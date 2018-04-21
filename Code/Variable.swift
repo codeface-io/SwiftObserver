@@ -7,13 +7,6 @@ public class Variable<Value: Equatable & Codable>: AbstractVariable<Value?>, Cod
         super.init(nil)
         
         storedValue = value
-        
-        print("VAR INIT \(String(describing: value))")
-    }
-    
-    deinit
-    {
-        print("VAR DEINIT \(String(describing: value))")
     }
     
     public required init(from decoder: Decoder) throws
