@@ -6,7 +6,8 @@
 
 It is designed to be flexible, non-intrusive, readable, simple and safe.
 
-![Type Dependency Diagram](Documentation/TypeDependencies.jpg)
+![Type Dependency Diagram](Documentation/TypeDependen
+cies.jpg)
 
 The Flowtoolz example project contains some [unit tests of SwiftObserver](https://github.com/flowtoolz/Flowtoolz/blob/master/Example/CocoapodTests/SwiftObserverTests.swift).
 
@@ -17,7 +18,7 @@ Right now, SwiftObserver can only be installed via [Carthage](https://github.com
 Add this line to your Cartfile:
 
 ~~~
-github "flowtoolz/Flowftoolz"
+github "flowtoolz/SwiftObserver"
 ~~~
 
 Let's look at some of the goodies of SwiftObserver ...
@@ -297,7 +298,7 @@ Let's look at some of the goodies of SwiftObserver ...
 
 * You won't need to distinguish different combining functions.
 
-	Other reactive libraries dump at least `merge`, `zip` and `combineLatest` on your brain. [SwiftObserver](https://github.com/flowtoolz/Flowtoolz/tree/master/Code/swift/SwiftObserver/) avoids all that by offering the most universal form of combined observation, in which the update trigger can be identified. (In the worst case, you must ensure the involved custom observables send updates of type `Update<_>`.) All other combine functions could be built on top of that using mappings.
+	Other reactive libraries dump at least `merge`, `zip` and `combineLatest` on your brain. [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) avoids all that by offering the most universal form of combined observation, in which the update trigger can be identified. (In the worst case, you must ensure the involved custom observables send updates of type `Update<_>`.) All other combine functions could be built on top of that using mappings.
 	
 	 Anyway, this universal mutual observing is all you need in virtually all cases. You're free to focus on the meaning of combined observations and forget the syntax!
 
@@ -341,6 +342,6 @@ What you might not like:
 ## Ending Note: Focus On Meaning Not On Technicalities
 
 * Because classes have to implement nothing to be observable, you can keep model and logic code independent of any observer frameworks and techniques. If the model layer had to be stuffed with heavyweight constructs just to be observed, it would become a technical issue instead of an easy to change,  meaningful, direct representation of domain-, business- and view logic.
-* Unlike established Swift implementations of the Redux approach, [SwiftObserver](https://github.com/flowtoolz/Flowtoolz/tree/master/Code/swift/SwiftObserver/) lets you freely model your domain-, business- and view logic with all your familiar design patterns and types. There are no restrictions on how you organize and store your app state.
-* Unlike established Swift implementations of the Reactive approach, [SwiftObserver](https://github.com/flowtoolz/Flowtoolz/tree/master/Code/swift/SwiftObserver/) lets you in control of the ancestral tree of your classes. There is not a single class that you have to inherit. Therefore, all your classes can be directly observed, even views and view controllers.
+* Unlike established Swift implementations of the Redux approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you freely model your domain-, business- and view logic with all your familiar design patterns and types. There are no restrictions on how you organize and store your app state.
+* Unlike established Swift implementations of the Reactive approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you in control of the ancestral tree of your classes. There is not a single class that you have to inherit. Therefore, all your classes can be directly observed, even views and view controllers.
 * There are no protocols that you have to implement. Your code remains focused and decoupled. Because there are no delegate protocols, there is no limit to how many things an observer can observe or to how many observers a thing can have.
