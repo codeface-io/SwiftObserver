@@ -1,10 +1,10 @@
-[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?longCache=true&style=flat-square)](https://github.com/Carthage/Carthage)  [![Pod Version](https://img.shields.io/cocoapods/v/SwiftObserver.svg?longCache=true&style=flat-square)](http://cocoapods.org/pods/SwiftObserver)
-
 # SwiftObserver
 
-It is designed to be flexible, non-intrusive, readable, simple and safe.
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?longCache=true&style=flat-square)](https://github.com/Carthage/Carthage)  [![Pod Version](https://img.shields.io/cocoapods/v/SwiftObserver.svg?longCache=true&style=flat-square)](http://cocoapods.org/pods/SwiftObserver)
 
 ![Type Dependency Diagram](Documentation/TypeDependencies.jpg)
+
+SwiftObserver is a reactive programming framework that is designed to be flexible, non-intrusive, readable, simple and safe.
 
 The Flowtoolz example project contains some [unit tests of SwiftObserver](https://github.com/flowtoolz/Flowtoolz/blob/master/Example/CocoapodTests/SwiftObserverTests.swift).
 
