@@ -6,8 +6,7 @@
 
 It is designed to be flexible, non-intrusive, readable, simple and safe.
 
-![Type Dependency Diagram](Documentation/TypeDependen
-cies.jpg)
+![Type Dependency Diagram](Documentation/TypeDependencies.jpg)
 
 The Flowtoolz example project contains some [unit tests of SwiftObserver](https://github.com/flowtoolz/Flowtoolz/blob/master/Example/CocoapodTests/SwiftObserverTests.swift).
 
