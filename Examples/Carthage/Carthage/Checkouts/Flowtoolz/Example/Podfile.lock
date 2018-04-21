@@ -1,0 +1,28 @@
+PODS:
+  - Flowtoolz (0.2.0):
+    - Flowtoolz/Foundation (= 0.2.0)
+    - Flowtoolz/Swift (= 0.2.0)
+    - Flowtoolz/UI (= 0.2.0)
+  - Flowtoolz/Foundation (0.2.0):
+    - ReachabilitySwift (= 3)
+  - Flowtoolz/Swift (0.2.0)
+  - Flowtoolz/UI (0.2.0):
+    - PureLayout (= 3.0.2)
+  - PureLayout (3.0.2)
+  - ReachabilitySwift (3)
+
+DEPENDENCIES:
+  - Flowtoolz (from `../`)
+
+EXTERNAL SOURCES:
+  Flowtoolz:
+    :path: ../
+
+SPEC CHECKSUMS:
+  Flowtoolz: ba964df5988363c9ff3cdca2da04f638e2f7bd48
+  PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
+  ReachabilitySwift: f5b9bb30a0777fac8f09ce8b067e32faeb29bb64
+
+PODFILE CHECKSUM: 21a62498cb618a9d7854289794af25c8705305ee
+
+COCOAPODS: 1.4.0
