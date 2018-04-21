@@ -7,51 +7,37 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9ED9258D208B492C000E74B4 /* AbstractObservable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED9257E208B492B000E74B4 /* AbstractObservable.swift */; };
-		9ED9258E208B492C000E74B4 /* AbstractVariable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED9257F208B492B000E74B4 /* AbstractVariable.swift */; };
-		9ED9258F208B492C000E74B4 /* CustomObservable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED92580208B492B000E74B4 /* CustomObservable.swift */; };
-		9ED92590208B492C000E74B4 /* TypeDependencies.graffle in Resources */ = {isa = PBXBuildFile; fileRef = 9ED92582208B492C000E74B4 /* TypeDependencies.graffle */; };
-		9ED92591208B492C000E74B4 /* TypeDependencies.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9ED92583208B492C000E74B4 /* TypeDependencies.jpg */; };
-		9ED92592208B492C000E74B4 /* ObservableMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED92584208B492C000E74B4 /* ObservableMapping.swift */; };
-		9ED92593208B492C000E74B4 /* ObservableProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED92585208B492C000E74B4 /* ObservableProtocol.swift */; };
-		9ED92594208B492C000E74B4 /* ObservableUnwrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED92586208B492C000E74B4 /* ObservableUnwrap.swift */; };
-		9ED92595208B492C000E74B4 /* ObservationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED92587208B492C000E74B4 /* ObservationService.swift */; };
-		9ED92596208B492C000E74B4 /* Observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED92588208B492C000E74B4 /* Observer.swift */; };
-		9ED92597208B492C000E74B4 /* PairVariable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED92589208B492C000E74B4 /* PairVariable.swift */; };
-		9ED92598208B492C000E74B4 /* readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 9ED9258A208B492C000E74B4 /* readme.md */; };
-		9ED92599208B492C000E74B4 /* Update.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED9258B208B492C000E74B4 /* Update.swift */; };
-		9ED9259A208B492C000E74B4 /* Variable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED9258C208B492C000E74B4 /* Variable.swift */; };
-		9ED925A2208B4A2D000E74B4 /* Array+Flowtoolz.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED9259C208B4A2D000E74B4 /* Array+Flowtoolz.swift */; };
-		9ED925A3208B4A2D000E74B4 /* BuildConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED9259D208B4A2D000E74B4 /* BuildConfiguration.swift */; };
-		9ED925A4208B4A2D000E74B4 /* Dictionary+Flowtoolz.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED9259E208B4A2D000E74B4 /* Dictionary+Flowtoolz.swift */; };
-		9ED925A5208B4A2D000E74B4 /* MessageLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED9259F208B4A2D000E74B4 /* MessageLogger.swift */; };
-		9ED925A6208B4A2D000E74B4 /* String+Flowtoolz.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED925A0208B4A2D000E74B4 /* String+Flowtoolz.swift */; };
-		9ED925A7208B4A2D000E74B4 /* SwiftHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED925A1208B4A2D000E74B4 /* SwiftHelpers.swift */; };
+		9E202FED208BD30E002161F8 /* AbstractObservable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE0208BD30E002161F8 /* AbstractObservable.swift */; };
+		9E202FEE208BD30E002161F8 /* AbstractVariable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE1208BD30E002161F8 /* AbstractVariable.swift */; };
+		9E202FEF208BD30E002161F8 /* CustomObservable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE2208BD30E002161F8 /* CustomObservable.swift */; };
+		9E202FF0208BD30E002161F8 /* ObservableMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE3208BD30E002161F8 /* ObservableMapping.swift */; };
+		9E202FF1208BD30E002161F8 /* ObservableProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE4208BD30E002161F8 /* ObservableProtocol.swift */; };
+		9E202FF2208BD30E002161F8 /* ObservableUnwrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE5208BD30E002161F8 /* ObservableUnwrap.swift */; };
+		9E202FF3208BD30E002161F8 /* ObservationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE6208BD30E002161F8 /* ObservationService.swift */; };
+		9E202FF4208BD30E002161F8 /* Observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE7208BD30E002161F8 /* Observer.swift */; };
+		9E202FF5208BD30E002161F8 /* PairVariable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE8208BD30E002161F8 /* PairVariable.swift */; };
+		9E202FF6208BD30E002161F8 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FEA208BD30E002161F8 /* NotificationService.swift */; };
+		9E202FF7208BD30E002161F8 /* Update.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FEB208BD30E002161F8 /* Update.swift */; };
+		9E202FF8208BD30E002161F8 /* Variable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FEC208BD30E002161F8 /* Variable.swift */; };
+		9E202FFF208BD50C002161F8 /* SwiftyToolz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E202FFE208BD50C002161F8 /* SwiftyToolz.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9E202FE0208BD30E002161F8 /* AbstractObservable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractObservable.swift; sourceTree = "<group>"; };
+		9E202FE1208BD30E002161F8 /* AbstractVariable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractVariable.swift; sourceTree = "<group>"; };
+		9E202FE2208BD30E002161F8 /* CustomObservable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomObservable.swift; sourceTree = "<group>"; };
+		9E202FE3208BD30E002161F8 /* ObservableMapping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableMapping.swift; sourceTree = "<group>"; };
+		9E202FE4208BD30E002161F8 /* ObservableProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableProtocol.swift; sourceTree = "<group>"; };
+		9E202FE5208BD30E002161F8 /* ObservableUnwrap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableUnwrap.swift; sourceTree = "<group>"; };
+		9E202FE6208BD30E002161F8 /* ObservationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservationService.swift; sourceTree = "<group>"; };
+		9E202FE7208BD30E002161F8 /* Observer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Observer.swift; sourceTree = "<group>"; };
+		9E202FE8208BD30E002161F8 /* PairVariable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PairVariable.swift; sourceTree = "<group>"; };
+		9E202FEA208BD30E002161F8 /* NotificationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		9E202FEB208BD30E002161F8 /* Update.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Update.swift; sourceTree = "<group>"; };
+		9E202FEC208BD30E002161F8 /* Variable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Variable.swift; sourceTree = "<group>"; };
+		9E202FFE208BD50C002161F8 /* SwiftyToolz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyToolz.framework; path = Carthage/Build/iOS/SwiftyToolz.framework; sourceTree = "<group>"; };
 		9ED92565208B48F7000E74B4 /* SwiftObserver.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftObserver.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9ED92569208B48F7000E74B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9ED9257E208B492B000E74B4 /* AbstractObservable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractObservable.swift; sourceTree = "<group>"; };
-		9ED9257F208B492B000E74B4 /* AbstractVariable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractVariable.swift; sourceTree = "<group>"; };
-		9ED92580208B492B000E74B4 /* CustomObservable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomObservable.swift; sourceTree = "<group>"; };
-		9ED92582208B492C000E74B4 /* TypeDependencies.graffle */ = {isa = PBXFileReference; lastKnownFileType = file; path = TypeDependencies.graffle; sourceTree = "<group>"; };
-		9ED92583208B492C000E74B4 /* TypeDependencies.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = TypeDependencies.jpg; sourceTree = "<group>"; };
-		9ED92584208B492C000E74B4 /* ObservableMapping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableMapping.swift; sourceTree = "<group>"; };
-		9ED92585208B492C000E74B4 /* ObservableProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableProtocol.swift; sourceTree = "<group>"; };
-		9ED92586208B492C000E74B4 /* ObservableUnwrap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableUnwrap.swift; sourceTree = "<group>"; };
-		9ED92587208B492C000E74B4 /* ObservationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservationService.swift; sourceTree = "<group>"; };
-		9ED92588208B492C000E74B4 /* Observer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Observer.swift; sourceTree = "<group>"; };
-		9ED92589208B492C000E74B4 /* PairVariable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PairVariable.swift; sourceTree = "<group>"; };
-		9ED9258A208B492C000E74B4 /* readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = readme.md; sourceTree = "<group>"; };
-		9ED9258B208B492C000E74B4 /* Update.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Update.swift; sourceTree = "<group>"; };
-		9ED9258C208B492C000E74B4 /* Variable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Variable.swift; sourceTree = "<group>"; };
-		9ED9259C208B4A2D000E74B4 /* Array+Flowtoolz.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+Flowtoolz.swift"; sourceTree = "<group>"; };
-		9ED9259D208B4A2D000E74B4 /* BuildConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BuildConfiguration.swift; sourceTree = "<group>"; };
-		9ED9259E208B4A2D000E74B4 /* Dictionary+Flowtoolz.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Dictionary+Flowtoolz.swift"; sourceTree = "<group>"; };
-		9ED9259F208B4A2D000E74B4 /* MessageLogger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageLogger.swift; sourceTree = "<group>"; };
-		9ED925A0208B4A2D000E74B4 /* String+Flowtoolz.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+Flowtoolz.swift"; sourceTree = "<group>"; };
-		9ED925A1208B4A2D000E74B4 /* SwiftHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftHelpers.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,17 +45,56 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9E202FFF208BD50C002161F8 /* SwiftyToolz.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9E202FDF208BD30E002161F8 /* Code */ = {
+			isa = PBXGroup;
+			children = (
+				9E202FE0208BD30E002161F8 /* AbstractObservable.swift */,
+				9E202FE1208BD30E002161F8 /* AbstractVariable.swift */,
+				9E202FE2208BD30E002161F8 /* CustomObservable.swift */,
+				9E202FE3208BD30E002161F8 /* ObservableMapping.swift */,
+				9E202FE4208BD30E002161F8 /* ObservableProtocol.swift */,
+				9E202FE5208BD30E002161F8 /* ObservableUnwrap.swift */,
+				9E202FE6208BD30E002161F8 /* ObservationService.swift */,
+				9E202FE7208BD30E002161F8 /* Observer.swift */,
+				9E202FE8208BD30E002161F8 /* PairVariable.swift */,
+				9E202FE9208BD30E002161F8 /* SwiftNotifier */,
+				9E202FEB208BD30E002161F8 /* Update.swift */,
+				9E202FEC208BD30E002161F8 /* Variable.swift */,
+			);
+			name = Code;
+			path = ../Code;
+			sourceTree = "<group>";
+		};
+		9E202FE9208BD30E002161F8 /* SwiftNotifier */ = {
+			isa = PBXGroup;
+			children = (
+				9E202FEA208BD30E002161F8 /* NotificationService.swift */,
+			);
+			path = SwiftNotifier;
+			sourceTree = "<group>";
+		};
+		9E202FFD208BD50C002161F8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9E202FFE208BD50C002161F8 /* SwiftyToolz.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		9ED92559208B4883000E74B4 = {
 			isa = PBXGroup;
 			children = (
-				9ED92567208B48F7000E74B4 /* SwiftObserver */,
+				9E202FDF208BD30E002161F8 /* Code */,
+				9ED92569208B48F7000E74B4 /* Info.plist */,
 				9ED92566208B48F7000E74B4 /* Products */,
+				9E202FFD208BD50C002161F8 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -79,60 +104,6 @@
 				9ED92565208B48F7000E74B4 /* SwiftObserver.framework */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		9ED92567208B48F7000E74B4 /* SwiftObserver */ = {
-			isa = PBXGroup;
-			children = (
-				9ED9257D208B492B000E74B4 /* SwiftObserver */,
-				9ED9259B208B4A2D000E74B4 /* SwiftBase */,
-				9ED92569208B48F7000E74B4 /* Info.plist */,
-			);
-			name = SwiftObserver;
-			sourceTree = "<group>";
-		};
-		9ED9257D208B492B000E74B4 /* SwiftObserver */ = {
-			isa = PBXGroup;
-			children = (
-				9ED9257E208B492B000E74B4 /* AbstractObservable.swift */,
-				9ED9257F208B492B000E74B4 /* AbstractVariable.swift */,
-				9ED92580208B492B000E74B4 /* CustomObservable.swift */,
-				9ED92581208B492B000E74B4 /* Documentation */,
-				9ED92584208B492C000E74B4 /* ObservableMapping.swift */,
-				9ED92585208B492C000E74B4 /* ObservableProtocol.swift */,
-				9ED92586208B492C000E74B4 /* ObservableUnwrap.swift */,
-				9ED92587208B492C000E74B4 /* ObservationService.swift */,
-				9ED92588208B492C000E74B4 /* Observer.swift */,
-				9ED92589208B492C000E74B4 /* PairVariable.swift */,
-				9ED9258A208B492C000E74B4 /* readme.md */,
-				9ED9258B208B492C000E74B4 /* Update.swift */,
-				9ED9258C208B492C000E74B4 /* Variable.swift */,
-			);
-			name = SwiftObserver;
-			path = ../Code/SwiftObserver;
-			sourceTree = "<group>";
-		};
-		9ED92581208B492B000E74B4 /* Documentation */ = {
-			isa = PBXGroup;
-			children = (
-				9ED92582208B492C000E74B4 /* TypeDependencies.graffle */,
-				9ED92583208B492C000E74B4 /* TypeDependencies.jpg */,
-			);
-			path = Documentation;
-			sourceTree = "<group>";
-		};
-		9ED9259B208B4A2D000E74B4 /* SwiftBase */ = {
-			isa = PBXGroup;
-			children = (
-				9ED9259C208B4A2D000E74B4 /* Array+Flowtoolz.swift */,
-				9ED9259D208B4A2D000E74B4 /* BuildConfiguration.swift */,
-				9ED9259E208B4A2D000E74B4 /* Dictionary+Flowtoolz.swift */,
-				9ED9259F208B4A2D000E74B4 /* MessageLogger.swift */,
-				9ED925A0208B4A2D000E74B4 /* String+Flowtoolz.swift */,
-				9ED925A1208B4A2D000E74B4 /* SwiftHelpers.swift */,
-			);
-			name = SwiftBase;
-			path = ../Code/SwiftBase;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -156,6 +127,7 @@
 				9ED92561208B48F7000E74B4 /* Frameworks */,
 				9ED92562208B48F7000E74B4 /* Headers */,
 				9ED92563208B48F7000E74B4 /* Resources */,
+				9E203000208BD60C002161F8 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -203,36 +175,45 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9ED92591208B492C000E74B4 /* TypeDependencies.jpg in Resources */,
-				9ED92598208B492C000E74B4 /* readme.md in Resources */,
-				9ED92590208B492C000E74B4 /* TypeDependencies.graffle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		9E203000208BD60C002161F8 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/SwiftyToolz.framework",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		9ED92560208B48F7000E74B4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9ED9258D208B492C000E74B4 /* AbstractObservable.swift in Sources */,
-				9ED925A7208B4A2D000E74B4 /* SwiftHelpers.swift in Sources */,
-				9ED92596208B492C000E74B4 /* Observer.swift in Sources */,
-				9ED92599208B492C000E74B4 /* Update.swift in Sources */,
-				9ED925A6208B4A2D000E74B4 /* String+Flowtoolz.swift in Sources */,
-				9ED925A3208B4A2D000E74B4 /* BuildConfiguration.swift in Sources */,
-				9ED925A4208B4A2D000E74B4 /* Dictionary+Flowtoolz.swift in Sources */,
-				9ED9258F208B492C000E74B4 /* CustomObservable.swift in Sources */,
-				9ED9259A208B492C000E74B4 /* Variable.swift in Sources */,
-				9ED9258E208B492C000E74B4 /* AbstractVariable.swift in Sources */,
-				9ED92595208B492C000E74B4 /* ObservationService.swift in Sources */,
-				9ED92592208B492C000E74B4 /* ObservableMapping.swift in Sources */,
-				9ED92593208B492C000E74B4 /* ObservableProtocol.swift in Sources */,
-				9ED92597208B492C000E74B4 /* PairVariable.swift in Sources */,
-				9ED925A5208B4A2D000E74B4 /* MessageLogger.swift in Sources */,
-				9ED925A2208B4A2D000E74B4 /* Array+Flowtoolz.swift in Sources */,
-				9ED92594208B492C000E74B4 /* ObservableUnwrap.swift in Sources */,
+				9E202FF7208BD30E002161F8 /* Update.swift in Sources */,
+				9E202FED208BD30E002161F8 /* AbstractObservable.swift in Sources */,
+				9E202FF4208BD30E002161F8 /* Observer.swift in Sources */,
+				9E202FEF208BD30E002161F8 /* CustomObservable.swift in Sources */,
+				9E202FEE208BD30E002161F8 /* AbstractVariable.swift in Sources */,
+				9E202FF3208BD30E002161F8 /* ObservationService.swift in Sources */,
+				9E202FF0208BD30E002161F8 /* ObservableMapping.swift in Sources */,
+				9E202FF8208BD30E002161F8 /* Variable.swift in Sources */,
+				9E202FF1208BD30E002161F8 /* ObservableProtocol.swift in Sources */,
+				9E202FF5208BD30E002161F8 /* PairVariable.swift in Sources */,
+				9E202FF6208BD30E002161F8 /* NotificationService.swift in Sources */,
+				9E202FF2208BD30E002161F8 /* ObservableUnwrap.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -291,6 +272,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -364,6 +349,10 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

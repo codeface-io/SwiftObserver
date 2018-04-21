@@ -24,5 +24,8 @@
     s.tvos.deployment_target = '9.0'
 
     # sorces
-    s.source_files = 'Code/SwiftBase/**/*.swift', 'Code/SwiftObserver/**/*.swift'
+    s.source_files = 'Code/**/*.swift'
+
+    # dependencies
+    s.dependency 'SwiftyToolz', '1.0.0'
 end

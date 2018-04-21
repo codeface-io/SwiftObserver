@@ -1,3 +1,5 @@
+import SwiftyToolz
+
 // MARK: - Sender Protocol
 
 public protocol Sender
