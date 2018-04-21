@@ -1,0 +1,16 @@
+### building
+build/
+DerivedData/
+.build
+.DS_Store
+
+### settings
+*.pbxuser
+xcuserdata/
+
+### carthage
+Checkouts/
+Build/
+
+### cocoapods
+Pods/
