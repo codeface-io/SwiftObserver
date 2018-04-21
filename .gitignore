@@ -9,8 +9,8 @@ DerivedData/
 xcuserdata/
 
 ### carthage
-Checkouts/
-Build/
+#Checkouts/
+#Build/
 
 ### cocoapods
 Pods/
