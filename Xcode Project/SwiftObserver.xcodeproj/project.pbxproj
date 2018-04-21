@@ -190,6 +190,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/SwiftyToolz.framework",
 			);
 			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SwiftyToolz.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
