@@ -1,5 +1,7 @@
 PODS:
-  - SwiftObserver (1.0.0)
+  - SwiftObserver (1.0.1):
+    - SwiftyToolz (= 1.0.0)
+  - SwiftyToolz (1.0.0)
 
 DEPENDENCIES:
   - SwiftObserver
@@ -7,9 +9,11 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
     - SwiftObserver
+    - SwiftyToolz
 
 SPEC CHECKSUMS:
-  SwiftObserver: ab624515719d6f16aaad1d3338083aa9b8efb6c2
+  SwiftObserver: 68b901d3a247ecf5384b40750f20a0217dd17016
+  SwiftyToolz: 593a3a1dd6e6a7f038efd87bca3d05b3cb0842f4
 
 PODFILE CHECKSUM: 10703abff80a5b9bb6597ba0a114609ee5f045a1
 
