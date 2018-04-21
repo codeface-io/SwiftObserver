@@ -2,8 +2,6 @@
 
 # SwiftObserver
 
-#### A Sweet Little "Use and Forget" Toolbox for Reactive Swift Programming
-
 It is designed to be flexible, non-intrusive, readable, simple and safe.
 
 ![Type Dependency Diagram](Documentation/TypeDependencies.jpg)
