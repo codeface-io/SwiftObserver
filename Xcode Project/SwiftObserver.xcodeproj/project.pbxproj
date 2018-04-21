@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9ED9256F208B48F7000E74B4 /* SwiftObserver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9ED92565208B48F7000E74B4 /* SwiftObserver.framework */; };
 		9ED9258D208B492C000E74B4 /* AbstractObservable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED9257E208B492B000E74B4 /* AbstractObservable.swift */; };
 		9ED9258E208B492C000E74B4 /* AbstractVariable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED9257F208B492B000E74B4 /* AbstractVariable.swift */; };
 		9ED9258F208B492C000E74B4 /* CustomObservable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED92580208B492B000E74B4 /* CustomObservable.swift */; };
@@ -30,21 +29,9 @@
 		9ED925A7208B4A2D000E74B4 /* SwiftHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ED925A1208B4A2D000E74B4 /* SwiftHelpers.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		9ED92570208B48F7000E74B4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 9ED9255A208B4883000E74B4 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 9ED92564208B48F7000E74B4;
-			remoteInfo = SwiftObserver;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		9ED92565208B48F7000E74B4 /* SwiftObserver.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftObserver.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9ED92569208B48F7000E74B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9ED9256E208B48F7000E74B4 /* SwiftObserverTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftObserverTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		9ED92575208B48F7000E74B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9ED9257E208B492B000E74B4 /* AbstractObservable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractObservable.swift; sourceTree = "<group>"; };
 		9ED9257F208B492B000E74B4 /* AbstractVariable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractVariable.swift; sourceTree = "<group>"; };
 		9ED92580208B492B000E74B4 /* CustomObservable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomObservable.swift; sourceTree = "<group>"; };
@@ -75,14 +62,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		9ED9256B208B48F7000E74B4 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				9ED9256F208B48F7000E74B4 /* SwiftObserver.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -90,7 +69,6 @@
 			isa = PBXGroup;
 			children = (
 				9ED92567208B48F7000E74B4 /* SwiftObserver */,
-				9ED92572208B48F7000E74B4 /* SwiftObserverTests */,
 				9ED92566208B48F7000E74B4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -99,7 +77,6 @@
 			isa = PBXGroup;
 			children = (
 				9ED92565208B48F7000E74B4 /* SwiftObserver.framework */,
-				9ED9256E208B48F7000E74B4 /* SwiftObserverTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -111,15 +88,7 @@
 				9ED9259B208B4A2D000E74B4 /* SwiftBase */,
 				9ED92569208B48F7000E74B4 /* Info.plist */,
 			);
-			path = SwiftObserver;
-			sourceTree = "<group>";
-		};
-		9ED92572208B48F7000E74B4 /* SwiftObserverTests */ = {
-			isa = PBXGroup;
-			children = (
-				9ED92575208B48F7000E74B4 /* Info.plist */,
-			);
-			path = SwiftObserverTests;
+			name = SwiftObserver;
 			sourceTree = "<group>";
 		};
 		9ED9257D208B492B000E74B4 /* SwiftObserver */ = {
@@ -140,7 +109,7 @@
 				9ED9258C208B492C000E74B4 /* Variable.swift */,
 			);
 			name = SwiftObserver;
-			path = ../../Code/SwiftObserver;
+			path = ../Code/SwiftObserver;
 			sourceTree = "<group>";
 		};
 		9ED92581208B492B000E74B4 /* Documentation */ = {
@@ -163,7 +132,7 @@
 				9ED925A1208B4A2D000E74B4 /* SwiftHelpers.swift */,
 			);
 			name = SwiftBase;
-			path = ../../Code/SwiftBase;
+			path = ../Code/SwiftBase;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -197,24 +166,6 @@
 			productReference = 9ED92565208B48F7000E74B4 /* SwiftObserver.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		9ED9256D208B48F7000E74B4 /* SwiftObserverTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 9ED9257A208B48F7000E74B4 /* Build configuration list for PBXNativeTarget "SwiftObserverTests" */;
-			buildPhases = (
-				9ED9256A208B48F7000E74B4 /* Sources */,
-				9ED9256B208B48F7000E74B4 /* Frameworks */,
-				9ED9256C208B48F7000E74B4 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				9ED92571208B48F7000E74B4 /* PBXTargetDependency */,
-			);
-			name = SwiftObserverTests;
-			productName = SwiftObserverTests;
-			productReference = 9ED9256E208B48F7000E74B4 /* SwiftObserverTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -225,10 +176,6 @@
 				LastUpgradeCheck = 0920;
 				TargetAttributes = {
 					9ED92564208B48F7000E74B4 = {
-						CreatedOnToolsVersion = 9.2;
-						ProvisioningStyle = Automatic;
-					};
-					9ED9256D208B48F7000E74B4 = {
 						CreatedOnToolsVersion = 9.2;
 						ProvisioningStyle = Automatic;
 					};
@@ -247,7 +194,6 @@
 			projectRoot = "";
 			targets = (
 				9ED92564208B48F7000E74B4 /* SwiftObserver */,
-				9ED9256D208B48F7000E74B4 /* SwiftObserverTests */,
 			);
 		};
 /* End PBXProject section */
@@ -260,13 +206,6 @@
 				9ED92591208B492C000E74B4 /* TypeDependencies.jpg in Resources */,
 				9ED92598208B492C000E74B4 /* readme.md in Resources */,
 				9ED92590208B492C000E74B4 /* TypeDependencies.graffle in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		9ED9256C208B48F7000E74B4 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -297,22 +236,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		9ED9256A208B48F7000E74B4 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		9ED92571208B48F7000E74B4 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 9ED92564208B48F7000E74B4 /* SwiftObserver */;
-			targetProxy = 9ED92570208B48F7000E74B4 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		9ED9255E208B4883000E74B4 /* Debug */ = {
@@ -381,7 +305,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = SwiftObserver/Info.plist;
+				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -448,7 +372,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = SwiftObserver/Info.plist;
+				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -463,129 +387,6 @@
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
-		9ED9257B208B48F7000E74B4 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = SwiftObserverTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.flowtoolz.SwiftObserverTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		9ED9257C208B48F7000E74B4 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = SwiftObserverTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = com.flowtoolz.SwiftObserverTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -606,15 +407,6 @@
 			buildConfigurations = (
 				9ED92578208B48F7000E74B4 /* Debug */,
 				9ED92579208B48F7000E74B4 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		9ED9257A208B48F7000E74B4 /* Build configuration list for PBXNativeTarget "SwiftObserverTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				9ED9257B208B48F7000E74B4 /* Debug */,
-				9ED9257C208B48F7000E74B4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
