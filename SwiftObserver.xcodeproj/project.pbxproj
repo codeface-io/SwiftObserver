@@ -19,7 +19,7 @@
 		9E202FF6208BD30E002161F8 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FEA208BD30E002161F8 /* NotificationService.swift */; };
 		9E202FF7208BD30E002161F8 /* Update.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FEB208BD30E002161F8 /* Update.swift */; };
 		9E202FF8208BD30E002161F8 /* Variable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FEC208BD30E002161F8 /* Variable.swift */; };
-		9E202FFF208BD50C002161F8 /* SwiftyToolz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E202FFE208BD50C002161F8 /* SwiftyToolz.framework */; };
+		9E992683208BEDF500A24265 /* SwiftyToolz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E992682208BEDF500A24265 /* SwiftyToolz.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,7 +35,7 @@
 		9E202FEA208BD30E002161F8 /* NotificationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		9E202FEB208BD30E002161F8 /* Update.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Update.swift; sourceTree = "<group>"; };
 		9E202FEC208BD30E002161F8 /* Variable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Variable.swift; sourceTree = "<group>"; };
-		9E202FFE208BD50C002161F8 /* SwiftyToolz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyToolz.framework; path = Carthage/Build/iOS/SwiftyToolz.framework; sourceTree = "<group>"; };
+		9E992682208BEDF500A24265 /* SwiftyToolz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyToolz.framework; path = Carthage/Build/iOS/SwiftyToolz.framework; sourceTree = "<group>"; };
 		9ED92565208B48F7000E74B4 /* SwiftObserver.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftObserver.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9ED92569208B48F7000E74B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -45,7 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9E202FFF208BD50C002161F8 /* SwiftyToolz.framework in Frameworks */,
+				9E992683208BEDF500A24265 /* SwiftyToolz.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,8 +68,7 @@
 				9E202FEB208BD30E002161F8 /* Update.swift */,
 				9E202FEC208BD30E002161F8 /* Variable.swift */,
 			);
-			name = Code;
-			path = ../Code;
+			path = Code;
 			sourceTree = "<group>";
 		};
 		9E202FE9208BD30E002161F8 /* SwiftNotifier */ = {
@@ -80,10 +79,10 @@
 			path = SwiftNotifier;
 			sourceTree = "<group>";
 		};
-		9E202FFD208BD50C002161F8 /* Frameworks */ = {
+		9E992681208BEDF500A24265 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				9E202FFE208BD50C002161F8 /* SwiftyToolz.framework */,
+				9E992682208BEDF500A24265 /* SwiftyToolz.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -94,7 +93,7 @@
 				9E202FDF208BD30E002161F8 /* Code */,
 				9ED92569208B48F7000E74B4 /* Info.plist */,
 				9ED92566208B48F7000E74B4 /* Products */,
-				9E202FFD208BD50C002161F8 /* Frameworks */,
+				9E992681208BEDF500A24265 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
