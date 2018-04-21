@@ -10,7 +10,9 @@ The Flowtoolz example project contains some [unit tests of SwiftObserver](https:
 
 ## Installation
 
-Right now, SwiftObserver can only be installed via [Carthage](https://github.com/Carthage/Carthage).
+SwiftObserver can be installed via [Carthage](https://github.com/Carthage/Carthage) and via [Cocoapods](https://cocoapods.org).
+
+### Carthage
 
 Add this line to your Cartfile:
 
@@ -18,7 +20,15 @@ Add this line to your Cartfile:
 github "flowtoolz/SwiftObserver"
 ~~~
 
-Let's look at some of the goodies of SwiftObserver ...
+### Cocoapods
+
+Add this line to your Podfile:
+
+~~~
+pod 'SwiftObserver'
+~~~
+
+Now let's look at some of the goodies of SwiftObserver ...
 
 ## 1. Keep It Simple Sweety
 
