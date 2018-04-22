@@ -75,7 +75,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 ## 3. Variables
 
-* A variable is of type `Variable` (alias `Var`) or `PairVariable`. It holds a value in its `value` property. Values must be `Codable` and `Equatable`. Creating a variable without initial value sets the value `nil`. You may use the `<-` operator to set a value:
+* A variable is of type `Variable` (alias `Var`) and holds a value in its `value` property. Values must be `Codable` and `Equatable`. Creating a variable without initial value sets the value `nil`. You may use the `<-` operator to set a value:
 
 	~~~swift
 	let number = Var(13)
@@ -122,9 +122,9 @@ Now let's look at some of the goodies of SwiftObserver ...
 	~~~swift
 	observer.observe(Var("friday 13"))
 	{
-		update in
+	   update in
 		
-		// FAIL! The observed variable has local scope and will deinit!
+	   // FAIL! The observed variable has local scope and will deinit!
 	}
 	~~~
 
@@ -153,9 +153,9 @@ Now let's look at some of the goodies of SwiftObserver ...
 	~~~swift
 	observer.observe(Var("friday") + Var(13))
 	{
-		update in
+	   update in
 		
-		// FAIL! The observed variable has local scope and will deinit!
+	   // FAIL! The observed variable has local scope and will deinit!
 	}
 	~~~
 
@@ -183,14 +183,14 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 * Custom observables just need to adopt the `CustomObservable` protocol (alias `Observable`) and provide a `var update: UpdateType { get }` of the type of updates they wish to send:
 
-	~~~swift
-	class Model: Observable
-	{
-	   var update: Event { return .didNothing }
+    ~~~swift
+    class Model: Observable
+    {
+        var update: Event { return .didNothing }
 	   
-	   enum Event { case didNothing, didUpdate, willDeinit }
-	}
-	~~~
+        enum Event { case didNothing, didUpdate, willDeinit }
+    }
+    ~~~
 	
 	Swift will infer the update type so you don't need `typealias UpdateType = Event`
 
