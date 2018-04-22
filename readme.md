@@ -274,9 +274,9 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 	observer.observe(latestNumber)
 	{
-		newInteger in
+	   newInteger in
 		
-		// newInteger is not optional!
+	   // newInteger is not optional!
 	}
 	~~~	
 
