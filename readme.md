@@ -6,7 +6,7 @@
 
 SwiftObserver is a reactive programming framework that is designed to be flexible, non-intrusive, readable, simple and safe.
 
-The Flowtoolz example project contains some [unit tests of SwiftObserver](https://github.com/flowtoolz/Flowtoolz/blob/master/Example/CocoapodTests/SwiftObserverTests.swift).
+There are some [unit tests of SwiftObserver](Code/SwiftObserverTests.swift), which also demonstrate its use.
 
 ## Installation
 
