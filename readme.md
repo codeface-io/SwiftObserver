@@ -2,11 +2,11 @@
 
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?longCache=true&style=flat-square)](https://github.com/Carthage/Carthage)  [![Pod Version](https://img.shields.io/cocoapods/v/SwiftObserver.svg?longCache=true&style=flat-square)](http://cocoapods.org/pods/SwiftObserver)
 
-<img src="Documentation/TypeDependencies.jpg" style="width:100%;max-width:640px;display:block;margin-left:auto;margin-right:auto"/>
+<img src="https://raw.githubusercontent.com/flowtoolz/SwiftObserver/master/Documentation/TypeDependencies.jpg" style="width:100%;max-width:640px;display:block;margin-left:auto;margin-right:auto"/>
 
 SwiftObserver is a reactive programming framework that is designed to be flexible, non-intrusive, readable, simple and safe.
 
-There are some [unit tests of SwiftObserver](Code/SwiftObserverTests.swift), which also demonstrate its use.
+There are some [unit tests of SwiftObserver](https://github.com/flowtoolz/SwiftObserver/blob/master/SwiftObserverTests.swift), which also demonstrate its use.
 
 ## Installation
 
@@ -134,7 +134,6 @@ Now let's look at some of the goodies of SwiftObserver ...
 * You can observe combinations of variables, which are actually recursive variable pairs. Like a simple variable of type `Var`, a `PairVariable` sends updates of type `Update<Value>`, only here the value is a `Pair<Value1, Value2>`, which holds values for both combined variables:
 
 	~~~swift
-	
 	let textAndNumber = text + number
 
 	observer.observe(textAndNumber)
