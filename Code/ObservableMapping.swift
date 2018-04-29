@@ -43,6 +43,11 @@ public class ObservableMapping<SourceObservable: ObservableProtocol,
         observable.removeAllObservers()
     }
     
+    public func removeNilObservers()
+    {
+        observable.removeNilObservers()
+    }
+    
     public var update: MappedUpdate { return map(observable.update) }
     
     private let map: Mapping

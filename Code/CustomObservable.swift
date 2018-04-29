@@ -18,6 +18,11 @@ public extension CustomObservable
         }
     }
     
+    func updateObservers(_ update: UpdateType)
+    {
+        ObservationService.updateObservers(of: self, with: update)
+    }
+    
     func remove(_ observer: AnyObject)
     {
         ObservationService.remove(observer, of: self)
@@ -28,13 +33,10 @@ public extension CustomObservable
         ObservationService.removeAllObservers(of: self)
     }
     
-    func updateObservers(_ update: UpdateType)
+    func removeNilObservers()
     {
-        ObservationService.updateObservers(of: self, with: update)
+        ObservationService.removeAbandonedObservings()
     }
 }
 
-public protocol CustomObservable: ObservableProtocol
-{
-    func updateObservers(_ update: UpdateType)
-}
+public protocol CustomObservable: ObserverUpdater {}

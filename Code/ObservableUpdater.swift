@@ -1,8 +1,12 @@
+public protocol ObserverUpdater: ObservableProtocol
+{
+    func updateObservers(_ update: UpdateType)
+}
+
 public protocol ObservableProtocol: ObserverRemover
 {
     func add(_ observer: AnyObject,
              _ handleUpdate: @escaping UpdateHandler)
-    func removeAllObservers()
     
     var update: UpdateType { get }
     
@@ -13,4 +17,6 @@ public protocol ObservableProtocol: ObserverRemover
 public protocol ObserverRemover: AnyObject
 {
     func remove(_ observer: AnyObject)
+    func removeAllObservers()
+    func removeNilObservers()
 }

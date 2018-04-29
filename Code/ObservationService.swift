@@ -9,27 +9,24 @@ class ObservationService
                     with handleUpdate: @escaping (Any?) -> ())
     {
         removeAbandonedObservings()
-        
-        let observerInfo = ObserverInfo(observer: observer,
-                                        handleUpdate: handleUpdate)
-        
-        mapping(of: observed).observerInfos[hash(observer)] = observerInfo
+
+        observation(of: observed).observerList.add(observer, handleUpdate)
     }
     
-    private static func mapping(of observed: AnyObject) -> Mapping
+    private static func observation(of observed: AnyObject) -> Observation
     {
-        return mappings[hash(observed)] ?? createAndAddMapping(of: observed)
+        return observations[hash(observed)] ?? createAndAddObservation(of: observed)
     }
     
-    private static func createAndAddMapping(of observed: AnyObject) -> Mapping
+    private static func createAndAddObservation(of observed: AnyObject) -> Observation
     {
-        let mapping = Mapping()
+        let observation = Observation()
         
-        mapping.observed = observed
+        observation.observed = observed
         
-        mappings[hash(observed)] = mapping
+        observations[hash(observed)] = observation
         
-        return mapping
+        return observation
     }
     
     // MARK: Remove Observers
@@ -38,13 +35,13 @@ class ObservationService
     {
         removeAbandonedObservings()
         
-        guard let mapping = mappings[hash(observed)] else { return }
+        guard let observation = observations[hash(observed)] else { return }
         
-        mapping.observerInfos[hash(observer)] = nil
+        observation.observerList.remove(observer)
         
-        if mapping.observerInfos.isEmpty
+        if observation.observerList.isEmpty
         {
-            mappings[hash(observed)] = nil
+            observations[hash(observed)] = nil
         }
     }
     
@@ -52,14 +49,14 @@ class ObservationService
     {
         removeAbandonedObservings()
         
-        mappings[hash(observed)] = nil
+        observations[hash(observed)] = nil
     }
     
     static func removeObserverFromAllObservables(_ observer: AnyObject)
     {
-        for mapping in mappings.values
+        for observation in observations.values
         {
-            mapping.observerInfos[hash(observer)] = nil
+            observation.observerList.remove(observer)
         }
         
         removeAbandonedObservings()
@@ -71,47 +68,28 @@ class ObservationService
     {
         removeAbandonedObservings()
         
-        guard let mapping = mappings[hash(observed)] else { return }
+        guard let observation = observations[hash(observed)] else { return }
         
-        for observer in mapping.observerInfos.values
-        {
-            observer.handleUpdate?(event)
-        }
+        observation.observerList.update(event)
     }
     
     static func removeAbandonedObservings()
     {
-        for mapping in mappings.values
+        for observation in observations.values
         {
-            mapping.observerInfos.remove
-                {
-                    $0.observer == nil || $0.handleUpdate == nil
-            }
+            observation.observerList.removeNilObservers()
         }
         
-        mappings.remove { $0.observed == nil || $0.observerInfos.isEmpty }
+        observations.remove { $0.observed == nil || $0.observerList.isEmpty }
     }
     
     // MARK: Private State
     
-    private static var mappings = [HashValue: Mapping]()
+    private static var observations = [HashValue: Observation]()
     
-    private class Mapping
+    private class Observation
     {
         weak var observed: AnyObject?
-        
-        var observerInfos = [HashValue: ObserverInfo]()
-    }
-    
-    private class ObserverInfo
-    {
-        init(observer: AnyObject, handleUpdate: @escaping (Any?) -> ())
-        {
-            self.observer = observer
-            self.handleUpdate = handleUpdate
-        }
-        
-        weak var observer: AnyObject?
-        var handleUpdate: ((Any?) -> ())?
+        let observerList = ObserverList<Any?>()
     }
 }

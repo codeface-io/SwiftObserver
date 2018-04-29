@@ -1,6 +1,6 @@
 import SwiftyToolz
 
-public class AbstractObservable<ObservedUpdate>: ObservableProtocol
+public class AbstractObservable<ObservedUpdate>: ObserverUpdater
 {
     // MARK: Life Cycle
     
@@ -11,31 +11,28 @@ public class AbstractObservable<ObservedUpdate>: ObservableProtocol
     
     deinit { removeAllObservers() }
     
-    // MARK: ObservableProtocol
+    // MARK: ObserverUpdater
     
     public func add(_ observer: AnyObject,
                     _ handleUpdate: @escaping UpdateHandler)
     {
         removeNilObservers()
         
-        let observerInfo = ObserverInfo(observer: observer,
-                                        handleUpdate: handleUpdate)
-        
-        observerInfos[hash(observer)] = observerInfo
-        
-        if observerInfos.count == 1
+        if observerList.isEmpty
         {
             observedObjects[hash(self)] = WeakObservedObject(observed: self)
         }
+        
+        observerList.add(observer, handleUpdate)
     }
     
     public func remove(_ observer: AnyObject)
     {
         removeNilObservers()
         
-        observerInfos[hash(observer)] = nil
+        observerList.remove(observer)
         
-        if observerInfos.count == 0
+        if observerList.isEmpty
         {
             observedObjects[hash(self)] = nil
         }
@@ -43,42 +40,31 @@ public class AbstractObservable<ObservedUpdate>: ObservableProtocol
     
     public func removeAllObservers()
     {
-        observerInfos.removeAll()
+        observerList.removeAll()
         
         observedObjects[hash(self)] = nil
     }
-    
-    // MARK: Updating Observers
     
     public func updateObservers(_ update: ObservedUpdate)
     {
         removeNilObservers()
         
-        for observerInfo in observerInfos.values
-        {
-            observerInfo.handleUpdate?(update)
-        }
+        observerList.update(update)
     }
-    
-    // MARK: Managing Observers
     
     public func removeNilObservers()
     {
-        observerInfos.remove { $0.observer == nil || $0.handleUpdate == nil}
+        observerList.removeNilObservers()
         
-        if observerInfos.count == 0
+        if observerList.isEmpty
         {
             observedObjects[hash(self)] = nil
         }
     }
     
-    private var observerInfos = [HashValue: ObserverInfo]()
+    // MARK: Managing Observers
     
-    private struct ObserverInfo
-    {
-        weak var observer: AnyObject?
-        var handleUpdate: UpdateHandler?
-    }
+    private let observerList = ObserverList<ObservedUpdate>()
     
     public var update: ObservedUpdate
     
