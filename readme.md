@@ -117,7 +117,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~
 	
-* Be aware that you must hold a reference to a variable that you want to observe. Observation alone creates no strong reference on the observed object. So observing an ad-hoc created variable makes no sense:
+* Be aware that you must hold a reference to a variable that you want to observe. Observation alone creates no strong reference to the observed object. So observing an ad-hoc created variable makes no sense:
 
 	~~~swift
 	observer.observe(Var("friday 13"))
@@ -191,9 +191,9 @@ Now let's look at some of the goodies of SwiftObserver ...
     }
     ~~~
 	
-	Swift will infer the update type so you don't need `typealias UpdateType = Event`
+	Swift will infer the `update` type so you don't need to write `typealias UpdateType = Event`.
 
-* Combined variables as well as combined observation sometimes request the current update state from their constituting observables. Therefor observables offer the `update` property, which is also a way for other clients to actively get the update state in addition to observing it.
+* Combined variables as well as combined observation sometimes request the current update state from their constituting observables. Therefor, observables offer the `update` property, which is also a way for other clients to actively get the update state in addition to observing it.
 
 * The `update` property should typically return the last update that was sent or a value that indicates that nothing changed. But it can be optional and may (always) return `nil`:
 
@@ -215,7 +215,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~
 	
-* Using the `update` property together with an `UpdateType` that is an `Update<...>`, a custom observable can have a state and be used like a variable:
+* Using the `update` property together with an `UpdateType` that is an `Update<_>`, a custom observable can have a state and be used like a variable:
 
 	~~~swift
 	class Model: Observable
@@ -251,7 +251,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	let latestTextLength = latestText.map { $0?.count ?? 0 }
 	~~~
 
-* Often we want to observe only the new value of a variable without the old one. Above we mapped a value update onto its new value. This mapping is already available for all observables whos update type is `Update<_>` (not just for variables). The above code can be written as:
+* Often we want to observe only the new value of a variable without the old one. Above, we mapped a value update onto its new value. This mapping is already available for all observables whos update type is `Update<_>` (not just for variables). The above code can be written as:
 
 	~~~swift
 	let text = Var<String>()
@@ -266,7 +266,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	number <- nil
 	~~~
 	
-	Often we don't want to deal with optionals down the line. You can easily get rid of the optional by providing a default:
+	However, we often don't want to deal with optionals down the line. You can easily get rid of the optional by providing a default value:
 	
 	~~~swift
 	let latestNumber = number.new().unwrap(0)
@@ -279,9 +279,9 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~	
 
-* This default is only required for the `update` property every observable provides according to the `ObservableProtocol`. It will only come into play with combined observations where the unwrapped observable didn't trigger the update but just provided its current `update` state.
+* This default is only required for the `update` property every observable provides in accordance with the `ObservableProtocol`. It will only come into play with combined observations in cases where the unwrapped observable didn't trigger the update but just provided its current `update` state.
 
-	When the `value` of `latestNumber` is set to `nil`, the `unwrap` mapping sends nothing to its obervers, not even the default `0`. When `newInteger` is zero, the observer actually knows that it's a real value and not just a replacement for `nil`.
+	The above exampe is not a combined observation, so only `latest number` can trigger the update. When the `value` of `latestNumber` is set to `nil`, the `unwrap` mapping sends nothing to its obervers, not even the default `0`. So when `newInteger` is zero, the observer knows that it's a real value and not just a replacement for `nil`.
 
 ## 7. One Combine To Rule Them All
 
@@ -292,7 +292,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	let numberAndText = number + text
 	let model = Model()
 	
-	observer.observe(text, numberAndText, model)
+	observer.observe(newText, numberAndText, model)
 	{
 	   textValue, numberAndTextUpdate, event in
 		
