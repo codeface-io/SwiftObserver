@@ -8,7 +8,7 @@ class ObservationService
                     of observed: AnyObject,
                     with handleUpdate: @escaping (Any?) -> ())
     {
-        removeAbandonedObservings()
+        removeAbandonedObservations()
 
         observation(of: observed).observerList.add(observer, handleUpdate)
     }
@@ -33,7 +33,7 @@ class ObservationService
     
     static func remove(_ observer: AnyObject, of observed: AnyObject)
     {
-        removeAbandonedObservings()
+        removeAbandonedObservations()
         
         guard let observation = observations[hash(observed)] else { return }
         
@@ -47,7 +47,7 @@ class ObservationService
     
     static func removeAllObservers(of observed: AnyObject)
     {
-        removeAbandonedObservings()
+        removeAbandonedObservations()
         
         observations[hash(observed)] = nil
     }
@@ -59,21 +59,26 @@ class ObservationService
             observation.observerList.remove(observer)
         }
         
-        removeAbandonedObservings()
+        removeAbandonedObservations()
+    }
+    
+    static func removeNilObservers(of observed: AnyObject)
+    {
+        observations[hash(observed)]?.observerList.removeNilObservers()
     }
     
     // MARK: Send Events to Observers
     
     static func updateObservers(of observed: AnyObject, with event: Any?)
     {
-        removeAbandonedObservings()
+        removeAbandonedObservations()
         
-        guard let observation = observations[hash(observed)] else { return }
-        
-        observation.observerList.update(event)
+        observations[hash(observed)]?.observerList.update(event)
     }
     
-    static func removeAbandonedObservings()
+    // MARK: Private State
+    
+    private static func removeAbandonedObservations()
     {
         for observation in observations.values
         {
@@ -82,8 +87,6 @@ class ObservationService
         
         observations.remove { $0.observed == nil || $0.observerList.isEmpty }
     }
-    
-    // MARK: Private State
     
     private static var observations = [HashValue: Observation]()
     

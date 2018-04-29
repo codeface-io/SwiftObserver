@@ -7,14 +7,12 @@ public extension CustomObservable
     {
         ObservationService.add(observer, of: self)
         {
-            if let update = $0 as? UpdateType
-            {
-                handleUpdate(update)
-            }
-            else
+            guard let update = $0 as? UpdateType else
             {
                 fatalError("Impossible error: could not cast update type received from observation center")
             }
+            
+            handleUpdate(update)
         }
     }
     
@@ -35,7 +33,7 @@ public extension CustomObservable
     
     func removeNilObservers()
     {
-        ObservationService.removeAbandonedObservings()
+        ObservationService.removeNilObservers(of: self)
     }
 }
 
