@@ -33,11 +33,13 @@ public class Variable<Value: Equatable & Codable>: AbstractVariable<Value?>, Cod
         {
             valueQueue.append(newValue)
             
-            if valueQueue.count != 1 { return }
+            if valueQueue.count > 1 { return }
             
-            while !valueQueue.isEmpty
+            while let first = valueQueue.first
             {
-                storedValue = valueQueue.removeFirst()
+                storedValue = first
+                
+                valueQueue.removeFirst()
             }
         }
     }
