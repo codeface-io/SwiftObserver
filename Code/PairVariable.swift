@@ -97,12 +97,12 @@ public func +++<T1, T2>(_ left: T1, _ right: T2) -> Pair<T1, T2>
 
 public struct Pair<T1, T2>
 {
-    init(_ left: T1, _ right: T2)
+    public init(_ left: T1, _ right: T2)
     {
         self.left = left
         self.right = right
     }
     
-    let left: T1
-    let right: T2
+    public let left: T1
+    public let right: T2
 }

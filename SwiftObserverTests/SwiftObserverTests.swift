@@ -1,5 +1,5 @@
 import XCTest
-@testable import Flowtoolz
+import SwiftObserver
 
 class SwiftObserverTests: XCTestCase
 {
@@ -227,6 +227,8 @@ class SwiftObserverTests: XCTestCase
         }
     }
     
+    /*
+    // this test would require FoundationToolz which we don't want to import here
     func testCodingTheModel()
     {
         var didEncode = false
@@ -246,6 +248,7 @@ class SwiftObserverTests: XCTestCase
         XCTAssert(didEncode)
         XCTAssert(didDecode)
     }
+    */
 
     let model = Model()
     

@@ -29,16 +29,6 @@
       language = ""
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9ED9256D208B48F7000E74B4"
-               BuildableName = "SwiftObserverTests.xctest"
-               BlueprintName = "SwiftObserverTests"
-               ReferencedContainer = "container:SwiftObserver.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
