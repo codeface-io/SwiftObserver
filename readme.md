@@ -8,7 +8,19 @@ SwiftObserver is a reactive programming framework that is designed to be flexibl
 
 There are some [unit tests of SwiftObserver](https://github.com/flowtoolz/SwiftObserver/blob/master/SwiftObserverTests/SwiftObserverTests.swift), which also demonstrate its use.
 
-## Installation
+## Contents
+
+* [Installation](#installation)
+* [1. Keep It Simple Sweety](#kiss)
+* [2. The Easiest Memory Management](#memory)
+* [3. Variables](#variables)
+* [4. Create Variables as Combinations of Others](#pair-variables)
+* [5. Custom Observables](#custom-observables)
+* [6. Create Observables as Mappings of Others](#mappings)
+* [7. One Combine To Rule Them All](#combine)
+* [Why the Hell Another Reactive Library?](#why)
+
+## <a name="installation"></a>Installation
 
 SwiftObserver can be installed via [Carthage](https://github.com/Carthage/Carthage) and via [Cocoapods](https://cocoapods.org).
 
@@ -30,7 +42,7 @@ pod 'SwiftObserver'
 
 Now let's look at some of the goodies of SwiftObserver ...
 
-## 1. Keep It Simple Sweety
+## <a name="kiss"></a>1. Keep It Simple Sweety
 
 * No need to learn a bunch of arbitrary metaphors, terms or types.
 
@@ -56,7 +68,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 	We'll get to each of these. First, something else...
 
-## 2. The Easiest Memory Management
+## <a name="memory"></a>2. The Easiest Memory Management
 
 * There are no Disposables, Cancelables, Tokens, DisposeBags etc to handle. Simply call `stopAllObserving()` on an observer, and its references are removed from everything it observes:
 
@@ -73,7 +85,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 * Although you don't need to handle "disposables" or tokens after adding an observer, all objects are internally hashed, so performance is never an issue.
 * Even if you forget to remove observers from observables, you likely won't run into problems because abandoned obervervings get pruned internally at every opportunity.
 
-## 3. Variables
+## <a name="variables"></a>3. Variables
 
 * A variable is of type `Variable` (alias `Var`) and holds a value in its `value` property. Values must be `Codable` and `Equatable`. Creating a variable without initial value sets the value `nil`. You may use the `<-` operator to set a value:
 
@@ -129,7 +141,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	~~~
 
 
-## 4. Create Variables as Combinations of Others
+## <a name="pair-variables"></a>4. Create Variables as Combinations of Others
 
 * You can observe combinations of variables, which are actually recursive variable pairs. Like a simple variable of type `Var`, a `PairVariable` sends updates of type `Update<Value>`, only here the value is a `Pair<Value1, Value2>`, which holds values for both combined variables:
 
@@ -178,7 +190,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 * A variable combination holds strong references to its combined variables. So you don't need to hold references to the combined variables - only to the resulting combination.
 
-## 5. Custom Observables
+## <a name="custom-observables"></a>5. Custom Observables
 
 * Custom observables just need to adopt the `CustomObservable` protocol (alias `Observable`) and provide a `var update: UpdateType { get }` of the type of updates they wish to send:
 
@@ -239,7 +251,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	~~~
 	
 
-## 6. Create Observables as Mappings of Others
+## <a name="mappings"></a>6. Create Observables as Mappings of Others
 
 * Create a new observable object by mapping a given one:
 
@@ -283,7 +295,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 	The above exampe is not a combined observation, so only `latest number` can trigger the update. When the `value` of `latestNumber` is set to `nil`, the `unwrap` mapping sends nothing to its obervers, not even the default `0`. So when `newInteger` is zero, the observer knows that it's a real value and not just a replacement for `nil`.
 
-## 7. One Combine To Rule Them All
+## <a name="combine"></a>7. One Combine To Rule Them All
 
 * In addition to creating a new variable by combining others, you can also observe multiple observable objects of any type and without creating a new object:
 
@@ -312,7 +324,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 	Not having to duplicate data where multiple things must be observed is one of the reasons to use these combined observations. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value objects. This forces them to duplicate data by buffering the data sent from those observables.
 
-## Why the Hell Another Reactive Library?
+## <a name="why"></a>Why the Hell Another Reactive Library?
 
 SwiftObserver diverges from convention. It follows the reactive idea in generalizing the observer pattern. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something we love.
 
@@ -345,7 +357,7 @@ What you might not like:
 - Observers and observables must be objects and cannot be structs. (Of course, variables can hold any type of values and observables can send any type of updates.)
 - For now, your code must hold strong references to observables that you want to observe. In other libraries, variable combinations or mappings would be kept alive as a side effect of being observed.
 
-## Ending Note: Focus On Meaning Not On Technicalities
+### Ending Note: Focus On Meaning Not On Technicalities
 
 * Because classes have to implement nothing to be observable, you can keep model and logic code independent of any observer frameworks and techniques. If the model layer had to be stuffed with heavyweight constructs just to be observed, it would become a technical issue instead of an easy to change,  meaningful, direct representation of domain-, business- and view logic.
 * Unlike established Swift implementations of the Redux approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you freely model your domain-, business- and view logic with all your familiar design patterns and types. There are no restrictions on how you organize and store your app state.
