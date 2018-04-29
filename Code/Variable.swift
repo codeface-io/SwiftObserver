@@ -39,6 +39,7 @@ public class Variable<Value: Equatable & Codable>: AbstractVariable<Value?>, Cod
             {
                 storedValue = first
                 
+                // remove value AFTER all handlers were called. do NOT write `storedValue = valueQueue.removeFirst()`
                 valueQueue.removeFirst()
             }
         }
