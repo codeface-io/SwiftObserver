@@ -22,6 +22,7 @@
 		9E8D1E6E2095639400143080 /* SwiftObserver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9ED92565208B48F7000E74B4 /* SwiftObserver.framework */; };
 		9E8D1E75209564C200143080 /* SwiftObserverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8D1E74209564C100143080 /* SwiftObserverTests.swift */; };
 		9E992683208BEDF500A24265 /* SwiftyToolz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E992682208BEDF500A24265 /* SwiftyToolz.framework */; };
+		9EA73E452095EA610075B222 /* Pair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EA73E442095EA610075B222 /* Pair.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +52,7 @@
 		9E8D1E6D2095639400143080 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9E8D1E74209564C100143080 /* SwiftObserverTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftObserverTests.swift; sourceTree = "<group>"; };
 		9E992682208BEDF500A24265 /* SwiftyToolz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyToolz.framework; path = Carthage/Build/iOS/SwiftyToolz.framework; sourceTree = "<group>"; };
+		9EA73E442095EA610075B222 /* Pair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pair.swift; sourceTree = "<group>"; };
 		9ED92565208B48F7000E74B4 /* SwiftObserver.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftObserver.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9ED92569208B48F7000E74B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -78,18 +80,19 @@
 		9E202FDF208BD30E002161F8 /* Code */ = {
 			isa = PBXGroup;
 			children = (
-				9E202FE0208BD30E002161F8 /* AbstractObservable.swift */,
-				9E202FE1208BD30E002161F8 /* AbstractVariable.swift */,
-				9E202FE2208BD30E002161F8 /* CustomObservable.swift */,
-				9E202FE3208BD30E002161F8 /* ObservableMapping.swift */,
-				9E202FE4208BD30E002161F8 /* ObservableProtocol.swift */,
-				9E202FE5208BD30E002161F8 /* ObservableUnwrap.swift */,
-				9E202FE6208BD30E002161F8 /* ObservationService.swift */,
 				9E202FE7208BD30E002161F8 /* Observer.swift */,
 				9E202FE8208BD30E002161F8 /* PairVariable.swift */,
-				9E202FE9208BD30E002161F8 /* SwiftNotifier */,
-				9E202FEB208BD30E002161F8 /* Update.swift */,
+				9EA73E442095EA610075B222 /* Pair.swift */,
 				9E202FEC208BD30E002161F8 /* Variable.swift */,
+				9E202FE1208BD30E002161F8 /* AbstractVariable.swift */,
+				9E202FEB208BD30E002161F8 /* Update.swift */,
+				9E202FE0208BD30E002161F8 /* AbstractObservable.swift */,
+				9E202FE2208BD30E002161F8 /* CustomObservable.swift */,
+				9E202FE5208BD30E002161F8 /* ObservableUnwrap.swift */,
+				9E202FE3208BD30E002161F8 /* ObservableMapping.swift */,
+				9E202FE4208BD30E002161F8 /* ObservableProtocol.swift */,
+				9E202FE6208BD30E002161F8 /* ObservationService.swift */,
+				9E202FE9208BD30E002161F8 /* SwiftNotifier */,
 			);
 			path = Code;
 			sourceTree = "<group>";
@@ -278,6 +281,7 @@
 				9E202FF7208BD30E002161F8 /* Update.swift in Sources */,
 				9E202FED208BD30E002161F8 /* AbstractObservable.swift in Sources */,
 				9E202FF4208BD30E002161F8 /* Observer.swift in Sources */,
+				9EA73E452095EA610075B222 /* Pair.swift in Sources */,
 				9E202FEF208BD30E002161F8 /* CustomObservable.swift in Sources */,
 				9E202FEE208BD30E002161F8 /* AbstractVariable.swift in Sources */,
 				9E202FF3208BD30E002161F8 /* ObservationService.swift in Sources */,

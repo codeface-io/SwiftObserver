@@ -27,8 +27,6 @@ public class PairVariable<Value1, Value2>: AbstractVariable<Pair<Value1, Value2>
         // TODO: does this trigger my (overridden) value setter and therefor the updates of both variables?
         super.init(Pair(variable1.value, variable2.value))
         
-        print("PAIR INIT \(String(describing: value))")
-        
         variable1.add(self)
         {
             [weak self] value1 in
@@ -58,8 +56,6 @@ public class PairVariable<Value1, Value2>: AbstractVariable<Pair<Value1, Value2>
     {
         variable1.remove(self)
         variable2.remove(self)
-        
-        print("PAIR DEINIT \(String(describing: value))")
     }
     
     // MARK: Value
@@ -82,27 +78,4 @@ public class PairVariable<Value1, Value2>: AbstractVariable<Pair<Value1, Value2>
     
     private var variable1: AbstractVariable<Value1>
     private var variable2: AbstractVariable<Value2>
-}
-
-// MARK: - Value Pair Operator
-
-infix operator +++: MultiplicationPrecedence
-
-public func +++<T1, T2>(_ left: T1, _ right: T2) -> Pair<T1, T2>
-{
-    return Pair(left, right)
-}
-
-// MARK: - Value Pair
-
-public struct Pair<T1, T2>
-{
-    public init(_ left: T1, _ right: T2)
-    {
-        self.left = left
-        self.right = right
-    }
-    
-    public let left: T1
-    public let right: T2
 }
