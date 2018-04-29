@@ -322,7 +322,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 * This combined observation does not duplicate the data of any observed object. When one object sends an update, the involved closures pull update information of other observed objects directly from them.
 
-	Not having to duplicate data where multiple things must be observed is one of the reasons to use these combined observations. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value objects. This forces them to duplicate data by buffering the data sent from those observables.
+	Not having to duplicate data where multiple things must be observed is one of the reasons to use these combined observations. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the data sent from observables.
 
 ## <a name="why"></a>Why the Hell Another Reactive Library?
 
