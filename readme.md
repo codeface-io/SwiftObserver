@@ -4,7 +4,7 @@
 
 <img src="https://raw.githubusercontent.com/flowtoolz/SwiftObserver/master/Documentation/TypeDependencies.jpg" style="width:100%;max-width:640px;display:block;margin-left:auto;margin-right:auto"/>
 
-SwiftObserver is a reactive programming framework that is designed to be flexible, non-intrusive, readable, simple and safe.
+SwiftObserver is a reactive programming framework for pure Swift. It is designed to be usable, flexible, non-intrusive, readable, simple and safe.
 
 There are some [unit tests of SwiftObserver](https://github.com/flowtoolz/SwiftObserver/blob/master/SwiftObserverTests/SwiftObserverTests.swift), which also demonstrate its use.
 
