@@ -81,7 +81,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 * Observers can also stop observing an observable object via `observer.stopObserving(observable)`.
 * Another way to remove observers from an observable object is to call `observable.removeAllObservers()`.
-* To actively remove dead observer references from a variable, you may call `variable.removeNilObservers()`.
+* To actively remove dead observer references from an observable object, you may call `observable.removeNilObservers()`.
 * Although you don't need to handle "disposables" or tokens after adding an observer, all objects are internally hashed, so performance is never an issue.
 * Even if you forget to remove observers from observables, you likely won't run into problems because abandoned obervervings get pruned internally at every opportunity.
 
