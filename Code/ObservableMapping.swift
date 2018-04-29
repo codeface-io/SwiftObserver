@@ -45,8 +45,8 @@ public class ObservableMapping<SourceObservable: ObservableProtocol,
     
     public var update: MappedUpdate { return map(observable.update) }
     
-    var map: Mapping
-    var observable: SourceObservable
+    private let map: Mapping
+    let observable: SourceObservable
     
     typealias Mapping = (SourceObservable.UpdateType) -> (MappedUpdate)
     public typealias UpdateType = MappedUpdate

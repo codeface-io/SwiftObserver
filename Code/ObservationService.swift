@@ -1,6 +1,6 @@
 import SwiftyToolz
 
-internal class ObservationService
+class ObservationService
 {
     // MARK: Add Observers
     

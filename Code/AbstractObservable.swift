@@ -4,7 +4,7 @@ public class AbstractObservable<ObservedUpdate>: ObservableProtocol
 {
     // MARK: Life Cycle
     
-    internal init(_ update: ObservedUpdate)
+    init(_ update: ObservedUpdate)
     {
         self.update = update
     }

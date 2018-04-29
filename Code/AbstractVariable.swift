@@ -22,7 +22,7 @@ public class AbstractVariable<ValueType>: AbstractObservable<Update<ValueType>>
     
     // MARK: Value
     
-    internal init(_ value: ValueType)
+    init(_ value: ValueType)
     {
         self.value = value
         

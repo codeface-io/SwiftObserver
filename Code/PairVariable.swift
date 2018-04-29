@@ -18,7 +18,7 @@ public class PairVariable<Value1, Value2>: AbstractVariable<Pair<Value1, Value2>
 {
     // MARK: Life Cycle
     
-    init(_ variable1: AbstractVariable<Value1>,
+    fileprivate init(_ variable1: AbstractVariable<Value1>,
          _ variable2: AbstractVariable<Value2>)
     {
         self.variable1 = variable1
