@@ -102,13 +102,13 @@
 			path = SwiftNotifier;
 			sourceTree = "<group>";
 		};
-		9E8D1E6A2095639400143080 /* SwiftObserverTests */ = {
+		9E8D1E6A2095639400143080 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
 				9E8D1E74209564C100143080 /* SwiftObserverTests.swift */,
 				9E8D1E6D2095639400143080 /* Info.plist */,
 			);
-			path = SwiftObserverTests;
+			path = Tests;
 			sourceTree = "<group>";
 		};
 		9E992681208BEDF500A24265 /* Frameworks */ = {
@@ -122,9 +122,9 @@
 		9ED92559208B4883000E74B4 = {
 			isa = PBXGroup;
 			children = (
+				9E8D1E6A2095639400143080 /* Tests */,
 				9E202FDF208BD30E002161F8 /* Code */,
 				9ED92569208B48F7000E74B4 /* Info.plist */,
-				9E8D1E6A2095639400143080 /* SwiftObserverTests */,
 				9ED92566208B48F7000E74B4 /* Products */,
 				9E992681208BEDF500A24265 /* Frameworks */,
 			);
@@ -350,7 +350,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = SwiftObserverTests/Info.plist;
+				INFOPLIST_FILE = Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -408,7 +408,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = SwiftObserverTests/Info.plist;
+				INFOPLIST_FILE = Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
