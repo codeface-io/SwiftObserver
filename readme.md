@@ -291,9 +291,9 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~	
 
-* This default is only required for the `update` property every observable provides in accordance with the `ObservableProtocol`. It will only come into play with combined observations in cases where the unwrapped observable didn't trigger the update but just provided its current `update` state.
+* This default is only required for the `update` property every observable provides in accordance with the `ObservableProtocol`. It will only come into play when the unwrapped observable didn't trigger the update but just provided its current `update` state. Of course, this can only happen where multiple observables are being observed (combined observation or observation of combined variable).
 
-	The above exampe is not a combined observation, so only `latest number` can trigger the update. When the `value` of `latestNumber` is set to `nil`, the `unwrap` mapping sends nothing to its obervers, not even the default `0`. So when `newInteger` is zero, the observer knows that it's a real value and not just a replacement for `nil`.
+	The above example is not a combined observation, so only `latest number` can trigger the update. When the `value` of `latestNumber` is set to `nil`, the `unwrap` mapping sends nothing to its obervers, not even the default `0`. So when `newInteger` is zero, the observer knows that it's a real value and not just a replacement for `nil`.
 
 ## <a name="combine"></a>7. One Combine To Rule Them All
 
