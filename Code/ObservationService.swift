@@ -6,11 +6,11 @@ class ObservationService
     
     static func add(_ observer: AnyObject,
                     of observed: AnyObject,
-                    with handleUpdate: @escaping (Any?) -> ())
+                    with receive: @escaping (Any?) -> Void)
     {
         removeAbandonedObservations()
 
-        observation(of: observed).observerList.add(observer, handleUpdate)
+        observation(of: observed).observerList.add(observer, receive)
     }
     
     private static func observation(of observed: AnyObject) -> Observation

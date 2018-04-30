@@ -41,12 +41,12 @@
  
  fileprivate class ObserverInfo<Update>
  {
-    init(observer: AnyObject, receive: @escaping (Update) -> ())
+    init(observer: AnyObject, receive: @escaping (Update) -> Void)
     {
         self.observer = observer
         self.receive = receive
     }
     
     weak var observer: AnyObject?
-    let receive: (Update) -> ()
+    let receive: (Update) -> Void
  }

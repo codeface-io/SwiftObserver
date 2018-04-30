@@ -13,7 +13,7 @@ public class AbstractVariable<ValueType>: AbstractObservable<Update<ValueType>>
     // MARK: Update Observers When They Start Observing
     
     public override func add(_ observer: AnyObject,
-                             _ receive: @escaping (Update<ValueType>) -> ())
+                             _ receive: @escaping (Update<ValueType>) -> Void)
     {
         super.add(observer, receive)
         

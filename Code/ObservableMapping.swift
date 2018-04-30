@@ -21,7 +21,7 @@ public class ObservableMapping<SourceObservable: ObservableProtocol,
     }
     
     public func add(_ observer: AnyObject,
-                    _ handleUpdate: @escaping UpdateReceiver)
+                    _ receive: @escaping UpdateReceiver)
     {
         observable.add(observer)
         {
@@ -29,7 +29,7 @@ public class ObservableMapping<SourceObservable: ObservableProtocol,
             
             guard let me = self else { return }
             
-            handleUpdate(me.map($0))
+            receive(me.map($0))
         }
     }
     

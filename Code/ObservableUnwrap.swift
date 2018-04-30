@@ -15,13 +15,13 @@ public class ObservableUnwrap<SourceObservable: ObservableProtocol, Unwrapped>: 
     }
     
     public override func add(_ observer: AnyObject,
-                             _ handleUpdate: @escaping UpdateReceiver)
+                             _ receive: @escaping UpdateReceiver)
     {
         observable.add(observer)
         {
             if let unwrapped = $0
             {
-                handleUpdate(unwrapped)
+                receive(unwrapped)
             }
         }
     }

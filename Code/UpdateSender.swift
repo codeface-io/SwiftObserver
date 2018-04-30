@@ -6,11 +6,11 @@ public protocol UpdateSender: ObservableProtocol
 public protocol ObservableProtocol: ObserverRemover
 {
     func add(_ observer: AnyObject,
-             _ handleUpdate: @escaping UpdateReceiver)
+             _ receive: @escaping UpdateReceiver)
     
     var update: UpdateType { get }
     
-    typealias UpdateReceiver = (_ update: UpdateType) -> ()
+    typealias UpdateReceiver = (_ update: UpdateType) -> Void
     associatedtype UpdateType: Any
 }
 

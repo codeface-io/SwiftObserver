@@ -3,7 +3,7 @@ public typealias Observable = CustomObservable
 public extension CustomObservable
 {
     func add(_ observer: AnyObject,
-             _ handleUpdate: @escaping UpdateReceiver)
+             _ receive: @escaping UpdateReceiver)
     {
         ObservationService.add(observer, of: self)
         {
@@ -12,7 +12,7 @@ public extension CustomObservable
                 fatalError("Impossible error: could not cast update type received from observation center")
             }
             
-            handleUpdate(update)
+            receive(update)
         }
     }
     
