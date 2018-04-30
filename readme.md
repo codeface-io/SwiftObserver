@@ -46,7 +46,9 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 * No need to learn a bunch of arbitrary metaphors, terms or types.
 
-	Observers observe observable objects, and observed objects send updates to their observers. That's it. Just readable code:
+	Observers observe observable objects. Or the other way around: Observed objects send updates to their observers.
+	
+	That's it. Just readable code:
 
 	~~~swift
 	observer.observe(observable)
