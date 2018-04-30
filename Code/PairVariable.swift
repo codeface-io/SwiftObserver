@@ -36,7 +36,7 @@ public class PairVariable<Value1, Value2>: AbstractVariable<Pair<Value1, Value2>
             let oldPair = value1.old +++ me.variable2.value
             let newPair = value1.new +++ me.variable2.value
             
-            me.updateObservers(Update(oldPair, newPair))
+            me.send(Update(oldPair, newPair))
         }
         
         variable2.add(self)
@@ -48,7 +48,7 @@ public class PairVariable<Value1, Value2>: AbstractVariable<Pair<Value1, Value2>
             let oldPair = me.variable1.value +++ value2.old
             let newPair = me.variable1.value +++ value2.new
             
-            me.updateObservers(Update(oldPair, newPair))
+            me.send(Update(oldPair, newPair))
         }
     }
     

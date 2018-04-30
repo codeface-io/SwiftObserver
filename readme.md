@@ -216,12 +216,12 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~
 
-* Updates are custom and yet fully typed. A custom observable sends whatever it likes whenever it wants via `updateObservers(update)`:
+* Updates are custom and yet fully typed. A custom observable sends whatever it likes whenever it wants via `send(update)`:
 
 	~~~swift
 	class Model: Observable
 	{
-	   deinit { updateObservers(.willDeinit) }
+	   deinit { send(.willDeinit) }
 	   
 	   // ...
 	}
@@ -243,7 +243,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	      {
 	         if oldValue != state
 	         {
-	            updateObservers(Update(oldValue, state))
+	            send(Update(oldValue, state))
 	         }
 	      }
 	   }

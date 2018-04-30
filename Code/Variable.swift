@@ -53,7 +53,7 @@ public class Variable<Value: Equatable & Codable>: AbstractVariable<Value?>, Cod
         {
             if oldValue != storedValue
             {
-                updateObservers(Update(oldValue, storedValue))
+                send(Update(oldValue, storedValue))
             }
         }
     }

@@ -89,7 +89,7 @@ class SwiftObserverTests: XCTestCase
             XCTAssertEqual($0, .didUpdate)
         }
         
-        model.updateObservers(.didUpdate)
+        model.send(.didUpdate)
     }
     
     func testObservingVariableTriggersUpdate()
@@ -151,7 +151,7 @@ class SwiftObserverTests: XCTestCase
             XCTAssertEqual($0, "didUpdate")
         }
         
-        model.updateObservers(.didUpdate)
+        model.send(.didUpdate)
     }
     
     func testSettingValueOnPairVariableTriggersUpdate()
@@ -279,7 +279,7 @@ class SwiftObserverTests: XCTestCase
             {
                 if oldValue != state
                 {
-                    updateObservers(Update(oldValue, state))
+                    send(Update(oldValue, state))
                 }
             }
         }

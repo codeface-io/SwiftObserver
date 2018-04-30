@@ -1,18 +1,18 @@
 public extension Observer
 {
     func observe<O: ObservableProtocol>(_ observable: O,
-                                        _ handleUpdate:
-            @escaping (O.UpdateType) -> ())
+                                        _ receive:
+            @escaping (O.UpdateType) -> Void)
     {
-        observable.add(self, handleUpdate)
+        observable.add(self, receive)
     }
     
     func observe<
         O1: ObservableProtocol,
         O2: ObservableProtocol>(_ observable1: O1,
                                 _ observable2: O2,
-                                _ handleUpdate:
-            @escaping (O1.UpdateType, O2.UpdateType) -> ())
+                                _ receive:
+            @escaping (O1.UpdateType, O2.UpdateType) -> Void)
     {
         observable1.add(self)
         {
@@ -20,7 +20,7 @@ public extension Observer
             
             guard let o2 = observable2 else { return }
             
-            handleUpdate($0, o2.update)
+            receive($0, o2.update)
         }
         
         observable2.add(self)
@@ -29,7 +29,7 @@ public extension Observer
             
             guard let o1 = observable1 else { return }
             
-            handleUpdate(o1.update, $0)
+            receive(o1.update, $0)
         }
     }
     
@@ -39,8 +39,8 @@ public extension Observer
         O3: ObservableProtocol>(_ observable1: O1,
                                 _ observable2: O2,
                                 _ observable3: O3,
-                                _ handleUpdate:
-            @escaping (O1.UpdateType, O2.UpdateType, O3.UpdateType) -> ())
+                                _ receive:
+            @escaping (O1.UpdateType, O2.UpdateType, O3.UpdateType) -> Void)
     {
         observable1.add(self)
         {
@@ -48,7 +48,7 @@ public extension Observer
             
             guard let o2 = observable2, let o3 = observable3 else { return }
             
-            handleUpdate($0, o2.update, o3.update)
+            receive($0, o2.update, o3.update)
         }
         
         observable2.add(self)
@@ -57,7 +57,7 @@ public extension Observer
             
             guard let o1 = observable1, let o3 = observable3 else { return }
             
-            handleUpdate(o1.update, $0, o3.update)
+            receive(o1.update, $0, o3.update)
         }
         
         observable3.add(self)
@@ -66,7 +66,7 @@ public extension Observer
             
             guard let o1 = observable1, let o2 = observable2 else { return }
             
-            handleUpdate(o1.update, o2.update, $0)
+            receive(o1.update, o2.update, $0)
         }
     }
     

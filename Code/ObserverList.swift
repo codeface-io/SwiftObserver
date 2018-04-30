@@ -1,12 +1,12 @@
  import SwiftyToolz
  
- class ObserverList<UpdateType>
+ class ObserverList<Update>
  {
     func add(_ observer: AnyObject,
-             _ handleUpdate: @escaping (UpdateType) -> Void)
+             _ receive: @escaping (Update) -> Void)
     {
         let observerInfo = ObserverInfo(observer: observer,
-                                        handleUpdate: handleUpdate)
+                                        receive: receive)
         
         observers[hash(observer)] = observerInfo
     }
@@ -28,25 +28,25 @@
     
     var isEmpty: Bool { return observers.isEmpty }
     
-    func update(_ update: UpdateType)
+    func receive(_ update: Update)
     {
         for observer in observers.values
         {
-            observer.handleUpdate(update)
+            observer.receive(update)
         }
     }
     
-    private var observers = [HashValue: ObserverInfo<UpdateType>]()
+    private var observers = [HashValue: ObserverInfo<Update>]()
  }
  
- fileprivate class ObserverInfo<UpdateType>
+ fileprivate class ObserverInfo<Update>
  {
-    init(observer: AnyObject, handleUpdate: @escaping (UpdateType) -> ())
+    init(observer: AnyObject, receive: @escaping (Update) -> ())
     {
         self.observer = observer
-        self.handleUpdate = handleUpdate
+        self.receive = receive
     }
     
     weak var observer: AnyObject?
-    let handleUpdate: (UpdateType) -> ()
+    let receive: (Update) -> ()
  }

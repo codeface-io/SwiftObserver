@@ -69,11 +69,11 @@ class ObservationService
     
     // MARK: Send Events to Observers
     
-    static func updateObservers(of observed: AnyObject, with event: Any?)
+    static func send(_ event: Any?, toObserversOf observed: AnyObject)
     {
         removeAbandonedObservations()
         
-        observations[hash(observed)]?.observerList.update(event)
+        observations[hash(observed)]?.observerList.receive(event)
     }
     
     // MARK: Private State

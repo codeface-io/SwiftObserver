@@ -1,16 +1,16 @@
-public protocol ObserverUpdater: ObservableProtocol
+public protocol UpdateSender: ObservableProtocol
 {
-    func updateObservers(_ update: UpdateType)
+    func send(_ update: UpdateType)
 }
 
 public protocol ObservableProtocol: ObserverRemover
 {
     func add(_ observer: AnyObject,
-             _ handleUpdate: @escaping UpdateHandler)
+             _ handleUpdate: @escaping UpdateReceiver)
     
     var update: UpdateType { get }
     
-    typealias UpdateHandler = (_ update: UpdateType) -> ()
+    typealias UpdateReceiver = (_ update: UpdateType) -> ()
     associatedtype UpdateType: Any
 }
 

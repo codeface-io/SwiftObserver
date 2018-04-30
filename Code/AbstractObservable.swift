@@ -1,10 +1,10 @@
 import SwiftyToolz
 
-public class AbstractObservable<ObservedUpdate>: ObserverUpdater
+public class AbstractObservable<Update>: UpdateSender
 {
     // MARK: Life Cycle
     
-    init(_ update: ObservedUpdate)
+    init(_ update: Update)
     {
         self.update = update
     }
@@ -14,7 +14,7 @@ public class AbstractObservable<ObservedUpdate>: ObserverUpdater
     // MARK: ObserverUpdater
     
     public func add(_ observer: AnyObject,
-                    _ handleUpdate: @escaping UpdateHandler)
+                    _ receive: @escaping UpdateReceiver)
     {
         removeNilObservers()
         
@@ -23,7 +23,7 @@ public class AbstractObservable<ObservedUpdate>: ObserverUpdater
             observedObjects[hash(self)] = WeakObservedObject(observed: self)
         }
         
-        observerList.add(observer, handleUpdate)
+        observerList.add(observer, receive)
     }
     
     public func remove(_ observer: AnyObject)
@@ -45,11 +45,11 @@ public class AbstractObservable<ObservedUpdate>: ObserverUpdater
         observedObjects[hash(self)] = nil
     }
     
-    public func updateObservers(_ update: ObservedUpdate)
+    public func send(_ update: Update)
     {
         removeNilObservers()
         
-        observerList.update(update)
+        observerList.receive(update)
     }
     
     public func removeNilObservers()
@@ -64,11 +64,11 @@ public class AbstractObservable<ObservedUpdate>: ObserverUpdater
     
     // MARK: Managing Observers
     
-    private let observerList = ObserverList<ObservedUpdate>()
+    private let observerList = ObserverList<Update>()
     
-    public var update: ObservedUpdate
+    public var update: Update
     
-    public typealias UpdateType = ObservedUpdate
+    public typealias UpdateType = Update
 }
 
 // MARK: - Registering Observed Objects

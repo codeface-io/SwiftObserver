@@ -3,7 +3,7 @@ public typealias Observable = CustomObservable
 public extension CustomObservable
 {
     func add(_ observer: AnyObject,
-             _ handleUpdate: @escaping UpdateHandler)
+             _ handleUpdate: @escaping UpdateReceiver)
     {
         ObservationService.add(observer, of: self)
         {
@@ -16,9 +16,9 @@ public extension CustomObservable
         }
     }
     
-    func updateObservers(_ update: UpdateType)
+    func send(_ update: UpdateType)
     {
-        ObservationService.updateObservers(of: self, with: update)
+        ObservationService.send(update, toObserversOf: self)
     }
     
     func remove(_ observer: AnyObject)
@@ -37,4 +37,4 @@ public extension CustomObservable
     }
 }
 
-public protocol CustomObservable: ObserverUpdater {}
+public protocol CustomObservable: UpdateSender {}

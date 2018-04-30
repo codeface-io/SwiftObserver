@@ -21,7 +21,7 @@ public class ObservableMapping<SourceObservable: ObservableProtocol,
     }
     
     public func add(_ observer: AnyObject,
-                    _ handleUpdate: @escaping UpdateHandler)
+                    _ handleUpdate: @escaping UpdateReceiver)
     {
         observable.add(observer)
         {
