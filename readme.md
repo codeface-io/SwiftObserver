@@ -293,19 +293,21 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~	
 
-* This default is only required for the `update` property every observable provides in accordance with the `ObservableProtocol`. It will only come into play when the unwrapped observable didn't trigger the update but just provided its current `update` state. Of course, this can only happen where multiple observables are being observed (combined observation or observation of combined variable).
+* The default in `unwrap(default)` is only required for the `update` property every observable provides in accordance with the `ObservableProtocol`. It will only come into play when the unwrapped observable didn't trigger the update but just provided its current `update` state. Of course, this can only happen where multiple observables are being observed (combined observation or observation of combined variable).
 
-	The above example is not a combined observation, so only `latest number` can trigger the update. When the `value` of `latestNumber` is set to `nil`, the `unwrap` mapping sends nothing to its obervers, not even the default `0`. So when `newInteger` is zero, the observer knows that it's a real value and not just a replacement for `nil`.
+	The above example is just a single observation and only `latest number` can trigger the update. When the `value` of `latestNumber` is set to `nil`, the `unwrap` mapping sends nothing to its obervers, not even the default `0`. So when `newInteger` is zero, the observer knows that it's a real value and not just a replacement for `nil`.
+	
+* Be aware that observing a mapping does not keep it alive. You must hold a strong reference to a mapping that you want to use.
 	
 * A mapping is not "composed" of the observable it maps (like a variable combination is composed of its combined variables). A mapping is just that: an access wrapper to the mapped observable.
 	
-	That means a mapping holds a `weak` reference to its observable. You can check whether a mapping still has its observable via `mapping.isAlive`.
+	That means a mapping holds a `weak` reference to its observable. You can check whether a mapping still has its observable via `mapping.hasObservable`.
 	
-	Be aware though that when mapping *A* maps mapping *B*, then *A* might be alive while *B* is not. So *A* might be alive and yet send no more updates.
+	Be aware though that when mapping *A* maps mapping *B*, *A* might still have its observable *B* but *B* might have none. So a mapping can have its observable and still not send updates.
 
 ## <a name="combine"></a>7. One Combine To Rule Them All
 
-* In addition to creating a new variable by combining others, you can also observe multiple observable objects of any type and without creating a new object:
+* In addition to creating a new variable by combining others, you can also observe a combination of any observable objects and without creating a new object:
 
 	~~~swift
 	let newText = text.new()
@@ -320,7 +322,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~
 	
-* This does not create any combined observable, and the observer won't need to remove itself from anything other than the 3 observed variables. Of course, memory management is no concern if the observer calls `stopAllObserving()` at some point.
+    This does not create any combined observable, and the observer won't need to remove itself from anything other than the 3 observed objects. Of course, memory management is no concern if the observer calls `stopAllObserving()` at some point.
 
 * You won't need to distinguish different combining functions.
 

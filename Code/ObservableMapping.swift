@@ -62,7 +62,7 @@ public class ObservableMapping<SourceObservable: ObservableProtocol,
     
     private var lastMappedUpdate: MappedUpdate
 
-    public var isAlive: Bool { return observable != nil }
+    public var hasObservable: Bool { return observable != nil }
     weak var observable: SourceObservable?
     
     private let map: Mapping
