@@ -18,12 +18,14 @@ public class ObservableMapping<SourceObservable: ObservableProtocol,
     {
         self.observable = observable
         self.map = mapping
+        
+        lastMappedUpdate = map(observable.update)
     }
     
     public func add(_ observer: AnyObject,
                     _ receive: @escaping UpdateReceiver)
     {
-        observable.add(observer)
+        observable?.add(observer)
         {
             [weak self] in
             
@@ -35,24 +37,36 @@ public class ObservableMapping<SourceObservable: ObservableProtocol,
     
     public func remove(_ observer: AnyObject)
     {
-        observable.remove(observer)
+        observable?.remove(observer)
     }
     
     public func removeAllObservers()
     {
-        observable.removeAllObservers()
+        observable?.removeAllObservers()
     }
     
     public func removeNilObservers()
     {
-        observable.removeNilObservers()
+        observable?.removeNilObservers()
     }
     
-    public var update: MappedUpdate { return map(observable.update) }
+    public var update: MappedUpdate
+    {
+        if let observable = observable
+        {
+            lastMappedUpdate = map(observable.update)
+        }
+        
+        return lastMappedUpdate
+    }
+    
+    private var lastMappedUpdate: MappedUpdate
+
+    public var isAlive: Bool { return observable != nil }
+    weak var observable: SourceObservable?
     
     private let map: Mapping
-    let observable: SourceObservable
-    
     typealias Mapping = (SourceObservable.UpdateType) -> (MappedUpdate)
+    
     public typealias UpdateType = MappedUpdate
 }

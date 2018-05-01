@@ -296,6 +296,12 @@ Now let's look at some of the goodies of SwiftObserver ...
 * This default is only required for the `update` property every observable provides in accordance with the `ObservableProtocol`. It will only come into play when the unwrapped observable didn't trigger the update but just provided its current `update` state. Of course, this can only happen where multiple observables are being observed (combined observation or observation of combined variable).
 
 	The above example is not a combined observation, so only `latest number` can trigger the update. When the `value` of `latestNumber` is set to `nil`, the `unwrap` mapping sends nothing to its obervers, not even the default `0`. So when `newInteger` is zero, the observer knows that it's a real value and not just a replacement for `nil`.
+	
+* A mapping is not "composed" of the observable it maps (like a variable combination is composed of its combined variables). A mapping is just that: an access wrapper to the mapped observable.
+	
+	That means a mapping holds a `weak` reference to its observable. You can check whether a mapping still has its observable via `mapping.isAlive`.
+	
+	Be aware though that when mapping *A* maps mapping *B*, then *A* might be alive while *B* is not. So *A* might be alive and yet send no more updates.
 
 ## <a name="combine"></a>7. One Combine To Rule Them All
 
@@ -347,7 +353,7 @@ What you might like:
 - Optional variable types plus ability to map onto non-optional types
 - Variables are `Codable`
 - Call observation and mappings directly on observables (no mediating property)
-- No data duplication, no internal buffers
+- No data duplication for combined observations or combined variables
 - Custom observables without having to inherit from any class
 - Maximum freedom for your architectural- and design choices
 
