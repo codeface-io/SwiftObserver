@@ -18,6 +18,7 @@ There are some [unit tests of SwiftObserver](https://github.com/flowtoolz/SwiftO
 * [5. Custom Observables](#custom-observables)
 * [6. Create Observables as Mappings of Others](#mappings)
 * [7. One Combine To Rule Them All](#combine)
+* [8. Events? Notifications? We Got You Covered](#messenger)
 * [Why the Hell Another Reactive Library?](#why)
 
 ## <a name="installation"></a>Installation
@@ -333,6 +334,58 @@ Now let's look at some of the goodies of SwiftObserver ...
 * This combined observation does not duplicate the data of any observed object. When one object sends an update, the involved closures pull update information of other observed objects directly from them.
 
 	Not having to duplicate data where multiple things must be observed is one of the reasons to use these combined observations. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the data sent from observables.
+	
+## <a name="messenger"></a>8. Events? Notifications? Dispatcher? We Got You Covered
+
+* SwiftObserver is also a sweet & easy notification system since you can quickly turn a custom observable into something similar to Foundation's `NotificationCenter`.
+
+    The generic class `Messenger<Message>` does that for you, and the `Observer` protocol makes it even more convenient.
+    
+* You may use the global `textMessenger` of type `Messenger<String>`:
+
+    ~~~swift
+    observer.observe(textMessenger)
+    {
+        textMessage in
+        
+        // respond to text message
+    }
+    
+    textMessenger.send("some message")
+    ~~~
+    
+* An observer can also observe one specific message sent by some messenger:
+
+    ~~~swift
+    observer.observe("event name", from textMessenger)
+    {
+        // respond to "event name"
+    }
+    
+    textMessenger.send("event name")
+    ~~~
+
+    Note that this response closure does not take any arguments because it only gets called for the specified message.
+    
+* You may also create your own messenger:
+
+    ~~~swift
+    let initialLastMessage: FancyMessageType = ...
+    let messenger = Messenger(initialLastMessage)
+    ~~~
+
+    An initial last message is required so it can be returned by `messenger.update` before any message has been sent. After the first message has been sent, `update` will return the last message, which you can also read via `messenger.lastMessage`.
+    
+* Since the `Messenger<Message>` is just an `Observable`, you can include messengers in combined observations:
+
+    ~~~swift
+    observer.observe(text, number, messenger)
+    {
+        textUpdate, numberUpdate, message in
+        
+        // respond to text update, number update and message
+    }
+    ~~~
 
 ## <a name="why"></a>Why the Hell Another Reactive Library?
 
@@ -355,6 +408,7 @@ What you might like:
 - Optional variable types plus ability to map onto non-optional types
 - Variables are `Codable`
 - Call observation and mappings directly on observables (no mediating property)
+- Seemless integration of the *Notifier Pattern*
 - No data duplication for combined observations or combined variables
 - Custom observables without having to inherit from any class
 - Maximum freedom for your architectural- and design choices

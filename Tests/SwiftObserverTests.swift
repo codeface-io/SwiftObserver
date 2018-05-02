@@ -3,6 +3,51 @@ import SwiftObserver
 
 class SwiftObserverTests: XCTestCase
 {
+    func testObservingWrongMessage()
+    {
+        var receivedMessage: String?
+        
+        controller.observe("wrong message", from: textMessenger)
+        {
+            receivedMessage = "wrong message"
+        }
+        
+        textMessenger.send("right message")
+        
+        XCTAssertNil(receivedMessage)
+    }
+    
+    func testObservingMessenger()
+    {
+        var receivedMessage: String?
+        let expectedMessage = "message"
+        
+        controller.observe(textMessenger)
+        {
+            receivedMessage = $0
+        }
+        
+        textMessenger.send(expectedMessage)
+        
+        XCTAssertEqual(textMessenger.lastMessage, expectedMessage)
+        XCTAssertEqual(receivedMessage, expectedMessage)
+    }
+    
+    func testObservingMessage()
+    {
+        var receivedMessage: String?
+        let expectedMessage = "message"
+        
+        controller.observe(expectedMessage, from: textMessenger)
+        {
+            receivedMessage = expectedMessage
+        }
+    
+        textMessenger.send(expectedMessage)
+        
+        XCTAssertEqual(receivedMessage, expectedMessage)
+    }
+    
     func testPairRetainsItsVariables()
     {
         var v1: Var<Int>? = Var(1)
