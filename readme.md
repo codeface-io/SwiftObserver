@@ -2,9 +2,14 @@
 
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?longCache=true&style=flat-square)](https://github.com/Carthage/Carthage)  [![Pod Version](https://img.shields.io/cocoapods/v/SwiftObserver.svg?longCache=true&style=flat-square)](http://cocoapods.org/pods/SwiftObserver)
 
-<img src="https://raw.githubusercontent.com/flowtoolz/SwiftObserver/master/Documentation/TypeDependencies.jpg" style="width:100%;max-width:640px;display:block;margin-left:auto;margin-right:auto"/>
+SwiftObserver is a reactive programming framework for pure Swift. It is designed to be ...
 
-SwiftObserver is a reactive programming framework for pure Swift. It is designed to be usable, flexible, non-intrusive, readable, simple and safe.
+:white_check_mark: usable  
+:white_check_mark: flexible  
+:white_check_mark: non-intrusive  
+:white_check_mark: readable  
+:white_check_mark: simple  
+:white_check_mark: safe
 
 There are some [unit tests of SwiftObserver](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests.swift), which also demonstrate its use.
 
@@ -18,10 +23,13 @@ There are some [unit tests of SwiftObserver](https://github.com/flowtoolz/SwiftO
 * [5. Custom Observables](#custom-observables)
 * [6. Create Observables as Mappings of Others](#mappings)
 * [7. One Combine To Rule Them All](#combine)
-* [8. Events? Notifications? We Got You Covered](#messenger)
-* [Why the Hell Another Reactive Library?](#why)
+* [8. Messenger? Notifier? Dispatcher? It's All Observation](#messenger)
+* [9. Putting It All Together](#wrap-up)
+    - [Type Dependency Diagram](#diagram)
+    - [Why the Hell Another Reactive Library?](#why)
+    - [Ending Note: Focus On Meaning Not On Technicalities](#meaning)
 
-## <a name="installation"></a>Installation
+## <a id="installation"></a>Installation
 
 SwiftObserver can be installed via [Carthage](https://github.com/Carthage/Carthage) and via [Cocoapods](https://cocoapods.org).
 
@@ -43,7 +51,7 @@ pod 'SwiftObserver'
 
 Now let's look at some of the goodies of SwiftObserver ...
 
-## <a name="kiss"></a>1. Keep It Simple Sweety
+## <a id="kiss"></a>1. Keep It Simple Sweety
 
 * No need to learn a bunch of arbitrary metaphors, terms or types.
 
@@ -71,7 +79,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 	We'll get to each of these. First, something else...
 
-## <a name="memory"></a>2. The Easiest Memory Management
+## <a id="memory"></a>2. The Easiest Memory Management
 
 * There are no Disposables, Cancelables, Tokens, DisposeBags etc to handle. Simply call `stopAllObserving()` on an observer, and its references are removed from everything it observes:
 
@@ -88,7 +96,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 * Although you don't need to handle "disposables" or tokens after adding an observer, all objects are internally hashed, so performance is never an issue.
 * Even if you forget to remove observers from observables, you likely won't run into problems because abandoned obervervings get pruned internally at every opportunity.
 
-## <a name="variables"></a>3. Variables
+## <a id="variables"></a>3. Variables
 
 * A variable is of type `Variable` (alias `Var`) and holds a value in its `value` property. Values must be `Codable` and `Equatable`. Creating a variable without initial value sets the value `nil`. You may use the `<-` operator to set a value:
 
@@ -144,7 +152,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	~~~
 
 
-## <a name="pair-variables"></a>4. Create Variables as Combinations of Others
+## <a id="pair-variables"></a>4. Create Variables as Combinations of Others
 
 * You can observe combinations of variables, which are actually recursive variable pairs. Like a simple variable of type `Var`, a `PairVariable` sends updates of type `Update<Value>`, only here the value is a `Pair<Value1, Value2>`, which holds values for both combined variables:
 
@@ -193,7 +201,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 * A variable combination holds strong references to its combined variables. So you don't need to hold references to the combined variables - only to the resulting combination.
 
-## <a name="custom-observables"></a>5. Custom Observables
+## <a id="custom-observables"></a>5. Custom Observables
 
 * Custom observables just need to adopt the `CustomObservable` protocol (alias `Observable`) and provide a `var update: UpdateType { get }` of the type of updates they wish to send:
 
@@ -254,7 +262,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	~~~
 	
 
-## <a name="mappings"></a>6. Create Observables as Mappings of Others
+## <a id="mappings"></a>6. Create Observables as Mappings of Others
 
 * Create a new observable object by mapping a given one:
 
@@ -306,7 +314,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	
 	Be aware though that when mapping *A* maps mapping *B*, *A* might still have its observable *B* but *B* might have none. So a mapping can have its observable and still not send updates.
 
-## <a name="combine"></a>7. One Combine To Rule Them All
+## <a id="combine"></a>7. One Combine To Rule Them All
 
 * In addition to creating a new variable by combining others, you can also observe a combination of any observable objects and without creating a new object:
 
@@ -335,11 +343,40 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 	Not having to duplicate data where multiple things must be observed is one of the reasons to use these combined observations. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the data sent from observables.
 	
-## <a name="messenger"></a>8. Events? Notifications? Dispatcher? We Got You Covered
+## <a id="messenger"></a>8. Messenger? Notifier? Dispatcher? It's All Observation
 
-* SwiftObserver is also a sweet & easy notification system since you can quickly turn a custom observable into something similar to Foundation's `NotificationCenter`.
+* When observer and observable need to be more decoupled, it is common to use a mediating observable through which any object can anonymously send updates. An example of this mediator is Foundation's `NotificationCenter`.
 
-    The generic class `Messenger<Message>` does that for you, and the `Observer` protocol makes it even more convenient.
+    This extension of the observer pattern is sometimes called *Messenger*, *Notifier*, *Dispatcher*, *Event Emitter* or *Decoupler*. Its main differences to direct observation are:
+    
+    - An observer may indirectly observe multiple other objects.
+    - Observers don't care who triggered an update.
+    - Observer types don't need to depend on the types that trigger updates.
+    - Updates function more as messages (notifications, events) than as artifacts of raw data.
+    - Every object can trigger updates, without adopting any protocol.
+    - Multiple objects may share the same update type and trigger the same updates.
+
+* You could simply use a global `CustomObservable` (alias `Observable`) to implement a mediating messenger:
+
+    ~~~swift
+    class Messenger: Observable
+    {
+        var update: String? { return nil }
+    }
+    
+    let messenger = Messenger()
+    
+    observer.observe(messenger)
+    {
+        message in
+        
+        // respond to message
+    }
+    
+    messenger.send("some message")
+    ~~~
+
+* However, SwiftObserver's generic class `Messenger<Message>` has a bit more to offer and plays well together with the `Observer` protocol.
     
 * You may use the global `textMessenger` of type `Messenger<String>`:
 
@@ -354,7 +391,7 @@ Now let's look at some of the goodies of SwiftObserver ...
     textMessenger.send("some message")
     ~~~
     
-* An observer can also observe one specific message sent by some messenger:
+* An `Observer` can also observe one specific message sent by some messenger:
 
     ~~~swift
     observer.observe("event name", from textMessenger)
@@ -374,7 +411,7 @@ Now let's look at some of the goodies of SwiftObserver ...
     let messenger = Messenger(initialLastMessage)
     ~~~
 
-    An initial last message is required so it can be returned by `messenger.update` before any message has been sent. After the first message has been sent, `update` will return the last message, which you can also read via `messenger.lastMessage`.
+    An initial last message is required so it can be returned by `messenger.update` before any message has been sent. After at least one message has been sent, `update` will always return the last message, which you can also get via `messenger.lastMessage`.
     
 * Since the `Messenger<Message>` is just an `Observable`, you can include messengers in combined observations:
 
@@ -386,8 +423,14 @@ Now let's look at some of the goodies of SwiftObserver ...
         // respond to text update, number update and message
     }
     ~~~
+    
+## <a id="wrap-up"></a>9. Putting It All Together
 
-## <a name="why"></a>Why the Hell Another Reactive Library?
+### <a id="diagram"></a>Type Dependency Diagram
+
+<img src="https://raw.githubusercontent.com/flowtoolz/SwiftObserver/master/Documentation/TypeDependencies.jpg" style="width:100%;max-width:640px;display:block;margin-left:auto;margin-right:auto"/>
+
+### <a id="why"></a>Why the Hell Another Reactive Library?
 
 SwiftObserver diverges from convention. It follows the reactive idea in generalizing the observer pattern. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something we love.
 
@@ -421,7 +464,7 @@ What you might not like:
 - Observers and observables must be objects and cannot be structs. (Of course, variables can hold any type of values and observables can send any type of updates.)
 - For now, your code must hold strong references to observables that you want to observe. In other libraries, variable combinations or mappings would be kept alive as a side effect of being observed.
 
-### Ending Note: Focus On Meaning Not On Technicalities
+### <a id="meaning"></a>Ending Note: Focus On Meaning Not On Technicalities
 
 * Because classes have to implement nothing to be observable, you can keep model and logic code independent of any observer frameworks and techniques. If the model layer had to be stuffed with heavyweight constructs just to be observed, it would become a technical issue instead of an easy to change,  meaningful, direct representation of domain-, business- and view logic.
 * Unlike established Swift implementations of the Redux approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you freely model your domain-, business- and view logic with all your familiar design patterns and types. There are no restrictions on how you organize and store your app state.
