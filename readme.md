@@ -214,7 +214,7 @@ Now let's look at some of the goodies of SwiftObserver ...
     }
     ~~~
 	
-	Swift will infer the type of `latestUpdate` so you don't need to write `typealias UpdateType = Event`.
+	Swift will infer the update type from `latestUpdate`, so you don't need to write `typealias UpdateType = Event`.
 
 * Combined variables as well as combined observation sometimes request the latest update from their constituting observables. Therefor, observables offer the `latestUpdate` property, which is also a way for other clients to actively get the current update state in addition to observing it.
 
@@ -405,7 +405,7 @@ Now let's look at some of the goodies of SwiftObserver ...
     
      After at least one message has been sent, `latestUpdate` will return the last message, which you can also get via `messenger.latestMessage`.
     
-* Since the `Messenger<Message>` is just an `Observable`, you can include messengers in combined observations:
+* Since `Messenger<Message>` conforms to the `ObservableProtocol`, you can include messengers in combined observations:
 
     ~~~swift
     observer.observe(text, number, messenger)
