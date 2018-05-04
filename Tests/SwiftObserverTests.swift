@@ -3,6 +3,30 @@ import SwiftObserver
 
 class SwiftObserverTests: XCTestCase
 {
+    func testCustomMessenger()
+    {
+        enum Event { case none, userError, techError }
+        
+        let eventMessenger = Messenger<Event>(.none)
+        
+        XCTAssertEqual(eventMessenger.lastMessage, .none)
+        
+        var receivedEvent: Event?
+        
+        controller.observe(eventMessenger)
+        {
+            receivedEvent = $0
+        }
+        
+        XCTAssertNil(receivedEvent)
+        
+        eventMessenger.send(.userError)
+        
+        XCTAssertEqual(eventMessenger.lastMessage, eventMessenger.update)
+        XCTAssertEqual(eventMessenger.lastMessage, .userError)
+        XCTAssertEqual(receivedEvent, .userError)
+    }
+    
     func testObservingWrongMessage()
     {
         var receivedMessage: String?

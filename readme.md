@@ -407,11 +407,23 @@ Now let's look at some of the goodies of SwiftObserver ...
 * You may also create your own messenger:
 
     ~~~swift
-    let initialLastMessage: FancyMessageType = ...
-    let messenger = Messenger(initialLastMessage)
+    enum Event { case none, userError, techError }
+        
+    let eventMessenger = Messenger<Event>(.none)
+    
+    observer.observe(eventMessenger)
+    {
+        event in
+        
+        // repond to event
+    }
+    
+    eventMessenger.send(.techError)
     ~~~
 
-    An initial last message is required so it can be returned by `messenger.update` before any message has been sent. After at least one message has been sent, `update` will always return the last message, which you can also get via `messenger.lastMessage`.
+    The initializer of `Messenger<Message>` takes an initial `Message` that will be returned by `messenger.update` as long as no message has been sent.
+    
+     After at least one message has been sent, `update` will always return the last message, which you can also get via `messenger.lastMessage`.
     
 * Since the `Messenger<Message>` is just an `Observable`, you can include messengers in combined observations:
 
