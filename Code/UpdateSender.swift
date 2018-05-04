@@ -8,7 +8,7 @@ public protocol ObservableProtocol: ObserverRemover
     func add(_ observer: AnyObject,
              _ receive: @escaping UpdateReceiver)
     
-    var update: UpdateType { get }
+    var latestUpdate: UpdateType { get }
     
     typealias UpdateReceiver = (_ update: UpdateType) -> Void
     associatedtype UpdateType: Any

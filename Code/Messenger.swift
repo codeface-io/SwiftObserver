@@ -12,9 +12,9 @@ public extension Observer
 
 public class Messenger<Message: Equatable>: Observable
 {
-    public init(_ initialLast: Message)
+    public init(_ latest: Message)
     {
-        storedLastMessage = initialLast
+        storedLatestMessage = latest
     }
     
     public func add(_ observer: AnyObject,
@@ -32,13 +32,13 @@ public class Messenger<Message: Equatable>: Observable
     
     public func send(_ update: Message)
     {
-        storedLastMessage = update
+        storedLatestMessage = update
         
         ObservationService.send(update, toObserversOf: self)
     }
     
-    public var update: Message { return storedLastMessage }
-    public var lastMessage: Message { return storedLastMessage }
+    public var latestUpdate: Message { return storedLatestMessage }
+    public var latestMessage: Message { return storedLatestMessage }
     
-    private var storedLastMessage: Message
+    private var storedLatestMessage: Message
 }

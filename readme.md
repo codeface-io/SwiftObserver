@@ -203,27 +203,27 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 ## <a id="custom-observables"></a>5. Custom Observables
 
-* Custom observables just need to adopt the `CustomObservable` protocol (alias `Observable`) and provide a `var update: UpdateType { get }` of the type of updates they wish to send:
+* Custom observables just need to adopt the `CustomObservable` protocol (alias `Observable`) and provide a `var latestUpdate: UpdateType { get }` of the type of updates they wish to send:
 
     ~~~swift
     class Model: Observable
     {
-        var update: Event { return .didNothing }
+        var latestUpdate: Event { return .didNothing }
 	   
         enum Event { case didNothing, didUpdate, willDeinit }
     }
     ~~~
 	
-	Swift will infer the `update` type so you don't need to write `typealias UpdateType = Event`.
+	Swift will infer the type of `latestUpdate` so you don't need to write `typealias UpdateType = Event`.
 
-* Combined variables as well as combined observation sometimes request the current update state from their constituting observables. Therefor, observables offer the `update` property, which is also a way for other clients to actively get the update state in addition to observing it.
+* Combined variables as well as combined observation sometimes request the latest update from their constituting observables. Therefor, observables offer the `latestUpdate` property, which is also a way for other clients to actively get the current update state in addition to observing it.
 
-* The `update` property should typically return the last update that was sent or a value that indicates that nothing changed. But it can be optional and may (always) return `nil`:
+* The `latestUpdate` property should typically return the last update that was sent or a value that indicates that nothing changed. But it can be optional and may (always) return `nil`:
 
 	~~~swift
 	class MinimalObservable: Observable
 	{
-	   var update: String? { return nil }
+	   var latestUpdate: String? { return nil }
 	}
 	~~~
 
@@ -243,7 +243,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	~~~swift
 	class Model: Observable
 	{
-	   var update: Update<String?>
+	   var latestUpdate: Update<String?>
 	   {
 	      return Update(state, state)
 	   }
@@ -269,9 +269,9 @@ Now let's look at some of the goodies of SwiftObserver ...
 	~~~swift
 	let text = Var<String>()
 	        
-	let latestText = text.map { $0.new }
+	let newestText = text.map { $0.new }
 	        
-	let latestTextLength = latestText.map { $0?.count ?? 0 }
+	let newestTextLength = newestText.map { $0?.count ?? 0 }
 	~~~
 
 * Often we want to observe only the new value of a variable without the old one. Above, we mapped a value update onto its new value. This mapping is already available for all observables whos update type is `Update<_>` (not just for variables). The above code can be written as:
@@ -279,7 +279,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	~~~swift
 	let text = Var<String>()
 	        
-	let latestTextLength = text.new().map { $0?.count ?? 0 }
+	let newestTextLength = text.new().map { $0?.count ?? 0 }
 	~~~
 	
 * The value of a `Var` is always optional. That's why you can create one without initial value and also set its value `nil`:
@@ -292,9 +292,9 @@ Now let's look at some of the goodies of SwiftObserver ...
 	However, we often don't want to deal with optionals down the line. You can easily get rid of the optional by providing a default value:
 	
 	~~~swift
-	let latestNumber = number.new().unwrap(0)
+	let newestNumber = number.new().unwrap(0)
 
-	observer.observe(latestNumber)
+	observer.observe(newestNumber)
 	{
 	   newInteger in
 		
@@ -302,9 +302,9 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~	
 
-* The default in `unwrap(default)` is only required for the `update` property every observable provides in accordance with the `ObservableProtocol`. It will only come into play when the unwrapped observable didn't trigger the update but just provided its current `update` state. Of course, this can only happen where multiple observables are being observed (combined observation or observation of combined variable).
+* The default in `unwrap(default)` is only required for `latestUpdate` in accordance with the `ObservableProtocol`. It will only come into play when the unwrapped observable didn't trigger the update but just returned its latest update. Of course, this can only happen where multiple observables are being observed (combined observation or observation of combined variable).
 
-	The above example is just a single observation and only `latest number` can trigger the update. When the `value` of `latestNumber` is set to `nil`, the `unwrap` mapping sends nothing to its obervers, not even the default `0`. So when `newInteger` is zero, the observer knows that it's a real value and not just a replacement for `nil`.
+	The above example is just a single observation and only `newestNumber` can trigger the update. When the `value` of `newestNumber` is set to `nil`, the `unwrap` mapping sends nothing to its obervers, not even the default `0`. So when `newInteger` is zero, the observer knows that it's a real value and not just a replacement for `nil`.
 	
 * Be aware that observing a mapping does not keep it alive. You must hold a strong reference to a mapping that you want to use.
 	
@@ -312,7 +312,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	
 	That means a mapping holds a `weak` reference to its observable. You can check whether a mapping still has its observable via `mapping.hasObservable`.
 	
-	Be aware though that when mapping *A* maps mapping *B*, *A* might still have its observable *B* but *B* might have none. So a mapping can have its observable and still not send updates.
+* The nature of mappings also means an observer does not have to stop observing a mapping but could instead stop observing the mapped observable. A mapping forwards all calls to its observable and only maps observations and `latestUpdate`.
 
 ## <a id="combine"></a>7. One Combine To Rule Them All
 
@@ -401,9 +401,9 @@ Now let's look at some of the goodies of SwiftObserver ...
     eventMessenger.send(.techError)
     ~~~
 
-    The initializer of `Messenger<Message>` takes an initial `Message` that will be returned by `messenger.update` as long as no message has been sent.
+    The initializer of `Messenger<Message>` takes a `Message` that will be returned by `messenger.latestUpdate` as long as no update (message) has been sent.
     
-     After at least one message has been sent, `update` will always return the last message, which you can also get via `messenger.lastMessage`.
+     After at least one message has been sent, `latestUpdate` will return the last message, which you can also get via `messenger.latestMessage`.
     
 * Since the `Messenger<Message>` is just an `Observable`, you can include messengers in combined observations:
 

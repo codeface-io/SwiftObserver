@@ -4,9 +4,9 @@ public class AbstractObservable<Update>: UpdateSender
 {
     // MARK: Life Cycle
     
-    init(_ update: Update)
+    init(_ latest: Update)
     {
-        self.update = update
+        self.latestUpdate = latest
     }
     
     deinit { removeAllObservers() }
@@ -66,7 +66,7 @@ public class AbstractObservable<Update>: UpdateSender
     
     private let observerList = ObserverList<Update>()
     
-    public var update: Update
+    public var latestUpdate: Update
     
     public typealias UpdateType = Update
 }

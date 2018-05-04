@@ -19,7 +19,7 @@ public class ObservableMapping<SourceObservable: ObservableProtocol,
         self.observable = observable
         self.map = mapping
         
-        lastMappedUpdate = map(observable.update)
+        latestMappedUpdate = map(observable.latestUpdate)
     }
     
     public func add(_ observer: AnyObject,
@@ -50,17 +50,17 @@ public class ObservableMapping<SourceObservable: ObservableProtocol,
         observable?.removeNilObservers()
     }
     
-    public var update: MappedUpdate
+    public var latestUpdate: MappedUpdate
     {
         if let observable = observable
         {
-            lastMappedUpdate = map(observable.update)
+            latestMappedUpdate = map(observable.latestUpdate)
         }
         
-        return lastMappedUpdate
+        return latestMappedUpdate
     }
     
-    private var lastMappedUpdate: MappedUpdate
+    private var latestMappedUpdate: MappedUpdate
 
     public var hasObservable: Bool { return observable != nil }
     weak var observable: SourceObservable?

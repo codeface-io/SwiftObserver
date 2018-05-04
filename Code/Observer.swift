@@ -20,7 +20,7 @@ public extension Observer
             
             guard let o2 = observable2 else { return }
             
-            receive($0, o2.update)
+            receive($0, o2.latestUpdate)
         }
         
         observable2.add(self)
@@ -29,7 +29,7 @@ public extension Observer
             
             guard let o1 = observable1 else { return }
             
-            receive(o1.update, $0)
+            receive(o1.latestUpdate, $0)
         }
     }
     
@@ -48,7 +48,7 @@ public extension Observer
             
             guard let o2 = observable2, let o3 = observable3 else { return }
             
-            receive($0, o2.update, o3.update)
+            receive($0, o2.latestUpdate, o3.latestUpdate)
         }
         
         observable2.add(self)
@@ -57,7 +57,7 @@ public extension Observer
             
             guard let o1 = observable1, let o3 = observable3 else { return }
             
-            receive(o1.update, $0, o3.update)
+            receive(o1.latestUpdate, $0, o3.latestUpdate)
         }
         
         observable3.add(self)
@@ -66,7 +66,7 @@ public extension Observer
             
             guard let o1 = observable1, let o2 = observable2 else { return }
             
-            receive(o1.update, o2.update, $0)
+            receive(o1.latestUpdate, o2.latestUpdate, $0)
         }
     }
     

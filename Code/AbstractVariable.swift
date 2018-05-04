@@ -17,7 +17,7 @@ public class AbstractVariable<ValueType>: AbstractObservable<Update<ValueType>>
     {
         super.add(observer, receive)
         
-        receive(update)
+        receive(latestUpdate)
     }
     
     // MARK: Value
@@ -29,7 +29,7 @@ public class AbstractVariable<ValueType>: AbstractObservable<Update<ValueType>>
         super.init(Update(value, value))
     }
     
-    public override var update: UpdateType
+    public override var latestUpdate: UpdateType
     {
         get
         {

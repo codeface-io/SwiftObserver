@@ -9,7 +9,7 @@ class SwiftObserverTests: XCTestCase
         
         let eventMessenger = Messenger<Event>(.none)
         
-        XCTAssertEqual(eventMessenger.lastMessage, .none)
+        XCTAssertEqual(eventMessenger.latestMessage, .none)
         
         var receivedEvent: Event?
         
@@ -22,8 +22,8 @@ class SwiftObserverTests: XCTestCase
         
         eventMessenger.send(.userError)
         
-        XCTAssertEqual(eventMessenger.lastMessage, eventMessenger.update)
-        XCTAssertEqual(eventMessenger.lastMessage, .userError)
+        XCTAssertEqual(eventMessenger.latestMessage, eventMessenger.latestUpdate)
+        XCTAssertEqual(eventMessenger.latestMessage, .userError)
         XCTAssertEqual(receivedEvent, .userError)
     }
     
@@ -53,7 +53,7 @@ class SwiftObserverTests: XCTestCase
         
         textMessenger.send(expectedMessage)
         
-        XCTAssertEqual(textMessenger.lastMessage, expectedMessage)
+        XCTAssertEqual(textMessenger.latestMessage, expectedMessage)
         XCTAssertEqual(receivedMessage, expectedMessage)
     }
     
@@ -325,7 +325,7 @@ class SwiftObserverTests: XCTestCase
     
     class Model: Observable, Codable
     {
-        var update: Event { return .didNothing }
+        var latestUpdate: Event { return .didNothing }
         
         enum Event: String { case didUpdate, didReset, didNothing }
         
@@ -337,7 +337,7 @@ class SwiftObserverTests: XCTestCase
     
     class ModelWithState: Observable
     {
-        var update: Update<String>
+        var latestUpdate: Update<String>
         {
             return Update(state, state)
         }
