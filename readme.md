@@ -356,27 +356,7 @@ Now let's look at some of the goodies of SwiftObserver ...
     - Every object can trigger updates, without adopting any protocol.
     - Multiple objects may share the same update type and trigger the same updates.
 
-* You could simply use a global `CustomObservable` (alias `Observable`) to implement a mediating messenger:
-
-    ~~~swift
-    class Messenger: Observable
-    {
-        var update: String? { return nil }
-    }
-    
-    let messenger = Messenger()
-    
-    observer.observe(messenger)
-    {
-        message in
-        
-        // respond to message
-    }
-    
-    messenger.send("some message")
-    ~~~
-
-* However, SwiftObserver's generic class `Messenger<Message>` has a bit more to offer and plays well together with the `Observer` protocol.
+* You could simply use a global `CustomObservable` (alias `Observable`) as a mediating messenger. But SwiftObserver's generic class `Messenger<Message>` has a bit more to offer and plays well together with the `Observer` protocol.
     
 * You may use the global `textMessenger` of type `Messenger<String>`:
 
@@ -404,7 +384,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 
     Note that this response closure does not take any arguments because it only gets called for the specified message.
     
-* You may also create your own messenger:
+* You may also instantiate your own messenger as some `Messenger<Message>`:
 
     ~~~swift
     enum Event { case none, userError, techError }
