@@ -19,7 +19,6 @@
 		9E8D1E6E2095639400143080 /* SwiftObserver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9ED92565208B48F7000E74B4 /* SwiftObserver.framework */; };
 		9E8D1E75209564C200143080 /* SwiftObserverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E8D1E74209564C100143080 /* SwiftObserverTests.swift */; };
 		9E992683208BEDF500A24265 /* SwiftyToolz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E992682208BEDF500A24265 /* SwiftyToolz.framework */; };
-		9EA73E452095EA610075B222 /* Pair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EA73E442095EA610075B222 /* Pair.swift */; };
 		9EA73E472096105D0075B222 /* ObserverList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EA73E462096105D0075B222 /* ObserverList.swift */; };
 /* End PBXBuildFile section */
 
@@ -47,7 +46,6 @@
 		9E8D1E6D2095639400143080 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9E8D1E74209564C100143080 /* SwiftObserverTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftObserverTests.swift; sourceTree = "<group>"; };
 		9E992682208BEDF500A24265 /* SwiftyToolz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyToolz.framework; path = Carthage/Build/iOS/SwiftyToolz.framework; sourceTree = "<group>"; };
-		9EA73E442095EA610075B222 /* Pair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pair.swift; sourceTree = "<group>"; };
 		9EA73E462096105D0075B222 /* ObserverList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObserverList.swift; sourceTree = "<group>"; };
 		9ED92565208B48F7000E74B4 /* SwiftObserver.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftObserver.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9ED92569208B48F7000E74B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -77,7 +75,6 @@
 			isa = PBXGroup;
 			children = (
 				9E202FE7208BD30E002161F8 /* Observer.swift */,
-				9EA73E442095EA610075B222 /* Pair.swift */,
 				9E202FEC208BD30E002161F8 /* Variable.swift */,
 				9E202FEB208BD30E002161F8 /* Update.swift */,
 				9E4D15CF2098B2C30088C5FB /* Messenger.swift */,
@@ -267,7 +264,6 @@
 				9E202FF7208BD30E002161F8 /* Update.swift in Sources */,
 				9E4D15D02098B2C30088C5FB /* Messenger.swift in Sources */,
 				9E202FF4208BD30E002161F8 /* Observer.swift in Sources */,
-				9EA73E452095EA610075B222 /* Pair.swift in Sources */,
 				9E202FEF208BD30E002161F8 /* Observable.swift in Sources */,
 				9E202FF3208BD30E002161F8 /* ObservationService.swift in Sources */,
 				9E202FF0208BD30E002161F8 /* Mapping.swift in Sources */,
