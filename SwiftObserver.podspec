@@ -2,7 +2,7 @@
     
     # meta infos
     s.name             = "SwiftObserver"
-    s.version          = "1.0.8"
+    s.version          = "1.0.9"
     s.summary          = "A Reactive Swift Toolbox"
     s.description      = "A Sweet Little 'Use and Forget' Toolbox for Reactive Swift Programming"
     s.homepage         = "http://flowtoolz.com"
