@@ -78,11 +78,6 @@ public extension Observer
     func stopAllObserving()
     {
         ObservationService.removeObserverFromAllObservables(self)
-        
-        for weakObservedObject in observedObjects.values
-        {
-            weakObservedObject.observed?.remove(self)
-        }
     }
 }
 

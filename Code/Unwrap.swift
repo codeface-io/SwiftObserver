@@ -1,13 +1,13 @@
 public extension ObservableProtocol
 {
-    public func unwrap<Unwrapped>(_ defaultUpdate: Unwrapped) -> ObservableUnwrap<Self, Unwrapped>
+    public func unwrap<Unwrapped>(_ defaultUpdate: Unwrapped) -> Unwrap<Self, Unwrapped>
     {
-        return ObservableUnwrap(observable: self,
+        return Unwrap(observable: self,
                                 defaultUpdate: defaultUpdate)
     }
 }
 
-public class ObservableUnwrap<SourceObservable: ObservableProtocol, Unwrapped>: ObservableMapping<SourceObservable, Unwrapped> where SourceObservable.UpdateType == Optional<Unwrapped>
+public class Unwrap<SourceObservable: ObservableProtocol, Unwrapped>: Mapping<SourceObservable, Unwrapped> where SourceObservable.UpdateType == Optional<Unwrapped>
 {
     init(observable: SourceObservable, defaultUpdate: Unwrapped)
     {

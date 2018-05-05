@@ -8,38 +8,35 @@ public func <-<Value>(variable: AbstractVariable<Value>?,
     return variable
 }
 
-public class AbstractVariable<ValueType>: AbstractObservable<Update<ValueType>>
+public class AbstractVariable<Value>: Observable
 {
-    // MARK: Update Observers When They Start Observing
-    
-    public override func add(_ observer: AnyObject,
-                             _ receive: @escaping (Update<ValueType>) -> Void)
+    init(_ value: Value)
     {
-        super.add(observer, receive)
+        self.value = value
+    }
+    
+    public func add(_ observer: AnyObject,
+                    _ receive: @escaping (Update<Value>) -> Void)
+    {
+        ObservationService.add(observer, of: self)
+        {
+            guard let update = $0 as? Update<Value> else
+            {
+                fatalError("Impossible error: could not cast update type received from observation center")
+            }
+            
+            receive(update)
+        }
         
         receive(latestUpdate)
     }
     
-    // MARK: Value
-    
-    init(_ value: ValueType)
+    public var latestUpdate: Update<Value>
     {
-        self.value = value
+        let currentValue = value
         
-        super.init(Update(value, value))
+        return Update(currentValue, currentValue)
     }
     
-    public override var latestUpdate: UpdateType
-    {
-        get
-        {
-            let currentValue = value
-            
-            return Update(currentValue, currentValue)
-        }
-        
-        set {}
-    }
-    
-    public var value: ValueType
+    public var value: Value
 }

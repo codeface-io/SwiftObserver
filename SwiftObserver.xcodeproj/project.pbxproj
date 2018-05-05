@@ -7,12 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9E202FED208BD30E002161F8 /* AbstractObservable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE0208BD30E002161F8 /* AbstractObservable.swift */; };
 		9E202FEE208BD30E002161F8 /* AbstractVariable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE1208BD30E002161F8 /* AbstractVariable.swift */; };
 		9E202FEF208BD30E002161F8 /* CustomObservable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE2208BD30E002161F8 /* CustomObservable.swift */; };
-		9E202FF0208BD30E002161F8 /* ObservableMapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE3208BD30E002161F8 /* ObservableMapping.swift */; };
+		9E202FF0208BD30E002161F8 /* Mapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE3208BD30E002161F8 /* Mapping.swift */; };
 		9E202FF1208BD30E002161F8 /* UpdateSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE4208BD30E002161F8 /* UpdateSender.swift */; };
-		9E202FF2208BD30E002161F8 /* ObservableUnwrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE5208BD30E002161F8 /* ObservableUnwrap.swift */; };
+		9E202FF2208BD30E002161F8 /* Unwrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE5208BD30E002161F8 /* Unwrap.swift */; };
 		9E202FF3208BD30E002161F8 /* ObservationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE6208BD30E002161F8 /* ObservationService.swift */; };
 		9E202FF4208BD30E002161F8 /* Observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE7208BD30E002161F8 /* Observer.swift */; };
 		9E202FF5208BD30E002161F8 /* PairVariable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E202FE8208BD30E002161F8 /* PairVariable.swift */; };
@@ -37,12 +36,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		9E202FE0208BD30E002161F8 /* AbstractObservable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractObservable.swift; sourceTree = "<group>"; };
 		9E202FE1208BD30E002161F8 /* AbstractVariable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbstractVariable.swift; sourceTree = "<group>"; };
 		9E202FE2208BD30E002161F8 /* CustomObservable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomObservable.swift; sourceTree = "<group>"; };
-		9E202FE3208BD30E002161F8 /* ObservableMapping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableMapping.swift; sourceTree = "<group>"; };
+		9E202FE3208BD30E002161F8 /* Mapping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mapping.swift; sourceTree = "<group>"; };
 		9E202FE4208BD30E002161F8 /* UpdateSender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UpdateSender.swift; sourceTree = "<group>"; };
-		9E202FE5208BD30E002161F8 /* ObservableUnwrap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservableUnwrap.swift; sourceTree = "<group>"; };
+		9E202FE5208BD30E002161F8 /* Unwrap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Unwrap.swift; sourceTree = "<group>"; };
 		9E202FE6208BD30E002161F8 /* ObservationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservationService.swift; sourceTree = "<group>"; };
 		9E202FE7208BD30E002161F8 /* Observer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Observer.swift; sourceTree = "<group>"; };
 		9E202FE8208BD30E002161F8 /* PairVariable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PairVariable.swift; sourceTree = "<group>"; };
@@ -88,11 +86,10 @@
 				9E202FEC208BD30E002161F8 /* Variable.swift */,
 				9E202FE1208BD30E002161F8 /* AbstractVariable.swift */,
 				9E202FEB208BD30E002161F8 /* Update.swift */,
-				9E202FE0208BD30E002161F8 /* AbstractObservable.swift */,
 				9E4D15CF2098B2C30088C5FB /* Messenger.swift */,
 				9E202FE2208BD30E002161F8 /* CustomObservable.swift */,
-				9E202FE5208BD30E002161F8 /* ObservableUnwrap.swift */,
-				9E202FE3208BD30E002161F8 /* ObservableMapping.swift */,
+				9E202FE5208BD30E002161F8 /* Unwrap.swift */,
+				9E202FE3208BD30E002161F8 /* Mapping.swift */,
 				9E202FE4208BD30E002161F8 /* UpdateSender.swift */,
 				9E202FE6208BD30E002161F8 /* ObservationService.swift */,
 				9EA73E462096105D0075B222 /* ObserverList.swift */,
@@ -275,17 +272,16 @@
 			files = (
 				9E202FF7208BD30E002161F8 /* Update.swift in Sources */,
 				9E4D15D02098B2C30088C5FB /* Messenger.swift in Sources */,
-				9E202FED208BD30E002161F8 /* AbstractObservable.swift in Sources */,
 				9E202FF4208BD30E002161F8 /* Observer.swift in Sources */,
 				9EA73E452095EA610075B222 /* Pair.swift in Sources */,
 				9E202FEF208BD30E002161F8 /* CustomObservable.swift in Sources */,
 				9E202FEE208BD30E002161F8 /* AbstractVariable.swift in Sources */,
 				9E202FF3208BD30E002161F8 /* ObservationService.swift in Sources */,
-				9E202FF0208BD30E002161F8 /* ObservableMapping.swift in Sources */,
+				9E202FF0208BD30E002161F8 /* Mapping.swift in Sources */,
 				9E202FF8208BD30E002161F8 /* Variable.swift in Sources */,
 				9E202FF1208BD30E002161F8 /* UpdateSender.swift in Sources */,
 				9E202FF5208BD30E002161F8 /* PairVariable.swift in Sources */,
-				9E202FF2208BD30E002161F8 /* ObservableUnwrap.swift in Sources */,
+				9E202FF2208BD30E002161F8 /* Unwrap.swift in Sources */,
 				9EA73E472096105D0075B222 /* ObserverList.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -203,7 +203,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 ## <a id="custom-observables"></a>5. Custom Observables
 
-* Custom observables just need to adopt the `CustomObservable` protocol (alias `Observable`) and provide a `var latestUpdate: UpdateType { get }` of the type of updates they wish to send:
+* Custom observables just need to adopt the `Observable` protocol and provide a `var latestUpdate: UpdateType { get }` of the type of updates they wish to send:
 
     ~~~swift
     class Model: Observable
@@ -356,7 +356,7 @@ Now let's look at some of the goodies of SwiftObserver ...
     - Every object can trigger updates, without adopting any protocol.
     - Multiple objects may share the same update type and trigger the same updates.
 
-* You could simply use a global `CustomObservable` (alias `Observable`) as a mediating messenger. But SwiftObserver's generic class `Messenger<Message>` has a bit more to offer and plays well together with the `Observer` protocol.
+* You could simply use a global custom `Observable` as a mediating messenger. But SwiftObserver's generic class `Messenger<Message>` has a bit more to offer and plays well together with the `Observer` protocol.
     
 * You may use the global `textMessenger` of type `Messenger<String>`:
 

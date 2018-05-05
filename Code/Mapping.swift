@@ -1,17 +1,17 @@
 public extension ObservableProtocol
 {
-    public func new<TargetUpdate>() -> ObservableMapping<Self, TargetUpdate> where UpdateType == Update<TargetUpdate>
+    public func new<TargetUpdate>() -> Mapping<Self, TargetUpdate> where UpdateType == Update<TargetUpdate>
     {
-        return ObservableMapping(observable: self) { $0.new }
+        return Mapping(observable: self) { $0.new }
     }
     
-    public func map<TargetUpdate>(_ mapping: @escaping (UpdateType) -> (TargetUpdate)) -> ObservableMapping<Self, TargetUpdate>
+    public func map<TargetUpdate>(_ mapping: @escaping (UpdateType) -> (TargetUpdate)) -> Mapping<Self, TargetUpdate>
     {
-        return ObservableMapping(observable: self, mapping: mapping)
+        return Mapping(observable: self, mapping: mapping)
     }
 }
 
-public class ObservableMapping<SourceObservable: ObservableProtocol,
+public class Mapping<SourceObservable: ObservableProtocol,
     MappedUpdate>: ObservableProtocol
 {
     init(observable: SourceObservable, mapping: @escaping Mapping)

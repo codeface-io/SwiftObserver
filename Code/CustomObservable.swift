@@ -1,6 +1,4 @@
-public typealias Observable = CustomObservable
-
-public extension CustomObservable
+public extension Observable
 {
     func add(_ observer: AnyObject,
              _ receive: @escaping UpdateReceiver)
@@ -37,4 +35,4 @@ public extension CustomObservable
     }
 }
 
-public protocol CustomObservable: UpdateSender {}
+public protocol Observable: UpdateSender {}
