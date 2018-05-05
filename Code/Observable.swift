@@ -35,4 +35,4 @@ public extension Observable
     }
 }
 
-public protocol Observable: UpdateSender {}
+public protocol Observable: ObservableProtocol {}

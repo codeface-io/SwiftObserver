@@ -1,8 +1,3 @@
-public protocol UpdateSender: ObservableProtocol
-{
-    func send(_ update: UpdateType)
-}
-
 public protocol ObservableProtocol: class
 {
     func add(_ observer: AnyObject,
