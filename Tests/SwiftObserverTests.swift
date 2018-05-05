@@ -72,6 +72,7 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual(receivedMessage, expectedMessage)
     }
     
+    /*
     func testPairRetainsItsVariables()
     {
         var v1: Var<Int>? = Var(1)
@@ -90,6 +91,7 @@ class SwiftObserverTests: XCTestCase
             XCTAssert(false)
         }
     }
+     */
 
     func testHowToUseOptionalVariables()
     {
@@ -195,6 +197,7 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual(observedNewValue, expectedNewValue)
     }
     
+    /*
     func testObservingPairVariableTriggersUpdate()
     {
         let combinedVariable = Var("Text 1") + Var(7) + Var("Text 2")
@@ -212,6 +215,7 @@ class SwiftObserverTests: XCTestCase
             XCTAssertEqual(update.new.right, "Text 2")
         }
     }
+    */
     
     func testObservableMapping()
     {
@@ -223,6 +227,7 @@ class SwiftObserverTests: XCTestCase
         model.send(.didUpdate)
     }
     
+    /*
     func testSettingValueOnPairVariableTriggersUpdate()
     {
         model.text <- "old"
@@ -273,7 +278,7 @@ class SwiftObserverTests: XCTestCase
         XCTAssertTrue(didUpdateNumber)
         XCTAssertEqual(numberOfObservations, 3)
     }
-    
+ 
     func testSettingNestedValueOnPairVariable()
     {
         let combinedVariable = Var(0.75) + Var("text") + Var(10)
@@ -282,6 +287,7 @@ class SwiftObserverTests: XCTestCase
         
         XCTAssertEqual(combinedVariable.value.left.right, "new")
     }
+    */
     
     func testObservingTwoObservablesTriggersUpdate()
     {

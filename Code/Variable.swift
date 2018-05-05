@@ -1,31 +1,56 @@
+infix operator <-: AdditionPrecedence
+
+@discardableResult
+public func <-<Value>(variable: Var<Value>?,
+                      value: Value?) -> Var<Value>?
+{
+    variable?.value = value
+    return variable
+}
+
 public typealias Var = Variable
 
-public class Variable<Value: Equatable & Codable>: AbstractVariable<Value?>, Codable
+public class Variable<Value: Equatable & Codable>: Observable, Codable
 {
     // MARK: Initialization
     
-    public override init(_ value: Value? = nil)
+    public init(_ value: Value? = nil)
     {
-        super.init(nil)
-        
         storedValue = value
+    }
+    
+    // MARK: Send Update When Observation Starts
+    
+    public func add(_ observer: AnyObject,
+                    _ receive: @escaping (UpdateType) -> Void)
+    {
+        ObservationService.add(observer, of: self)
+        {
+            guard let update = $0 as? UpdateType else
+            {
+                fatalError("Impossible error: could not cast update type received from observation center")
+            }
+            
+            receive(update)
+        }
+        
+        receive(latestUpdate)
     }
     
     // MARK: Codability
     
-    public required init(from decoder: Decoder) throws
-    {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
-        storedValue = try values.decode(Value.self, forKey: .storedValue)
-        
-        super.init(storedValue)
-    }
-    
     private enum CodingKeys: String, CodingKey { case storedValue }
     
     // MARK: Value
+
+    public var latestUpdate: Update<Value?>
+    {
+        let currentValue = value
+        
+        return Update(currentValue, currentValue)
+    }
     
-    public override var value: Value?
+    public var value: Value?
     {
         get { return storedValue }
         

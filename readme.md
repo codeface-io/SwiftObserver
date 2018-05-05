@@ -19,15 +19,11 @@ There are some [unit tests of SwiftObserver](https://github.com/flowtoolz/SwiftO
 * [1. Keep It Simple Sweety](#kiss)
 * [2. The Easiest Memory Management](#memory)
 * [3. Variables](#variables)
-* [4. Create Variables as Combinations of Others](#pair-variables)
-* [5. Custom Observables](#custom-observables)
-* [6. Create Observables as Mappings of Others](#mappings)
-* [7. One Combine To Rule Them All](#combine)
-* [8. Messenger? Notifier? Dispatcher? It's All Observation](#messenger)
-* [9. Putting It All Together](#wrap-up)
-    - [Type Dependency Diagram](#diagram)
-    - [Why the Hell Another Reactive Library?](#why)
-    - [Ending Note: Focus On Meaning Not On Technicalities](#meaning)
+* [4. Custom Observables](#custom-observables)
+* [5. Create Observables as Mappings of Others](#mappings)
+* [6. One Combine To Rule Them All](#combine)
+* [7. Messenger? Notifier? Dispatcher? It's All Observation](#messenger)
+* [8. Why the Hell Another Reactive Library?](#why)
 
 ## <a id="installation"></a>Installation
 
@@ -71,13 +67,16 @@ Now let's look at some of the goodies of SwiftObserver ...
 * Any object can observe. But observers who adopt the `Observer` protocol can use more convenient functions for starting and ending observation.
 * There are 3 kinds of observable objects:
 
-	1. Variables, wich may be composed of other variables
+	1. Variables
 		
 	2. Custom observables, which conform to the `Observable` protocol
 		
 	3. Mappings from other observable objects
 
-	We'll get to each of these. First, something else...
+* SwiftObserver's types system is pretty simple:
+
+    <img src="https://raw.githubusercontent.com/flowtoolz/SwiftObserver/master/Documentation/TypeDependencies.jpg" style="width:100%;max-width:400px;display:block;margin-left:auto;margin-right:auto"/>
+    We'll get to each type. First, something else...
 
 ## <a id="memory"></a>2. The Easiest Memory Management
 
@@ -151,57 +150,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~
 
-
-## <a id="pair-variables"></a>4. Create Variables as Combinations of Others
-
-* You can observe combinations of variables, which are actually recursive variable pairs. Like a simple variable of type `Var`, a `PairVariable` sends updates of type `Update<Value>`, only here the value is a `Pair<Value1, Value2>`, which holds values for both combined variables:
-
-	~~~swift
-	let textAndNumber = text + number
-
-	observer.observe(textAndNumber)
-	{
-	   update in
-		
-	   let newText = update.new.left
-	   let newNumber = update.new.right
-		
-	   // respond to latest text and number values
-	}
-	~~~
-	
-* Like with variables of type `Var`, you must hold a reference to a combined variable that you want to observe. The example above assumes that `textAndNumber` remains in scope during observation. However, observing an ad-hoc variable combination makes no sense at all:
-
-	~~~swift
-	observer.observe(Var("friday") + Var(13))
-	{
-	   update in
-		
-	   // FAIL! The observed variable has local scope and will deinit!
-	}
-	~~~
-
-* You can nest and store combined variables and set their values:
-
-	~~~swift
-	let combinedVariable = Var(0.75) + Var("text") + Var(10)
-	
-	combinedVariable <- Pair(Pair(0.33, "new"), 42)
-	~~~
-
-* You may use the `+++` operator for combining variable values. The last line from above can be written as: 
-
-	~~~swift
-	combinedVariable <- 0.33 +++ "new" +++ 42
-	~~~	
-	
-* A variable combination stores no value of its own. Instead it reads and sets the values of the variables it combines. So the above line changes the values of all three involved variables and would update all observers of these three.
-
-* A variable combination sends an update whenever one of the combined variables changes its value. Since variables send the old and new values in their updates, update handlers can easily determine the one variable that triggered the update.
-
-* A variable combination holds strong references to its combined variables. So you don't need to hold references to the combined variables - only to the resulting combination.
-
-## <a id="custom-observables"></a>5. Custom Observables
+## <a id="custom-observables"></a>4. Custom Observables
 
 * Custom observables just need to adopt the `Observable` protocol and provide a `var latestUpdate: UpdateType { get }` of the type of updates they wish to send:
 
@@ -216,7 +165,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	
 	Swift will infer the update type from `latestUpdate`, so you don't need to write `typealias UpdateType = Event`.
 
-* Combined variables as well as combined observation sometimes request the latest update from their constituting observables. Therefor, observables offer the `latestUpdate` property, which is also a way for other clients to actively get the current update state in addition to observing it.
+* Combined observations sometimes request the latest update from their constituting observables. Therefor, observables offer the `latestUpdate` property, which is also a way for other clients to actively get the current update state in addition to observing it.
 
 * The `latestUpdate` property should typically return the last update that was sent or a value that indicates that nothing changed. But it can be optional and may (always) return `nil`:
 
@@ -262,7 +211,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	~~~
 	
 
-## <a id="mappings"></a>6. Create Observables as Mappings of Others
+## <a id="mappings"></a>5. Create Observables as Mappings of Others
 
 * Create a new observable object by mapping a given one:
 
@@ -302,19 +251,19 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~	
 
-* The default in `unwrap(default)` is only required for `latestUpdate` in accordance with the `ObservableProtocol`. It will only come into play when the unwrapped observable didn't trigger the update but just returned its latest update. Of course, this can only happen where multiple observables are being observed (combined observation or observation of combined variable).
+* The default in `unwrap(default)` is only required for `latestUpdate` in accordance with the `ObservableProtocol`. It will only come into play when the unwrapped observable didn't trigger the update but just returned its latest update. Of course, this can only happen where multiple observables are being observed (combined observation).
 
 	The above example is just a single observation and only `newestNumber` can trigger the update. When the `value` of `newestNumber` is set to `nil`, the `unwrap` mapping sends nothing to its obervers, not even the default `0`. So when `newInteger` is zero, the observer knows that it's a real value and not just a replacement for `nil`.
 	
 * Be aware that observing a mapping does not keep it alive. You must hold a strong reference to a mapping that you want to use.
 	
-* A mapping is not "composed" of the observable it maps (like a variable combination is composed of its combined variables). A mapping is just that: an access wrapper to the mapped observable.
+* A mapping is not "composed" of the observable it maps. A mapping is just that: an access wrapper to the mapped observable.
 	
 	That means a mapping holds a `weak` reference to its observable. You can check whether a mapping still has its observable via `mapping.hasObservable`.
 	
 * The nature of mappings also means an observer does not have to stop observing a mapping but could instead stop observing the mapped observable. A mapping forwards all calls to its observable and only maps observations and `latestUpdate`.
 
-## <a id="combine"></a>7. One Combine To Rule Them All
+## <a id="combine"></a>6. One Combine To Rule Them All
 
 * In addition to creating a new variable by combining others, you can also observe a combination of any observable objects and without creating a new object:
 
@@ -343,7 +292,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 	Not having to duplicate data where multiple things must be observed is one of the reasons to use these combined observations. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the data sent from observables.
 	
-## <a id="messenger"></a>8. Messenger? Notifier? Dispatcher? It's All Observation
+## <a id="messenger"></a>7. Messenger? Notifier? Dispatcher? It's All Observation
 
 * When observer and observable need to be more decoupled, it is common to use a mediating observable through which any object can anonymously send updates. An example of this mediator is Foundation's `NotificationCenter`.
 
@@ -415,14 +364,8 @@ Now let's look at some of the goodies of SwiftObserver ...
         // respond to text update, number update and message
     }
     ~~~
-    
-## <a id="wrap-up"></a>9. Putting It All Together
 
-### <a id="diagram"></a>Type Dependency Diagram
-
-<img src="https://raw.githubusercontent.com/flowtoolz/SwiftObserver/master/Documentation/TypeDependencies.jpg" style="width:100%;max-width:400px;display:block;margin-left:auto;margin-right:auto"/>
-
-### <a id="why"></a>Why the Hell Another Reactive Library?
+## <a id="why"></a>8. Why the Hell Another Reactive Library?
 
 SwiftObserver diverges from convention. It follows the reactive idea in generalizing the observer pattern. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something we love.
 
@@ -434,8 +377,6 @@ What you might like:
 - No cancellables or tokens to pass around and store
 - Ability to pull current update from observable
 - Memory gets cleared even if the client/observer forgets to manage it
-- Combine variables with `+`
-- Set combined values back into combined variables
 - Use `<-` operator to directly set variable values
 - Recieve old *and* new value from variables
 - No distinction between "hot-" and "cold signals" necessary
@@ -444,7 +385,7 @@ What you might like:
 - Variables are `Codable`
 - Call observation and mappings directly on observables (no mediating property)
 - Seemless integration of the *Notifier Pattern*
-- No data duplication for combined observations or combined variables
+- No data duplication for combined observations
 - Custom observables without having to inherit from any class
 - Maximum freedom for your architectural- and design choices
 
@@ -456,7 +397,7 @@ What you might not like:
 - Observers and observables must be objects and cannot be structs. (Of course, variables can hold any type of values and observables can send any type of updates.)
 - For now, your code must hold strong references to observables that you want to observe. In other libraries, variable combinations or mappings would be kept alive as a side effect of being observed.
 
-### <a id="meaning"></a>Ending Note: Focus On Meaning Not On Technicalities
+### Ending Note: Focus On Meaning Not On Technicalities
 
 * Because classes have to implement nothing to be observable, you can keep model and logic code independent of any observer frameworks and techniques. If the model layer had to be stuffed with heavyweight constructs just to be observed, it would become a technical issue instead of an easy to change,  meaningful, direct representation of domain-, business- and view logic.
 * Unlike established Swift implementations of the Redux approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you freely model your domain-, business- and view logic with all your familiar design patterns and types. There are no restrictions on how you organize and store your app state.
