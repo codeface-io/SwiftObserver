@@ -420,7 +420,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 ### <a id="diagram"></a>Type Dependency Diagram
 
-<img src="https://raw.githubusercontent.com/flowtoolz/SwiftObserver/master/Documentation/TypeDependencies.jpg" style="width:100%;max-width:640px;display:block;margin-left:auto;margin-right:auto"/>
+<img src="https://raw.githubusercontent.com/flowtoolz/SwiftObserver/master/Documentation/TypeDependencies.jpg" style="width:100%;max-width:400px;display:block;margin-left:auto;margin-right:auto"/>
 
 ### <a id="why"></a>Why the Hell Another Reactive Library?
 
