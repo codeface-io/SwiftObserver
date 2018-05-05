@@ -187,7 +187,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~
 	
-* Using the `update` property together with an `UpdateType` that is an `Update<_>`, a custom observable can have a state and be used like a variable:
+* Using the `latestUpdate` property together with an `UpdateType` that is an `Update<_>`, a custom observable can have a state and be used like a variable:
 
 	~~~swift
 	class Model: Observable
