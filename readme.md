@@ -4,12 +4,12 @@
 
 SwiftObserver is a reactive programming framework for pure Swift. It is designed to be ...
 
-:white_check_mark: usable  
-:white_check_mark: flexible  
-:white_check_mark: non-intrusive  
-:white_check_mark: readable  
-:white_check_mark: simple  
-:white_check_mark: safe
+* :white_check_mark: usable  
+* :white_check_mark: flexible  
+* :white_check_mark: non-intrusive  
+* :white_check_mark: readable  
+* :white_check_mark: simple  
+* :white_check_mark: safe
 
 There are some [unit tests of SwiftObserver](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests.swift), which also demonstrate its use.
 
@@ -64,18 +64,22 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~
 
-* Any object can observe. But observers who adopt the `Observer` protocol can use more convenient functions for starting and ending observation.
-* There are 3 kinds of observable objects:
-
-	1. Variables
-		
-	2. Custom observables, which conform to the `Observable` protocol
-		
-	3. Mappings from other observable objects
-
 * SwiftObserver's types system is pretty simple:
-
     <img src="https://raw.githubusercontent.com/flowtoolz/SwiftObserver/master/Documentation/TypeDependencies.jpg" style="width:100%;max-width:400px;display:block;margin-left:auto;margin-right:auto"/>
+
+* Any object can observe. But observers who adopt the `Observer` protocol can use more convenient functions for starting and ending observation.
+
+* There are 3 kinds of observable objects:
+	
+
+    1. Custom observables, which conform to the `Observable` protocol
+
+    2. Built-in custom observables:
+        * Variables
+        * Messengers
+		
+    3. Mappings from other observable objects
+
     We'll get to each type. First, something else...
 
 ## <a id="memory"></a>2. The Easiest Memory Management
@@ -92,8 +96,8 @@ Now let's look at some of the goodies of SwiftObserver ...
 * Observers can also stop observing an observable object via `observer.stopObserving(observable)`.
 * Another way to remove observers from an observable object is to call `observable.removeAllObservers()`.
 * To actively remove dead observer references from an observable object, you may call `observable.removeNilObservers()`.
-* Although you don't need to handle "disposables" or tokens after adding an observer, all objects are internally hashed, so performance is never an issue.
-* Even if you forget to remove observers from observables, you likely won't run into problems because abandoned obervervings get pruned internally at every opportunity.
+* Although you don't need to handle tokens after adding an observer, all objects are internally hashed, so performance is never an issue.
+* Even if you forget to remove observers from observables, you likely won't run into problems because abandoned obervervations get pruned internally at every opportunity.
 
 ## <a id="variables"></a>3. Variables
 
@@ -231,6 +235,18 @@ Now let's look at some of the goodies of SwiftObserver ...
 	let newestTextLength = text.new().map { $0?.count ?? 0 }
 	~~~
 	
+* Be aware that observing a mapping does not keep it alive. You must hold a strong reference to a mapping that you want to use.
+	
+* A mapping is not "composed" of the observable it maps. It is just an access wrapper to the mapped observable. That means:
+	
+    * A mapping holds a `weak` reference to its observable. You can check whether a mapping still has its observable via `mapping.hasObservable`.
+	
+    * A mapping forwards all calls to its observable and only maps observations and `latestUpdate`.
+	
+    * An observer does not have to stop observing a mapping but could instead stop observing the mapped observable. 
+
+### Unwrap
+
 * The value of a `Var` is always optional. That's why you can create one without initial value and also set its value `nil`:
 
 	~~~swift
@@ -238,7 +254,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	number <- nil
 	~~~
 	
-	However, we often don't want to deal with optionals down the line. You can easily get rid of the optional by providing a default value:
+	However, we often don't want to deal with optionals down the line. You can easily get rid of the optional with the special mapping `unwrap(default)`:
 	
 	~~~swift
 	let newestNumber = number.new().unwrap(0)
@@ -254,14 +270,6 @@ Now let's look at some of the goodies of SwiftObserver ...
 * The default in `unwrap(default)` is only required for `latestUpdate` in accordance with the `ObservableProtocol`. It will only come into play when the unwrapped observable didn't trigger the update but just returned its latest update. Of course, this can only happen where multiple observables are being observed (combined observation).
 
 	The above example is just a single observation and only `newestNumber` can trigger the update. When the `value` of `newestNumber` is set to `nil`, the `unwrap` mapping sends nothing to its obervers, not even the default `0`. So when `newInteger` is zero, the observer knows that it's a real value and not just a replacement for `nil`.
-	
-* Be aware that observing a mapping does not keep it alive. You must hold a strong reference to a mapping that you want to use.
-	
-* A mapping is not "composed" of the observable it maps. A mapping is just that: an access wrapper to the mapped observable.
-	
-	That means a mapping holds a `weak` reference to its observable. You can check whether a mapping still has its observable via `mapping.hasObservable`.
-	
-* The nature of mappings also means an observer does not have to stop observing a mapping but could instead stop observing the mapped observable. A mapping forwards all calls to its observable and only maps observations and `latestUpdate`.
 
 ## <a id="combine"></a>6. One Combine To Rule Them All
 
