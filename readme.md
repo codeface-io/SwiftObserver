@@ -64,7 +64,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~
 
-* SwiftObserver's types system is pretty simple:
+* SwiftObserver's type system is pretty simple:
     <img src="https://raw.githubusercontent.com/flowtoolz/SwiftObserver/master/Documentation/TypeDependencies.jpg" style="width:100%;max-width:400px;display:block;margin-left:auto;margin-right:auto"/>
 
 * Any object can observe. But observers who adopt the `Observer` protocol can use more convenient functions for starting and ending observation.
@@ -403,7 +403,7 @@ What you might not like:
 - Not many operators included
 - No UI bindings included
 - Observers and observables must be objects and cannot be structs. (Of course, variables can hold any type of values and observables can send any type of updates.)
-- For now, your code must hold strong references to observables that you want to observe. In other libraries, variable combinations or mappings would be kept alive as a side effect of being observed.
+- For now, your code must hold strong references to mappings that you want to observe. In other libraries, mappings are kept alive as a side effect of observing them.
 
 ### Ending Note: Focus On Meaning Not On Technicalities
 
