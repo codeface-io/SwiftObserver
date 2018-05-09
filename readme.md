@@ -64,23 +64,22 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~
 
-* SwiftObserver's type system is pretty simple:
+* SwiftObserver's type system is radically simple:
     <img src="https://raw.githubusercontent.com/flowtoolz/SwiftObserver/master/Documentation/TypeDependencies.jpg" style="width:100%;max-width:400px;display:block;margin-left:auto;margin-right:auto"/>
 
 * Any object can observe. But observers who adopt the `Observer` protocol can use more convenient functions for starting and ending observation.
 
-* There are 3 kinds of observable objects:
+* All observables conform to the `Observable` protocol. There are three ways to make use of `Observable`:
 	
+    1. Use a pre-built `Observable`:
+        * `Variable<Value>`
+        * `Messenger<Message>`
 
-    1. Custom observables, which conform to the `Observable` protocol
+    2. Implement your own custom `Observable`
 
-    2. Built-in custom observables:
-        * Variables
-        * Messengers
-		
-    3. Mappings from other observable objects
+    3. Create a new `Observable` by mapping an existing one
 
-    We'll get to each type. First, something else...
+    We'll get to each of these. First, something else...
 
 ## <a id="memory"></a>2. The Easiest Memory Management
 
@@ -101,7 +100,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 ## <a id="variables"></a>3. Variables
 
-* A variable is of type `Variable` (alias `Var`) and holds a value in its `value` property. Values must be `Codable` and `Equatable`. Creating a variable without initial value sets the value `nil`. You may use the `<-` operator to set a value:
+* A variable is of type `Variable<Value>` (alias `Var<Value>`) and holds a `value` of type `Value`. Values must be `Codable` and `Equatable`. Creating a variable without initial value sets the value `nil`. You may use the `<-` operator to set a value:
 
 	~~~swift
 	let number = Var(13)
@@ -169,7 +168,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	
 	Swift will infer the update type from `latestUpdate`, so you don't need to write `typealias UpdateType = Event`.
 
-* Combined observations sometimes request the latest update from their constituting observables. Therefor, observables offer the `latestUpdate` property, which is also a way for other clients to actively get the current update state in addition to observing it.
+* Combined observations sometimes request the latest update from the observed objects. Therefor, observables offer the `latestUpdate` property, which is also a way for clients to actively get the current update state in addition to observing it.
 
 * The `latestUpdate` property should typically return the last update that was sent or a value that indicates that nothing changed. But it can be optional and may (always) return `nil`:
 
@@ -235,15 +234,12 @@ Now let's look at some of the goodies of SwiftObserver ...
 	let newestTextLength = text.new().map { $0?.count ?? 0 }
 	~~~
 	
-* Be aware that observing a mapping does not keep it alive. You must hold a strong reference to a mapping that you want to use.
+* A mapping holds a `weak` reference to its mapped observable. You can check whether a mapping still has its observable via `mapping.hasObservable`.
 	
-* A mapping is not "composed" of the observable it maps. It is just an access wrapper to the mapped observable. That means:
-	
-    * A mapping holds a `weak` reference to its observable. You can check whether a mapping still has its observable via `mapping.hasObservable`.
-	
-    * A mapping forwards all calls to its observable and only maps observations and `latestUpdate`.
-	
-    * An observer does not have to stop observing a mapping but could instead stop observing the mapped observable. 
+* A mapping is to be used like any other `Observable`:
+    * An observer of the mapping would have to stop observing the mapping itself, not the mapped observable.
+    * Observing a mapping does not keep it alive. You must hold a strong reference to a mapping that you want to use.
+    * You can call `send(update)` on a mapping as well as any other function or property declared by `Observable`.
 
 ### Unwrap
 
@@ -267,13 +263,13 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~	
 
-* The default in `unwrap(default)` is only required for `latestUpdate` in accordance with the `ObservableProtocol`. It will only come into play when the unwrapped observable didn't trigger the update but just returned its latest update. Of course, this can only happen where multiple observables are being observed (combined observation).
+* The default in `unwrap(default)` is only required for `latestUpdate` in accordance with the `Observable` protocol. It will only come into play when the unwrapped observable didn't trigger the update but just returned its latest update. Of course, this can only happen in combined observations (see next section).
 
 	The above example is just a single observation and only `newestNumber` can trigger the update. When the `value` of `newestNumber` is set to `nil`, the `unwrap` mapping sends nothing to its obervers, not even the default `0`. So when `newInteger` is zero, the observer knows that it's a real value and not just a replacement for `nil`.
 
 ## <a id="combine"></a>6. One Combine To Rule Them All
 
-* In addition to creating a new variable by combining others, you can also observe a combination of any observable objects and without creating a new object:
+* You can observe upt to three observable objects:
 
 	~~~swift
 	let newText = text.new()
@@ -288,7 +284,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~
 	
-    This does not create any combined observable, and the observer won't need to remove itself from anything other than the 3 observed objects. Of course, memory management is no concern if the observer calls `stopAllObserving()` at some point.
+    This does not create any new observable object, and the observer won't need to remove itself from anything other than the three observed objects. Of course, memory management is no concern if the observer calls `stopAllObserving()` at some point.
 
 * You won't need to distinguish different combining functions.
 
@@ -362,7 +358,7 @@ Now let's look at some of the goodies of SwiftObserver ...
     
      After at least one message has been sent, `latestUpdate` will return the last message, which you can also get via `messenger.latestMessage`.
     
-* Since `Messenger<Message>` conforms to the `ObservableProtocol`, you can include messengers in combined observations:
+* Since `Messenger<Message>` conforms to the `Observable` protocol, you can include messengers in combined observations:
 
     ~~~swift
     observer.observe(text, number, messenger)
@@ -389,6 +385,7 @@ What you might like:
 - Recieve old *and* new value from variables
 - No distinction between "hot-" and "cold signals" necessary
 - All the power of combining without a single dedicated combine function
+- Combined observations send one update per observable. No tuple destructuring necessary.
 - Optional variable types plus ability to map onto non-optional types
 - Variables are `Codable`
 - Call observation and mappings directly on observables (no mediating property)

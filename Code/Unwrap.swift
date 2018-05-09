@@ -1,4 +1,4 @@
-public extension ObservableProtocol
+public extension Observable
 {
     public func unwrap<Unwrapped>(_ defaultUpdate: Unwrapped) -> Mapping<Self, Unwrapped>
         where Self.UpdateType == Optional<Unwrapped>
@@ -7,21 +7,24 @@ public extension ObservableProtocol
     }
 }
 
-class Unwrap<SourceObservable: ObservableProtocol, Unwrapped>: Mapping<SourceObservable, Unwrapped> where SourceObservable.UpdateType == Optional<Unwrapped>
+class Unwrap<SourceObservable: Observable, Unwrapped>: Mapping<SourceObservable, Unwrapped> where SourceObservable.UpdateType == Optional<Unwrapped>
 {
     init(observable: SourceObservable, defaultUpdate: Unwrapped)
     {
         super.init(observable: observable) { $0 ?? defaultUpdate }
     }
     
-    override func add(_ observer: AnyObject,
-                      _ receive: @escaping UpdateReceiver)
+    override func startObserving(_ observable: SourceObservable)
     {
-        observable?.add(observer)
+        observable.add(self)
         {
-            if let unwrapped = $0
+            [weak self] update in
+            
+            guard let me = self else { return }
+            
+            if let update = update
             {
-                receive(unwrapped)
+                me.send(update)
             }
         }
     }

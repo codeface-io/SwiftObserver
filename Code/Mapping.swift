@@ -1,4 +1,4 @@
-public extension ObservableProtocol
+public extension Observable
 {
     public func new<TargetUpdate>() -> Mapping<Self, TargetUpdate> where UpdateType == Update<TargetUpdate>
     {
@@ -11,8 +11,8 @@ public extension ObservableProtocol
     }
 }
 
-public class Mapping<SourceObservable: ObservableProtocol,
-    MappedUpdate>: ObservableProtocol
+public class Mapping<SourceObservable: Observable,
+    MappedUpdate>: Observable
 {
     init(observable: SourceObservable, mapping: @escaping Mapping)
     {
@@ -20,34 +20,28 @@ public class Mapping<SourceObservable: ObservableProtocol,
         self.map = mapping
         
         latestMappedUpdate = map(observable.latestUpdate)
+        
+        startObserving(observable)
     }
     
-    public func add(_ observer: AnyObject,
-                    _ receive: @escaping UpdateReceiver)
+    func startObserving(_ observable: SourceObservable)
     {
-        observable?.add(observer)
+        observable.add(self)
         {
-            [weak self] in
+            [weak self] update in
             
             guard let me = self else { return }
             
-            receive(me.map($0))
+            me.send(me.map(update))
         }
     }
     
-    public func remove(_ observer: AnyObject)
+    deinit
     {
-        observable?.remove(observer)
-    }
-    
-    public func removeAllObservers()
-    {
-        observable?.removeAllObservers()
-    }
-    
-    public func removeNilObservers()
-    {
-        observable?.removeNilObservers()
+        if let observable = observable
+        {
+            ObservationService.remove(self, from: observable)
+        }
     }
     
     public var latestUpdate: MappedUpdate

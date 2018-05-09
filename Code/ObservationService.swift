@@ -31,7 +31,7 @@ class ObservationService
     
     // MARK: Remove Observers
     
-    static func remove(_ observer: AnyObject, of observed: AnyObject)
+    static func remove(_ observer: AnyObject, from observed: AnyObject)
     {
         removeAbandonedObservations()
         

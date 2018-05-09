@@ -1,6 +1,6 @@
 public extension Observer
 {
-    func observe<O: ObservableProtocol>(_ observable: O,
+    func observe<O: Observable>(_ observable: O,
                                         _ receive:
             @escaping (O.UpdateType) -> Void)
     {
@@ -8,8 +8,8 @@ public extension Observer
     }
     
     func observe<
-        O1: ObservableProtocol,
-        O2: ObservableProtocol>(_ observable1: O1,
+        O1: Observable,
+        O2: Observable>(_ observable1: O1,
                                 _ observable2: O2,
                                 _ receive:
             @escaping (O1.UpdateType, O2.UpdateType) -> Void)
@@ -34,9 +34,9 @@ public extension Observer
     }
     
     func observe<
-        O1: ObservableProtocol,
-        O2: ObservableProtocol,
-        O3: ObservableProtocol>(_ observable1: O1,
+        O1: Observable,
+        O2: Observable,
+        O3: Observable>(_ observable1: O1,
                                 _ observable2: O2,
                                 _ observable3: O3,
                                 _ receive:
@@ -70,7 +70,7 @@ public extension Observer
         }
     }
     
-    func stopObserving<O: ObservableProtocol>(_ observable: O)
+    func stopObserving<O: Observable>(_ observable: O)
     {
         observable.remove(self)
     }

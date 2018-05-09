@@ -21,7 +21,7 @@ public extension Observable
     
     func remove(_ observer: AnyObject)
     {
-        ObservationService.remove(observer, of: self)
+        ObservationService.remove(observer, from: self)
     }
     
     func removeAllObservers()
@@ -35,4 +35,17 @@ public extension Observable
     }
 }
 
-public protocol Observable: ObservableProtocol {}
+public protocol Observable: class
+{
+    func add(_ observer: AnyObject,
+             _ receive: @escaping UpdateReceiver)
+    
+    func remove(_ observer: AnyObject)
+    func removeAllObservers()
+    func removeNilObservers()
+    
+    var latestUpdate: UpdateType { get }
+    
+    typealias UpdateReceiver = (_ update: UpdateType) -> Void
+    associatedtype UpdateType: Any
+}
