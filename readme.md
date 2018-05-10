@@ -269,18 +269,18 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 ## <a id="combine"></a>6. One Combine To Rule Them All
 
-* You can observe upt to three observable objects:
+* You can observe up to three observable objects:
 
 	~~~swift
 	let newText = text.new()
-	let numberAndText = number + text
+	let number = Var(42)
 	let model = Model()
 	
-	observer.observe(newText, numberAndText, model)
+	observer.observe(newText, number, model)
 	{
-	   textValue, numberAndTextUpdate, event in
+	   textValue, numberUpdate, event in
 		
-	   // process new combination of String, pair update and event
+	   // process new combination of String, number update and event
 	}
 	~~~
 	
