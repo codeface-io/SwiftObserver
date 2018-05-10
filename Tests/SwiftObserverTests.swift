@@ -1,8 +1,122 @@
 import XCTest
 import SwiftObserver
+import UIKit
+
+extension UILabel: TextPresenter
+{
+    var presentedText: String?
+    {
+        get { return text }
+        set { text = newValue }
+    }
+}
+
+extension UITextField: TextPresenter
+{
+    var presentedText: String?
+    {
+        get { return text }
+        set { text = newValue }
+    }
+}
+
+extension UITextView: TextPresenter
+{
+    var presentedText: String?
+    {
+        get { return text }
+        set { if newValue != nil { text = newValue } }
+    }
+}
+
+extension TextPresenter
+{
+    // MARK: Strings
+    
+    func present<O: Observable>(_ text: O) where O.UpdateType == Update<String>
+    {
+        self.presentedText = text.latestUpdate.new
+        observe(text) { [weak self] in self?.presentedText = $0.new }
+    }
+    
+    func present<O: Observable>(_ text: O) where O.UpdateType == Update<String?>
+    {
+        self.presentedText = text.latestUpdate.new
+        observe(text) { [weak self] in self?.presentedText = $0.new }
+    }
+    
+    func present<O: Observable>(_ text: O) where O.UpdateType == String
+    {
+        self.presentedText = text.latestUpdate
+        observe(text) { [weak self] in self?.presentedText = $0 }
+    }
+    
+    func present<O: Observable>(_ text: O) where O.UpdateType == String?
+    {
+        self.presentedText = text.latestUpdate
+        observe(text) { [weak self] in self?.presentedText = $0 }
+    }
+    
+    func present(_ text: Variable<String>)
+    {
+        observe(text) { [weak self] in self?.presentedText = $0.new }
+    }
+    
+    // MARK: Integers
+    
+    func present<O: Observable>(_ text: O) where O.UpdateType == Update<Int>
+    {
+        setPresentedText(text.latestUpdate.new)
+        observe(text) { [weak self] in self?.setPresentedText($0.new) }
+    }
+    
+    func present<O: Observable>(_ text: O) where O.UpdateType == Update<Int?>
+    {
+        setPresentedText(text.latestUpdate.new)
+        observe(text) { [weak self] in self?.setPresentedText($0.new) }
+    }
+    
+    func present<O: Observable>(_ text: O) where O.UpdateType == Int
+    {
+        setPresentedText(text.latestUpdate)
+        observe(text) { [weak self] in self?.setPresentedText($0) }
+    }
+    
+    func present<O: Observable>(_ text: O) where O.UpdateType == Int?
+    {
+        setPresentedText(text.latestUpdate)
+        observe(text) { [weak self] in self?.setPresentedText($0) }
+    }
+    
+    func present(_ text: Variable<Int>)
+    {
+        observe(text) { [weak self] in self?.setPresentedText($0.new) }
+    }
+    
+    func setPresentedText(_ number: Int?)
+    {
+        presentedText =
+        {
+            guard let number = number else { return nil }
+            
+            return "\(number)"
+        }()
+    }
+}
+
+protocol TextPresenter: Observer
+{
+    var presentedText: String? { get set }
+}
 
 class SwiftObserverTests: XCTestCase
 {
+    func testUIExtensionTextPresenter()
+    {
+        let label = UILabel()
+        label.present(model.number)
+    }
+    
     func testCustomMessenger()
     {
         enum Event { case none, userError, techError }
