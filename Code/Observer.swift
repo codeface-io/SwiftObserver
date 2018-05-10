@@ -1,18 +1,15 @@
 public extension Observer
 {
     func observe<O: Observable>(_ observable: O,
-                                        _ receive:
-            @escaping (O.UpdateType) -> Void)
+                                _ receive: @escaping (O.UpdateType) -> Void)
     {
         observable.add(self, receive)
     }
     
-    func observe<
-        O1: Observable,
-        O2: Observable>(_ observable1: O1,
-                                _ observable2: O2,
-                                _ receive:
-            @escaping (O1.UpdateType, O2.UpdateType) -> Void)
+    func observe<O1: Observable, O2: Observable>(
+        _ observable1: O1,
+        _ observable2: O2,
+        _ receive: @escaping (O1.UpdateType, O2.UpdateType) -> Void)
     {
         observable1.add(self)
         {
@@ -33,14 +30,11 @@ public extension Observer
         }
     }
     
-    func observe<
-        O1: Observable,
-        O2: Observable,
-        O3: Observable>(_ observable1: O1,
-                                _ observable2: O2,
-                                _ observable3: O3,
-                                _ receive:
-            @escaping (O1.UpdateType, O2.UpdateType, O3.UpdateType) -> Void)
+    func observe<O1: Observable, O2: Observable, O3: Observable>(
+        _ observable1: O1,
+        _ observable2: O2,
+        _ observable3: O3,
+        _ receive: @escaping (O1.UpdateType, O2.UpdateType, O3.UpdateType) -> Void)
     {
         observable1.add(self)
         {

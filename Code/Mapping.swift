@@ -1,18 +1,19 @@
 public extension Observable
 {
-    public func new<TargetUpdate>() -> Mapping<Self, TargetUpdate> where UpdateType == Update<TargetUpdate>
+    public func new<TargetUpdate>() -> Mapping<Self, TargetUpdate>
+        where UpdateType == Update<TargetUpdate>
     {
         return Mapping(observable: self) { $0.new }
     }
     
-    public func map<TargetUpdate>(_ mapping: @escaping (UpdateType) -> (TargetUpdate)) -> Mapping<Self, TargetUpdate>
+    public func map<TargetUpdate>(_ mapping: @escaping (UpdateType) -> (TargetUpdate))
+        -> Mapping<Self, TargetUpdate>
     {
         return Mapping(observable: self, mapping: mapping)
     }
 }
 
-public class Mapping<SourceObservable: Observable,
-    MappedUpdate>: Observable
+public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
 {
     init(observable: SourceObservable, mapping: @escaping Mapping)
     {
