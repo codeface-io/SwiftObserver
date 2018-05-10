@@ -298,7 +298,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	
 ## <a id="messenger"></a>7. Messenger? Notifier? Dispatcher? It's All Observation
 
-* When observer and observable need to be more decoupled, it is common to use a mediating observable through which any object can anonymously send updates. An example of this mediator is Foundation's `NotificationCenter`.
+* When observer and observable need to be more decoupled, it is common to use a mediating observable through which any object can anonymously send updates. An example of this mediator is `Foundation`'s `NotificationCenter`.
 
     This extension of the observer pattern is sometimes called *Messenger*, *Notifier*, *Dispatcher*, *Event Emitter* or *Decoupler*. Its main differences to direct observation are:
     
@@ -388,6 +388,7 @@ What you might like:
 - Combined observations send one update per observable. No tuple destructuring necessary.
 - Optional variable types plus ability to map onto non-optional types
 - Variables are `Codable`
+- Pure Swift code for clean modelling. Does not even depend on `Foundation`.
 - Call observation and mappings directly on observables (no mediating property)
 - Seemless integration of the *Notifier Pattern*
 - No data duplication for combined observations
