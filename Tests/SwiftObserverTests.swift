@@ -52,6 +52,15 @@ extension UITextView: TextPresenter
     }
 }
 
+extension UIButton: TextPresenter
+{
+    var presentedText: String?
+    {
+        get { return currentTitle }
+        set { setTitle(newValue, for: .normal) }
+    }
+}
+
 extension TextPresenter
 {
     // MARK: Strings
