@@ -1,18 +1,26 @@
 import SwiftyToolz
 
-class ObservationService
+public class ObservationService
 {
     // MARK: Add Observers
     
-    static func add(_ observer: AnyObject,
-                    of observed: AnyObject,
-                    with receive: @escaping (Any?) -> Void)
+    public static func add<O: Observable>(_ observer: AnyObject,
+                                          of observable: O,
+                                          _ receive: @escaping (O.UpdateType) -> Void)
     {
         removeAbandonedObservations()
-
-        observation(of: observed).observerList.add(observer, receive)
+        
+        observation(of: observable).observerList.add(observer)
+        {
+            guard let update = $0 as? O.UpdateType else
+            {
+                fatalError("Impossible error: Update of observable is not of the observable's update type.")
+            }
+            
+            receive(update)
+        }
     }
-    
+
     private static func observation(of observed: AnyObject) -> Observation
     {
         return observations[hash(observed)] ?? createAndAddObservation(of: observed)
@@ -31,7 +39,7 @@ class ObservationService
     
     // MARK: Remove Observers
     
-    static func remove(_ observer: AnyObject, from observed: AnyObject)
+    public static func remove(_ observer: AnyObject, from observed: AnyObject)
     {
         removeAbandonedObservations()
         
@@ -45,14 +53,14 @@ class ObservationService
         }
     }
     
-    static func removeAllObservers(of observed: AnyObject)
+    public static func removeAllObservers(of observed: AnyObject)
     {
         removeAbandonedObservations()
         
         observations[hash(observed)] = nil
     }
     
-    static func removeObserverFromAllObservables(_ observer: AnyObject)
+    public static func removeObserverFromAllObservables(_ observer: AnyObject)
     {
         for observation in observations.values
         {
@@ -62,14 +70,14 @@ class ObservationService
         removeAbandonedObservations()
     }
     
-    static func removeNilObservers(of observed: AnyObject)
+    public static func removeNilObservers(of observed: AnyObject)
     {
         observations[hash(observed)]?.observerList.removeNilObservers()
     }
     
     // MARK: Send Events to Observers
     
-    static func send(_ event: Any?, toObserversOf observed: AnyObject)
+    public static func send(_ event: Any?, toObserversOf observed: AnyObject)
     {
         removeAbandonedObservations()
         

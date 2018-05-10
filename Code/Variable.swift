@@ -24,15 +24,7 @@ public class Variable<Value: Equatable & Codable>: Observable, Codable
     public func add(_ observer: AnyObject,
                     _ receive: @escaping (UpdateType) -> Void)
     {
-        ObservationService.add(observer, of: self)
-        {
-            guard let update = $0 as? UpdateType else
-            {
-                fatalError("Impossible error: could not cast update type received from observation center")
-            }
-            
-            receive(update)
-        }
+        ObservationService.add(observer, of: self, receive)
         
         receive(latestUpdate)
     }

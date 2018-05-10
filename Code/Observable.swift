@@ -3,15 +3,7 @@ public extension Observable
     func add(_ observer: AnyObject,
              _ receive: @escaping UpdateReceiver)
     {
-        ObservationService.add(observer, of: self)
-        {
-            guard let update = $0 as? UpdateType else
-            {
-                fatalError("Impossible error: could not cast update type received from observation center")
-            }
-            
-            receive(update)
-        }
+        ObservationService.add(observer, of: self, receive)
     }
     
     func send(_ update: UpdateType)
