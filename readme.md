@@ -386,9 +386,10 @@ What you might like:
 - No distinction between "hot-" and "cold signals" necessary
 - All the power of combining without a single dedicated combine function
 - Combined observations send one update per observable. No tuple destructuring necessary.
-- Optional variable types plus ability to map onto non-optional types
-- Variables are `Codable`
-- Pure Swift code for clean modelling. Does not even depend on `Foundation`.
+- Optional variable types plus ability to map onto non-optional types. And no other optionals on generics, which avoids optional optionals and gives you full controll over value and update types.
+- no protocols that you have to implement
+- Variables are `Codable`, so model types are easy to encode and persist.
+- Pure Swift code for clean modelling. Not even dependence on `Foundation`.
 - Call observation and mappings directly on observables (no mediating property)
 - Seemless integration of the *Notifier Pattern*
 - No data duplication for combined observations
@@ -408,4 +409,3 @@ What you might not like:
 * Because classes have to implement nothing to be observable, you can keep model and logic code independent of any observer frameworks and techniques. If the model layer had to be stuffed with heavyweight constructs just to be observed, it would become a technical issue instead of an easy to change,  meaningful, direct representation of domain-, business- and view logic.
 * Unlike established Swift implementations of the Redux approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you freely model your domain-, business- and view logic with all your familiar design patterns and types. There are no restrictions on how you organize and store your app state.
 * Unlike established Swift implementations of the Reactive approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you in control of the ancestral tree of your classes. There is not a single class that you have to inherit. Therefore, all your classes can be directly observed, even views and view controllers.
-* There are no protocols that you have to implement. Your code remains focused and decoupled. Because there are no delegate protocols, there is no limit to how many things an observer can observe or to how many observers a thing can have.
