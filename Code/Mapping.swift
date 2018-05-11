@@ -27,9 +27,9 @@ public extension Observable
 
 public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
 {
-    init(_ observable: SourceObservable,
-         prefilter: @escaping SourceObservable.UpdateFilter = { _ in true },
-         mapping: @escaping Mapping)
+    fileprivate init(_ observable: SourceObservable,
+                     prefilter: @escaping SourceObservable.UpdateFilter = { _ in true },
+                     mapping: @escaping Mapping)
     {
         self.observable = observable
         self.prefilter = prefilter

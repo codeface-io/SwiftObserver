@@ -220,19 +220,17 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 	~~~swift
 	let text = Var<String>()
-	        
 	let newestText = text.map { $0.new }
-	        
 	let newestTextLength = newestText.map { $0?.count ?? 0 }
 	~~~
 
 * Often we want to observe only the new value of a variable without the old one. Above, we mapped a value update onto its new value. This mapping is already available for all observables whos update type is `Update<_>` (not just for variables). The above code can be written as:
 
-	~~~swift
-	let text = Var<String>()
-	        
-	let newestTextLength = text.new().map { $0?.count ?? 0 }
-	~~~
+    ~~~swift
+    let text = Var<String>()
+    let newestText = text.new()
+    let newestTextLength = newestText.map { $0?.count ?? 0 }
+    ~~~
 	
 * A mapping holds a `weak` reference to its mapped observable. You can check whether a mapping still has its observable via `mapping.hasObservable`.
 	
@@ -253,9 +251,10 @@ Now let's look at some of the goodies of SwiftObserver ...
 	However, we often don't want to deal with optionals down the line. You can easily get rid of the optional with the special mapping `unwrap(default)`:
 	
 	~~~swift
-	let newestNumber = number.new().unwrap(0)
+	let newestNumber = number.new()
+	let newestUnwrappedNumber = newestNumber.unwrap(0)
 
-	observer.observe(newestNumber)
+	observer.observe(newestUnwrappedNumber)
 	{
 	   newInteger in
 		
