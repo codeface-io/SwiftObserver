@@ -1,9 +1,13 @@
 public extension Observable
 {
     func add(_ observer: AnyObject,
-             _ receive: @escaping UpdateReceiver)
+             filter: @escaping UpdateFilter = { _ in true },
+             receive: @escaping UpdateReceiver)
     {
-        ObservationService.add(observer, of: self, receive)
+        ObservationService.add(observer,
+                               of: self,
+                               filter: filter,
+                               receive: receive)
     }
     
     func send(_ update: UpdateType)
@@ -30,7 +34,8 @@ public extension Observable
 public protocol Observable: class
 {
     func add(_ observer: AnyObject,
-             _ receive: @escaping UpdateReceiver)
+             filter: @escaping UpdateFilter,
+             receive: @escaping UpdateReceiver)
     
     func remove(_ observer: AnyObject)
     func removeAllObservers()
@@ -38,6 +43,7 @@ public protocol Observable: class
     
     var latestUpdate: UpdateType { get }
     
-    typealias UpdateReceiver = (_ update: UpdateType) -> Void
+    typealias UpdateFilter = (UpdateType) -> Bool
+    typealias UpdateReceiver = (UpdateType) -> Void
     associatedtype UpdateType: Any
 }

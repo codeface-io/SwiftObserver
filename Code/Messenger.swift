@@ -21,13 +21,7 @@ public class Messenger<Message: Equatable>: Observable
                     for message: Message,
                     receive: @escaping () -> Void)
     {
-        add(observer)
-        {
-            if $0 == message
-            {
-                receive()
-            }
-        }
+        add(observer, filter: { $0 == message }) { _ in receive() }
     }
     
     public func send(_ update: Message)

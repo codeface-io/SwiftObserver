@@ -22,9 +22,13 @@ public class Variable<Value: Equatable & Codable>: Observable, Codable
     // MARK: Send Update When Observation Starts
     
     public func add(_ observer: AnyObject,
-                    _ receive: @escaping (UpdateType) -> Void)
+                    filter keep: @escaping UpdateFilter,
+                    receive: @escaping UpdateReceiver)
     {
-        ObservationService.add(observer, of: self, receive)
+        ObservationService.add(observer,
+                               of: self,
+                               filter: keep,
+                               receive: receive)
         
         receive(latestUpdate)
     }

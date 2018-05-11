@@ -6,7 +6,8 @@ public class ObservationService
     
     public static func add<O: Observable>(_ observer: AnyObject,
                                           of observable: O,
-                                          _ receive: @escaping (O.UpdateType) -> Void)
+                                          filter keep: @escaping (O.UpdateType) -> Bool = { _ in true },
+                                          receive: @escaping (O.UpdateType) -> Void)
     {
         removeAbandonedObservations()
         
@@ -17,7 +18,7 @@ public class ObservationService
                 fatalError("Impossible error: Update of observable is not of the observable's update type.")
             }
             
-            receive(update)
+            if keep(update) { receive(update) }
         }
     }
 

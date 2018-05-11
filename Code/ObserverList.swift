@@ -3,10 +3,9 @@
  class ObserverList<Update>
  {
     func add(_ observer: AnyObject,
-             _ receive: @escaping (Update) -> Void)
+             receive: @escaping (Update) -> Void)
     {
-        let observerInfo = ObserverInfo(observer: observer,
-                                        receive: receive)
+        let observerInfo = ObserverInfo(observer: observer, receive: receive)
         
         observers[hash(observer)] = observerInfo
     }

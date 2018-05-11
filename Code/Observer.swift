@@ -1,9 +1,10 @@
 public extension Observer
 {
     func observe<O: Observable>(_ observable: O,
-                                _ receive: @escaping (O.UpdateType) -> Void)
+                                filter keep: @escaping (O.UpdateType) -> Bool = { _ in true },
+                                receive: @escaping (O.UpdateType) -> Void)
     {
-        observable.add(self, receive)
+        observable.add(self, filter: keep, receive: receive)
     }
     
     func observe<O1: Observable, O2: Observable>(
