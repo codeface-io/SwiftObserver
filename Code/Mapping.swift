@@ -3,25 +3,31 @@ public extension Observable
     public func new<MappedUpdate>() -> Mapping<Self, MappedUpdate>
         where UpdateType == Update<MappedUpdate>
     {
-        return Mapping(observable: self) { $0.new }
+        return map { $0.new }
     }
     
     public func filter(_ keep: @escaping UpdateFilter) -> Mapping<Self, UpdateType>
     {
-        return Mapping(observable: self, prefilter: keep) { $0 }
+        return map(prefilter: keep) { $0 }
+    }
+    
+    public func unwrap<Unwrapped>(_ defaultUpdate: Unwrapped) -> Mapping<Self, Unwrapped>
+        where Self.UpdateType == Optional<Unwrapped>
+    {
+        return map(prefilter: { $0 != nil }) { $0 ?? defaultUpdate }
     }
     
     public func map<MappedUpdate>(prefilter: @escaping UpdateFilter = { _ in true },
                                   mapping: @escaping (UpdateType) -> MappedUpdate)
         -> Mapping<Self, MappedUpdate>
     {
-        return Mapping(observable: self, prefilter: prefilter, mapping: mapping)
+        return Mapping(self, prefilter: prefilter, mapping: mapping)
     }
 }
 
 public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
 {
-    init(observable: SourceObservable,
+    init(_ observable: SourceObservable,
          prefilter: @escaping SourceObservable.UpdateFilter = { _ in true },
          mapping: @escaping Mapping)
     {
@@ -34,7 +40,7 @@ public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
         startObserving(observable)
     }
     
-    func startObserving(_ observable: SourceObservable)
+    private func startObserving(_ observable: SourceObservable)
     {
         observable.add(self, filter: prefilter)
         {
@@ -44,7 +50,7 @@ public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
         }
     }
     
-    func receivedPrefiltered(_ update: SourceObservable.UpdateType)
+    private func receivedPrefiltered(_ update: SourceObservable.UpdateType)
     {
         latestMappedUpdate = map(update)
         send(latestMappedUpdate)
@@ -69,12 +75,12 @@ public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
         return latestMappedUpdate
     }
     
-    var latestMappedUpdate: MappedUpdate
+    private var latestMappedUpdate: MappedUpdate
     
-    let prefilter: SourceObservable.UpdateFilter
+    private let prefilter: SourceObservable.UpdateFilter
 
     public var hasObservable: Bool { return observable != nil }
-    weak var observable: SourceObservable?
+    private weak var observable: SourceObservable?
     
     private let map: Mapping
     typealias Mapping = (SourceObservable.UpdateType) -> MappedUpdate
