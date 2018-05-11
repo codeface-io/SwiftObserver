@@ -35,17 +35,17 @@
         }
     }
     
-    private var observers = [HashValue: ObserverInfo<Update>]()
- }
- 
- fileprivate class ObserverInfo<Update>
- {
-    init(observer: AnyObject, receive: @escaping (Update) -> Void)
-    {
-        self.observer = observer
-        self.receive = receive
-    }
+    private var observers = [HashValue: ObserverInfo]()
     
-    weak var observer: AnyObject?
-    let receive: (Update) -> Void
- }
+    private class ObserverInfo
+    {
+        init(observer: AnyObject, receive: @escaping (Update) -> Void)
+        {
+            self.observer = observer
+            self.receive = receive
+        }
+        
+        weak var observer: AnyObject?
+        let receive: (Update) -> Void
+    }
+}

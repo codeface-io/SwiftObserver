@@ -22,11 +22,11 @@ public extension Observable
 public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
 {
     init(observable: SourceObservable,
-         prefilter keep: @escaping SourceObservable.UpdateFilter = { _ in true },
+         prefilter: @escaping SourceObservable.UpdateFilter = { _ in true },
          mapping: @escaping Mapping)
     {
         self.observable = observable
-        self.keep = keep
+        self.prefilter = prefilter
         self.map = mapping
         
         latestMappedUpdate = map(observable.latestUpdate)
@@ -36,14 +36,18 @@ public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
     
     func startObserving(_ observable: SourceObservable)
     {
-        observable.add(self, filter: keep)
+        observable.add(self, filter: prefilter)
         {
             [weak self] update in
             
-            guard let me = self else { return }
-            
-            me.send(me.map(update))
+            self?.receivedPrefiltered(update)
         }
+    }
+    
+    func receivedPrefiltered(_ update: SourceObservable.UpdateType)
+    {
+        latestMappedUpdate = map(update)
+        send(latestMappedUpdate)
     }
     
     deinit
@@ -57,7 +61,7 @@ public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
     public var latestUpdate: MappedUpdate
     {
         if let latestOriginalUpdate = observable?.latestUpdate,
-            keep(latestOriginalUpdate)
+            prefilter(latestOriginalUpdate)
         {
             latestMappedUpdate = map(latestOriginalUpdate)
         }
@@ -67,7 +71,7 @@ public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
     
     var latestMappedUpdate: MappedUpdate
     
-    let keep: SourceObservable.UpdateFilter
+    let prefilter: SourceObservable.UpdateFilter
 
     public var hasObservable: Bool { return observable != nil }
     weak var observable: SourceObservable?

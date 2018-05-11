@@ -14,18 +14,8 @@ class Unwrap<SourceObservable: Observable, Unwrapped>: Mapping<SourceObservable,
         super.init(observable: observable) { $0 ?? defaultUpdate }
     }
     
-    override func startObserving(_ observable: SourceObservable)
+    override func receivedPrefiltered(_ update: SourceObservable.UpdateType)
     {
-        observable.add(self)
-        {
-            [weak self] update in
-            
-            guard let me = self else { return }
-            
-            if let update = update
-            {
-                me.send(update)
-            }
-        }
+        if update != nil { super.receivedPrefiltered(update) }
     }
 }

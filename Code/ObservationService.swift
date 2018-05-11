@@ -15,7 +15,7 @@ public class ObservationService
         {
             guard let update = $0 as? O.UpdateType else
             {
-                fatalError("Impossible error: Update of observable is not of the observable's update type.")
+                fatalError("Impossible error: Update from observable is not of the observable's update type.")
             }
             
             if keep(update) { receive(update) }
