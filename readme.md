@@ -11,7 +11,9 @@ SwiftObserver is a reactive programming framework for pure Swift. It is designed
 * :white_check_mark: simple  
 * :white_check_mark: safe
 
-There are some [unit tests of SwiftObserver](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests.swift), which also demonstrate its use.
+SwiftObserver is [covered by unit tests](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests.swift) which also demonstrate its use. 
+
+If you'd like some UI tools based on SwiftObserver, have a look at [UIObserver](https://github.com/flowtoolz/UIObserver).
 
 ## Contents
 
@@ -190,7 +192,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~
 	
-* Using the `latestUpdate` property together with an `UpdateType` that is an `Update<_>`, a custom observable can have a state and be used like a variable:
+* Using `latestUpdate` property together with an `UpdateType` that is an `Update<_>`, a custom `Observable` can have a state and be used like a variable:
 
 	~~~swift
 	class Model: Observable
@@ -212,7 +214,10 @@ Now let's look at some of the goodies of SwiftObserver ...
 	   }
 	}
 	~~~
-	
+
+* By adopting the `Observable` protocol, a class adopts default implementations for all functions and properties in `Observable`.
+
+    When you replace a default implementation, you can still incorporate it in your custom implementation. The default implementations use the `ObservationService`. You'll find them in [Observable.swift](https://github.com/flowtoolz/SwiftObserver/blob/master/Code/Observable.swift).
 
 ## <a id="mappings"></a>5. Create Observables as Mappings of Others
 
@@ -220,26 +225,15 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 	~~~swift
 	let text = Var<String>()
-	let newestText = text.map { $0.new }
-	let newestTextLength = newestText.map { $0?.count ?? 0 }
+	let latestTextLength = text.map { $0.new?.count ?? 0 }
 	~~~
-
-* Often we want to observe only the new value of a variable without the old one. Above, we mapped a value update onto its new value. This mapping is already available for all observables whos update type is `Update<_>` (not just for variables). The above code can be written as:
-
-    ~~~swift
-    let text = Var<String>()
-    let newestText = text.new()
-    let newestTextLength = newestText.map { $0?.count ?? 0 }
-    ~~~
-	
-* A mapping holds a `weak` reference to its mapped observable. You can check whether a mapping still has its observable via `mapping.hasObservable`.
 	
 * A mapping is to be used like any other `Observable`:
     * An observer of the mapping would have to stop observing the mapping itself, not the mapped observable.
     * Observing a mapping does not keep it alive. You must hold a strong reference to a mapping that you want to use.
     * You can call `send(update)` on a mapping as well as any other function or property declared by `Observable`.
 
-### Unwrap
+### Unwrap Optional Updates
 
 * The value of a `Var` is always optional. That's why you can create one without initial value and also set its value `nil`:
 
@@ -248,13 +242,12 @@ Now let's look at some of the goodies of SwiftObserver ...
 	number <- nil
 	~~~
 	
-	However, we often don't want to deal with optionals down the line. You can easily get rid of the optional with the special mapping `unwrap(default)`:
+* However, we often don't want to deal with optionals down the line. You can easily get rid of the optional with the special mapping `unwrap(default)`:
 	
 	~~~swift
-	let newestNumber = number.new()
-	let newestUnwrappedNumber = newestNumber.unwrap(0)
+	let latestUnwrappedNumber = number.new().unwrap(0)
 
-	observer.observe(newestUnwrappedNumber)
+	observer.observe(latestUnwrappedNumber)
 	{
 	   newInteger in
 		
@@ -262,9 +255,65 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~	
 
-* The default in `unwrap(default)` is only required for `latestUpdate` in accordance with the `Observable` protocol. It will only come into play when the unwrapped observable didn't trigger the update but just returned its latest update. Of course, this can only happen in combined observations (see next section).
+* The default update is only required for `latestUpdate` in accordance with the `Observable` protocol. It will only come into play when the unwrapped observable hasn't sent any non-optional value yet **and** didn't trigger the update but just returned its latest update. Of course, the latter can only happen in combined observations (see next section).
 
-	The above example is just a single observation and only `newestNumber` can trigger the update. When the `value` of `newestNumber` is set to `nil`, the `unwrap` mapping sends nothing to its obervers, not even the default `0`. So when `newInteger` is zero, the observer knows that it's a real value and not just a replacement for `nil`.
+	The above example is just a single observation and only `number` can trigger the update. When the `value` of `number` is set to `nil`, the `unwrap(0)` mapping sends nothing to its obervers, not even the default `0`. So when `newInteger` is 0, the observer knows that it's a real value and not just a replacement for `nil`.
+	
+### Map `Update` Onto `new` Value
+
+* Often we want to observe only the new value of a variable without the old one. The special mapping `new()` maps a value update onto its new value. It is available for all observables whos update type is `Update<_>` (not just for variables):
+
+    ~~~swift
+    let text = Var<String>()
+    let newestTextLength = text.new().map { $0?.count ?? 0 }
+    ~~~
+    
+### Filter Updates
+
+* The `filter(filter)` mapping filters updates:
+
+    ~~~swift
+    let available = Var(100)
+    let scarcityWarning = available.new().unwrap(0).filter { $0 < 10 }
+    ~~~
+    
+* You can actually apply a prefilter with every general mapping:
+    
+    ~~~swift
+    let available = Var(100)
+    let orderText = available.new().unwrap(0).map(prefilter: { $0 < 10 })
+    {
+        "Send me \(100 - $0) new ones."
+    }
+    ~~~
+    
+* Observers can also filter single observations without creating any filter mapping at all:
+    
+    ~~~swift
+    let available = Var(100)
+    let latestAvailable = available.new().unwrap(0)
+    
+    controller.observe(latestAvailable, filter: { $0 < 9 })
+    {
+        lowNumber in
+        
+        // oh my god, less than 10 left!
+    }
+    ~~~
+
+### Chain Mappings Together
+
+* A mapping holds a `weak` reference to its mapped observable. You can read and even reset the observable via `mapping.observable`.
+
+* However, when you chain mappings together, you only have to hold the last mapping because chaining actually combines them into one:
+
+    ~~~swift
+    let newUnwrappedText = text.new().unwrap("")
+    ~~~
+
+    The intermediate mapping created by `new()` will die immediately, but the resulting `newUnwrappedText` will still work.
+    
+* Because chained mappings get combined, the `observable` property on a mapping never refers to another mapping. It always refers to the original mapped `Observable`. In the above example, `newUnwrappedText.observable` refers to `text`.
 
 ## <a id="combine"></a>6. One Combine To Rule Them All
 
@@ -386,7 +435,8 @@ What you might like:
 - All the power of combining without a single dedicated combine function
 - Combined observations send one update per observable. No tuple destructuring necessary.
 - Optional variable types plus ability to map onto non-optional types. And no other optionals on generics, which avoids optional optionals and gives you full controll over value and update types.
-- no protocols that you have to implement
+- Chain mappings together without creating strong references to the mapped objects, without side effects ("myterious memory magic") and without depending on the existence of the other mappings.
+- No delegate protocols to implement
 - Variables are `Codable`, so model types are easy to encode and persist.
 - Pure Swift code for clean modelling. Not even dependence on `Foundation`.
 - Call observation and mappings directly on observables (no mediating property)
@@ -394,12 +444,11 @@ What you might like:
 - No data duplication for combined observations
 - Custom observables without having to inherit from any class
 - Maximum freedom for your architectural- and design choices
+- UI bindings are available in a separate framework [UIObserver](https://github.com/flowtoolz/UIObserver).
 
 What you might not like:
 
 - Not conform to Rx (the semi standard of reactive programming)
-- Not many operators included
-- No UI bindings included
 - Observers and observables must be objects and cannot be structs. (Of course, variables can hold any type of values and observables can send any type of updates.)
 - For now, your code must hold strong references to mappings that you want to observe. In other libraries, mappings are kept alive as a side effect of observing them.
 
