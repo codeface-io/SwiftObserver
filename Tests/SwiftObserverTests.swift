@@ -3,6 +3,50 @@ import SwiftObserver
 
 class SwiftObserverTests: XCTestCase
 {
+    func testSingleObservationFilter()
+    {
+        let number = Var(99)
+        let latestUnwrappedNumber = number.new().unwrap(0)
+        
+        var observedNumbers = [Int]()
+        
+        controller.observe(latestUnwrappedNumber, filter: { $0 > 9 })
+        {
+            observedNumbers.append($0)
+        }
+        
+        number <- 10
+        number <- nil
+        number <- 11
+        number <- 1
+        number <- 12
+        number <- 2
+        
+        XCTAssertEqual(observedNumbers, [10, 11, 12])
+    }
+    
+    func testMappingsIncludingFilter()
+    {
+        let number = Var(99)
+        let doubleDigits = number.new().unwrap(0).filter { $0 > 9 }
+        
+        var observedNumbers = [Int]()
+        
+        controller.observe(doubleDigits)
+        {
+            observedNumbers.append($0)
+        }
+        
+        number <- 10
+        number <- nil
+        number <- 11
+        number <- 1
+        number <- 12
+        number <- 2
+        
+        XCTAssertEqual(observedNumbers, [10, 11, 12])
+    }
+    
     func testCombineMappingsByChainingThem()
     {
         let number = Var<Int>()
