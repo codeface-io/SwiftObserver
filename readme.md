@@ -2,7 +2,11 @@
 
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?longCache=true&style=flat-square)](https://github.com/Carthage/Carthage)  [![Pod Version](https://img.shields.io/cocoapods/v/SwiftObserver.svg?longCache=true&style=flat-square)](http://cocoapods.org/pods/SwiftObserver)
 
-SwiftObserver is a reactive programming framework for pure Swift. It is designed to be ...
+SwiftObserver is a reactive programming framework for pure Swift. As sucht it covers all variations of the observer pattern and should meet all your needs for callbacks and propagating data up the control hierarchy (against the direction of control).
+
+Typical applications are the continuous propagation of data from domain model to use cases, from use cases to view model, and from view model to controllers and views.
+
+SwiftObserver is designed to be ...
 
 * :white_check_mark: usable  
 * :white_check_mark: flexible  
