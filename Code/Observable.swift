@@ -10,11 +10,6 @@ public extension Observable
                                receive: receive)
     }
     
-    func send(_ update: UpdateType)
-    {
-        ObservationService.send(update, toObserversOf: self)
-    }
-    
     func remove(_ observer: AnyObject)
     {
         ObservationService.remove(observer, from: self)
@@ -29,6 +24,11 @@ public extension Observable
     {
         ObservationService.removeNilObservers(of: self)
     }
+    
+    func send(_ update: UpdateType)
+    {
+        ObservationService.send(update, toObserversOf: self)
+    }
 }
 
 public protocol Observable: class
@@ -40,6 +40,8 @@ public protocol Observable: class
     func remove(_ observer: AnyObject)
     func removeAllObservers()
     func removeNilObservers()
+    
+    func send(_ update: UpdateType)
     
     var latestUpdate: UpdateType { get }
     
