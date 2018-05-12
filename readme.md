@@ -2,9 +2,9 @@
 
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?longCache=true&style=flat-square)](https://github.com/Carthage/Carthage)  [![Pod Version](https://img.shields.io/cocoapods/v/SwiftObserver.svg?longCache=true&style=flat-square)](http://cocoapods.org/pods/SwiftObserver)
 
-SwiftObserver is a reactive programming framework for pure Swift. As sucht it covers all variations of the observer pattern and should meet all your needs for callbacks and propagating data up the control hierarchy (against the direction of control).
+SwiftObserver is a reactive programming framework for pure Swift. As such it covers all variations of the observer pattern and should meet all your needs for callbacks and continuous propagation of data up the control hierarchy (against the direction of control).
 
-Typical applications are the continuous propagation of data from domain model to use cases, from use cases to view model, and from view model to controllers and views.
+Typical applications are the propagation of data from domain model to use cases, from use cases to view model, and from view model to controllers and views.
 
 SwiftObserver is designed to be ...
 
@@ -297,7 +297,7 @@ Now let's look at some of the goodies of SwiftObserver ...
     let available = Var(100)
     let latestAvailable = available.new().unwrap(0)
     
-    controller.observe(latestAvailable, filter: { $0 < 9 })
+    observer.observe(latestAvailable, filter: { $0 < 10 })
     {
         lowNumber in
         
@@ -307,17 +307,17 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 ### Chain Mappings Together
 
-* A mapping holds a `weak` reference to its mapped observable. You can read and even reset the observable via `mapping.observable`.
+* A mapping holds a `weak` reference to its mapped observable. You can check whether the observable still exists and even reset it via `mapping.observable`.
 
-* However, when you chain mappings together, you only have to hold the last mapping because chaining actually combines them into one:
+* You must have some strong reference to a mapped observable because the mapping has none. However, when you chain mappings together, you only have to hold the last mapping strongly because chaining actually combines them into one:
 
     ~~~swift
     let newUnwrappedText = text.new().unwrap("")
     ~~~
 
-    The intermediate mapping created by `new()` will die immediately, but the resulting `newUnwrappedText` will still work.
+    The intermediate mapping created by `new()` will die immediately, but the resulting `newUnwrappedText` will still live and be fully functional.
     
-* Because chained mappings get combined, the `observable` property on a mapping never refers to another mapping. It always refers to the original mapped `Observable`. In the above example, `newUnwrappedText.observable` refers to `text`.
+* Because chained mappings get combined into one mapping, the `observable` property on a mapping never refers to another mapping. It always refers to the original mapped `Observable`. In the above example, `newUnwrappedText.observable` would refer to `text`.
 
 ## <a id="combine"></a>6. One Combine To Rule Them All
 
@@ -439,13 +439,14 @@ What you might like:
 - All the power of combining without a single dedicated combine function
 - Combined observations send one update per observable. No tuple destructuring necessary.
 - Optional variable types plus ability to map onto non-optional types. And no other optionals on generics, which avoids optional optionals and gives you full controll over value and update types.
-- Chain mappings together without creating strong references to the mapped objects, without side effects ("myterious memory magic") and without depending on the existence of the other mappings.
+- Chain mappings together without creating strong references to the mapped objects, without side effects ("mysterious memory magic") and without depending on the existence of the other mappings.
 - No delegate protocols to implement
 - Variables are `Codable`, so model types are easy to encode and persist.
 - Pure Swift code for clean modelling. Not even dependence on `Foundation`.
 - Call observation and mappings directly on observables (no mediating property)
 - Seemless integration of the *Notifier Pattern*
 - No data duplication for combined observations
+- The syntax clearly reflects the intent and metaphor of the Observer Pattern. Observers are active subjects while observables are passive objects which are unconcerned about being observed: `observer.observe(observable)`
 - Custom observables without having to inherit from any class
 - Maximum freedom for your architectural- and design choices
 - UI bindings are available in a separate framework [UIObserver](https://github.com/flowtoolz/UIObserver).
