@@ -3,6 +3,46 @@ import SwiftObserver
 
 class SwiftObserverTests: XCTestCase
 {
+    func testCombineMappingsByChainingThem()
+    {
+        let number = Var<Int>()
+        
+        var strongNewNumber: Mapping<Variable<Int>, Int?>? = number.new()
+        weak var weakNewNumber = strongNewNumber
+        
+        guard let strongUnwrappedNewNumber = weakNewNumber?.unwrap(-1) else
+        {
+            XCTAssert(false)
+            return
+        }
+        
+        var observedNumbers = [Int]()
+        
+        controller.observe(strongUnwrappedNewNumber)
+        {
+            observedNumbers.append($0)
+        }
+        
+        XCTAssertNotNil(strongNewNumber)
+        XCTAssertNotNil(weakNewNumber)
+        
+        strongNewNumber = nil
+        XCTAssertNil(weakNewNumber)
+
+        XCTAssertEqual(strongUnwrappedNewNumber.latestUpdate, -1)
+        
+        number <- 9
+        XCTAssertEqual(strongUnwrappedNewNumber.latestUpdate, 9)
+        
+        number <- nil
+        XCTAssertEqual(strongUnwrappedNewNumber.latestUpdate, 9)
+        
+        number <- 10
+        XCTAssertEqual(strongUnwrappedNewNumber.latestUpdate, 10)
+        
+        XCTAssertEqual(observedNumbers, [9, 10])
+    }
+    
     func testCustomMessenger()
     {
         enum Event { case none, userError, techError }

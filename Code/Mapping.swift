@@ -21,47 +21,65 @@ public extension Observable
                                   map: @escaping (UpdateType) -> MappedUpdate)
         -> Mapping<Self, MappedUpdate>
     {
-        return Mapping(self, prefilter: prefilter, map: map)
+        return Mapping(self,
+                       latestMappedUpdate: map(latestUpdate),
+                       prefilter: prefilter,
+                       map: map)
+    }
+}
+
+extension Mapping
+{
+    public func new<Value>() -> Mapping<SourceObservable, Value>
+        where MappedUpdate == Update<Value>
+    {
+        return map { $0.new }
+    }
+    
+    public func filter(_ keep: @escaping UpdateFilter)
+        -> Mapping<SourceObservable, MappedUpdate>
+    {
+        return map(prefilter: keep) { $0 }
+    }
+    
+    public func unwrap<Unwrapped>(_ defaultUpdate: Unwrapped)
+        -> Mapping<SourceObservable, Unwrapped>
+        where MappedUpdate == Optional<Unwrapped>
+    {
+        return map(prefilter: { $0 != nil }, map: { $0 ?? defaultUpdate })
+    }
+    
+    public func map<MappedUpdate2>(
+        prefilter: @escaping (MappedUpdate) -> Bool = { _ in true },
+        map: @escaping (MappedUpdate) -> MappedUpdate2)
+        -> Mapping<SourceObservable, MappedUpdate2>
+    {
+        let localMap = self.map
+        let localPrefilter = self.prefilter
+        
+        return Mapping<SourceObservable, MappedUpdate2>(
+            observable,
+            latestMappedUpdate: map(latestUpdate),
+            prefilter: { localPrefilter($0) && prefilter(localMap($0)) },
+            map: { map(localMap($0)) })
     }
 }
 
 public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
 {
-    public func map<MappedUpdate2>(
-        prefilter2: @escaping (MappedUpdate) -> Bool = { _ in true },
-        map2: @escaping (MappedUpdate) -> MappedUpdate2)
-        -> Mapping<SourceObservable, MappedUpdate2>?
-    {
-        guard let observable1 = observable else { return nil }
-        let map1 = map
-        let prefilter1 = prefilter
-        
-        return Mapping<SourceObservable, MappedUpdate2>(
-            observable1,
-            prefilter: { prefilter1($0) && prefilter2(map1($0)) },
-            map: { map2(map1($0)) })
-    }
-    
-    fileprivate init(_ observable: SourceObservable,
+    fileprivate init(_ observable: SourceObservable?,
+                     latestMappedUpdate: MappedUpdate,
                      prefilter: @escaping SourceObservable.UpdateFilter = { _ in true },
                      map: @escaping Mapper)
     {
         self.observable = observable
         self.prefilter = prefilter
         self.map = map
+        self.latestMappedUpdate = latestMappedUpdate
         
-        latestMappedUpdate = map(observable.latestUpdate)
-        
-        startObserving(observable)
-    }
-    
-    private func startObserving(_ observable: SourceObservable)
-    {
-        observable.add(self, filter: prefilter)
+        if let observable = observable
         {
-            [weak self] update in
-            
-            self?.receivedPrefiltered(update)
+            startObserving(observable)
         }
     }
     
@@ -91,12 +109,34 @@ public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
     }
     
     private var latestMappedUpdate: MappedUpdate
-    
-    private let prefilter: SourceObservable.UpdateFilter
 
-    public var hasObservable: Bool { return observable != nil }
-    private weak var observable: SourceObservable?
+    public weak var observable: SourceObservable?
+    {
+        didSet
+        {
+            guard let newObservable = observable,
+                newObservable !== oldValue
+            else
+            {
+                return
+            }
+            
+            startObserving(newObservable)
+        }
+    }
     
-    private let map: Mapper
+    private func startObserving(_ observable: SourceObservable)
+    {
+        observable.add(self, filter: prefilter)
+        {
+            [weak self] update in
+            
+            self?.receivedPrefiltered(update)
+        }
+    }
+    
+    fileprivate let prefilter: SourceObservable.UpdateFilter
+    
+    fileprivate let map: Mapper
     typealias Mapper = (SourceObservable.UpdateType) -> MappedUpdate
 }
