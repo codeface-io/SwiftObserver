@@ -28,6 +28,8 @@ public extension Observable
     }
 }
 
+// MARK: -
+
 extension Mapping
 {
     public func new<Value>() -> Mapping<SourceObservable, Value>
@@ -65,8 +67,12 @@ extension Mapping
     }
 }
 
+// MARK: -
+
 public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
 {
+    // MARK: Life Cycle
+    
     fileprivate init(_ observable: SourceObservable?,
                      latestMappedUpdate: MappedUpdate,
                      prefilter: @escaping SourceObservable.UpdateFilter = { _ in true },
@@ -83,12 +89,6 @@ public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
         }
     }
     
-    private func receivedPrefiltered(_ update: SourceObservable.UpdateType)
-    {
-        latestMappedUpdate = map(update)
-        send(latestMappedUpdate)
-    }
-    
     deinit
     {
         if let observable = observable
@@ -96,6 +96,8 @@ public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
             ObservationService.remove(self, from: observable)
         }
     }
+    
+    // MARK: Observable
     
     public var latestUpdate: MappedUpdate
     {
@@ -107,8 +109,6 @@ public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
         
         return latestMappedUpdate
     }
-    
-    private var latestMappedUpdate: MappedUpdate
 
     public weak var observable: SourceObservable?
     {
@@ -134,6 +134,16 @@ public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
             self?.receivedPrefiltered(update)
         }
     }
+    
+    private func receivedPrefiltered(_ update: SourceObservable.UpdateType)
+    {
+        latestMappedUpdate = map(update)
+        send(latestMappedUpdate)
+    }
+    
+    private var latestMappedUpdate: MappedUpdate
+    
+    // MARK: Map Functions
     
     fileprivate let prefilter: SourceObservable.UpdateFilter
     
