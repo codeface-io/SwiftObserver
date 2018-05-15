@@ -1,5 +1,6 @@
 import XCTest
 import SwiftObserver
+import Foundation
 
 class SwiftObserverTests: XCTestCase
 {
@@ -386,20 +387,26 @@ class SwiftObserverTests: XCTestCase
         }
     }
     
-    /*
-    // this test would require FoundationToolz which we don't want to import here
     func testCodingTheModel()
     {
         var didEncode = false
         var didDecode = false
         
+        model.number <- 123
+        model.text <- "123"
+        
         if let modelData = try? JSONEncoder().encode(model)
         {
+            let actual = String(data: modelData, encoding: .utf8) ?? "fail"
+            let expected = "{\"number\":{\"storedValue\":123},\"text\":{\"storedValue\":\"123\"}}"
+            XCTAssertEqual(actual, expected)
+            
             didEncode = true
             
-            if let _ = try? JSONDecoder().decode(Model.self,
-                                                 from: modelData)
+            if let decodedModel = try? JSONDecoder().decode(Model.self, from: modelData)
             {
+                XCTAssertEqual(decodedModel.number.value, 123)
+                XCTAssertEqual(decodedModel.text.value, "123")
                 didDecode = true
             }
         }
@@ -407,7 +414,6 @@ class SwiftObserverTests: XCTestCase
         XCTAssert(didEncode)
         XCTAssert(didDecode)
     }
-    */
 
     let model = Model()
     
