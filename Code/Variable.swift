@@ -1,8 +1,7 @@
-infix operator <-: AdditionPrecedence
+infix operator <-: AssignmentPrecedence
 
-@discardableResult
-public func <-<Value>(variable: Var<Value>?,
-                      value: Value?) -> Var<Value>?
+@discardableResult public func <-<Value>(variable: Var<Value>?,
+                                         value: Value?) -> Var<Value>?
 {
     variable?.value = value
     return variable
