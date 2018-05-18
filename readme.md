@@ -137,16 +137,22 @@ Now let's look at some of the goodies of SwiftObserver ...
 	~~~swift
 	class Model: Codable
 	{
-	   let text = Var("A String Variable")
+	   private(set) var text = Var("A String Variable")
 	}
 	
 	let model = Model()
 	
-	if let modelData = try? JSONEncoder().encode(model)
+	if let modelJson = try? JSONEncoder().encode(model)
 	{
-	   print(String(data: modelData, encoding: .utf8))
+	   print(String(data: modelJson, encoding: .utf8))
+	   
+	   let decodedModel = try? JSONDecoder().decode(Model.self, from: modelJson)
 	}
 	~~~
+	
+    Notice that the `text` object is a `var` instead of a `let`. It cannot be a constant because Swift's decoder must set it.
+    
+    However, other classes are only supposed to set `text.value` and not `text` itself, so we made the setter private via `private(set)`.
 	
 * Be aware that you must hold a reference to a variable that you want to observe. Observation alone creates no strong reference to the observed object. So observing an ad-hoc created variable makes no sense:
 
