@@ -387,13 +387,42 @@ class SwiftObserverTests: XCTestCase
         }
     }
     
+    func testVariableIsCodable()
+    {
+        var didEncode = false
+        var didDecode = false
+        
+        let variable = Var(123)
+        
+        if let variableData = try? JSONEncoder().encode(variable)
+        {
+            let actual = String(data: variableData, encoding: .utf8) ?? "fail"
+            let expected = "{\"storedValue\":123}"
+            XCTAssertEqual(actual, expected)
+            
+            didEncode = true
+            
+            if let decodedVariable = try? JSONDecoder().decode(Var<Int>.self,
+                                                               from: variableData)
+            {
+                XCTAssertEqual(decodedVariable.value, 123)
+                didDecode = true
+            }
+        }
+        
+        XCTAssert(didEncode)
+        XCTAssert(didDecode)
+    }
+    
     func testCodingTheModel()
     {
         var didEncode = false
         var didDecode = false
         
-        model.number <- 123
+        let model = ModelStruct()
+
         model.text <- "123"
+        model.number <- 123
         
         if let modelData = try? JSONEncoder().encode(model)
         {
@@ -403,7 +432,7 @@ class SwiftObserverTests: XCTestCase
             
             didEncode = true
             
-            if let decodedModel = try? JSONDecoder().decode(Model.self, from: modelData)
+            if let decodedModel = try? JSONDecoder().decode(ModelStruct.self, from: modelData)
             {
                 XCTAssertEqual(decodedModel.number.value, 123)
                 XCTAssertEqual(decodedModel.text.value, "123")
@@ -419,14 +448,20 @@ class SwiftObserverTests: XCTestCase
     
     let controller = Controller()
     
+    struct ModelStruct: Codable
+    {
+        let text = Var<String>()
+        let number = Var<Int>()
+    }
+    
     class Model: Observable, Codable
     {
         var latestUpdate: Event { return .didNothing }
         
         enum Event: String { case didUpdate, didReset, didNothing }
         
-        let text = Var("")
-        let number = Var(0)
+        let text = Var<String>()
+        let number = Var<Int>()
     }
     
     let customObservable = ModelWithState()
