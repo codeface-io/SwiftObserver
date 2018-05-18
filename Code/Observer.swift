@@ -65,9 +65,9 @@ public extension Observer
         }
     }
     
-    func stopObserving<O: Observable>(_ observable: O)
+    func stopObserving<O: Observable>(_ observable: O?)
     {
-        observable.remove(self)
+        observable?.remove(self)
     }
     
     func stopAllObserving()
