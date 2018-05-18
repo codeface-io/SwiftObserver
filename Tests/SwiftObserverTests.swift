@@ -419,23 +419,21 @@ class SwiftObserverTests: XCTestCase
         var didEncode = false
         var didDecode = false
         
-        let model = ModelStruct()
-
         model.text <- "123"
         model.number <- 123
         
-        if let modelData = try? JSONEncoder().encode(model)
+        if let modelJson = try? JSONEncoder().encode(model)
         {
-            let actual = String(data: modelData, encoding: .utf8) ?? "fail"
+            let actual = String(data: modelJson, encoding: .utf8) ?? "fail"
             let expected = "{\"number\":{\"storedValue\":123},\"text\":{\"storedValue\":\"123\"}}"
             XCTAssertEqual(actual, expected)
             
             didEncode = true
             
-            if let decodedModel = try? JSONDecoder().decode(ModelStruct.self, from: modelData)
+            if let decodedModel = try? JSONDecoder().decode(Model.self, from: modelJson)
             {
-                XCTAssertEqual(decodedModel.number.value, 123)
                 XCTAssertEqual(decodedModel.text.value, "123")
+                XCTAssertEqual(decodedModel.number.value, 123)
                 didDecode = true
             }
         }
@@ -448,20 +446,14 @@ class SwiftObserverTests: XCTestCase
     
     let controller = Controller()
     
-    struct ModelStruct: Codable
-    {
-        let text = Var<String>()
-        let number = Var<Int>()
-    }
-    
     class Model: Observable, Codable
     {
         var latestUpdate: Event { return .didNothing }
         
         enum Event: String { case didUpdate, didReset, didNothing }
         
-        let text = Var<String>()
-        let number = Var<Int>()
+        private(set) var text = Var<String>()
+        private(set) var number = Var<Int>()
     }
     
     let customObservable = ModelWithState()

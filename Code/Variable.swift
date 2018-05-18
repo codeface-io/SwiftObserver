@@ -32,7 +32,7 @@ public class Variable<Value: Equatable & Codable>: Observable, Codable
         receive(latestUpdate)
     }
     
-    // MARK: Value
+    // MARK: Value Access
 
     public var latestUpdate: Update<Value?>
     {
@@ -61,7 +61,9 @@ public class Variable<Value: Equatable & Codable>: Observable, Codable
     
     private var valueQueue = [Value?]()
     
-    private enum CodingKeys: String, CodingKey { case storedValue }
+    // MARK: Stored Value
+    
+    private enum CodingKeys: CodingKey { case storedValue }
     
     private var storedValue: Value?
     {
