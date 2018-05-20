@@ -25,6 +25,11 @@ public extension Observable
         ObservationService.removeNilObservers(of: self)
     }
     
+    func send()
+    {
+        send(latestUpdate)
+    }
+    
     func send(_ update: UpdateType)
     {
         ObservationService.send(update, toObserversOf: self)
@@ -41,6 +46,7 @@ public protocol Observable: class
     func removeAllObservers()
     func removeNilObservers()
     
+    func send()
     func send(_ update: UpdateType)
     
     var latestUpdate: UpdateType { get }
