@@ -26,7 +26,7 @@ public extension Observable
     public func unwrap<Unwrapped>(_ defaultUpdate: Unwrapped) -> Mapping<Self, Unwrapped>
         where Self.UpdateType == Optional<Unwrapped>
     {
-        return map(prefilter: { $0 != nil }) { $0 ?? defaultUpdate }
+        return map { $0 ?? defaultUpdate }
     }
     
     public func map<MappedUpdate>(prefilter: @escaping UpdateFilter = { _ in true },
@@ -72,7 +72,7 @@ extension Mapping
         -> Mapping<SourceObservable, Unwrapped>
         where MappedUpdate == Optional<Unwrapped>
     {
-        return map(prefilter: { $0 != nil }) { $0 ?? defaultUpdate }
+        return map { $0 ?? defaultUpdate }
     }
     
     public func map<MappedUpdate2>(
@@ -141,7 +141,6 @@ public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
     {
         old?.remove(self)
         observe(new)
-        
         new?.send()
     }
     
