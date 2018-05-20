@@ -7,6 +7,8 @@ class SwiftObserverTests: XCTestCase
     func testSettingObservableOfMapping()
     {
         let mapping = Var<String>().new().unwrap("")
+        XCTAssertNil(mapping.observable)
+        
         var observedStrings = [String]()
         
         controller.observe(mapping)
