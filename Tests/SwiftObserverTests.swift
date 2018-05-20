@@ -4,6 +4,35 @@ import Foundation
 
 class SwiftObserverTests: XCTestCase
 {
+    func testSettingObservableOfMapping()
+    {
+        let mapping = Var<String>().new().unwrap("")
+        var observedStrings = [String]()
+        
+        controller.observe(mapping)
+        {
+            newString in
+            
+            observedStrings.append(newString)
+        }
+        
+        XCTAssertEqual(observedStrings, [])
+        
+        let initialText = "initial text"
+        
+        let text = Var(initialText)
+        mapping.observable = text
+        
+        XCTAssertEqual(mapping.latestUpdate, initialText)
+        XCTAssertEqual(observedStrings, [initialText])
+        
+        let newText = "new text"
+        text <- newText
+        
+        XCTAssertEqual(mapping.latestUpdate, newText)
+        XCTAssertEqual(observedStrings, [initialText, newText])
+    }
+    
     func testSingleObservationFilter()
     {
         let number = Var(99)
