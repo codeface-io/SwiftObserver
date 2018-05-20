@@ -107,19 +107,10 @@ public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
         self.map = map
         self.latestMappedUpdate = latestMappedUpdate
         
-        if let observable = observable
-        {
-            startObserving(observable)
-        }
+        observe(observable)
     }
     
-    deinit
-    {
-        if let observable = observable
-        {
-            ObservationService.remove(self, from: observable)
-        }
-    }
+    deinit { observable?.remove(self) }
     
     // MARK: Observable
     
@@ -138,19 +129,26 @@ public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
     {
         didSet
         {
-            guard let newObservable = observable,
-                newObservable !== oldValue
-            else
-            {
-                return
-            }
+            guard oldValue !== observable else { return }
             
-            startObserving(newObservable)
+            didSwitchObservable(from: oldValue, to: observable)
         }
     }
     
-    private func startObserving(_ observable: SourceObservable)
+    
+    private func didSwitchObservable(from old: SourceObservable?,
+                                     to new: SourceObservable?)
     {
+        old?.remove(self)
+        observe(new)
+        
+        new?.send()
+    }
+    
+    private func observe(_ observable: SourceObservable?)
+    {
+        guard let observable = observable else { return }
+        
         observable.add(self, filter: prefilter)
         {
             [weak self] update in
