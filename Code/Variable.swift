@@ -18,20 +18,6 @@ public class Variable<Value: Equatable & Codable>: Observable, Codable
         storedValue = value
     }
     
-    // MARK: Send Update When Observation Starts
-    
-    public func add(_ observer: AnyObject,
-                    filter keep: @escaping UpdateFilter,
-                    receive: @escaping UpdateReceiver)
-    {
-        ObservationService.add(observer,
-                               of: self,
-                               filter: keep,
-                               receive: receive)
-        
-        receive(latestUpdate)
-    }
-    
     // MARK: Value Access
 
     public var latestUpdate: Update<Value?>

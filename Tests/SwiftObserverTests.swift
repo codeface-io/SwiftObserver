@@ -277,17 +277,20 @@ class SwiftObserverTests: XCTestCase
         model.send(.didUpdate)
     }
     
-    func testObservingVariableTriggersUpdate()
+    func testObservingVariableDoesNotTriggerUpdate()
     {
-        let expectedValue = "expected value"
+        let text = Var("initial text")
         
-        model.text <- expectedValue
+        var didTriggerUpdate = false
         
-        controller.observe(model.text)
+        controller.observe(text)
         {
-            XCTAssertEqual($0.old, expectedValue)
-            XCTAssertEqual($0.new, expectedValue)
+            _ in
+            
+            didTriggerUpdate = true
         }
+        
+        XCTAssertFalse(didTriggerUpdate)
     }
     
     func testObservingVariableValueChange()
