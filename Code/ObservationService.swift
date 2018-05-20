@@ -40,7 +40,7 @@ public class ObservationService
     
     // MARK: Remove Observers
     
-    public static func remove(_ observer: AnyObject, from observed: AnyObject)
+    public static func remove(_ observer: AnyObject, of observed: AnyObject)
     {
         removeAbandonedObservations()
         
@@ -54,14 +54,14 @@ public class ObservationService
         }
     }
     
-    public static func removeAllObservers(of observed: AnyObject)
+    public static func removeObservers(of observed: AnyObject)
     {
         removeAbandonedObservations()
         
         observations[hash(observed)] = nil
     }
     
-    public static func removeObserverFromAllObservables(_ observer: AnyObject)
+    public static func removeObserver(_ observer: AnyObject)
     {
         for observation in observations.values
         {
@@ -71,7 +71,12 @@ public class ObservationService
         removeAbandonedObservations()
     }
     
-    public static func removeNilObservers(of observed: AnyObject)
+    public static func removeObservationsOfDeadObservables()
+    {
+        observations.remove { $0.observed == nil }
+    }
+    
+    public static func removeDeadObservers(of observed: AnyObject)
     {
         observations[hash(observed)]?.observerList.removeNilObservers()
     }

@@ -70,9 +70,14 @@ public extension Observer
         observable?.remove(self)
     }
     
+    func stopObservingDeadObservables()
+    {
+        ObservationService.removeObservationsOfDeadObservables()
+    }
+    
     func stopAllObserving()
     {
-        ObservationService.removeObserverFromAllObservables(self)
+        ObservationService.removeObserver(self)
     }
 }
 

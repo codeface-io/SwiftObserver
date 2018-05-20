@@ -12,17 +12,17 @@ public extension Observable
     
     func remove(_ observer: AnyObject)
     {
-        ObservationService.remove(observer, from: self)
+        ObservationService.remove(observer, of: self)
     }
     
-    func removeAllObservers()
+    func removeObservers()
     {
-        ObservationService.removeAllObservers(of: self)
+        ObservationService.removeObservers(of: self)
     }
     
-    func removeNilObservers()
+    func removeDeadObservers()
     {
-        ObservationService.removeNilObservers(of: self)
+        ObservationService.removeDeadObservers(of: self)
     }
     
     func send()
@@ -43,8 +43,8 @@ public protocol Observable: class
              receive: @escaping UpdateReceiver)
     
     func remove(_ observer: AnyObject)
-    func removeAllObservers()
-    func removeNilObservers()
+    func removeObservers()
+    func removeDeadObservers()
     
     func send()
     func send(_ update: UpdateType)
