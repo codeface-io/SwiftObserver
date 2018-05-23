@@ -1,10 +1,8 @@
 infix operator <-: AssignmentPrecedence
 
-@discardableResult public func <-<Value>(variable: Var<Value>?,
-                                         value: Value?) -> Var<Value>?
+public func <-<Value>(variable: Var<Value>?, value: Value?)
 {
     variable?.value = value
-    return variable
 }
 
 public typealias Var = Variable
