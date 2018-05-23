@@ -86,7 +86,7 @@ class SwiftObserverTests: XCTestCase
         var strongNewNumber: Mapping<Variable<Int>, Int?>? = number.new()
         weak var weakNewNumber = strongNewNumber
         
-        guard let strongUnwrappedNewNumber = weakNewNumber?.unwrap(-1) else
+        guard let strongUnwrappedNewNumber = weakNewNumber?.filter({ $0 != nil }).unwrap(-1) else
         {
             XCTAssert(false)
             return
@@ -147,7 +147,7 @@ class SwiftObserverTests: XCTestCase
     {
         var receivedMessage: String?
         
-        controller.observe("wrong message", from: textMessenger)
+        controller.observe(textMessenger, select: "wrong message")
         {
             receivedMessage = "wrong message"
         }
@@ -178,7 +178,7 @@ class SwiftObserverTests: XCTestCase
         var receivedMessage: String?
         let expectedMessage = "message"
         
-        controller.observe(expectedMessage, from: textMessenger)
+        controller.observe(textMessenger, select: expectedMessage)
         {
             receivedMessage = expectedMessage
         }
