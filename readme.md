@@ -98,13 +98,12 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 * There are four other ways to stop observation:
 
-    * Stop observing specific observable:<br>`observer.stopObserving(observable)`
-    * Stop observing all observables that don't exist anymore:<br>`observer.stopObservingDeadObservables()`
-    * Remove observers that don't exist anymore:<br>`observable.removeDeadObservers()`
-    * Remove all observers:<br>`observable.removeObservers()`
+    * Stop observing a specific observable: `observer.stopObserving(observable)`
+    * Stop observing all observables that don't exist anymore: `observer.stopObservingDeadObservables()`
+    * Remove observers that don't exist anymore: `observable.removeDeadObservers()`
+    * Remove all observers: `observable.removeObservers()`
 
 * Although you don't need to handle tokens after adding an observer, all objects are internally hashed, so performance is never an issue.
-* Even if you forget to remove observers from observables, you likely won't run into problems because abandoned obervervations get pruned internally at every opportunity.
 
 ## <a id="variables"></a>3. Variables
 
