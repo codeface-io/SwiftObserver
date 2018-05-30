@@ -217,14 +217,19 @@ class SwiftObserverTests: XCTestCase
         
         XCTAssertNil(text.value)
         
-        text <- "text"
-        
-        XCTAssertEqual(text.value, "text")
+        var didUpdate = false
         
         controller.observe(text)
         {
             XCTAssertEqual($0.new, "text")
+            
+            didUpdate = true
         }
+        
+        text <- "text"
+        
+        XCTAssertEqual(text.value, "text")
+        XCTAssert(didUpdate)
     }
     
     func testHowToMapVariablesToNonOptionalValues()
@@ -233,20 +238,36 @@ class SwiftObserverTests: XCTestCase
         
         let nonOptionalText = text.map { $0.new ?? "" }
         
+        var didUpdate = false
+        
         controller.observe(nonOptionalText)
         {
             XCTAssertEqual($0, "")
+            
+            didUpdate = true
         }
+        
+        text.send()
+        
+        XCTAssert(didUpdate)
     }
     
     func testHowToUseUnwrapMapping()
     {
         let text = Var<String>()
+        let unwrappedText = text.new().unwrap("")
         
-        controller.observe(text.new().unwrap(""))
+        var didUpdate = false
+        
+        controller.observe(unwrappedText)
         {
             XCTAssertEqual($0, "")
+            didUpdate = true
         }
+        
+        text.send()
+        
+        XCTAssert(didUpdate)
     }
     
     func testHowToUseNewMappingOnObservablesThatAreNotVariables()
@@ -271,12 +292,17 @@ class SwiftObserverTests: XCTestCase
     
     func testObservingTheModel()
     {
+        var didUpdate = false
+        
         controller.observe(model)
         {
             XCTAssertEqual($0, .didUpdate)
+            didUpdate = true
         }
         
         model.send(.didUpdate)
+        
+        XCTAssert(didUpdate)
     }
     
     func testObservingVariableDoesNotTriggerUpdate()
@@ -306,14 +332,10 @@ class SwiftObserverTests: XCTestCase
             observedNewValue = $0.new
         }
         
-        XCTAssertEqual(observedOldValue, model.text.value)
-        XCTAssertEqual(observedNewValue, model.text.value)
+        model.text <- "new text"
         
-        let expectedNewValue = "new value"
-        
-        model.text <- expectedNewValue
-        
-        XCTAssertEqual(observedNewValue, expectedNewValue)
+        XCTAssertEqual(observedOldValue, nil)
+        XCTAssertEqual(observedNewValue, "new text")
     }
     
     /*
@@ -408,7 +430,7 @@ class SwiftObserverTests: XCTestCase
     }
     */
     
-    func testObservingTwoObservablesTriggersUpdate()
+    func testObservingTwoObservables()
     {
         let number = Var(7)
         
@@ -419,6 +441,8 @@ class SwiftObserverTests: XCTestCase
             XCTAssertEqual($1.old, 7)
             XCTAssertEqual($1.new, 7)
         }
+        
+        number.send()
     }
     
     func testVariableIsCodable()
