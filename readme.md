@@ -125,12 +125,14 @@ Now let's look at some of the goodies of SwiftObserver ...
 	{
 	   update in
     	   
-	   print(update.old)
-	   print(update.new)
+	   if update.old == update.new
+	   {
+	       // update was manually triggered, no value change
+	   }
 	}
 	~~~
 		
-* A Variable only sends an update whenever its value actually changes, not upon observing it. This avoids confusion and is consistent with the behaviour of all other `Observable`s.
+* A Variable only sends an update whenever its value actually changes, not upon observing it. This avoids confusion and is consistent with the behaviour of mappings.
 
     You can always call `send()` on any observable to trigger an update. In that case, a `Variable` would send an `Update` in which the `old` and `new` values are equal.
 * Because a `Var` is `Codable`, objects composed of these variables are still automatically encodable and decodable in Swift 4, simply by adopting the `Codable` protocol:
@@ -300,7 +302,7 @@ Now let's look at some of the goodies of SwiftObserver ...
     }
     ~~~
     
-    Note that this response closure does not take any arguments because it only gets called for the specified message.
+    Note that this response closure does not take any arguments because it only gets called for the specified event.
     
 ### Unwrap Optional Updates
 
@@ -324,7 +326,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~	
 
-    The mapping will replace `nil` values with the default. If you want the mapping to never actively send the default, you can apply a filter before it:
+* The mapping will replace `nil` values with the default. If you want the mapping to never actively send the default, you can apply a filter before it:
     
     ~~~swift
 	let latestUnwrappedNumber = number.new().filter({ $0 != nil }).unwrap(0)
@@ -419,7 +421,7 @@ Now let's look at some of the goodies of SwiftObserver ...
     }
     ~~~
     
-* Of course, if you'd wanna acces the latest message, backup the messenger with a variable:
+* Of course, if you'd wanna acces the latest message, just backup the messenger with a variable:
 
     ~~~swift
     let currentMessage = Var<String>()
