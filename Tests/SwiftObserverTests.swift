@@ -119,32 +119,63 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual(observedNumbers, [9, 10])
     }
     
-    func testCustomMessenger()
+    func testSimpleMessenger()
     {
-        enum Event { case none, userError, techError }
+        let textMessenger = Var<String>().new()
+        var receivedMessage: String?
+        let expectedMessage = "message"
         
-        let eventMessenger = Messenger<Event>(.none)
-        
-        XCTAssertEqual(eventMessenger.latestMessage, .none)
-        
-        var receivedEvent: Event?
-        
-        controller.observe(eventMessenger)
+        controller.observe(textMessenger)
         {
-            receivedEvent = $0
+            receivedMessage = $0
         }
         
-        XCTAssertNil(receivedEvent)
+        textMessenger.send(expectedMessage)
+
+        XCTAssertEqual(receivedMessage, expectedMessage)
+    }
+    
+    func testSimpleMessengerWithSpecificMessage()
+    {
+        let textMessenger = Var<String>().new()
+        var receivedMessage: String?
+        let expectedMessage = "message"
         
-        eventMessenger.send(.userError)
+        controller.observe(textMessenger, select: expectedMessage)
+        {
+            receivedMessage = expectedMessage
+        }
         
-        XCTAssertEqual(eventMessenger.latestMessage, eventMessenger.latestUpdate)
-        XCTAssertEqual(eventMessenger.latestMessage, .userError)
-        XCTAssertEqual(receivedEvent, .userError)
+        textMessenger.send(expectedMessage)
+        
+        XCTAssertEqual(receivedMessage, expectedMessage)
+    }
+    
+    func testMessengerBackedByVariable()
+    {
+        let textMessage = Var<String>("initial message")
+        let textMessenger = textMessage.new()
+        
+        XCTAssertEqual(textMessenger.latestUpdate, "initial message")
+        
+        var receivedMessage: String?
+        
+        controller.observe(textMessenger)
+        {
+            receivedMessage = $0
+        }
+        
+        XCTAssertNil(receivedMessage)
+        
+        textMessage <- "user error"
+        
+        XCTAssertEqual(textMessenger.latestUpdate, "user error")
+        XCTAssertEqual(receivedMessage, "user error")
     }
     
     func testObservingWrongMessage()
     {
+        let textMessenger = Var<String>().new()
         var receivedMessage: String?
         
         controller.observe(textMessenger, select: "wrong message")
@@ -155,37 +186,6 @@ class SwiftObserverTests: XCTestCase
         textMessenger.send("right message")
         
         XCTAssertNil(receivedMessage)
-    }
-    
-    func testObservingMessenger()
-    {
-        var receivedMessage: String?
-        let expectedMessage = "message"
-        
-        controller.observe(textMessenger)
-        {
-            receivedMessage = $0
-        }
-        
-        textMessenger.send(expectedMessage)
-        
-        XCTAssertEqual(textMessenger.latestMessage, expectedMessage)
-        XCTAssertEqual(receivedMessage, expectedMessage)
-    }
-    
-    func testObservingMessage()
-    {
-        var receivedMessage: String?
-        let expectedMessage = "message"
-        
-        controller.observe(textMessenger, select: expectedMessage)
-        {
-            receivedMessage = expectedMessage
-        }
-    
-        textMessenger.send(expectedMessage)
-        
-        XCTAssertEqual(receivedMessage, expectedMessage)
     }
     
     /*
