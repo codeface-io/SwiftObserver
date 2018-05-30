@@ -98,9 +98,13 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~
 
-* Observers can also stop observing an observable object via `observer.stopObserving(observable)`.
-* Another way to remove observers from an observable object is to call `observable.removeAllObservers()`.
-* To actively remove dead observer references from an observable object, you may call `observable.removeNilObservers()`.
+* There are four other ways to stop observation:
+
+    * Stop observing specific observable:<br>`observer.stopObserving(observable)`
+    * Stop observing all observables that don't exist anymore:<br>`observer.stopObservingDeadObservables()`
+    * Remove observers that don't exist anymore:<br>`observable.removeDeadObservers()`
+    * Remove all observers:<br>`observable.removeObservers()`
+
 * Although you don't need to handle tokens after adding an observer, all objects are internally hashed, so performance is never an issue.
 * Even if you forget to remove observers from observables, you likely won't run into problems because abandoned obervervations get pruned internally at every opportunity.
 
@@ -123,15 +127,15 @@ Now let's look at some of the goodies of SwiftObserver ...
 	observer.observe(variable)
 	{
 	   update in
-	
-	   if update.new != update.old
-	   {
-	      // respond to value change
-	   }
+    	   
+	   print(update.old)
+	   print(update.new)
 	}
 	~~~
 		
-* Variables send an update upon starting observation in which case `new` and `old` both hold the current value. Of course, they also send an update whenever their value actually changes.
+* A Variable only sends an update whenever its value actually changes, not upon observing it. This avoids confusion and is consistent with the behaviour of all other `Observable`s.
+
+    You can always call `send()` on any observable to trigger an update. In that case, a `Variable` would send an `Update` in which the `old` and `new` values are equal.
 * Because a `Var` is `Codable`, objects composed of these variables are still automatically encodable and decodable in Swift 4, simply by adopting the `Codable` protocol:
 
 	~~~swift
@@ -154,7 +158,7 @@ Now let's look at some of the goodies of SwiftObserver ...
     
     However, other classes are only supposed to set `text.value` and not `text` itself, so we made the setter private via `private(set)`.
 	
-* Be aware that you must hold a reference to a variable that you want to observe. Observation alone creates no strong reference to the observed object. So observing an ad-hoc created variable makes no sense:
+* Be aware that you must hold a reference to an observable object that you want to observe. Observation alone creates no strong reference to it. So observing an ad-hoc created variable makes no sense:
 
 	~~~swift
 	observer.observe(Var("friday 13"))
@@ -164,6 +168,8 @@ Now let's look at some of the goodies of SwiftObserver ...
 	   // FAIL! The observed variable has local scope and will deinit!
 	}
 	~~~
+	
+* There's one tricky detail related to variables and SwiftObserver takes care of it: Say a variable has multiple observers and at least one of them changes the variable value in reaction to a value change... New values land in an internal queue, so all observers get to process the first value change before the second is applied.
 
 ## <a id="custom-observables"></a>4. Custom Observables
 
@@ -242,32 +248,6 @@ Now let's look at some of the goodies of SwiftObserver ...
     * An observer of the mapping would have to stop observing the mapping itself, not the mapped observable.
     * Observing a mapping does not keep it alive. You must hold a strong reference to a mapping that you want to use.
     * You can call `send(update)` on a mapping as well as any other function or property declared by `Observable`.
-
-### Unwrap Optional Updates
-
-* The value of a `Var` is always optional. That's why you can create one without initial value and also set its value `nil`:
-
-	~~~swift
-	let number = Var<Int>()
-	number <- nil
-	~~~
-	
-* However, we often don't want to deal with optionals down the line. You can easily get rid of the optional with the special mapping `unwrap(default)`:
-	
-	~~~swift
-	let latestUnwrappedNumber = number.new().unwrap(0)
-
-	observer.observe(latestUnwrappedNumber)
-	{
-	   newInteger in
-		
-	   // newInteger is not optional!
-	}
-	~~~	
-
-* The default update is only required for `latestUpdate` in accordance with the `Observable` protocol. It will only come into play when the unwrapped observable hasn't sent any non-optional value yet **and** didn't trigger the update but just returned its latest update. Of course, the latter can only happen in combined observations (see next section).
-
-	The above example is just a single observation and only `number` can trigger the update. When the `value` of `number` is set to `nil`, the `unwrap(0)` mapping sends nothing to its obervers, not even the default `0`. So when `newInteger` is 0, the observer knows that it's a real value and not just a replacement for `nil`.
 	
 ### Map `Update` Onto `new` Value
 
@@ -310,6 +290,49 @@ Now let's look at some of the goodies of SwiftObserver ...
         // oh my god, less than 10 left!
     }
     ~~~
+    
+* Observers may also observe one specific event via the `select` parameter:
+    
+    ~~~swift
+    let available = Var(100)
+    let latestAvailable = available.new().unwrap(0)
+    
+    observer.observe(latestAvailable, select: 9)
+    {        
+        // oh my god, only 9 left!
+    }
+    ~~~
+    
+    Note that this response closure does not take any arguments because it only gets called for the specified message.
+    
+### Unwrap Optional Updates
+
+* The value of a `Var` is always optional. That's why you can create one without initial value and also set its value `nil`:
+
+	~~~swift
+	let number = Var<Int>()
+	number <- nil
+	~~~
+	
+* However, we often don't want to deal with optionals down the line. You can easily get rid of the optional with the special mapping `unwrap(default)`:
+	
+	~~~swift
+	let latestUnwrappedNumber = number.new().unwrap(0)
+
+	observer.observe(latestUnwrappedNumber)
+	{
+	   newInteger in
+		
+	   // newInteger is not optional!
+	}
+	~~~	
+
+    The mapping will replace `nil` values with the default. If you want the mapping to never actively send the default, you can apply a filter before it:
+    
+    ~~~swift
+	let latestUnwrappedNumber = number.new().filter({ $0 != nil }).unwrap(0)
+	~~~	
+    
 
 ### Chain Mappings Together
 
@@ -324,6 +347,15 @@ Now let's look at some of the goodies of SwiftObserver ...
     The intermediate mapping created by `new()` will die immediately, but the resulting `newUnwrappedText` will still live and be fully functional.
     
 * Because chained mappings get combined into one mapping, the `observable` property on a mapping never refers to another mapping. It always refers to the original mapped `Observable`. In the above example, `newUnwrappedText.observable` would refer to `text`.
+
+* One useful consequence of this chaining is that you can create a mapping without an actual underlying observable. Use an ad-hoc dummy observable to create the mapping and set the actual observable later:
+
+    ~~~swift
+    let mappedTitle = Var<String>().new().unwrap("untitled")
+    mappedTitle.observable = titleStringVariable
+    ~~~
+    
+    Being able to define observable mappings independent of any underlying mapped observable can help, for instance, in developing view models.
 
 ## <a id="combine"></a>6. One Combine To Rule Them All
 
@@ -367,11 +399,10 @@ Now let's look at some of the goodies of SwiftObserver ...
     - Every object can trigger updates, without adopting any protocol.
     - Multiple objects may share the same update type and trigger the same updates.
 
-* You could simply use a global custom `Observable` as a mediating messenger. But SwiftObserver's generic class `Messenger<Message>` has a bit more to offer and plays well together with the `Observer` protocol.
-    
-* You may use the global `textMessenger` of type `Messenger<String>`:
+* You can simply use a global (mapped) `Variable` as a mediating messenger:
 
     ~~~swift
+    let textMessenger = Var<String>().new()
     observer.observe(textMessenger)
     {
         textMessage in
@@ -382,51 +413,22 @@ Now let's look at some of the goodies of SwiftObserver ...
     textMessenger.send("some message")
     ~~~
     
-* An `Observer` can also observe one specific message sent by some messenger:
+* An `Observer` can use the select filter to observe one specific message:
 
     ~~~swift
-    observer.observe("event name", from textMessenger)
+    observer.observe(textMessenger, select: "event name")
     {
         // respond to "event name"
     }
-    
-    textMessenger.send("event name")
     ~~~
-
-    Note that this response closure does not take any arguments because it only gets called for the specified message.
     
-* You may also instantiate your own messenger as some `Messenger<Message>`:
+* Of course, if you'd wanna acces the latest message, backup the messenger with a variable:
 
     ~~~swift
-    enum Event { case none, userError, techError }
-        
-    let eventMessenger = Messenger<Event>(.none)
-    
-    observer.observe(eventMessenger)
-    {
-        event in
-        
-        // repond to event
-    }
-    
-    eventMessenger.send(.techError)
+    let currentMessage = Var<String>()
+    let textMessenger = currentMessage.new()
     ~~~
-
-    The initializer of `Messenger<Message>` takes a `Message` that will be returned by `messenger.latestUpdate` as long as no update (message) has been sent.
     
-     After at least one message has been sent, `latestUpdate` will return the last message, which you can also get via `messenger.latestMessage`.
-    
-* Since `Messenger<Message>` conforms to the `Observable` protocol, you can include messengers in combined observations:
-
-    ~~~swift
-    observer.observe(text, number, messenger)
-    {
-        textUpdate, numberUpdate, message in
-        
-        // respond to text update, number update and message
-    }
-    ~~~
-
 ## <a id="why"></a>8. Why the Hell Another Reactive Library?
 
 SwiftObserver diverges from convention. It follows the reactive idea in generalizing the observer pattern. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something we love.
