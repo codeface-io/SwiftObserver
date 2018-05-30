@@ -135,9 +135,10 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~
 		
-* A Variable only sends an update whenever its value actually changes, not upon observing it. This avoids confusion and is consistent with the behaviour of mappings.
+* A Variable only sends an update whenever its value actually changes, not upon observing it. This keeps it simple, predictable and consistent, in particular in combination with mappings.
 
-    You can always call `send()` on any observable to trigger an update. In that case, a `Variable` would send an `Update` in which the `old` and `new` values are equal.
+    You can always call `send()` on any observable to trigger an update. In that case, a `Variable` would send an `Update` in which `old` and `new` value are equal.
+    
 * Because a `Var` is `Codable`, objects composed of these variables are still automatically encodable and decodable in Swift 4, simply by adopting the `Codable` protocol:
 
 	~~~swift
