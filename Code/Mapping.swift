@@ -6,18 +6,6 @@ public extension Observable
         return map { $0.new }
     }
     
-    public func change<MappedUpdate>() -> Mapping<Self, MappedUpdate>
-        where UpdateType == Update<MappedUpdate>, MappedUpdate: Equatable
-    {
-        return map(prefilter: { $0.old != $0.new }) { $0.new }
-    }
-    
-    public func change<MappedUpdate>() -> Mapping<Self, Optional<MappedUpdate>>
-        where UpdateType == Update<Optional<MappedUpdate>>, MappedUpdate: Equatable
-    {
-        return map(prefilter: { $0.old != $0.new }) { $0.new }
-    }
-    
     public func filter(_ keep: @escaping UpdateFilter) -> Mapping<Self, UpdateType>
     {
         return map(prefilter: keep) { $0 }
@@ -48,18 +36,6 @@ extension Mapping
         where MappedUpdate == Update<Value>
     {
         return map { $0.new }
-    }
-    
-    public func change<Value>() -> Mapping<SourceObservable, Value>
-        where MappedUpdate == Update<Value>, Value: Equatable
-    {
-        return map(prefilter: { $0.old != $0.new }) { $0.new }
-    }
-    
-    public func change<Value>() -> Mapping<SourceObservable, Optional<Value>>
-        where MappedUpdate == Update<Optional<Value>>, Value: Equatable
-    {
-        return map(prefilter: { $0.old != $0.new }) { $0.new }
     }
     
     public func filter(_ keep: @escaping UpdateFilter)
