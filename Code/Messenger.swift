@@ -1,6 +1,6 @@
 public let textMessenger = Messenger("")
 
-public class Messenger<Message: Equatable>: Observable
+open class Messenger<Message: Equatable>: Observable
 {
     public init(_ latest: Message)
     {
