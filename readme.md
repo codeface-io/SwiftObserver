@@ -102,7 +102,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 * There are four other ways to stop observation:
 
     * Stop observing a specific observable: `observer.stopObserving(observable)`
-    * Stop observing all observables that don't exist anymore: `observer.stopObservingDeadObservables()`
+    * Stop observing observables that don't exist anymore: `observer.stopObservingDeadObservables()`
     * Remove observers that don't exist anymore: `observable.removeDeadObservers()`
     * Remove all observers: `observable.removeObservers()`
 
