@@ -77,9 +77,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 * All observables conform to the `Observable` protocol. There are three ways to make use of `Observable`:
 	
-    1. Use a pre-built `Observable`:
-        * `Variable<Value>`
-        * `Messenger<Message>`
+    1. Use a pre-built `Variable<Value>`
 
     2. Implement your own custom `Observable`
 
