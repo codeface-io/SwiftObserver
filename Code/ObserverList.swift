@@ -2,8 +2,7 @@
  
  class ObserverList<Update>
  {
-    func add(_ observer: AnyObject,
-             receive: @escaping (Update) -> Void)
+    func add(_ observer: AnyObject, receive: @escaping (Update) -> Void)
     {
         let observerInfo = ObserverInfo(observer: observer, receive: receive)
         

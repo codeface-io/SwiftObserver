@@ -9,8 +9,6 @@ public class ObservationService
                                           filter keep: @escaping (O.UpdateType) -> Bool = { _ in true },
                                           receive: @escaping (O.UpdateType) -> Void)
     {
-        removeAbandonedObservations()
-        
         observation(of: observable).observerList.add(observer)
         {
             guard let update = $0 as? O.UpdateType else
@@ -24,7 +22,14 @@ public class ObservationService
 
     private static func observation(of observed: AnyObject) -> Observation
     {
-        return observations[hash(observed)] ?? createAndAddObservation(of: observed)
+        guard let observation = observations[hash(observed)] else
+        {
+            return createAndAddObservation(of: observed)
+        }
+        
+        observation.observed = observed
+        
+        return observation
     }
     
     private static func createAndAddObservation(of observed: AnyObject) -> Observation
@@ -42,8 +47,6 @@ public class ObservationService
     
     public static func remove(_ observer: AnyObject, of observed: AnyObject)
     {
-        removeAbandonedObservations()
-        
         guard let observation = observations[hash(observed)] else { return }
         
         observation.observerList.remove(observer)
@@ -56,8 +59,6 @@ public class ObservationService
     
     public static func removeObservers(of observed: AnyObject)
     {
-        removeAbandonedObservations()
-        
         observations[hash(observed)] = nil
     }
     
@@ -68,7 +69,7 @@ public class ObservationService
             observation.observerList.remove(observer)
         }
         
-        removeAbandonedObservations()
+        observations.remove { $0.observerList.isEmpty }
     }
     
     public static func removeObservationsOfDeadObservables()
@@ -78,21 +79,26 @@ public class ObservationService
     
     public static func removeDeadObservers(of observed: AnyObject)
     {
-        observations[hash(observed)]?.observerList.removeNilObservers()
+        guard let observerList = observations[hash(observed)]?.observerList else
+        {
+            return
+        }
+        
+        observerList.removeNilObservers()
+        
+        if observerList.isEmpty { observations[hash(observed)] = nil }
     }
     
     // MARK: Send Events to Observers
     
     public static func send(_ event: Any?, toObserversOf observed: AnyObject)
     {
-        removeAbandonedObservations()
-        
         observations[hash(observed)]?.observerList.receive(event)
     }
     
     // MARK: Private State
     
-    private static func removeAbandonedObservations()
+    public static func removeAbandonedObservations()
     {
         for observation in observations.values
         {
