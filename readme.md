@@ -462,6 +462,7 @@ What you might like:
 - Seemless integration of the *Notifier Pattern*
 - No data duplication for combined observations
 - The syntax clearly reflects the intent and metaphor of the *Observer Pattern*. Observers are active subjects while observables are passive objects which are unconcerned about being observed: `observer.observe(observable)`
+- SwiftObserver is pragmatic and doesn't overgeneralize the *Observer Pattern*, i.e. it doesn't go overboard with the metaphor of *data streams* but keeps things more object-oriented and simple.
 - Custom observables without having to inherit from any class
 - Maximum freedom for your architectural- and design choices
 - UI bindings are available in a separate framework [UIObserver](https://github.com/flowtoolz/UIObserver).
