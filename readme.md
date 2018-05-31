@@ -98,15 +98,19 @@ Now let's look at some of the goodies of SwiftObserver ...
 	   deinit { stopAllObserving() }
 	}
 	~~~
+	
+* Although you don't need to handle tokens after starting observation, all objects are internally hashed, so performance is never an issue.
 
-* There are four other ways to stop observation:
+* There are four more variants of ending observation:
 
     * Stop observing a specific observable: `observer.stopObserving(observable)`
     * Stop observing observables that don't exist anymore: `observer.stopObservingDeadObservables()`
     * Remove observers that don't exist anymore: `observable.removeDeadObservers()`
     * Remove all observers: `observable.removeObservers()`
 
-* Although you don't need to handle tokens after adding an observer, all objects are internally hashed, so performance is never an issue.
+* If you systematically use the above functions or just call `stopAllObserving()` in `deinit` of all observers, observation itself cannot cause memory leaks.
+
+    However, should you still feel the need to erase orphaned observations at some point, just call `ObservationService.removeAbandonedObservations()`. It will fush out observations who lost their observable or lost their observers.
 
 ## <a id="variables"></a>3. Variables
 
@@ -442,6 +446,7 @@ What you might like:
 - Super easy to understand and use
 - Remove observer from all observables with 1 function call
 - No cancellables or tokens to pass around and store
+- No irreversible memory leaks, since orphaned observations can always be flushed out via `ObservationService.removeAbandonedObservations()`.
 - Ability to pull current update from observable
 - Use `<-` operator to directly set variable values
 - Recieve old *and* new value from variables
