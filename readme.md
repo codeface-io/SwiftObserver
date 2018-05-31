@@ -5,9 +5,9 @@
 
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?longCache=true&style=flat-square)](https://github.com/Carthage/Carthage)  [![Pod Version](https://img.shields.io/cocoapods/v/SwiftObserver.svg?longCache=true&style=flat-square)](http://cocoapods.org/pods/SwiftObserver)
 
-SwiftObserver is a reactive programming framework for pure Swift. As such it covers all variations of the observer pattern and should meet all your needs for callbacks and continuous propagation of data up the control hierarchy (against the direction of control).
+SwiftObserver is a framework for reactive programming in pure Swift. As such it covers all variations of the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern), which adresses the central challenge of implementing a clean architecture: [Dependency Inversion](https://en.wikipedia.org/wiki/Dependency_inversion_principle).
 
-Typical applications are the propagation of data from domain model to use cases, from use cases to view models, from view models to views, and from views to view controllers.
+SwiftObserver should meet all your needs for callbacks and continuous propagation of data up the control hierarchy (against the direction of control). Typical applications are the propagation of data from domain model to use cases, from use cases to view models, from view models to views, and from views to view controllers.
 
 SwiftObserver is designed to be ...
 
@@ -397,7 +397,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 * When observer and observable need to be more decoupled, it is common to use a mediating observable through which any object can anonymously send updates. An example of this mediator is `Foundation`'s `NotificationCenter`.
 
-    This extension of the observer pattern is sometimes called *Messenger*, *Notifier*, *Dispatcher*, *Event Emitter* or *Decoupler*. Its main differences to direct observation are:
+    This extension of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, *Dispatcher*, *Event Emitter* or *Decoupler*. Its main differences to direct observation are:
     
     - An observer may indirectly observe multiple other objects.
     - Observers don't care who triggered an update.
@@ -438,7 +438,7 @@ Now let's look at some of the goodies of SwiftObserver ...
     
 ## <a id="why"></a>8. Why the Hell Another Reactive Library?
 
-SwiftObserver diverges from convention. It follows the reactive idea in generalizing the observer pattern. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something we love.
+SwiftObserver diverges from convention. It follows the reactive idea in generalizing the *Observer Pattern*. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something we love.
 
 What you might like:
 
@@ -461,7 +461,7 @@ What you might like:
 - Call observation and mappings directly on observables (no mediating property)
 - Seemless integration of the *Notifier Pattern*
 - No data duplication for combined observations
-- The syntax clearly reflects the intent and metaphor of the Observer Pattern. Observers are active subjects while observables are passive objects which are unconcerned about being observed: `observer.observe(observable)`
+- The syntax clearly reflects the intent and metaphor of the *Observer Pattern*. Observers are active subjects while observables are passive objects which are unconcerned about being observed: `observer.observe(observable)`
 - Custom observables without having to inherit from any class
 - Maximum freedom for your architectural- and design choices
 - UI bindings are available in a separate framework [UIObserver](https://github.com/flowtoolz/UIObserver).
