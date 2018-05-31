@@ -244,7 +244,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 
 	~~~swift
 	let text = Var<String>()
-	let latestTextLength = text.map { $0.new?.count ?? 0 }
+	let latestTextLength = text.map { $0.new()?.count ?? 0 }
 	~~~
 	
 * A mapping is to be used like any other `Observable`:
