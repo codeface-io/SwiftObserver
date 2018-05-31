@@ -135,7 +135,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~
 		
-* A Variable only sends an update whenever its value actually changes, not upon observing it. This keeps it simple, predictable and consistent, in particular in combination with mappings.
+* A Variable sends an update whenever its value actually changes. Just starting to observe it does **not** trigger an update. This keeps it simple, predictable and consistent, in particular in combination with mappings.
 
     You can always call `send()` on any observable to trigger an update. In that case, a `Variable` would send an `Update` in which `old` and `new` value are equal.
     
