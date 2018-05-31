@@ -7,7 +7,7 @@
 
 SwiftObserver is a reactive programming framework for pure Swift. As such it covers all variations of the observer pattern and should meet all your needs for callbacks and continuous propagation of data up the control hierarchy (against the direction of control).
 
-Typical applications are the propagation of data from domain model to use cases, from use cases to view model, and from view model to controllers and views.
+Typical applications are the propagation of data from domain model to use cases, from use cases to view models, from view models to views, and from views to view controllers.
 
 SwiftObserver is designed to be ...
 
