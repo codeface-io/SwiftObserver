@@ -443,7 +443,6 @@ What you might like:
 - Remove observer from all observables with 1 function call
 - No cancellables or tokens to pass around and store
 - Ability to pull current update from observable
-- Memory gets cleared even if the client/observer forgets to manage it
 - Use `<-` operator to directly set variable values
 - Recieve old *and* new value from variables
 - No distinction between "hot-" and "cold signals" necessary
