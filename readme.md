@@ -172,7 +172,7 @@ Now let's look at some of the goodies of SwiftObserver ...
 	}
 	~~~
 	
-* There's one tricky detail related to variables and SwiftObserver takes care of it: Say a variable has multiple observers and at least one of them changes the variable value in reaction to a value change... New values land in an internal queue, so all observers get to process the first value change before the second is applied.
+* A `Variable` appends new values to an internal queue, so all its observers get to process a value change before the next change takes effect. This is important in situations where a variable has multiple observers and at least one of them changes the variable value in reaction to a value change...
 
 ## <a id="custom-observables"></a>4. Custom Observables
 
