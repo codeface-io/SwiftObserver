@@ -4,13 +4,13 @@
  {
     func add(_ observer: AnyObject, receive: @escaping (Update) -> Void)
     {
-        observers[hash(observer)] = ObserverInfo(observer: observer,
-                                                 receive: receive)
+        observers[hashValue(observer)] = ObserverInfo(observer: observer,
+                                                      receive: receive)
     }
     
     func remove(_ observer: AnyObject)
     {
-        observers[hash(observer)] = nil
+        observers[hashValue(observer)] = nil
     }
     
     func removeNilObservers()

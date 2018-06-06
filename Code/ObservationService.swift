@@ -24,7 +24,7 @@ public class ObservationService
 
     private static func observation(of observed: AnyObject) -> Observation
     {
-        guard let observation = observations[hash(observed)] else
+        guard let observation = observations[hashValue(observed)] else
         {
             return createAndAddObservation(of: observed)
         }
@@ -45,7 +45,7 @@ public class ObservationService
         
         observation.observed = observed
         
-        observations[hash(observed)] = observation
+        observations[hashValue(observed)] = observation
         
         return observation
     }
@@ -54,19 +54,19 @@ public class ObservationService
     
     public static func remove(_ observer: AnyObject, of observed: AnyObject)
     {
-        guard let observation = observations[hash(observed)] else { return }
+        guard let observation = observations[hashValue(observed)] else { return }
         
         observation.observerList.remove(observer)
         
         if observation.observerList.isEmpty
         {
-            observations[hash(observed)] = nil
+            observations[hashValue(observed)] = nil
         }
     }
     
     public static func removeObservers(of observed: AnyObject)
     {
-        observations[hash(observed)] = nil
+        observations[hashValue(observed)] = nil
     }
     
     public static func removeObserver(_ observer: AnyObject)
@@ -86,21 +86,21 @@ public class ObservationService
     
     public static func removeDeadObservers(of observed: AnyObject)
     {
-        guard let observerList = observations[hash(observed)]?.observerList else
+        guard let observerList = observations[hashValue(observed)]?.observerList else
         {
             return
         }
         
         observerList.removeNilObservers()
         
-        if observerList.isEmpty { observations[hash(observed)] = nil }
+        if observerList.isEmpty { observations[hashValue(observed)] = nil }
     }
     
     // MARK: Send Events to Observers
     
     public static func send(_ event: Any?, toObserversOf observed: AnyObject)
     {
-        let observableHash = hash(observed)
+        let observableHash = hashValue(observed)
         
         guard let observation = observations[observableHash] else { return }
         
