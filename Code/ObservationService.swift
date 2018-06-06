@@ -13,7 +13,9 @@ public class ObservationService
         {
             guard let update = $0 as? O.UpdateType else
             {
-                fatalError("Impossible error: Update from observable is not of the observable's update type.")
+                log(error: "Impossible: Update from observable is not of the observable's update type \(O.UpdateType.self).")
+                
+                return
             }
             
             if keep(update) { receive(update) }
@@ -27,7 +29,12 @@ public class ObservationService
             return createAndAddObservation(of: observed)
         }
         
-        observation.observed = observed
+        guard observation.observed != nil else
+        {
+            log(warning: "Will replace observation of dead observable (which had the same memory address, i.e. hash value).")
+            
+            return createAndAddObservation(of: observed)
+        }
         
         return observation
     }
@@ -93,7 +100,18 @@ public class ObservationService
     
     public static func send(_ event: Any?, toObserversOf observed: AnyObject)
     {
-        observations[hash(observed)]?.observerList.receive(event)
+        let observableHash = hash(observed)
+        
+        guard let observation = observations[observableHash] else { return }
+        
+        guard observation.observed != nil else
+        {
+            log(warning: "Will remove observation of dead observable.")
+            observations.removeValue(forKey: observableHash)
+            return
+        }
+            
+        observation.observerList.receive(event)
     }
     
     // MARK: Private State
