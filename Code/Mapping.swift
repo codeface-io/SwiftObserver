@@ -86,7 +86,11 @@ public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
         observe(observable)
     }
     
-    deinit { observable?.remove(self) }
+    deinit
+    {
+        observable?.remove(self)
+        removeObservers()
+    }
     
     // MARK: Observable
     

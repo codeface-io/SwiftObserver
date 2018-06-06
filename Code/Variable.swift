@@ -9,12 +9,11 @@ public typealias Var = Variable
 
 public class Variable<Value: Equatable & Codable>: Observable, Codable
 {
-    // MARK: Initialization
+    // MARK: Life Cycle
     
-    public init(_ value: Value? = nil)
-    {
-        storedValue = value
-    }
+    public init(_ value: Value? = nil) { storedValue = value }
+    
+    deinit { removeObservers() }
     
     // MARK: Value Access
 
