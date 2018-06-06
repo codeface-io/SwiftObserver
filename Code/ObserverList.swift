@@ -4,9 +4,8 @@
  {
     func add(_ observer: AnyObject, receive: @escaping (Update) -> Void)
     {
-        let observerInfo = ObserverInfo(observer: observer, receive: receive)
-        
-        observers[hash(observer)] = observerInfo
+        observers[hash(observer)] = ObserverInfo(observer: observer,
+                                                 receive: receive)
     }
     
     func remove(_ observer: AnyObject)
@@ -28,9 +27,16 @@
     
     func receive(_ update: Update)
     {
-        for observer in observers.values
+        for (observerHash, observerInfo) in observers
         {
-            observer.receive(update)
+            guard observerInfo.observer != nil else
+            {
+                log(warning: "Tried so send update to dead observer. Will remove observer.")
+                observers[observerHash] = nil
+                continue
+            }
+            
+            observerInfo.receive(update)
         }
     }
     
