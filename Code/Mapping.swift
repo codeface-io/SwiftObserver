@@ -121,7 +121,7 @@ public class Mapping<SourceObservable: Observable, MappedUpdate>: Observable
     {
         old?.remove(self)
         observe(new)
-        new?.send()
+        send()
     }
     
     private func observe(_ observable: SourceObservable?)
