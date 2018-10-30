@@ -1,10 +1,12 @@
 public func log(error: String,
+                title: String? = nil,
                 forUser: Bool = false,
                 file: String = #file,
                 function: String = #function,
                 line: Int = #line)
 {
     Log.shared.log(message: error,
+                   title: title,
                    level: .error,
                    forUser: forUser,
                    file: file,
@@ -13,12 +15,14 @@ public func log(error: String,
 }
 
 public func log(warning: String,
+                title: String? = nil,
                 forUser: Bool = false,
                 file: String = #file,
                 function: String = #function,
                 line: Int = #line)
 {
     Log.shared.log(message: warning,
+                   title: title,
                    level: .warning,
                    forUser: forUser,
                    file: file,
@@ -27,12 +31,14 @@ public func log(warning: String,
 }
 
 public func log(_ message: String,
+                title: String? = nil,
                 forUser: Bool = false,
                 file: String = #file,
                 function: String = #function,
                 line: Int = #line)
 {
     Log.shared.log(message: message,
+                   title: title,
                    level: .info,
                    forUser: forUser,
                    file: file,
@@ -51,6 +57,7 @@ public class Log
     // MARK: - Logging
     
     public func log(message: String,
+                    title: String? = nil,
                     level: Level = .info,
                     forUser: Bool = false,
                     file: String = #file,
@@ -74,16 +81,19 @@ public class Log
         
         let filename = file.components(separatedBy: "/").last ?? file
         
-        logString += " (\(filename), \(function), line \(line))"
+        let entry = Entry(message: message,
+                          title: title,
+                          level: level,
+                          forUser: forUser,
+                          file: filename,
+                          function: function,
+                          line: line)
+        
+        logString += " (\(entry.context))"
         
         print(logString)
         
-        latestEntry <- Entry(message: message,
-                             level: level,
-                             forUser: forUser,
-                             file: filename,
-                             function: function,
-                             line: line)
+        latestEntry <- entry
     }
     
     // MARK: - Observability
@@ -92,12 +102,18 @@ public class Log
     
     public struct Entry: Codable, Equatable
     {
-        var message = ""
-        var level = Level.info
-        var forUser = false
-        var file = ""
-        var function = ""
-        var line = 0
+        public var context: String
+        {
+            return "\(file), \(function), line \(line)"
+        }
+        
+        public var message = ""
+        public var title: String?
+        public var level = Level.info
+        public var forUser = false
+        public var file = ""
+        public var function = ""
+        public var line = 0
     }
     
     // MARK: - Log Levels
