@@ -1,34 +1,40 @@
 public func log(error: String,
+                forUser: Bool = false,
                 file: String = #file,
                 function: String = #function,
                 line: Int = #line)
 {
     Log.shared.log(message: error,
                    level: .error,
+                   forUser: forUser,
                    file: file,
                    function: function,
                    line: line)
 }
 
 public func log(warning: String,
+                forUser: Bool = false,
                 file: String = #file,
                 function: String = #function,
                 line: Int = #line)
 {
     Log.shared.log(message: warning,
                    level: .warning,
+                   forUser: forUser,
                    file: file,
                    function: function,
                    line: line)
 }
 
 public func log(_ message: String,
+                forUser: Bool = false,
                 file: String = #file,
                 function: String = #function,
                 line: Int = #line)
 {
     Log.shared.log(message: message,
                    level: .info,
+                   forUser: forUser,
                    file: file,
                    function: function,
                    line: line)
@@ -46,6 +52,7 @@ public class Log
     
     public func log(message: String,
                     level: Level = .info,
+                    forUser: Bool = false,
                     file: String = #file,
                     function: String = #function,
                     line: Int = #line)
@@ -70,6 +77,13 @@ public class Log
         logString += " (\(filename), \(function), line \(line))"
         
         print(logString)
+        
+        latestEntry <- Entry(message: message,
+                             level: level,
+                             forUser: forUser,
+                             file: filename,
+                             function: function,
+                             line: line)
     }
     
     // MARK: - Observability
@@ -80,6 +94,7 @@ public class Log
     {
         var message = ""
         var level = Level.info
+        var forUser = false
         var file = ""
         var function = ""
         var line = 0
