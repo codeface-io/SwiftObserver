@@ -56,6 +56,8 @@ public class Log
     
     // MARK: - Logging
     
+    public static var prefix = ""
+    
     public func log(message: String,
                     title: String? = nil,
                     level: Level = .info,
@@ -66,7 +68,7 @@ public class Log
     {
         guard level.integer >= minimumLevel.integer else { return }
         
-        var logString = ""
+        var logString = Log.prefix
         
         if level != .info
         {
