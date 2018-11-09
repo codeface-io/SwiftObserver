@@ -30,7 +30,7 @@ public func log(warning: String,
                    line: line)
 }
 
-public func log(_ message: String,
+public func log(_ message: String = "",
                 title: String? = nil,
                 forUser: Bool = false,
                 file: String = #file,
