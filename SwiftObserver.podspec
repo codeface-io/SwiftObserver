@@ -2,7 +2,7 @@
     
     # meta infos
     s.name             = "SwiftObserver"
-    s.version          = "1.3.2"
+    s.version          = "1.4.0"
     s.summary          = "A Reactive Swift Toolbox"
     s.description      = "A Sweet Little 'Use and Forget' Toolbox for Reactive Swift Programming"
     s.homepage         = "http://flowtoolz.com"
@@ -13,7 +13,7 @@
     
     # compiler requirements
     s.requires_arc = true
-    s.swift_version = '4.0'
+    s.swift_version = '4.2'
     
     # minimum platform SDKs
     s.platforms = {:ios => "9.0", :osx => "10.10", :tvos => "9.0"}
@@ -27,5 +27,5 @@
     s.source_files = 'Code/**/*.swift'
 
     # dependencies
-    s.dependency 'SwiftyToolz', '1.1.0'
+    s.dependency 'SwiftyToolz', '~> 1.2.0'
 end
