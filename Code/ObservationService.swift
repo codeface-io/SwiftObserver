@@ -71,10 +71,7 @@ public class ObservationService
     
     public static func removeObserver(_ observer: AnyObject)
     {
-        for observation in observations.values
-        {
-            observation.observerList.remove(observer)
-        }
+        observations.values.forEach { $0.observerList.remove(observer) }
         
         observations.remove { $0.observerList.isEmpty }
     }
@@ -118,10 +115,7 @@ public class ObservationService
     
     public static func removeAbandonedObservations()
     {
-        for observation in observations.values
-        {
-            observation.observerList.removeNilObservers()
-        }
+        observations.values.forEach { $0.observerList.removeNilObservers() }
         
         observations.remove { $0.observed == nil || $0.observerList.isEmpty }
     }
