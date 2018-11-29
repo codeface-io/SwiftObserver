@@ -1,3 +1,18 @@
+public func log(_ error: Error,
+                title: String? = nil,
+                forUser: Bool = false,
+                file: String = #file,
+                function: String = #function,
+                line: Int = #line)
+{
+    log(error: error.localizedDescription,
+        title: title,
+        forUser: forUser,
+        file: file,
+        function: function,
+        line: line)
+}
+
 public func log(error: String,
                 title: String? = nil,
                 forUser: Bool = false,
