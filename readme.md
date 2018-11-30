@@ -31,8 +31,8 @@ If you'd like some UI tools based on SwiftObserver, have a look at [UIObserver](
 * [4. Custom Observables](#custom-observables)
 * [5. Create Observables as Mappings of Others](#mappings)
 * [6. One Combine To Rule Them All](#combine)
-* [7. Messenger? Notifier? Dispatcher? It's All Observation](#messenger)
-* [8. Why the Hell Another Reactive Library?](#why)
+* [7. Why the Hell Another Reactive Library?](#why)
+* [Appendix: Special Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/special-patterns.md)
 
 ## <a id="installation"></a>Installation
 
@@ -392,51 +392,8 @@ Now let's look at some of the goodies of SwiftObserver ...
 * This combined observation does not duplicate the data of any observed object. When one object sends an update, the involved closures pull update information of other observed objects directly from them.
 
 	Not having to duplicate data where multiple things must be observed is one of the reasons to use these combined observations. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the data sent from observables.
-	
-## <a id="messenger"></a>7. Messenger? Notifier? Dispatcher? It's All Observation
 
-* When observer and observable need to be more decoupled, it is common to use a mediating observable through which any object can anonymously send updates. An example of this mediator is `Foundation`'s `NotificationCenter`.
-
-    This extension of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, *Dispatcher*, *Event Emitter* or *Decoupler*. Its main differences to direct observation are:
-    
-    - An observer may indirectly observe multiple other objects.
-    - Observers don't care who triggered an update.
-    - Observer types don't need to depend on the types that trigger updates.
-    - Updates function more as messages (notifications, events) than as artifacts of raw data.
-    - Every object can trigger updates, without adopting any protocol.
-    - Multiple objects may share the same update type and trigger the same updates.
-
-* You can simply use a global (mapped) `Variable` as a mediating messenger:
-
-    ~~~swift
-    let textMessenger = Var<String>().new()
-    observer.observe(textMessenger)
-    {
-        textMessage in
-        
-        // respond to text message
-    }
-    
-    textMessenger.send("some message")
-    ~~~
-    
-* An `Observer` can use the select filter to observe one specific message:
-
-    ~~~swift
-    observer.observe(textMessenger, select: "event name")
-    {
-        // respond to "event name"
-    }
-    ~~~
-    
-* Of course, if you'd wanna acces the latest message, just backup the messenger with a variable:
-
-    ~~~swift
-    let currentMessage = Var<String>()
-    let textMessenger = currentMessage.new()
-    ~~~
-    
-## <a id="why"></a>8. Why the Hell Another Reactive Library?
+## <a id="why"></a>7. Why the Hell Another Reactive Library?
 
 SwiftObserver diverges from convention. It follows the reactive idea in generalizing the *Observer Pattern*. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something we love.
 
