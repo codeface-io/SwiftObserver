@@ -32,7 +32,7 @@ If you'd like some UI tools based on SwiftObserver, have a look at [UIObserver](
 * [5. Create Observables as Mappings of Others](#mappings)
 * [6. One Combine To Rule Them All](#combine)
 * [7. Why the Hell Another Reactive Library?](#why)
-* [Appendix: Special Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/special-patterns.md)
+* [Appendix: Special Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/special-patterns.md#special-patterns)
 
 ## <a id="installation"></a>Installation
 
