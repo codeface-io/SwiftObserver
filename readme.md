@@ -5,28 +5,24 @@
 
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?longCache=true&style=flat-square)](https://github.com/Carthage/Carthage)  [![Pod Version](https://img.shields.io/cocoapods/v/SwiftObserver.svg?longCache=true&style=flat-square)](http://cocoapods.org/pods/SwiftObserver)
 
-SwiftObserver is a lean framework for reactive programming in pure Swift. As such it covers all variations of the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern), which adresses the central challenge of implementing a clean architecture: [Dependency Inversion](https://en.wikipedia.org/wiki/Dependency_inversion_principle).
+SwiftObserver is a lightweight framework for reactive Swift. It's unconventional, [covered by tests](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests.swift) and designed to be readable, usable, flexible, non-intrusive, simple and safe.
 
-SwiftObserver is [covered by tests](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests.swift) and designed to be:
+[Reactive programming]((https://en.wikipedia.org/wiki/Reactive_programming)) adresses the central challenge of implementing a clean architecture: [Dependency Inversion](https://en.wikipedia.org/wiki/Dependency_inversion_principle). SwiftObserver breaks reactive programming down to its essence, which is the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern).
 
-* :white_check_mark: usable  
-* :white_check_mark: flexible  
-* :white_check_mark: non-intrusive  
-* :white_check_mark: readable  
-* :white_check_mark: simple  
-* :white_check_mark: safe
+SwiftObserver is just 800 lines of code, but it's also 900 hours of work, thinking it through, letting features go for the sake of simplicity, and battle-testing it [in practice](http://flowlistapp.com).
 
 ## Contents
 
 * [Installation](#installation)
-* [1. Keep It Simple](#kiss)
-* [2. The Easiest Memory Management](#memory)
+* [1. Getting Started](#kiss)
+* [2. Memory Management](#memory)
 * [3. Variables](#variables)
 * [4. Custom Observables](#custom-observables)
-* [5. Create Observables as Mappings of Others](#mappings)
-* [6. One Combine To Rule Them All](#combine)
+* [5. Mappings](#mappings)
+* [6. Combined Observation](#combine)
 * [7. Why the Hell Another Reactive Library?](#why)
-* [Appendix: Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/special-patterns.md#specific-patterns)
+* [Appendix](#appendix)
+    *  [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/special-patterns.md#specific-patterns)
 
 ## <a id="installation"></a>Installation
 
@@ -71,7 +67,7 @@ Observers typically adopt the `Observer` protocol. For an object to be observabl
 
 We'll get to each of these. First, something else ...
 
-## <a id="memory"></a>2. The Easiest Memory Management
+## <a id="memory"></a>2. Memory Management
 
 * There are no Disposables, Cancelables, Tokens, DisposeBags etc to handle. Simply call `stopAllObserving()` on an observer, and its references are removed from everything it observes:
 
@@ -198,7 +194,7 @@ We'll get to each of these. First, something else ...
 	}
 	~~~
 	
-* Using `latestUpdate` property together with an `UpdateType` that is an `Update<_>`, a custom `Observable` can have a state and be used like a variable:
+* Using `latestUpdate` property together with an `UpdateType` that is an `Update`, a custom `Observable` can have a state and be used similar to a `Variable`:
 
 	~~~swift
 	class Model: Observable
@@ -221,9 +217,16 @@ We'll get to each of these. First, something else ...
 	}
 	~~~
 
-* By adopting the `Observable` protocol, a class adopts implementations of all functions and properties in `Observable`.
+It is good practice to remove your observers before you die:
 
-## <a id="mappings"></a>5. Create Observables as Mappings of Others
+~~~swift
+class Model: Observable {
+   deinit { removeObservers() }
+   // ...
+}
+~~~
+
+## <a id="mappings"></a>5. Mappings
 
 * Create a new observable object by mapping a given one:
 
@@ -345,7 +348,7 @@ We'll get to each of these. First, something else ...
     
     Being able to define observable mappings independent of any underlying mapped observable can help, for instance, in developing view models.
 
-## <a id="combine"></a>6. One Combine To Rule Them All
+## <a id="combine"></a>6. Combined Observation
 
 * You can observe up to three observable objects:
 
@@ -411,8 +414,12 @@ What you might not like:
 - Observers and observables must be objects and cannot be structs. (Of course, variables can hold any type of values and observables can send any type of updates.)
 - For now, your code must hold strong references to mappings that you want to observe. In other libraries, mappings are kept alive as a side effect of observing them.
 
-### Ending Note: Focus On Meaning Not On Technicalities
+### Focus On Meaning Not On Technicalities
 
 * Because classes have to implement nothing to be observable, you can keep model and logic code independent of any observer frameworks and techniques. If the model layer had to be stuffed with heavyweight constructs just to be observed, it would become a technical issue instead of an easy to change,  meaningful, direct representation of domain-, business- and view logic.
 * Unlike established Swift implementations of the Redux approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you freely model your domain-, business- and view logic with all your familiar design patterns and types. There are no restrictions on how you organize and store your app state.
 * Unlike established Swift implementations of the Reactive approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you in control of the ancestral tree of your classes. There is not a single class that you have to inherit. Therefore, all your classes can be directly observed, even views and view controllers.
+
+## <a id="appendix"></a>Appendix
+
+* [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/special-patterns.md#specific-patterns)
