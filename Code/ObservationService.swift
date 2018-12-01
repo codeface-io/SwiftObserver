@@ -1,13 +1,18 @@
 import SwiftyToolz
 
-public class ObservationService
+public func removeAbandonedObservations()
+{
+    ObservationService.removeAbandonedObservations()
+}
+
+class ObservationService
 {
     // MARK: - Add Observers
     
-    public static func add<O: Observable>(_ observer: AnyObject,
-                                          of observable: O,
-                                          filter keep: ((O.UpdateType) -> Bool)? = nil,
-                                          receive: @escaping (O.UpdateType) -> Void)
+    static func add<O: Observable>(_ observer: AnyObject,
+                                   of observable: O,
+                                   filter keep: ((O.UpdateType) -> Bool)? = nil,
+                                   receive: @escaping (O.UpdateType) -> Void)
     {
         observation(of: observable).observerList.add(observer)
         {
@@ -51,7 +56,7 @@ public class ObservationService
     
     // MARK: - Remove Observers
     
-    public static func remove(_ observer: AnyObject, of observed: AnyObject)
+    static func remove(_ observer: AnyObject, of observed: AnyObject)
     {
         guard let observation = observations[hashValue(observed)] else { return }
         
@@ -63,23 +68,23 @@ public class ObservationService
         }
     }
     
-    public static func removeObservers(of observed: AnyObject)
+    static func removeObservers(of observed: AnyObject)
     {
         observations[hashValue(observed)] = nil
     }
     
-    public static func removeObserver(_ observer: AnyObject)
+    static func removeObserver(_ observer: AnyObject)
     {
         observations.values.forEach { $0.observerList.remove(observer) }
         observations.remove { $0.observerList.isEmpty }
     }
     
-    public static func removeObservationsOfDeadObservables()
+    static func removeObservationsOfDeadObservables()
     {
         observations.remove { $0.observed == nil }
     }
     
-    public static func removeDeadObservers(of observed: AnyObject)
+    static func removeDeadObservers(of observed: AnyObject)
     {
         guard let observerList = observations[hashValue(observed)]?.observerList else
         {
@@ -93,7 +98,7 @@ public class ObservationService
     
     // MARK: - Send Updates to Observers
     
-    public static func send(_ update: Any?, toObserversOf observed: AnyObject)
+    static func send(_ update: Any?, toObserversOf observed: AnyObject)
     {
         let observableHash = hashValue(observed)
         
@@ -111,7 +116,7 @@ public class ObservationService
     
     // MARK: - Global Clean Up
     
-    public static func removeAbandonedObservations()
+    fileprivate static func removeAbandonedObservations()
     {
         observations.values.forEach { $0.observerList.removeNilObservers() }
         observations.remove { $0.observed == nil || $0.observerList.isEmpty }
@@ -131,7 +136,7 @@ public class ObservationService
     
     // MARK: - External Observables
     
-    static func removeDeadObserversFromExternalObservables()
+    private static func removeDeadObserversFromExternalObservables()
     {
         externalObservables.remove { $0.observable == nil }
         externalObservables.values.forEach { $0.observable?.removeDeadObservers() }
