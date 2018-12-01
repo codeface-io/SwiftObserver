@@ -69,153 +69,132 @@ We'll get to each of these. First, something else ...
 
 ## <a id="memory"></a>2. Memory Management
 
-* There are no Disposables, Cancelables, Tokens, DisposeBags etc to handle. Simply call `stopAllObserving()` on an observer, and its references are removed from everything it observes:
+There are no Disposables, Cancelables, Tokens, DisposeBags etc to handle. Simply call `stopAllObserving()` on an observer, and its references are removed from everything it observes:
 
-	~~~swift
-	class Controller: Observer
-	{
-	   deinit { stopAllObserving() }
-	}
-	~~~
+~~~swift
+class Controller: Observer {
+   deinit { stopAllObserving() }
+}
+~~~
 	
-* Although you don't need to handle tokens after starting observation, all objects are internally hashed, so performance is never an issue.
+Although you don't need to handle tokens after starting observation, all objects are internally hashed, so performance is never an issue.
 
-* There are four more variants of ending observation:
+There are four more variants of ending observation:
 
-    * Stop observing a specific observable: `observer.stopObserving(observable)`
-    * Stop observing observables that don't exist anymore: `observer.stopObservingDeadObservables()`
-    * Remove observers that don't exist anymore: `observable.removeDeadObservers()`
-    * Remove all observers: `observable.removeObservers()`
+* Stop observing a specific observable: `observer.stopObserving(observable)`
+* Stop observing observables that don't exist anymore: `observer.stopObservingDeadObservables()`
+* Remove observers that don't exist anymore: `observable.removeDeadObservers()`
+* Remove all observers: `observable.removeObservers()`
 
-* If you systematically use the above functions or just call `stopAllObserving()` in `deinit` of all observers, observation itself cannot cause memory leaks.
+If you systematically use the above functions or just call `stopAllObserving()` in `deinit` of all observers, observation itself cannot cause memory leaks.
 
-    However, should you still feel the need to erase orphaned observations at some point, just call `removeAbandonedObservations()`. It will flush out observations who lost their observable or lost their observers.
+However, should you still feel the need to erase orphaned observations at some point, just call `removeAbandonedObservations()`. It will flush out observations who lost their observable or lost their observers.
 
 ## <a id="variables"></a>3. Variables
 
-* A variable is of type `Variable<Value>` (alias `Var<Value>`) and holds a `value` of type `Value`. Values must be `Codable` and `Equatable`. Creating a variable without initial value sets the value `nil`. You may use the `<-` operator to set a value:
+A variable is of type `Variable<Value>` (alias `Var<Value>`) and holds a `value` of type `Value`. Values must be `Codable` and `Equatable`. Creating a variable without initial value sets the value `nil`. You may use the `<-` operator to set a value:
 
-	~~~swift
-	let number = Var(13)
-	number.value = 23
-	number.value = nil
-	number <- 42
+~~~swift
+let number = Var(13)
+number.value = 23
+number.value = nil
+number <- 42
 	
-	let nilText = Var<String>()
-	~~~
+let nilText = Var<String>()
+~~~
 		
-* An observed variable sends updates of type `Update<Value>` which gives access to the old and new value:
+An observed variable sends updates of type `Update<Value>` which gives access to the old and new value:
 		
-	~~~swift
-	observer.observe(variable)
-	{
-	   update in
-    	   
-	   if update.old == update.new
-	   {
-	       // update was manually triggered, no value change
-	   }
-	}
-	~~~
+~~~swift
+observer.observe(variable) { update in
+   if update.old == update.new {
+       // update was manually triggered, no value change
+   }
+}
+~~~
 		
-* A Variable sends an update whenever its value actually changes. Just starting to observe it does **not** trigger an update. This keeps it simple, predictable and consistent, in particular in combination with mappings.
+A Variable sends an update whenever its value actually changes. Just starting to observe it does **not** trigger an update. This keeps it simple, predictable and consistent, in particular in combination with mappings.
 
-    You can always call `send()` on any observable to trigger an update. In that case, a `Variable` would send an `Update` in which `old` and `new` value are equal.
+You can always call `send()` on any observable to trigger an update. In that case, a `Variable` would send an `Update` in which `old` and `new` value are equal.
     
-* Because a `Var` is `Codable`, objects composed of these variables are still automatically encodable and decodable in Swift 4, simply by adopting the `Codable` protocol:
+Because a `Var` is `Codable`, objects composed of these variables are still automatically encodable and decodable in Swift 4, simply by adopting the `Codable` protocol:
 
-	~~~swift
-	class Model: Codable
-	{
-	   private(set) var text = Var("A String Variable")
-	}
+~~~swift
+class Model: Codable {
+   private(set) var text = Var("A String Variable")
+}
 	
-	let model = Model()
+let model = Model()
 	
-	if let modelJson = try? JSONEncoder().encode(model)
-	{
-	   print(String(data: modelJson, encoding: .utf8))
-	   
-	   let decodedModel = try? JSONDecoder().decode(Model.self, from: modelJson)
-	}
-	~~~
+if let modelJson = try? JSONEncoder().encode(model) {
+   print(String(data: modelJson, encoding: .utf8))
+   let decodedModel = try? JSONDecoder().decode(Model.self, from: modelJson)
+}
+~~~
 	
-    Notice that the `text` object is a `var` instead of a `let`. It cannot be a constant because Swift's decoder must set it.
+Notice that the `text` object is a `var` instead of a `let`. It cannot be a constant because Swift's decoder must set it.
     
-    However, other classes are only supposed to set `text.value` and not `text` itself, so we made the setter private via `private(set)`.
+However, other classes are only supposed to set `text.value` and not `text` itself, so we made the setter private via `private(set)`.
 	
-* Be aware that you must hold a reference to an observable object that you want to observe. Observation alone creates no strong reference to it. So observing an ad-hoc created variable makes no sense:
+Be aware that you must hold a reference to an observable object that you want to observe. Observation alone creates no strong reference to it. So observing an ad-hoc created variable makes no sense:
 
-	~~~swift
-	observer.observe(Var("friday 13"))
-	{
-	   update in
-		
-	   // FAIL! The observed variable has local scope and will deinit!
-	}
-	~~~
+~~~swift
+observer.observe(Var("friday 13")) { update in
+   // FAIL! The observed variable has local scope and will deinit!
+}
+~~~
 	
-* A `Variable` appends new values to an internal queue, so all its observers get to process a value change before the next change takes effect. This is important in situations where a variable has multiple observers and at least one of them changes the variable value in reaction to a value change...
+A `Variable` appends new values to an internal queue, so all its observers get to process a value change before the next change takes effect. This is important in situations where a variable has multiple observers and at least one of them changes the variable value in reaction to a value change...
 
 ## <a id="custom-observables"></a>4. Custom Observables
 
-* Custom observables just need to adopt the `Observable` protocol and provide a `var latestUpdate: UpdateType { get }` of the type of updates they wish to send:
+Custom observables just need to adopt the `Observable` protocol and provide a `var latestUpdate: UpdateType { get }` of the type of updates they wish to send:
 
-    ~~~swift
-    class Model: Observable
-    {
-        var latestUpdate: Event { return .didNothing }
-	   
-        enum Event { case didNothing, didUpdate, willDeinit }
-    }
-    ~~~
+~~~swift
+class Model: Observable {
+    var latestUpdate: Event { return .didNothing }
+    enum Event { case didNothing, didUpdate, willDeinit }
+}
+~~~
 	
-	Swift will infer the update type from `latestUpdate`, so you don't need to write `typealias UpdateType = Event`.
+Swift will infer the update type from `latestUpdate`, so you don't need to write `typealias UpdateType = Event`.
 
-* Combined observations sometimes request the latest update from the observed objects. Therefor, observables offer the `latestUpdate` property, which is also a way for clients to actively get the current update state in addition to observing it.
+Combined observations sometimes request the latest update from the observed objects. Therefor, observables offer the `latestUpdate` property, which is also a way for clients to actively get the current update state in addition to observing it.
 
-* The `latestUpdate` property should typically return the last update that was sent or a value that indicates that nothing changed. But it can be optional and may (always) return `nil`:
+The `latestUpdate` property should typically return the last update that was sent or a value that indicates that nothing changed. But it can be optional and may (always) return `nil`:
 
-	~~~swift
-	class MinimalObservable: Observable
-	{
-	   var latestUpdate: String? { return nil }
-	}
-	~~~
+~~~swift
+class MinimalObservable: Observable {
+   var latestUpdate: String? { return nil }
+}
+~~~
 
-* Updates are custom and yet fully typed. A custom observable sends whatever it likes whenever it wants via `send(update)`:
+Updates are custom and yet fully typed. A custom observable sends whatever it likes whenever it wants via `send(update)`:
 
-	~~~swift
-	class Model: Observable
-	{
-	   deinit { send(.willDeinit) }
-	   
-	   // ...
-	}
-	~~~
+~~~swift
+class Model: Observable {
+   deinit { send(.willDeinit) }
+   // ...
+}
+~~~
 	
-* Using `latestUpdate` property together with an `UpdateType` that is an `Update`, a custom `Observable` can have a state and be used similar to a `Variable`:
+Using `latestUpdate` property together with an `UpdateType` that is an `Update`, a custom `Observable` can have a state and be used similar to a `Variable`:
 
-	~~~swift
-	class Model: Observable
-	{
-	   var latestUpdate: Update<String?>
-	   {
-	      return Update(state, state)
-	   }
-	   
-	   var state: String?
-	   {
-	      didSet
-	      {
-	         if oldValue != state
-	         {
-	            send(Update(oldValue, state))
-	         }
-	      }
-	   }
-	}
-	~~~
+~~~swift
+class Model: Observable {
+   var latestUpdate: Update<String?> {
+      return Update(state, state)
+   }
+   
+   var state: String? {
+      didSet {
+         if oldValue != state {
+            send(Update(oldValue, state))
+         }
+      }
+   }
+}
+~~~
 
 It is good practice to remove your observers before you die:
 
@@ -228,154 +207,144 @@ class Model: Observable {
 
 ## <a id="mappings"></a>5. Mappings
 
-* Create a new observable object by mapping a given one:
+Create a new observable object by mapping a given one:
 
-	~~~swift
-	let text = Var<String>()
-	let latestTextLength = text.map { $0.new()?.count ?? 0 }
-	~~~
+~~~swift
+let text = Var<String>()
+let latestTextLength = text.map { $0.new()?.count ?? 0 }
+~~~
 	
-* A mapping is to be used like any other `Observable`:
-    * An observer of the mapping would have to stop observing the mapping itself, not the mapped observable.
-    * Observing a mapping does not keep it alive. You must hold a strong reference to a mapping that you want to use.
-    * You can call `send(update)` on a mapping as well as any other function or property declared by `Observable`.
+A mapping is to be used like any other `Observable`:
+    
+* An observer of the mapping would have to stop observing the mapping itself, not the mapped observable.
+* Observing a mapping does not keep it alive. You must hold a strong reference to a mapping that you want to use.
+* You can call `send(update)` on a mapping as well as any other function or property declared by `Observable`.
 	
 ### Map `Update` Onto `new` Value
 
-* Often we want to observe only the new value of a variable without the old one. The special mapping `new()` maps a value update onto its new value. It is available for all observables whos update type is `Update<_>` (not just for variables):
+Often we want to observe only the new value of a variable without the old one. The special mapping `new()` maps a value update onto its new value. It is available for all observables whos update type is `Update<_>` (not just for variables):
 
-    ~~~swift
-    let text = Var<String>()
-    let newestTextLength = text.new().map { $0?.count ?? 0 }
-    ~~~
+~~~swift
+let text = Var<String>()
+let newestTextLength = text.new().map { $0?.count ?? 0 }
+~~~
     
 ### Filter Updates
 
-* The `filter(filter)` mapping filters updates:
+The `filter(filter)` mapping filters updates:
 
-    ~~~swift
-    let available = Var(100)
-    let scarcityWarning = available.new().unwrap(0).filter { $0 < 10 }
-    ~~~
+~~~swift
+let available = Var(100)
+let scarcityWarning = available.new().unwrap(0).filter { $0 < 10 }
+~~~
     
-* You can actually apply a prefilter with every general mapping:
+You can actually apply a prefilter with every general mapping:
     
-    ~~~swift
-    let available = Var(100)
-    let orderText = available.new().unwrap(0).map(prefilter: { $0 < 10 })
-    {
-        "Send me \(100 - $0) new ones."
-    }
-    ~~~
+~~~swift
+let available = Var(100)
+let orderText = available.new().unwrap(0).map(prefilter: { $0 < 10 }) {
+    "Send me \(100 - $0) new ones."
+}
+~~~
     
-* Observers can also filter single observations without creating any filter mapping at all:
+Observers can also filter single observations without creating any filter mapping at all:
     
-    ~~~swift
-    let available = Var(100)
-    let latestAvailable = available.new().unwrap(0)
+~~~swift
+let available = Var(100)
+let latestAvailable = available.new().unwrap(0)
     
-    observer.observe(latestAvailable, filter: { $0 < 10 })
-    {
-        lowNumber in
-        
-        // oh my god, less than 10 left!
-    }
-    ~~~
+observer.observe(latestAvailable, filter: { $0 < 10 }) { lowNumber in
+    // oh my god, less than 10 left!
+}
+~~~
     
-* Observers may also observe one specific event via the `select` parameter:
+Observers may also observe one specific event via the `select` parameter:
     
-    ~~~swift
-    let available = Var(100)
-    let latestAvailable = available.new().unwrap(0)
+~~~swift
+let available = Var(100)
+let latestAvailable = available.new().unwrap(0)
     
-    observer.observe(latestAvailable, select: 9)
-    {        
-        // oh my god, only 9 left!
-    }
-    ~~~
+observer.observe(latestAvailable, select: 9) {        
+    // oh my god, only 9 left!
+}
+~~~
     
-    Note that this response closure does not take any arguments because it only gets called for the specified event.
+Note that this response closure does not take any arguments because it only gets called for the specified event.
     
 ### Unwrap Optional Updates
 
-* The value of a `Var` is always optional. That's why you can create one without initial value and also set its value `nil`:
+The value of a `Var` is always optional. That's why you can create one without initial value and also set its value `nil`:
 
-	~~~swift
-	let number = Var<Int>()
-	number <- nil
-	~~~
+~~~swift
+let number = Var<Int>()
+number <- nil
+~~~
 	
-* However, we often don't want to deal with optionals down the line. You can easily get rid of the optional with the special mapping `unwrap(default)`:
+However, we often don't want to deal with optionals down the line. You can easily get rid of the optional with the special mapping `unwrap(default)`:
 	
-	~~~swift
-	let latestUnwrappedNumber = number.new().unwrap(0)
+~~~swift
+let latestUnwrappedNumber = number.new().unwrap(0)
 
-	observer.observe(latestUnwrappedNumber)
-	{
-	   newInteger in
-		
-	   // newInteger is not optional!
-	}
-	~~~	
+observer.observe(latestUnwrappedNumber) { newInteger in
+   // newInteger is not optional!
+}
+~~~	
 
-* The mapping will replace `nil` values with the default. If you want the mapping to never actively send the default, you can apply a filter before it:
+The mapping will replace `nil` values with the default. If you want the mapping to never actively send the default, you can apply a filter before it:
     
-    ~~~swift
-	let latestUnwrappedNumber = number.new().filter({ $0 != nil }).unwrap(0)
-	~~~	
+~~~swift
+let latestUnwrappedNumber = number.new().filter({ $0 != nil }).unwrap(0)
+~~~	
     
 
 ### Chain Mappings Together
 
-* A mapping holds a `weak` reference to its mapped observable. You can check whether the observable still exists and even reset it via `mapping.observable`. When a mapping's observabe changes, the mapping sends an update.
+A mapping holds a `weak` reference to its mapped observable. You can check whether the observable still exists and even reset it via `mapping.observable`. When a mapping's observabe changes, the mapping sends an update.
 
-* You must have some strong reference to a mapped observable because the mapping has none. However, when you chain mappings together, you only have to hold the last mapping strongly because chaining actually combines them into one:
+You must have some strong reference to a mapped observable because the mapping has none. However, when you chain mappings together, you only have to hold the last mapping strongly because chaining actually combines them into one:
 
-    ~~~swift
-    let newUnwrappedText = text.new().unwrap("")
-    ~~~
+~~~swift
+let newUnwrappedText = text.new().unwrap("")
+~~~
 
-    The intermediate mapping created by `new()` will die immediately, but the resulting `newUnwrappedText` will still live and be fully functional.
+The intermediate mapping created by `new()` will die immediately, but the resulting `newUnwrappedText` will still live and be fully functional.
     
-* Because chained mappings get combined into one mapping, the `observable` property on a mapping never refers to another mapping. It always refers to the original mapped `Observable`. In the above example, `newUnwrappedText.observable` would refer to `text`.
+Because chained mappings get combined into one mapping, the `observable` property on a mapping never refers to another mapping. It always refers to the original mapped `Observable`. In the above example, `newUnwrappedText.observable` would refer to `text`.
 
-* One useful consequence of this chaining is that you can create a mapping without an actual underlying observable. Use an ad-hoc dummy observable to create the mapping and set the actual observable later:
+One useful consequence of this chaining is that you can create a mapping without an actual underlying observable. Use an ad-hoc dummy observable to create the mapping and set the actual observable later:
 
-    ~~~swift
-    let mappedTitle = Var<String>().new().unwrap("untitled")
-    mappedTitle.observable = titleStringVariable
-    ~~~
+~~~swift
+let mappedTitle = Var<String>().new().unwrap("untitled")
+mappedTitle.observable = titleStringVariable
+~~~
     
-    Being able to define observable mappings independent of any underlying mapped observable can help, for instance, in developing view models.
+Being able to define observable mappings independent of any underlying mapped observable can help, for instance, in developing view models.
 
 ## <a id="combine"></a>6. Combined Observation
 
-* You can observe up to three observable objects:
+You can observe up to three observable objects:
 
-	~~~swift
-	let newText = text.new()
-	let number = Var(42)
-	let model = Model()
+~~~swift
+let newText = text.new()
+let number = Var(42)
+let model = Model()
 	
-	observer.observe(newText, number, model)
-	{
-	   textValue, numberUpdate, event in
-		
-	   // process new combination of String, number update and event
-	}
-	~~~
+observer.observe(newText, number, model) { textValue, numberUpdate, event in
+   // process new combination of String, number update and event
+}
+~~~
 	
-    This does not create any new observable object, and the observer won't need to remove itself from anything other than the three observed objects. Of course, memory management is no concern if the observer calls `stopAllObserving()` at some point.
+This does not create any new observable object, and the observer won't need to remove itself from anything other than the three observed objects. Of course, memory management is no concern if the observer calls `stopAllObserving()` at some point.
 
-* You won't need to distinguish different combining functions.
+You won't need to distinguish different combining functions.
 
-	Other reactive libraries dump at least `merge`, `zip` and `combineLatest` on your brain. [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) avoids all that by offering the most universal form of combined observation, in which the update trigger can be identified. (In the worst case, you must ensure the involved custom observables send updates of type `Update<_>`.) All other combine functions could be built on top of that using mappings.
+* Other reactive libraries dump at least `merge`, `zip` and `combineLatest` on your brain. [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) avoids all that by offering the most universal form of combined observation, in which the update trigger can be identified. (In the worst case, you must ensure the involved custom observables send updates of type `Update<_>`.) All other combine functions could be built on top of that using mappings.
 	
-	 Anyway, this universal mutual observing is all you need in virtually all cases. You're free to focus on the meaning of combined observations and forget the syntax!
+* Anyway, this universal mutual observing is all you need in virtually all cases. You're free to focus on the meaning of combined observations and forget the syntax!
 
-* This combined observation does not duplicate the data of any observed object. When one object sends an update, the involved closures pull update information of other observed objects directly from them.
+This combined observation does not duplicate the data of any observed object. When one object sends an update, the involved closures pull update information of other observed objects directly from them.
 
-	Not having to duplicate data where multiple things must be observed is one of the reasons to use these combined observations. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the data sent from observables.
+Not having to duplicate data where multiple things must be observed is one of the reasons to use these combined observations. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the data sent from observables.
 
 ## <a id="why"></a>7. Why the Hell Another Reactive Library?
 
