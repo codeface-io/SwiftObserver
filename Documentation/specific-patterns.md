@@ -2,7 +2,7 @@
 
 This docuemnt describes a few patterns that emerged from usage.
 
-In general, SwiftObserver meets all needs for callbacks and continuous propagation of data up the control hierarchy (against the direction of control). Typical applications are the propagation of data from domain model to use cases, from use cases to view models, from view models to views, and from views to view controllers.
+In general, SwiftObserver meets almost all needs for callbacks and continuous propagation of data up the control hierarchy (against the direction of control). Typical applications are the propagation of data from domain model to use cases, from use cases to view models, from view models to views, and from views to view controllers.
 
 ## Messenger
 
@@ -21,6 +21,7 @@ You can simply use a (mapped) `Variable` as a mediating messenger:
 
 ~~~swift
 let textMessenger = Var<String>().new()
+
 observer.observe(textMessenger) { textMessage in
     // respond to text message
 }
@@ -45,7 +46,7 @@ let textMessenger = currentMessage.new()
 
 ## Owned Messenger
 
-An * Owned Messenger* is a helpful, and sometimes necessary, application of the *Messenger* pattern.
+An *Owned Messenger* is a helpful, and sometimes necessary, application of the *Messenger* pattern.
 
 Instead of making a class `C` directly observable you give it an observable messenger as a constant. `C` sends its updates via its messenger, and observers of `C` actually observe the messenger of `C`. We recommend using a `Variable` for this:
 
