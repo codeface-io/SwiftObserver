@@ -7,7 +7,7 @@
 
 SwiftObserver is a lightweight framework for reactive Swift. It's unconventional, [covered by tests](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests.swift) and designed to be readable, usable, flexible, non-intrusive, simple and safe.
 
-[Reactive programming]((https://en.wikipedia.org/wiki/Reactive_programming)) adresses the central challenge of implementing a clean architecture: [Dependency Inversion](https://en.wikipedia.org/wiki/Dependency_inversion_principle). SwiftObserver breaks reactive programming down to its essence, which is the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern).
+[Reactive programming](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [Dependency Inversion](https://en.wikipedia.org/wiki/Dependency_inversion_principle). SwiftObserver breaks reactive programming down to its essence, which is the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern).
 
 SwiftObserver is just 800 lines of code, but it's also 900 hours of work, thinking it through, letting features go for the sake of simplicity, and battle-testing it [in practice](http://flowlistapp.com).
 
@@ -22,7 +22,7 @@ SwiftObserver is just 800 lines of code, but it's also 900 hours of work, thinki
 * [6. Combined Observation](#combine)
 * [7. Why the Hell Another Reactive Library?](#why)
 * [Appendix](#appendix)
-    *  [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/special-patterns.md#specific-patterns)
+    *  [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns)
 
 ## <a id="installation"></a>Installation
 
@@ -391,4 +391,4 @@ What you might not like:
 
 ## <a id="appendix"></a>Appendix
 
-* [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/special-patterns.md#specific-patterns)
+* [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns)
