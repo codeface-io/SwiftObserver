@@ -43,20 +43,20 @@ SwiftObserver can be installed via [Carthage](https://github.com/Carthage/Cartha
 Add this line to your Cartfile:
 
 ~~~
-github "flowtoolz/SwiftObserver"
+github 'flowtoolz/SwiftObserver'
 ~~~
 
 ### Cocoapods
 
 Add this line to your Podfile:
 
-~~~
+~~~ruby
 pod 'SwiftObserver'
 ~~~
 
 ## <a id="kiss"></a>1. Keep It Simple
 
-No need to learn a bunch of arbitrary metaphors, terms or types:
+No need to learn a bunch of arbitrary metaphors, terms or types. SwiftObserver is simple:
 
 > Objects observe other objects.<br>
 > Or a tad more technically: Observed objects send updates to their observers. 
@@ -69,11 +69,11 @@ dog.observe(sky) { color in
 }
 ~~~
 
-Observers typically adopt the `Observer` protocol. For an object to be observable, it must conform to protocol `Observable`. You may use `Observable` in three ways:
+Observers typically adopt the `Observer` protocol. For an object to be observable, it must conform to protocol `Observable`. You get `Observable` objects in three ways:
 
-1. Use a pre-built `Variable`. It's an `Observable` that holds a value and sends value updates.
-2. Implement your own custom `Observable`.
-3. Create a an `Observable` by mapping (transforming) the updates of a source `Observable`.
+1. Instantiate a `Variable`. It's an `Observable` that holds a value and sends value updates.
+2. Implement a custom `Observable` class.
+3. Create a an `Observable` that maps (transforms) updates from a source `Observable`.
 
 We'll get to each of these. First, something else ...
 
