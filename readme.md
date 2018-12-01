@@ -20,9 +20,9 @@ SwiftObserver is just 800 lines of code, but it's also 900 hours of work, thinki
 * [4. Custom Observables](#custom-observables)
 * [5. Mappings](#mappings)
 * [6. Combined Observation](#combine)
-* [7. Why the Hell Another Reactive Library?](#why)
 * [Appendix](#appendix)
     *  [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns)
+    *  [Why the Hell Another Reactive Library?](#why)
 
 ## <a id="installation"></a>Installation
 
@@ -346,7 +346,15 @@ This combined observation does not duplicate the data of any observed object. Wh
 
 Not having to duplicate data where multiple things must be observed is one of the reasons to use these combined observations. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the data sent from observables.
 
-## <a id="why"></a>7. Why the Hell Another Reactive Library?
+
+
+## <a id="appendix"></a>Appendix
+
+### Specific Patterns
+
+Patterns that emerged from using SwiftObserver [are documented over here](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns).
+
+### <a id="why"></a>Why the Hell Another Reactive Library?
 
 SwiftObserver diverges from convention. It follows the reactive idea in generalizing the *Observer Pattern*. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something we love.
 
@@ -383,12 +391,8 @@ What you might not like:
 - Observers and observables must be objects and cannot be structs. (Of course, variables can hold any type of values and observables can send any type of updates.)
 - For now, your code must hold strong references to mappings that you want to observe. In other libraries, mappings are kept alive as a side effect of observing them.
 
-### Focus On Meaning Not On Technicalities
+#### Focus On Meaning Not On Technicalities
 
 * Because classes have to implement nothing to be observable, you can keep model and logic code independent of any observer frameworks and techniques. If the model layer had to be stuffed with heavyweight constructs just to be observed, it would become a technical issue instead of an easy to change,  meaningful, direct representation of domain-, business- and view logic.
 * Unlike established Swift implementations of the Redux approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you freely model your domain-, business- and view logic with all your familiar design patterns and types. There are no restrictions on how you organize and store your app state.
 * Unlike established Swift implementations of the Reactive approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you in control of the ancestral tree of your classes. There is not a single class that you have to inherit. Therefore, all your classes can be directly observed, even views and view controllers.
-
-## <a id="appendix"></a>Appendix
-
-* [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns)

@@ -17,14 +17,11 @@ This extension of the *Observer Pattern* is sometimes called *Messenger*, *Notif
 - Every object can trigger updates, without adopting any protocol.
 - Multiple objects may share the same update type and trigger the same updates.
 
-You can simply use a global (mapped) `Variable` as a mediating messenger:
+You can simply use a (mapped) `Variable` as a mediating messenger:
 
 ~~~swift
 let textMessenger = Var<String>().new()
-observer.observe(textMessenger)
-{
-    textMessage in
-    
+observer.observe(textMessenger) { textMessage in
     // respond to text message
 }
     
@@ -34,37 +31,31 @@ textMessenger.send("some message")
 An `Observer` can use the select filter to observe one specific message:
 
 ~~~swift
-observer.observe(textMessenger, select: "event name")
-{
+observer.observe(textMessenger, select: "event name") {
     // respond to "event name"
 }
 ~~~
     
-Of course, if you'd wanna acces the latest message, just backup the messenger with a variable:
+Of course, if you wanna acces the latest message, just backup the messenger with a variable:
 
 ~~~swift
 let currentMessage = Var<String>()
 let textMessenger = currentMessage.new()
 ~~~
 
-## Nested Messenger
+## Owned Messenger
 
-A *Nested Messenger* is a helpful, and sometimes necessary, application of the *Messenger* pattern.
+An * Owned Messenger* is a helpful, and sometimes necessary, application of the *Messenger* pattern.
 
-Instead of making a class `C` directly observable you give it an observable messenger as a property. `C` sends its updates via its messenger, and observers of `C` actually observe the messenger of `C`:
+Instead of making a class `C` directly observable you give it an observable messenger as a constant. `C` sends its updates via its messenger, and observers of `C` actually observe the messenger of `C`. We recommend using a `Variable` for this:
 
 ~~~swift
 class C {
-   let messenger = Messenger()
-   
-   class Messenger: Observable {
-      latesUpdate = Event.didNothing
-      enum Event { case didNothing }
-   }
+   let messenger = Var<Event>()
 }
 ~~~
 
-An why would you want that? A *Nested Messenger* is necessary in three scenarios ...
+And why would you want that? An *Owned Messenger* is necessary in three scenarios ...
 
 ### 1. Require Specific Observability in an Interface
 
@@ -77,7 +68,9 @@ We don't want to define an abstract base class because objects conforming to the
 Now, we would want to define a protocol like this:
 
 ~~~swift
-protocol Database: Observable where UpdateType == DatabaseUpdate { }
+protocol Database: Observable where UpdateType == DatabaseUpdate {
+   // declare other database functionality
+}
 ~~~
 
 But this protocol could only be used as a generic constraint because it has an associated type requirement (Swift doesn't have generalized existentials yet).
@@ -94,16 +87,12 @@ var database: Database
 
 #### Solution
 
-We use a `Database` protocol but without a `where` clause. Instead, we define a `DatabaseMessenger` similar to *Nested Messengers* and require the `Database` to have such a messenger: 
+We use a `Database` protocol but without a `where` clause. Instead, we require the `Database` to have it own messenger: 
 
 ~~~swift
 protocol Database {
-   var messenger: DatabaseMessenger { get }
-   // declare other functionality
-}
-
-class DatabaseMessenger: Observable {
-   // declare update type etc.
+   var messenger: Var<DatabaseUpdate> { get }
+   // declare other database functionality
 }
 ~~~
 
@@ -117,34 +106,30 @@ When we create a custom `NSTextView` and try to observe it, we get a runtime err
 
 ~~~swift
 class MyTextView: NSTextView: Observable {
-   // declare update type etc.
+   var latestUpdate = TextEvent.none
 }
 
 let textView = MyTextView()
 
-observe(textView) { update in
-   // process update
+observe(textView) { textEvent in
+   // process event
 }
 
 // the error reads:
 // objc[89748]: Cannot form weak reference to instance (0x600000c8a5e0) of class NSTextView. It is possible that this object was over-released, or is in the process of deallocation.
 ~~~
 
-So, once again, we use a nested messenger:
+So, once again, we use an owned messenger:
 
 ~~~swift
 class MyTextView: NSTextView {
-   let messenger: Messenger
-   
-   class Messenger: Observable {
-      // declare update type etc.
-   }
+   let messenger = Var<TextEvent>
 }
 
 let textView = MyTextView()
 
-observe(textView.messenger) { update in
-   // process update
+observe(textView.messenger) { textEventUpdate in
+   // process event update
 }
 ~~~
 
