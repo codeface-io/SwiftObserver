@@ -25,7 +25,7 @@ If you'd like some UI tools based on SwiftObserver, have a look at [UIObserver](
 ## Contents
 
 * [Installation](#installation)
-* [1. Keep It Simple Sweety](#kiss)
+* [1. Keep It Simple](#kiss)
 * [2. The Easiest Memory Management](#memory)
 * [3. Variables](#variables)
 * [4. Custom Observables](#custom-observables)
@@ -54,39 +54,28 @@ Add this line to your Podfile:
 pod 'SwiftObserver'
 ~~~
 
-Now let's look at some of the goodies of SwiftObserver ...
+## <a id="kiss"></a>1. Keep It Simple
 
-## <a id="kiss"></a>1. Keep It Simple Sweety
+No need to learn a bunch of arbitrary metaphors, terms or types:
 
-* No need to learn a bunch of arbitrary metaphors, terms or types.
+> Objects observe other objects.<br>
+> Or a tad more technically: Observed objects send updates to their observers. 
 
-	Observers observe observable objects. Or the other way around: Observed objects send updates to their observers.
-	
-	That's it. Just readable code:
+That's it. Just readable code:
 
-	~~~swift
-	observer.observe(observable)
-	{
-	   update in
-	
-	   // respond to update
-	}
-	~~~
+~~~swift
+dog.observe(sky) { color in
+   // marvel at the sky changing its color
+}
+~~~
 
-* SwiftObserver's type system is radically simple:
-    <img src="https://raw.githubusercontent.com/flowtoolz/SwiftObserver/master/Documentation/TypeDependencies.jpg" style="width:100%;max-width:400px;display:block;margin-left:auto;margin-right:auto"/>
+Observers typically adopt the `Observer` protocol. For an object to be observable, it must conform to protocol `Observable`. You may use `Observable` in three ways:
 
-* Any object can observe. But observers who adopt the `Observer` protocol can use more convenient functions for starting and ending observation.
+1. Use a pre-built `Variable`. It's an `Observable` that holds a value and sends value updates.
+2. Implement your own custom `Observable`.
+3. Create a an `Observable` by mapping (transforming) the updates of a source `Observable`.
 
-* All observables conform to the `Observable` protocol. There are three ways to make use of `Observable`:
-	
-    1. Use a pre-built `Variable<Value>`
-
-    2. Implement your own custom `Observable`
-
-    3. Create a new `Observable` by mapping an existing one
-
-    We'll get to each of these. First, something else...
+We'll get to each of these. First, something else ...
 
 ## <a id="memory"></a>2. The Easiest Memory Management
 
