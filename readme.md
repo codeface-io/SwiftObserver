@@ -5,11 +5,9 @@
 
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?longCache=true&style=flat-square)](https://github.com/Carthage/Carthage)  [![Pod Version](https://img.shields.io/cocoapods/v/SwiftObserver.svg?longCache=true&style=flat-square)](http://cocoapods.org/pods/SwiftObserver)
 
-SwiftObserver is a framework for reactive programming in pure Swift. As such it covers all variations of the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern), which adresses the central challenge of implementing a clean architecture: [Dependency Inversion](https://en.wikipedia.org/wiki/Dependency_inversion_principle).
+SwiftObserver is a lean framework for reactive programming in pure Swift. As such it covers all variations of the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern), which adresses the central challenge of implementing a clean architecture: [Dependency Inversion](https://en.wikipedia.org/wiki/Dependency_inversion_principle).
 
-SwiftObserver should meet all your needs for callbacks and continuous propagation of data up the control hierarchy (against the direction of control). Typical applications are the propagation of data from domain model to use cases, from use cases to view models, from view models to views, and from views to view controllers.
-
-SwiftObserver is designed to be ...
+SwiftObserver is [covered by tests](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests.swift) and designed to be:
 
 * :white_check_mark: usable  
 * :white_check_mark: flexible  
@@ -17,10 +15,6 @@ SwiftObserver is designed to be ...
 * :white_check_mark: readable  
 * :white_check_mark: simple  
 * :white_check_mark: safe
-
-SwiftObserver is [covered by unit tests](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests.swift) which also demonstrate its use. 
-
-If you'd like some UI tools based on SwiftObserver, have a look at [UIObserver](https://github.com/flowtoolz/UIObserver).
 
 ## Contents
 
@@ -32,7 +26,7 @@ If you'd like some UI tools based on SwiftObserver, have a look at [UIObserver](
 * [5. Create Observables as Mappings of Others](#mappings)
 * [6. One Combine To Rule Them All](#combine)
 * [7. Why the Hell Another Reactive Library?](#why)
-* [Appendix: Special Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/special-patterns.md#special-patterns)
+* [Appendix: Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/special-patterns.md#specific-patterns)
 
 ## <a id="installation"></a>Installation
 
@@ -54,7 +48,7 @@ Add this line to your Podfile:
 pod 'SwiftObserver'
 ~~~
 
-## <a id="kiss"></a>1. Keep It Simple
+## <a id="kiss"></a>1. Getting Started
 
 No need to learn a bunch of arbitrary metaphors, terms or types. SwiftObserver is simple:
 
@@ -99,7 +93,7 @@ We'll get to each of these. First, something else ...
 
 * If you systematically use the above functions or just call `stopAllObserving()` in `deinit` of all observers, observation itself cannot cause memory leaks.
 
-    However, should you still feel the need to erase orphaned observations at some point, just call `ObservationService.removeAbandonedObservations()`. It will fush out observations who lost their observable or lost their observers.
+    However, should you still feel the need to erase orphaned observations at some point, just call `removeAbandonedObservations()`. It will flush out observations who lost their observable or lost their observers.
 
 ## <a id="variables"></a>3. Variables
 
@@ -227,9 +221,7 @@ We'll get to each of these. First, something else ...
 	}
 	~~~
 
-* By adopting the `Observable` protocol, a class adopts default implementations for all functions and properties in `Observable`.
-
-    When you replace a default implementation, you can still incorporate it in your custom implementation. The default implementations use the `ObservationService`. You'll find them in [Observable.swift](https://github.com/flowtoolz/SwiftObserver/blob/master/Code/Observable.swift).
+* By adopting the `Observable` protocol, a class adopts implementations of all functions and properties in `Observable`.
 
 ## <a id="mappings"></a>5. Create Observables as Mappings of Others
 
@@ -392,7 +384,7 @@ What you might like:
 - Super easy to understand and use
 - Remove observer from all observables with 1 function call
 - No cancellables or tokens to pass around and store
-- No irreversible memory leaks, since orphaned observations can always be flushed out via `ObservationService.removeAbandonedObservations()`.
+- No irreversible memory leaks, since orphaned observations can always be flushed out via `removeAbandonedObservations()`.
 - Ability to pull current update from observable
 - Use `<-` operator to directly set variable values
 - Recieve old *and* new value from variables
@@ -411,7 +403,7 @@ What you might like:
 - SwiftObserver is pragmatic and doesn't overgeneralize the *Observer Pattern*, i.e. it doesn't go overboard with the metaphor of *data streams* but keeps things more object-oriented and simple.
 - Custom observables without having to inherit from any class
 - Maximum freedom for your architectural- and design choices
-- UI bindings are available in a separate framework [UIObserver](https://github.com/flowtoolz/UIObserver).
+- UI bindings are available as [UIObserver](https://github.com/flowtoolz/UIObserver), although that framework is still in its infancy.
 
 What you might not like:
 

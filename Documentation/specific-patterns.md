@@ -1,4 +1,8 @@
-# Special Patterns
+# Specific Patterns
+
+This docuemnt describes a few patterns that emerged from usage.
+
+In general, SwiftObserver meets all needs for callbacks and continuous propagation of data up the control hierarchy (against the direction of control). Typical applications are the propagation of data from domain model to use cases, from use cases to view models, from view models to views, and from views to view controllers.
 
 ## Messenger
 
