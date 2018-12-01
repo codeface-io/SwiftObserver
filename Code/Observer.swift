@@ -9,7 +9,7 @@ public extension Observer
     }
     
     func observe<O: Observable>(_ observable: O,
-                                filter keep: @escaping (O.UpdateType) -> Bool = { _ in true },
+                                filter keep: ((O.UpdateType) -> Bool)? = nil,
                                 receive: @escaping (O.UpdateType) -> Void)
     {
         observable.add(self, filter: keep, receive: receive)
