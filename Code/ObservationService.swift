@@ -2,11 +2,11 @@ import SwiftyToolz
 
 public class ObservationService
 {
-    // MARK: Add Observers
+    // MARK: - Add Observers
     
     public static func add<O: Observable>(_ observer: AnyObject,
                                           of observable: O,
-                                          filter keep: @escaping (O.UpdateType) -> Bool = { _ in true },
+                                          filter keep: ((O.UpdateType) -> Bool)? = nil,
                                           receive: @escaping (O.UpdateType) -> Void)
     {
         observation(of: observable).observerList.add(observer)
@@ -18,7 +18,7 @@ public class ObservationService
                 return
             }
             
-            if keep(update) { receive(update) }
+            if keep?(update) ?? true { receive(update) }
         }
     }
 
@@ -42,7 +42,6 @@ public class ObservationService
     private static func createAndAddObservation(of observed: AnyObject) -> Observation
     {
         let observation = Observation()
-        
         observation.observed = observed
         
         observations[hashValue(observed)] = observation
@@ -50,7 +49,7 @@ public class ObservationService
         return observation
     }
     
-    // MARK: Remove Observers
+    // MARK: - Remove Observers
     
     public static func remove(_ observer: AnyObject, of observed: AnyObject)
     {
@@ -72,7 +71,6 @@ public class ObservationService
     public static func removeObserver(_ observer: AnyObject)
     {
         observations.values.forEach { $0.observerList.remove(observer) }
-        
         observations.remove { $0.observerList.isEmpty }
     }
     
@@ -93,9 +91,9 @@ public class ObservationService
         if observerList.isEmpty { observations[hashValue(observed)] = nil }
     }
     
-    // MARK: Send Events to Observers
+    // MARK: - Send Updates to Observers
     
-    public static func send(_ event: Any?, toObserversOf observed: AnyObject)
+    public static func send(_ update: Any?, toObserversOf observed: AnyObject)
     {
         let observableHash = hashValue(observed)
         
@@ -108,17 +106,20 @@ public class ObservationService
             return
         }
             
-        observation.observerList.receive(event)
+        observation.observerList.receive(update)
     }
     
-    // MARK: Private State
+    // MARK: - Global Clean Up
     
     public static func removeAbandonedObservations()
     {
         observations.values.forEach { $0.observerList.removeNilObservers() }
-        
         observations.remove { $0.observed == nil || $0.observerList.isEmpty }
+        
+        removeDeadObserversFromExternalObservables()
     }
+    
+    // MARK: - Observations
     
     private static var observations = [HashValue: Observation]()
     
@@ -126,5 +127,31 @@ public class ObservationService
     {
         weak var observed: AnyObject?
         let observerList = ObserverList<Any?>()
+    }
+    
+    // MARK: - External Observables
+    
+    static func removeDeadObserversFromExternalObservables()
+    {
+        externalObservables.remove { $0.observable == nil }
+        externalObservables.values.forEach { $0.observable?.removeDeadObservers() }
+    }
+    
+    static func register<O: Observable>(observable: O)
+    {
+        let weakObservable = WeakObservable(observable: observable)
+        externalObservables[hashValue(observable)] = weakObservable
+    }
+    
+    static func unregister<O: Observable>(observable: O)
+    {
+        externalObservables[hashValue(observable)] = nil
+    }
+    
+    private static var externalObservables = [HashValue : WeakObservable]()
+    
+    private struct WeakObservable
+    {
+        weak var observable: ObserverRemover?
     }
 }
