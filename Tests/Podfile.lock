@@ -1,0 +1,16 @@
+PODS:
+  - SwiftyToolz (1.3.0)
+
+DEPENDENCIES:
+  - SwiftyToolz (~> 1.3.0)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - SwiftyToolz
+
+SPEC CHECKSUMS:
+  SwiftyToolz: cc8fef079a43f8d67ef11bafb76449c6b69e6327
+
+PODFILE CHECKSUM: 90bb583fe9ceba9d90b53263cdf142d4ede2b9cb
+
+COCOAPODS: 1.6.0.beta.2

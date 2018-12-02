@@ -539,7 +539,7 @@ class SwiftObserverTests: XCTestCase
     {
         deinit
         {
-            stopAllObserving()
+            stopObserving()
         }
     }
 }

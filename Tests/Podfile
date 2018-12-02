@@ -1,0 +1,16 @@
+target 'SwiftObserver' do
+
+  use_frameworks!
+
+  # Pods for SwiftObserver
+
+  pod 'SwiftyToolz', '~> 1.3.0'
+
+  target 'SwiftObserverTests' do
+    inherit! :search_paths
+
+    pod 'SwiftyToolz', '~> 1.3.0'
+
+  end
+
+end
