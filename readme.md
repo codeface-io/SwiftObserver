@@ -5,7 +5,7 @@
 
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?longCache=true&style=flat-square)](https://github.com/Carthage/Carthage)  [![Pod Version](https://img.shields.io/cocoapods/v/SwiftObserver.svg?longCache=true&style=flat-square)](http://cocoapods.org/pods/SwiftObserver)
 
-SwiftObserver is a lightweight framework for reactive Swift. It's unconventional, [covered by tests](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests.swift) and designed to be readable, usable, flexible, non-intrusive, simple and safe.
+SwiftObserver is a lightweight framework for reactive Swift. It's unconventional, [covered by tests](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift) and designed to be readable, usable, flexible, non-intrusive, simple and safe.
 
 [Reactive programming](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [Dependency Inversion](https://en.wikipedia.org/wiki/Dependency_inversion_principle). SwiftObserver breaks reactive programming down to its essence, which is the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern).
 
@@ -21,8 +21,9 @@ SwiftObserver is just 800 lines of code, but it's also hundreds of hours of work
 * [5. Mappings](#mappings)
 * [6. Combined Observation](#combine)
 * [Appendix](#appendix)
-    *  [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns)
-    *  [Why the Hell Another Reactive Library?](#why)
+    * [Beginner Pitfalls](#pitfalls)
+    * [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns)
+    * [Why the Hell Another Reactive Library?](#why)
 
 ## <a id="installation"></a>Install
 
@@ -74,7 +75,7 @@ To avoid abandoning observations, you should stop them before their observer or 
 dog.stopObserving(sky)
 ~~~
 
-An even simpler and safer way is to cleanup objects right before they die:
+An even simpler and safer way is to clean up objects right before they die:
 
 ~~~swift
 class Dog: Observer {
@@ -102,18 +103,20 @@ The above functions are all you need for safe memory management. If you still wa
 
 ## <a id="variables"></a>3. Variables
 
-A variable is of type `Variable<Value>` (alias `Var<Value>`) and holds a `value` of type `Value`. Values must be `Codable` and `Equatable`. Creating a variable without initial value sets the value `nil`. You may use the `<-` operator to set a value:
+A `Var<Value>` has a `var value: Value?`. You can set the value with the `<-` operator.
 
 ~~~swift
 let number = Var(13)
-number.value = 23
 number.value = nil
+number.value = 23
 number <- 42
-	
-let nilText = Var<String>()
+
+let text = Var<String>()
 ~~~
-		
-An observed variable sends updates of type `Update<Value>` which gives access to the old and new value:
+
+### 3.1 Variable Updates
+
+Variables send updates of type `Update<Value>`, providing the old and new value:
 		
 ~~~swift
 observer.observe(variable) { update in
@@ -123,38 +126,46 @@ observer.observe(variable) { update in
 }
 ~~~
 		
-A Variable sends an update whenever its value actually changes. Just starting to observe it does **not** trigger an update. This keeps it simple, predictable and consistent, in particular in combination with mappings.
+A Variable sends an update whenever its value actually changes. Just starting to observe it does **not** trigger an update. This keeps it simple, predictable and consistent, in particular in combination with [mappings](#mappings).
 
-You can always call `send()` on any observable to trigger an update. In that case, a `Variable` would send an `Update` in which `old` and `new` value are equal.
-    
-Because a `Var` is `Codable`, objects composed of these variables are still automatically encodable and decodable in Swift 4, simply by adopting the `Codable` protocol:
+You can always call `send()` on any observable to send an update. Calling `send()` on a `Var` sends an `Update` in which `old` and `new` are both the current value.
+
+### 3.2 Variables and `Codable`
+
+`Var` is `Codable`, so you can compose a type of these variables, and make it `Codable` by simply adopting the `Codable` protocol. Of course, `Var.Value` must be `Codable` as well:
 
 ~~~swift
 class Model: Codable {
-   private(set) var text = Var("A String Variable")
+   private(set) var text = Var("String Variable")
 }
-	
-let model = Model()
-	
-if let modelJson = try? JSONEncoder().encode(model) {
-   print(String(data: modelJson, encoding: .utf8))
-   let decodedModel = try? JSONDecoder().decode(Model.self, from: modelJson)
-}
-~~~
-	
-Notice that the `text` object is a `var` instead of a `let`. It cannot be a constant because Swift's decoder must set it.
-    
-However, other classes are only supposed to set `text.value` and not `text` itself, so we made the setter private via `private(set)`.
-	
-Be aware that you must hold a reference to an observable object that you want to observe. Observation alone creates no strong reference to it. So observing an ad-hoc created variable makes no sense:
 
-~~~swift
-observer.observe(Var("friday 13")) { update in
-   // FAIL! The observed variable has local scope and will deinit!
+if let modelJSON = try? JSONEncoder().encode(model) {
+   print(String(data: modelJSON, encoding: .utf8) ?? "error")
+   // ^^ {"text":{"storedValue":"String Variable"}}
+            
+   if let decodedModel = try? JSONDecoder().decode(Model.self, from: modelJSON) {
+      print(decodedModel.text.value ?? "error")
+      // ^^ A String Variable
+   }
 }
 ~~~
 	
-A `Variable` appends new values to an internal queue, so all its observers get to process a value change before the next change takes effect. This is important in situations where a variable has multiple observers and at least one of them changes the variable value in reaction to a value change...
+Notice that `text` is a `var` instead of a `let`. It cannot be a constant because the implicit decoder must set it. However, other classes are only supposed to set `text.value` and not `text` itself, so the setter is private.
+
+### More on Variables
+
+* If your `Var.Value` is any kind of `Number`, you can use the operators `+=` and `-=` directly on the `Var`:
+    
+    ~~~swift
+    let number = Var(8)
+    number += 2
+    // number.value == 10
+    ~~~
+	
+* A `Var` appends new values to an internal queue, so all its observers get to process a value change before the next change takes effect. This is important in situations where a variable has multiple observers and at least one of them changes the variable value in reaction to a value change.
+
+* A `Var` is more performant than a custom observable because it maintains its own dedicated list of observers. So if you want to observe a super large number of ojects in some data structure, like particles in a simulation or nodes in a large graph, use a 'Var' as an [Owned Messenger](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#owned-messenger).
+
 
 ## <a id="custom-observables"></a>4. Custom Observables
 
@@ -359,6 +370,29 @@ Not having to duplicate data where multiple things must be observed is one of th
 
 
 ## <a id="appendix"></a>Appendix
+
+### <a id="pitfalls"></a>Beginner Pitfalls
+
+* Be aware that you must hold a strong reference to an object that you want to observe. Just observing it doesn't create a strong reference. For instance, observing an ad-hoc created `Var` makes no sense:
+
+ ~~~swift
+observer.observe(Var("friday 13")) { update in
+   // FAIL! The observed variable has local scope and will deinit!
+}
+~~~
+
+* Be aware that the observer must be alive for an observation closure to fire. It doesn't make sense to observe something and to expect the "observation" to continue after you die. There's no life after death in main memory. But that's somewhat easy to overlook when you observe other objects from within an observer, which is what you typically do:
+
+ ~~~swift
+ class Controller: Observer
+ {
+    func someFunction {
+       observe(someOtherObject) { update in
+          // to process the update, this Controller must live
+       }
+    }
+ }
+ ~~~
 
 ### Specific Patterns
 
