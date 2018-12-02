@@ -95,11 +95,13 @@ class Sky: Observable {
 }
 ~~~
 
-The above functions suffice to make simple and safe memory management. Should you still feel the need to clean up at some point, you have 3 ways to do it:
+The above functions suffice to make simple and safe memory management. Should you still feel the need to remove observations that you maybe forgot, you have 3 ways to do it:
 
 1. Stop observing dead observables: `observer.stopObservingDeadObservables()`
 2. Remove dead observers from an observable: `observable.removeDeadObservers()`
 3. Flush out all observations whos observer or observable are dead: `removeAbandonedObservations()`
+
+> Since you can always remove abandoned observations, real memory leaks are impossible with SwiftObserver.
 
 ## <a id="variables"></a>3. Variables
 
