@@ -69,24 +69,37 @@ We'll get to each of these. First, something else ...
 
 ## <a id="memory"></a>2. Memory Management
 
-With SwiftObserver, memory management is meaningful, simple and safe. We don't deal with contrived constructs like "Disposable" or "DisposeBag".
+With SwiftObserver, memory management is meaningful and easy. We don't deal with contrived constructs like "Disposable" or "DisposeBag".
 
-To avoid leaks, observations must stop before the involved observers or observables die. A simple and sure way to do this is calling `stopAllObserving()` in the `deinit` calls of observers:
+To avoid leaks, observations must stop before the involved observers or observables die. One way to do that is to stop each observation when it's not needed anymore:
 
 ~~~swift
-class Controller: Observer {
-   deinit { stopObserving() }
+dog.stopObserving(sky)
+~~~
+
+An even simpler and safer way is to cleanup objects right before they die:
+
+~~~swift
+class Dog: Observer {
+   deinit {
+      stopObserving() // ends ALL observations this dog is doing
+   } 
+}
+
+class Sky: Observable {
+   deinit {
+      removeObservers() // ends all observation of this sky
+   }
+   
+   // custom observable implementation ...
 }
 ~~~
 
-Another worthy habit is to call `removeObservers()` in `deinit` of custom `Observable` classes.
+The above functions suffice to make simple and safe memory management. Should you still feel the need to clean up at some point, you have 3 ways to do it:
 
-There are four more ways to end observations:
-
-* Stop observing a specific observable: `observer.stopObserving(observable)`
-* Stop observing dead observables: `observer.stopObservingDeadObservables()`
-* Remove dead observers from observable: `observable.removeDeadObservers()`
-* Erase all orphaned observations: `removeAbandonedObservations()`. It flushes out observations who lost their observable or lost their observers.
+1. Stop observing dead observables: `observer.stopObservingDeadObservables()`
+2. Remove dead observers from an observable: `observable.removeDeadObservers()`
+3. Flush out all observations whos observer or observable are dead: `removeAbandonedObservations()`
 
 ## <a id="variables"></a>3. Variables
 
