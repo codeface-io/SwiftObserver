@@ -69,9 +69,9 @@ We'll get to each of these. First, something else ...
 
 ## <a id="memory"></a>2. Memory Management
 
-With SwiftObserver, memory management is meaningful and easy. We don't deal with contrived constructs like "Disposable" or "DisposeBag".
+> Memory management with SwiftObserver is meaningful and easy. We never deal with contrived constructs like "Disposable" or "DisposeBag".
 
-To avoid leaks, observations must stop before the involved observers or observables die. One way to do that is to stop each observation when it's not needed anymore:
+To avoid leaks, stop observations before their observer or observable die. One way to do that is to stop each observation when it's not needed anymore:
 
 ~~~swift
 dog.stopObserving(sky)
@@ -95,7 +95,7 @@ class Sky: Observable {
 }
 ~~~
 
-The above functions suffice to make simple and safe memory management. Should you still feel the need to remove observations that you maybe forgot, you have 3 ways to do it:
+The above functions are all you need for save memory management. If you still want to remove observations that you maybe forgot, there are 3 ways to do that:
 
 1. Stop observing dead observables: `observer.stopObservingDeadObservables()`
 2. Remove dead observers from an observable: `observable.removeDeadObservers()`
