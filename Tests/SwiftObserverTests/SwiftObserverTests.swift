@@ -187,27 +187,6 @@ class SwiftObserverTests: XCTestCase
         
         XCTAssertNil(receivedMessage)
     }
-    
-    /*
-    func testPairRetainsItsVariables()
-    {
-        var v1: Var<Int>? = Var(1)
-        var v2: Var<Int>? = Var(2)
-        
-        if let pair = v1 + v2
-        {
-            v1 = nil
-            v2 = nil
-            
-            XCTAssertEqual(pair.value.left, 1)
-            XCTAssertEqual(pair.value.right, 2)
-        }
-        else
-        {
-            XCTAssert(false)
-        }
-    }
-     */
 
     func testHowToUseOptionalVariables()
     {
@@ -338,25 +317,6 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual(observedNewValue, "new text")
     }
     
-    /*
-    func testObservingPairVariableTriggersUpdate()
-    {
-        let combinedVariable = Var("Text 1") + Var(7) + Var("Text 2")
-        
-        controller.observe(combinedVariable)
-        {
-            update in
-            
-            XCTAssertEqual(update.old.left.left, "Text 1")
-            XCTAssertEqual(update.old.left.right, 7)
-            XCTAssertEqual(update.old.right, "Text 2")
-            
-            XCTAssertEqual(update.new.left.left, "Text 1")
-            XCTAssertEqual(update.new.left.right, 7)
-            XCTAssertEqual(update.new.right, "Text 2")
-        }
-    }
-    */
     
     func testObservableMapping()
     {
@@ -368,67 +328,6 @@ class SwiftObserverTests: XCTestCase
         model.send(.didUpdate)
     }
     
-    /*
-    func testSettingValueOnPairVariableTriggersUpdate()
-    {
-        model.text <- "old"
-        model.number <- 0
-        
-        let textAndNumber = model.text + model.number
-        
-        var didUpdateText = false
-        var didUpdateNumber = false
-        var numberOfObservations = 0
-        
-        controller.observe(textAndNumber)
-        {
-            numberOfObservations += 1
-            
-            if $0.new.left == "truth"
-            {
-                if !didUpdateText
-                {
-                    XCTAssertEqual($0.old.left, "old")
-                }
-                
-                didUpdateText = true
-            }
-            else
-            {
-                XCTAssertEqual($0.new.left, "old")
-            }
-            
-            if $0.new.right == 42
-            {
-                if !didUpdateNumber
-                {
-                    XCTAssertEqual($0.old.right, 0)
-                }
-                
-                didUpdateNumber = true
-            }
-            else
-            {
-                XCTAssertEqual($0.new.right, 0)
-            }
-        }
-        
-        textAndNumber <- "truth" +++ 42
-        
-        XCTAssertTrue(didUpdateText)
-        XCTAssertTrue(didUpdateNumber)
-        XCTAssertEqual(numberOfObservations, 3)
-    }
- 
-    func testSettingNestedValueOnPairVariable()
-    {
-        let combinedVariable = Var(0.75) + Var("text") + Var(10)
-        
-        combinedVariable <- 0.33 +++ "new" +++ 42
-        
-        XCTAssertEqual(combinedVariable.value.left.right, "new")
-    }
-    */
     
     func testObservingTwoObservables()
     {
