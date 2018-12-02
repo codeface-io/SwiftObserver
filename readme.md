@@ -17,6 +17,9 @@ SwiftObserver is just 800 lines of code, but it's also hundreds of hours of work
 * [1. Get Started](#kiss)
 * [2. Memory Management](#memory)
 * [3. Variables](#variables)
+    * [3.1. Variable Updates](#31-variable-updates) 
+    * [3.2. Variables are Codable](#32-variables-are-codable)
+    * [3.3. More on Variables](#31-more-on-variables)
 * [4. Custom Observables](#custom-observables)
 * [5. Mappings](#mappings)
 * [6. Combined Observation](#combine)
@@ -130,9 +133,9 @@ A Variable sends an update whenever its value actually changes. Just starting to
 
 You can always call `send()` on any observable to send an update. Calling `send()` on a `Var` sends an `Update` in which `old` and `new` are both the current value.
 
-### 3.2 Variables and `Codable`
+### 3.2 Variables are Codable
 
-`Var` is `Codable`, so you can compose a type of these variables, and make it `Codable` by simply adopting the `Codable` protocol. Of course, `Var.Value` must be `Codable` as well:
+`Var` is `Codable`, so when can compose a type of these variables, you can make it `Codable` by simply adopting the `Codable` protocol. Of course, `Var.Value` must be `Codable` as well:
 
 ~~~swift
 class Model: Codable {
@@ -145,16 +148,16 @@ if let modelJSON = try? JSONEncoder().encode(model) {
             
    if let decodedModel = try? JSONDecoder().decode(Model.self, from: modelJSON) {
       print(decodedModel.text.value ?? "error")
-      // ^^ A String Variable
+      // ^^ String Variable
    }
 }
 ~~~
 	
 Notice that `text` is a `var` instead of a `let`. It cannot be a constant because the implicit decoder must set it. However, other classes are only supposed to set `text.value` and not `text` itself, so the setter is private.
 
-### More on Variables
+### 3.3 More on Variables
 
-* If your `Var.Value` is any kind of `Number`, you can use the operators `+=` and `-=` directly on the `Var`:
+* If your `Var.Value` conforms to [`Numeric`](https://developer.apple.com/documentation/swift/numeric), you can use the operators `+=` and `-=` directly on the `Var`:
     
     ~~~swift
     let number = Var(8)
@@ -164,7 +167,7 @@ Notice that `text` is a `var` instead of a `let`. It cannot be a constant becaus
 	
 * A `Var` appends new values to an internal queue, so all its observers get to process a value change before the next change takes effect. This is important in situations where a variable has multiple observers and at least one of them changes the variable value in reaction to a value change.
 
-* A `Var` is more performant than a custom observable because it maintains its own dedicated list of observers. So if you want to observe a super large number of ojects in some data structure, like particles in a simulation or nodes in a large graph, use a 'Var' as an [Owned Messenger](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#owned-messenger).
+* A `Var` is more performant than a custom observable because it maintains its own dedicated list of observers. So if you want to observe a super large number of ojects in some data structure, like particles in a simulation or nodes in a large graph, use a `Var` as an [Owned Messenger](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#owned-messenger).
 
 
 ## <a id="custom-observables"></a>4. Custom Observables
