@@ -69,9 +69,7 @@ We'll get to each of these. First, something else ...
 
 ## <a id="memory"></a>2. Memory Management
 
-> Memory management with SwiftObserver is meaningful and easy. We never deal with contrived constructs like "Disposable" or "DisposeBag".
-
-To avoid leaks, stop observations before their observer or observable die. One way to do that is to stop each observation when it's not needed anymore:
+To avoid abandoning observations, you should stop them before their observer or observable die. One way to do that is to stop each observation when it's no longer needed:
 
 ~~~swift
 dog.stopObserving(sky)
@@ -82,26 +80,26 @@ An even simpler and safer way is to cleanup objects right before they die:
 ~~~swift
 class Dog: Observer {
    deinit {
-      stopObserving() // ends ALL observations this dog is doing
+      stopObserving() // stops ALL observations this dog is doing
    } 
 }
 
 class Sky: Observable {
    deinit {
-      removeObservers() // ends all observation of this sky
+      removeObservers() // stops all observations of this sky
    }
    
    // custom observable implementation ...
 }
 ~~~
 
-The above functions are all you need for safe memory management. If you still want to remove observations that you maybe forgot, there are 3 ways to do that:
+The above functions are all you need for safe memory management. If you still want to erase observations that you maybe forgot, there are 3 ways to do that:
 
 1. Stop observing dead observables: `observer.stopObservingDeadObservables()`
 2. Remove dead observers from an observable: `observable.removeDeadObservers()`
-3. Flush out all observations whos observer or observable are dead: `removeAbandonedObservations()`
+3. Erase all observations whos observer or observable are dead: `removeAbandonedObservations()`
 
-> Since you can always remove abandoned observations, real memory leaks are impossible with SwiftObserver.
+> Memory management with SwiftObserver is meaningful, easy and safe. We never deal with contrived constructs like "Disposable" or "DisposeBag". And since you can always flush out abandoned observations, real memory leaks are impossible.
 
 ## <a id="variables"></a>3. Variables
 
