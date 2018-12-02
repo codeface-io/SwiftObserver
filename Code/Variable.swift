@@ -53,7 +53,7 @@ public class Variable<Value: Equatable & Codable>: Observable, Codable
     
     public func send(_ update: Update<Value?>)
     {
-        observerList.receive(latestUpdate)
+        observerList.receive(update)
     }
     
     private let observerList = ObserverList<Update<Value?>>()
