@@ -9,12 +9,12 @@ SwiftObserver is a lightweight framework for reactive Swift. It's unconventional
 
 [Reactive programming](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [Dependency Inversion](https://en.wikipedia.org/wiki/Dependency_inversion_principle). SwiftObserver breaks reactive programming down to its essence, which is the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern).
 
-SwiftObserver is just 800 lines of code, but it's also 900 hours of work, thinking it through, letting features go for the sake of simplicity, and battle-testing it [in practice](http://flowlistapp.com).
+SwiftObserver is just 800 lines of code, but it's also hundreds of hours of work, thinking it through, letting features go for the sake of simplicity, and battle-testing it [in practice](http://flowlistapp.com).
 
 ## Contents
 
-* [Installation](#installation)
-* [1. Getting Started](#kiss)
+* [Install](#installation)
+* [1. Get Started](#kiss)
 * [2. Memory Management](#memory)
 * [3. Variables](#variables)
 * [4. Custom Observables](#custom-observables)
@@ -24,29 +24,29 @@ SwiftObserver is just 800 lines of code, but it's also 900 hours of work, thinki
     *  [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns)
     *  [Why the Hell Another Reactive Library?](#why)
 
-## <a id="installation"></a>Installation
+## <a id="installation"></a>Install
 
-SwiftObserver can be installed via [Carthage](https://github.com/Carthage/Carthage) and via [Cocoapods](https://cocoapods.org).
-
-### Carthage
-
-Add this line to your Cartfile:
+To install via [Carthage](https://github.com/Carthage/Carthage), add this line to your Cartfile:
 
 ~~~
 github 'flowtoolz/SwiftObserver'
 ~~~
 
-### Cocoapods
-
-Add this line to your Podfile:
+Or to install via [Cocoapods](https://cocoapods.org), add this line to your Podfile:
 
 ~~~ruby
 pod 'SwiftObserver'
 ~~~
 
-## <a id="kiss"></a>1. Getting Started
+Then, in your Swift files:
 
-No need to learn a bunch of arbitrary metaphors, terms or types. SwiftObserver is simple:
+~~~swift
+import SwiftObserver
+~~~
+
+## <a id="kiss"></a>1. Get Started
+
+No need to learn a bunch of arbitrary metaphors, terms or types. SwiftObserver is simple.
 
 > Objects observe other objects.<br>
 > Or a tad more technically: Observed objects send updates to their observers. 
@@ -69,26 +69,24 @@ We'll get to each of these. First, something else ...
 
 ## <a id="memory"></a>2. Memory Management
 
-There are no Disposables, Cancelables, Tokens, DisposeBags etc to handle. Simply call `stopAllObserving()` on an observer, and its references are removed from everything it observes:
+With SwiftObserver, memory management is meaningful, simple and safe. We don't deal with contrived constructs like "Disposable" or "DisposeBag".
+
+To avoid leaks, observations must stop before the involved observers or observables die. A simple and sure way to do this is calling `stopAllObserving()` in the `deinit` calls of observers:
 
 ~~~swift
 class Controller: Observer {
-   deinit { stopAllObserving() }
+   deinit { stopObserving() }
 }
 ~~~
-	
-Although you don't need to handle tokens after starting observation, all objects are internally hashed, so performance is never an issue.
 
-There are four more variants of ending observation:
+Another worthy habit is to call `removeObservers()` in `deinit` of custom `Observable` classes.
+
+There are four more ways to end observations:
 
 * Stop observing a specific observable: `observer.stopObserving(observable)`
-* Stop observing observables that don't exist anymore: `observer.stopObservingDeadObservables()`
-* Remove observers that don't exist anymore: `observable.removeDeadObservers()`
-* Remove all observers: `observable.removeObservers()`
-
-If you systematically use the above functions or just call `stopAllObserving()` in `deinit` of all observers, observation itself cannot cause memory leaks.
-
-However, should you still feel the need to erase orphaned observations at some point, just call `removeAbandonedObservations()`. It will flush out observations who lost their observable or lost their observers.
+* Stop observing dead observables: `observer.stopObservingDeadObservables()`
+* Remove dead observers from observable: `observable.removeDeadObservers()`
+* Erase all orphaned observations: `removeAbandonedObservations()`. It flushes out observations who lost their observable or lost their observers.
 
 ## <a id="variables"></a>3. Variables
 
