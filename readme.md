@@ -375,24 +375,24 @@ Not having to duplicate data where multiple things must be observed is one of th
 
 * Be aware that you must hold a strong reference to an object that you want to observe. Just observing it doesn't create a strong reference. For instance, observing an ad-hoc created `Var` makes no sense:
 
- ~~~swift
-observer.observe(Var("friday 13")) { update in
-   // FAIL! The observed variable has local scope and will deinit!
-}
-~~~
+    ~~~swift
+    observer.observe(Var("friday 13")) { update in
+       // FAIL! The observed variable has local scope and will deinit!
+    }
+    ~~~
 
 * Be aware that the observer must be alive for an observation closure to fire. It doesn't make sense to observe something and to expect the "observation" to continue after you die. There's no life after death in main memory. But that's somewhat easy to overlook when you observe other objects from within an observer, which is what you typically do:
 
- ~~~swift
- class Controller: Observer
- {
-    func someFunction {
-       observe(someOtherObject) { update in
-          // to process the update, this Controller must live
-       }
-    }
- }
- ~~~
+     ~~~swift
+     class Controller: Observer
+     {
+        func someFunction {
+           observe(someOtherObject) { update in
+              // to process the update, this Controller must live
+           }
+        }
+     }
+     ~~~
 
 ### Specific Patterns
 
