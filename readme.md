@@ -46,10 +46,9 @@ import SwiftObserver
 
 ## <a id="kiss"></a>1. Get Started
 
-No need to learn a bunch of arbitrary metaphors, terms or types. SwiftObserver is simple.
+> No need to learn a bunch of arbitrary metaphors, terms or types. SwiftObserver is simple.
 
-> Objects observe other objects.<br>
-> Or a tad more technically: Observed objects send updates to their observers. 
+**Objects observe other objects**. Or a tad more technically: Observed objects send updates to their observers.
 
 That's it. Just readable code:
 
