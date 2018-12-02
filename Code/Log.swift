@@ -1,18 +1,3 @@
-public func log(_ error: Error,
-                title: String? = nil,
-                forUser: Bool = false,
-                file: String = #file,
-                function: String = #function,
-                line: Int = #line)
-{
-    log(error: error.localizedDescription,
-        title: title,
-        forUser: forUser,
-        file: file,
-        function: function,
-        line: line)
-}
-
 public func log(error: String,
                 title: String? = nil,
                 forUser: Bool = false,
@@ -96,7 +81,12 @@ public class Log
         
         logString += message
         
-        let filename = file.components(separatedBy: "/").last ?? file
+        var filename = file
+        
+        if let lastSlashIndex = filename.lastIndex(of: "/")
+        {
+            filename.removeSubrange(filename.startIndex ... lastSlashIndex)
+        }
         
         let entry = Entry(message: message,
                           title: title,
