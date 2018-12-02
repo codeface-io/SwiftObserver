@@ -19,7 +19,7 @@ SwiftObserver is just 800 lines of code, but it's also hundreds of hours of work
 * [3. Variables](#variables)
     * [3.1. Variable Updates](#31-variable-updates) 
     * [3.2. Variables are Codable](#32-variables-are-codable)
-    * [3.3. More on Variables](#31-more-on-variables)
+    * [3.3. More on Variables](#33-more-on-variables)
 * [4. Custom Observables](#custom-observables)
 * [5. Mappings](#mappings)
 * [6. Combined Observation](#combine)
