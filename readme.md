@@ -95,7 +95,7 @@ class Sky: Observable {
 }
 ~~~
 
-The above functions are all you need for save memory management. If you still want to remove observations that you maybe forgot, there are 3 ways to do that:
+The above functions are all you need for safe memory management. If you still want to remove observations that you maybe forgot, there are 3 ways to do that:
 
 1. Stop observing dead observables: `observer.stopObservingDeadObservables()`
 2. Remove dead observers from an observable: `observable.removeDeadObservers()`
