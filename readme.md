@@ -1,28 +1,27 @@
 ![SwiftObserver](https://raw.githubusercontent.com/flowtoolz/SwiftObserver/master/Documentation/swift.jpg)
 
-
 # SwiftObserver
 
-[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?longCache=true&style=flat-square)](https://github.com/Carthage/Carthage)  [![Pod Version](https://img.shields.io/cocoapods/v/SwiftObserver.svg?longCache=true&style=flat-square)](http://cocoapods.org/pods/SwiftObserver)
+[![badge-pod]](http://cocoapods.org/pods/SwiftObserver) ![badge-pms] ![badge-languages] ![badge-platforms] ![badge-mit]
 
 SwiftObserver is a lightweight framework for reactive Swift. It's unconventional, [covered by tests](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift) and designed to be readable, usable, flexible, non-intrusive, simple and safe.
 
 [Reactive programming](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [Dependency Inversion](https://en.wikipedia.org/wiki/Dependency_inversion_principle). SwiftObserver breaks reactive programming down to its essence, which is the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern).
 
-SwiftObserver is just 800 lines of code, but it's also hundreds of hours of work, thinking it through, letting features go for the sake of simplicity, and battle-testing it [in practice](http://flowlistapp.com).
+SwiftObserver is just 800 lines of production code, but it's also hundreds of hours of work, thinking it through, letting features go for the sake of simplicity, and battle-testing it [in practice](http://flowlistapp.com).
 
 ## Contents
 
 * [Install](#installation)
-* [1. Get Started](#kiss)
-* [2. Memory Management](#memory)
-* [3. Variables](#variables)
-    * [3.1. Variable Updates](#31-variable-updates) 
-    * [3.2. Variables are Codable](#32-variables-are-codable)
-    * [3.3. More on Variables](#33-more-on-variables)
-* [4. Custom Observables](#custom-observables)
-* [5. Mappings](#mappings)
-* [6. Combined Observation](#combine)
+* [Get Started](#kiss)
+* [Memory Management](#memory)
+* [Variables](#variables)
+    * [Variable Updates](#variable-updates) 
+    * [Variables are Codable](#variables-are-codable)
+    * [More on Variables](#more-on-variables)
+* [Custom Observables](#custom-observables)
+* [Mappings](#mappings)
+* [Combined Observation](#combine)
 * [Appendix](#appendix)
     * [Beginner Pitfalls](#pitfalls)
     * [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns)
@@ -30,16 +29,20 @@ SwiftObserver is just 800 lines of code, but it's also hundreds of hours of work
 
 ## <a id="installation"></a>Install
 
-To install via [Carthage](https://github.com/Carthage/Carthage), add this line to your Cartfile:
+To install via [Carthage](https://github.com/Carthage/Carthage), add this line to your [Cartfile](https://github.com/Carthage/Carthage/blob/master/Documentation/Artifacts.md#cartfile):
 
 ~~~
-github 'flowtoolz/SwiftObserver'
+github "flowtoolz/SwiftObserver" ~> 2.0
 ~~~
 
-Or to install via [Cocoapods](https://cocoapods.org), add this line to your Podfile:
+Or to install via [Cocoapods](https://cocoapods.org), add this line to your [Podfile](https://guides.cocoapods.org/syntax/podfile.html):
 
 ~~~ruby
-pod 'SwiftObserver'
+use_frameworks!
+
+target "MyAppTarget" do
+  pod "SwiftObserver", "~> 2.0"
+end
 ~~~
 
 Then, in your Swift files:
@@ -48,7 +51,7 @@ Then, in your Swift files:
 import SwiftObserver
 ~~~
 
-## <a id="kiss"></a>1. Get Started
+## <a id="kiss"></a>Get Started
 
 > No need to learn a bunch of arbitrary metaphors, terms or types. SwiftObserver is simple.
 
@@ -70,7 +73,7 @@ Observers typically adopt the `Observer` protocol. For an object to be observabl
 
 We'll get to each of these. First, something else ...
 
-## <a id="memory"></a>2. Memory Management
+## <a id="memory"></a>Memory Management
 
 To avoid abandoning observations, you should stop them before their observer or observable die. One way to do that is to stop each observation when it's no longer needed:
 
@@ -104,7 +107,7 @@ The above functions are all you need for safe memory management. If you still wa
 
 > Memory management with SwiftObserver is meaningful, easy and safe. We never deal with contrived constructs like "Disposable" or "DisposeBag". And since you can always flush out abandoned observations, real memory leaks are impossible.
 
-## <a id="variables"></a>3. Variables
+## <a id="variables"></a>Variables
 
 A `Var<Value>` has a `var value: Value?`. You can set the value with the `<-` operator.
 
@@ -117,7 +120,7 @@ number <- 42
 let text = Var<String>()
 ~~~
 
-### 3.1 Variable Updates
+### Variable Updates
 
 Variables send updates of type `Update<Value>`, providing the old and new value:
 		
@@ -133,7 +136,7 @@ A Variable sends an update whenever its value actually changes. Just starting to
 
 You can always call `send()` on any observable to send an update. Calling `send()` on a `Var` sends an `Update` in which `old` and `new` are both the current value.
 
-### 3.2 Variables are Codable
+### Variables are Codable
 
 `Var` is `Codable`, so when you compose a type of these variables, you can make it `Codable` by simply adopting the `Codable` protocol. Of course, `Var.Value` must be `Codable` as well:
 
@@ -155,7 +158,7 @@ if let modelJSON = try? JSONEncoder().encode(model) {
 	
 Notice that `text` is a `var` instead of a `let`. It cannot be a constant because the implicit decoder must set it. However, other classes are only supposed to set `text.value` and not `text` itself, so the setter is private.
 
-### 3.3 More on Variables
+### More on Variables
 
 * If your `Var.Value` conforms to [`Numeric`](https://developer.apple.com/documentation/swift/numeric), you can use the operators `+=` and `-=` directly on the `Var`:
     
@@ -170,7 +173,7 @@ Notice that `text` is a `var` instead of a `let`. It cannot be a constant becaus
 * A `Var` is more performant than a custom observable because it maintains its own dedicated list of observers. So if you want to observe a super large number of ojects in some data structure, like particles in a simulation or nodes in a large graph, use a `Var` as an [Owned Messenger](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#owned-messenger).
 
 
-## <a id="custom-observables"></a>4. Custom Observables
+## <a id="custom-observables"></a>Custom Observables
 
 Custom observables just need to adopt the `Observable` protocol and provide a `var latestUpdate: UpdateType { get }` of the type of updates they wish to send:
 
@@ -229,7 +232,7 @@ class Model: Observable {
 }
 ~~~
 
-## <a id="mappings"></a>5. Mappings
+## <a id="mappings"></a>Mappings
 
 Create a new observable object by mapping a given one:
 
@@ -344,7 +347,7 @@ mappedTitle.observable = titleStringVariable
     
 Being able to define observable mappings independent of any underlying mapped observable can help, for instance, in developing view models.
 
-## <a id="combine"></a>6. Combined Observation
+## <a id="combine"></a>Combined Observation
 
 You can observe up to three observable objects:
 
@@ -442,3 +445,9 @@ What you might not like:
 * Because classes have to implement nothing to be observable, you can keep model and logic code independent of any observer frameworks and techniques. If the model layer had to be stuffed with heavyweight constructs just to be observed, it would become a technical issue instead of an easy to change,  meaningful, direct representation of domain-, business- and view logic.
 * Unlike established Swift implementations of the Redux approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you freely model your domain-, business- and view logic with all your familiar design patterns and types. There are no restrictions on how you organize and store your app state.
 * Unlike established Swift implementations of the Reactive approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you in control of the ancestral tree of your classes. There is not a single class that you have to inherit. Therefore, all your classes can be directly observed, even views and view controllers.
+
+[badge-pod]: https://img.shields.io/cocoapods/v/SwiftObserver.svg?label=version&style=flat-square
+[badge-pms]: https://img.shields.io/badge/supports-CocoaPods%20%7C%20Carthage-green.svg?style=flat-square
+[badge-languages]: https://img.shields.io/badge/languages-Swift-orange.svg?style=flat-square
+[badge-platforms]: https://img.shields.io/badge/platforms-iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20watchOS%20%7C%20Linux-lightgrey.svg?style=flat-square
+[badge-mit]: https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat-square
