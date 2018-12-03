@@ -135,7 +135,7 @@ You can always call `send()` on any observable to send an update. Calling `send(
 
 ### 3.2 Variables are Codable
 
-`Var` is `Codable`, so when can compose a type of these variables, you can make it `Codable` by simply adopting the `Codable` protocol. Of course, `Var.Value` must be `Codable` as well:
+`Var` is `Codable`, so when you compose a type of these variables, you can make it `Codable` by simply adopting the `Codable` protocol. Of course, `Var.Value` must be `Codable` as well:
 
 ~~~swift
 class Model: Codable {
