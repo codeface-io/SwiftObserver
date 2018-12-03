@@ -387,8 +387,7 @@ Not having to duplicate data where multiple things must be observed is one of th
 * Be aware that the observer must be alive for an observation closure to fire. It doesn't make sense to observe something and to expect the "observation" to continue after you die. There's no life after death in main memory. But that's somewhat easy to overlook when you observe other objects from within an observer, which is what you typically do:
 
      ~~~swift
-     class Controller: Observer
-     {
+     class Controller: Observer {
         func someFunction {
            observe(someOtherObject) { update in
               // to process the update, this Controller must live
