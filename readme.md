@@ -4,13 +4,13 @@
 
 [![badge-pod]](http://cocoapods.org/pods/SwiftObserver) ![badge-pms] ![badge-languages] ![badge-platforms] ![badge-mit]
 
-SwiftObserver is a lightweight framework for reactive Swift. It's unconventional, [covered by tests](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift) and designed to be readable, usable, flexible, non-intrusive, simple and safe.
+SwiftObserver is a lightweight framework for reactive Swift. 
+
+It's unconventional, [covered by tests](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift) and designed to be readable, usable, flexible, non-intrusive, simple and safe.
 
 [Reactive programming](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [Dependency Inversion](https://en.wikipedia.org/wiki/Dependency_inversion_principle). SwiftObserver breaks reactive programming down to its essence, which is the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern).
 
 SwiftObserver is just 800 lines of production code, but it's also hundreds of hours of work, thinking it through, letting features go for the sake of simplicity, documenting it, unit-testing it, and battle-testing it [in practice](http://flowlistapp.com).
-
-## Contents
 
 * [Install](#installation)
 * [Get Started](#kiss)
@@ -27,7 +27,7 @@ SwiftObserver is just 800 lines of production code, but it's also hundreds of ho
     * [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns)
     * [Why the Hell Another Reactive Library?](#why)
 
-## <a id="installation"></a>Install
+# <a id="installation"></a>Install
 
 To install via [Carthage](https://github.com/Carthage/Carthage), add this line to your [Cartfile](https://github.com/Carthage/Carthage/blob/master/Documentation/Artifacts.md#cartfile):
 
@@ -51,7 +51,7 @@ Then, in your Swift files:
 import SwiftObserver
 ~~~
 
-## <a id="kiss"></a>Get Started
+# <a id="kiss"></a>Get Started
 
 > No need to learn a bunch of arbitrary metaphors, terms or types. SwiftObserver is simple.
 
@@ -65,15 +65,15 @@ dog.observe(sky) { color in
 }
 ~~~
 
-Observers typically adopt the `Observer` protocol. For an object to be observable, it must conform to protocol `Observable`. You get `Observable` objects in three ways:
+Observers typically adopt the `Observer` protocol. For an object to be observable, it must conform to `Observable`. You get `Observable` objects in three ways:
 
-1. Instantiate a `Variable`. It's an `Observable` that holds a value and sends value updates.
-2. Implement a custom `Observable` class.
-3. Create a an `Observable` that maps (transforms) updates from a source `Observable`.
+1. Create a [`Var<Value>`](#variables). It's an `Observable` that holds a value and sends value updates.
+2. Implement a [custom](#custom-observables) `Observable` class.
+3. Create a an `Observable` that [maps](#mappings) (transforms) updates from a source `Observable`.
 
 We'll get to each of these. First, something else ...
 
-## <a id="memory"></a>Memory Management
+# <a id="memory"></a>Memory Management
 
 To avoid abandoning observations, you should stop them before their observer or observable die. One way to do that is to stop each observation when it's no longer needed:
 
@@ -107,7 +107,7 @@ The above functions are all you need for safe memory management. If you still wa
 
 > Memory management with SwiftObserver is meaningful and safe. We don't deal with contrived constructs like "Disposable" or "DisposeBag". And since you can always flush out orphaned observations, real memory leaks are impossible.
 
-## <a id="variables"></a>Variables
+# <a id="variables"></a>Variables
 
 A `Var<Value>` has a `var value: Value?`. You can set the value with the `<-` operator.
 
@@ -120,7 +120,7 @@ number <- 42
 let text = Var<String>()
 ~~~
 
-### Variable Updates
+## Variable Updates
 
 Variables send updates of type `Update<Value>`, providing the old and new value:
 		
@@ -136,7 +136,7 @@ A Variable sends an update whenever its value actually changes. Just starting to
 
 You can always call `send()` on any observable to send an update. Calling `send()` on a `Var` sends an `Update` in which `old` and `new` are both the current value.
 
-### Variables are Codable
+## Variables are Codable
 
 `Var` is `Codable`, so when you compose a type of these variables, you can make it `Codable` by simply adopting the `Codable` protocol. Of course, `Var.Value` must be `Codable` as well:
 
@@ -158,7 +158,7 @@ if let modelJSON = try? JSONEncoder().encode(model) {
 	
 Notice that `text` is a `var` instead of a `let`. It cannot be a constant because the implicit decoder must set it. However, other classes are only supposed to set `text.value` and not `text` itself, so the setter is private.
 
-### More on Variables
+## More on Variables
 
 * If your `Var.Value` conforms to [`Numeric`](https://developer.apple.com/documentation/swift/numeric), you can use the operators `+=` and `-=` directly on the `Var`:
     
@@ -173,7 +173,7 @@ Notice that `text` is a `var` instead of a `let`. It cannot be a constant becaus
 * A `Var` is more performant than a custom observable because it maintains its own dedicated list of observers. So if you want to observe a super large number of ojects in some data structure, like particles in a simulation or nodes in a large graph, use a `Var` as an [Owned Messenger](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#owned-messenger).
 
 
-## <a id="custom-observables"></a>Custom Observables
+# <a id="custom-observables"></a>Custom Observables
 
 Custom observables just need to adopt the `Observable` protocol and provide a `var latestUpdate: UpdateType { get }` of the type of updates they wish to send:
 
@@ -232,7 +232,7 @@ class Model: Observable {
 }
 ~~~
 
-## <a id="mappings"></a>Mappings
+# <a id="mappings"></a>Mappings
 
 Create a new observable object by mapping a given one:
 
@@ -247,7 +247,7 @@ A mapping is to be used like any other `Observable`:
 * Observing a mapping does not keep it alive. You must hold a strong reference to a mapping that you want to use.
 * You can call `send(update)` on a mapping as well as any other function or property declared by `Observable`.
 	
-### Map `Update` Onto `new` Value
+## Map `Update` Onto `new` Value
 
 Often we want to observe only the new value of a variable without the old one. The special mapping `new()` maps a value update onto its new value. It is available for all observables whos update type is `Update<_>` (not just for variables):
 
@@ -256,7 +256,7 @@ let text = Var<String>()
 let newestTextLength = text.new().map { $0?.count ?? 0 }
 ~~~
     
-### Filter Updates
+## Filter Updates
 
 The `filter(filter)` mapping filters updates:
 
@@ -298,7 +298,7 @@ observer.observe(latestAvailable, select: 9) {
     
 Note that this response closure does not take any arguments because it only gets called for the specified event.
     
-### Unwrap Optional Updates
+## Unwrap Optional Updates
 
 The value of a `Var` is always optional. That's why you can create one without initial value and also set its value `nil`:
 
@@ -324,7 +324,7 @@ let latestUnwrappedNumber = number.new().filter({ $0 != nil }).unwrap(0)
 ~~~	
     
 
-### Chain Mappings Together
+## Chain Mappings Together
 
 A mapping holds a `weak` reference to its mapped observable. You can check whether the observable still exists and even reset it via `mapping.observable`. When a mapping's observabe changes, the mapping sends an update.
 
@@ -375,9 +375,9 @@ Not having to duplicate data where multiple things must be observed is one of th
 
 
 
-## <a id="appendix"></a>Appendix
+# <a id="appendix"></a>Appendix
 
-### <a id="pitfalls"></a>Beginner Pitfalls
+## <a id="pitfalls"></a>Beginner Pitfalls
 
 * Be aware that you must hold a strong reference to an object that you want to observe. Just observing it doesn't create a strong reference. For instance, observing an ad-hoc created `Var` makes no sense:
 
@@ -399,11 +399,11 @@ Not having to duplicate data where multiple things must be observed is one of th
      }
      ~~~
 
-### Specific Patterns
+## Specific Patterns
 
 Patterns that emerged from using SwiftObserver [are documented over here](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns).
 
-### <a id="why"></a>Why the Hell Another Reactive Library?
+## <a id="why"></a>Why the Hell Another Reactive Library?
 
 SwiftObserver diverges from convention. It follows the reactive idea in generalizing the *Observer Pattern*. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something we love.
 
@@ -440,7 +440,7 @@ What you might not like:
 - Observers and observables must be objects and cannot be structs. (Of course, variables can hold any type of values and observables can send any type of updates.)
 - For now, your code must hold strong references to mappings that you want to observe. In other libraries, mappings are kept alive as a side effect of observing them.
 
-#### Focus On Meaning Not On Technicalities
+### Focus On Meaning Not On Technicalities
 
 * Because classes have to implement nothing to be observable, you can keep model and logic code independent of any observer frameworks and techniques. If the model layer had to be stuffed with heavyweight constructs just to be observed, it would become a technical issue instead of an easy to change,  meaningful, direct representation of domain-, business- and view logic.
 * Unlike established Swift implementations of the Redux approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you freely model your domain-, business- and view logic with all your familiar design patterns and types. There are no restrictions on how you organize and store your app state.
