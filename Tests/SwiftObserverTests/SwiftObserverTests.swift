@@ -331,17 +331,33 @@ class SwiftObserverTests: XCTestCase
     
     func testObservingTwoObservables()
     {
-        let number = Var(7)
+        let testModel = Model()
+        let number = Var<Int>()
         
-        controller.observe(model, number)
+        var didFire = false
+        var lastObservedEvent: Model.Event?
+        var lastObservedNumber: Int?
+        
+        controller.observe(testModel, number)
         {
-            XCTAssertEqual($0, .didNothing)
+            event, numberUpdate in
             
-            XCTAssertEqual($1.old, 7)
-            XCTAssertEqual($1.new, 7)
+            didFire = true
+            
+            lastObservedEvent = event
+            lastObservedNumber = numberUpdate.new
         }
         
-        number.send()
+        testModel.send(.didUpdate)
+        
+        XCTAssert(didFire)
+        XCTAssertEqual(lastObservedEvent, .didUpdate)
+        
+        didFire = false
+        number <- 7
+        
+        XCTAssert(didFire)
+        XCTAssertEqual(lastObservedNumber, 7)
     }
     
     func testVariableIsCodable()
@@ -397,6 +413,31 @@ class SwiftObserverTests: XCTestCase
         
         XCTAssert(didEncode)
         XCTAssert(didDecode)
+    }
+    
+    func testObservingThreeVariables()
+    {
+        let var1 = Var<Bool>()
+        let var2 = Var<Int>()
+        let var3 = Var<String>()
+        
+        let observer = Controller()
+        
+        var observedString: String?
+        var didFire = false
+        
+        observer.observe(var1, var2, var3)
+        {
+            truth, number, string in
+            
+            didFire = true
+            observedString = string.new
+        }
+        
+        var3 <- "test"
+        
+        XCTAssert(didFire)
+        XCTAssertEqual(observedString, "test")
     }
 
     let model = Model()

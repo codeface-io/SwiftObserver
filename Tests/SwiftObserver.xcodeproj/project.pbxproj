@@ -113,9 +113,9 @@
 		9E37EDE521B47AC100A594F1 = {
 			isa = PBXGroup;
 			children = (
+				9E37EDFC21B47AC200A594F1 /* SwiftObserverTests */,
 				9E17055521B47C470045581C /* Code */,
 				9E37EDF121B47AC100A594F1 /* SwiftObserver */,
-				9E37EDFC21B47AC200A594F1 /* SwiftObserverTests */,
 				9E37EDF021B47AC100A594F1 /* Products */,
 				D8E3DC067226836B85B834D5 /* Pods */,
 				6C169249C7EC9C7231244327 /* Frameworks */,
@@ -157,7 +157,6 @@
 				4B0B803B49EF9C2B0C0070FD /* Pods-SwiftObserverTests.debug.xcconfig */,
 				66FEFE6734356FD7F5ACEA34 /* Pods-SwiftObserverTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
