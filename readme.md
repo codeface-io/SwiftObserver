@@ -8,7 +8,7 @@ SwiftObserver is a lightweight framework for reactive Swift. It's unconventional
 
 [Reactive programming](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [Dependency Inversion](https://en.wikipedia.org/wiki/Dependency_inversion_principle). SwiftObserver breaks reactive programming down to its essence, which is the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern).
 
-SwiftObserver is just 800 lines of production code, but it's also hundreds of hours of work, thinking it through, letting features go for the sake of simplicity, and battle-testing it [in practice](http://flowlistapp.com).
+SwiftObserver is just 800 lines of production code, but it's also hundreds of hours of work, thinking it through, letting features go for the sake of simplicity, documenting it, unit-testing it, and battle-testing it [in practice](http://flowlistapp.com).
 
 ## Contents
 
@@ -35,7 +35,7 @@ To install via [Carthage](https://github.com/Carthage/Carthage), add this line t
 github "flowtoolz/SwiftObserver" ~> 2.0
 ~~~
 
-Or to install via [Cocoapods](https://cocoapods.org), add this line to your [Podfile](https://guides.cocoapods.org/syntax/podfile.html):
+Or to install via [Cocoapods](https://cocoapods.org), do this in your [Podfile](https://guides.cocoapods.org/syntax/podfile.html):
 
 ~~~ruby
 use_frameworks!
@@ -105,7 +105,7 @@ The above functions are all you need for safe memory management. If you still wa
 2. Remove dead observers from an observable: `observable.removeDeadObservers()`
 3. Erase all observations whos observer or observable are dead: `removeAbandonedObservations()`
 
-> Memory management with SwiftObserver is meaningful, easy and safe. We never deal with contrived constructs like "Disposable" or "DisposeBag". And since you can always flush out abandoned observations, real memory leaks are impossible.
+> Memory management with SwiftObserver is meaningful and safe. We don't deal with contrived constructs like "Disposable" or "DisposeBag". And since you can always flush out orphaned observations, real memory leaks are impossible.
 
 ## <a id="variables"></a>Variables
 
