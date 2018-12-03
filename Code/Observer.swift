@@ -20,7 +20,7 @@ public extension Observer
         _ observable2: O2,
         _ receive: @escaping (O1.UpdateType, O2.UpdateType) -> Void)
     {
-        observable1.add(self)
+        observable1.add(self, filter: nil)
         {
             [weak observable2] in
             
@@ -29,7 +29,7 @@ public extension Observer
             receive($0, o2.latestUpdate)
         }
         
-        observable2.add(self)
+        observable2.add(self, filter: nil)
         {
             [weak observable1] in
             
@@ -45,7 +45,7 @@ public extension Observer
         _ observable3: O3,
         _ receive: @escaping (O1.UpdateType, O2.UpdateType, O3.UpdateType) -> Void)
     {
-        observable1.add(self)
+        observable1.add(self, filter: nil)
         {
             [weak observable2, weak observable3] in
             
@@ -54,7 +54,7 @@ public extension Observer
             receive($0, o2.latestUpdate, o3.latestUpdate)
         }
         
-        observable2.add(self)
+        observable2.add(self, filter: nil)
         {
             [weak observable1, weak observable3] in
             
@@ -63,7 +63,7 @@ public extension Observer
             receive(o1.latestUpdate, $0, o3.latestUpdate)
         }
         
-        observable3.add(self)
+        observable3.add(self, filter: nil)
         {
             [weak observable1, weak observable2] in
             

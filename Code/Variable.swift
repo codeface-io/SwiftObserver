@@ -19,7 +19,7 @@ public class Variable<Value: Equatable & Codable>: Observable, Codable
     // MARK: Observable
     
     public func add(_ observer: AnyObject,
-                    filter: UpdateFilter? = nil,
+                    filter: UpdateFilter?,
                     receive: @escaping UpdateReceiver)
     {
         guard let filter = filter else

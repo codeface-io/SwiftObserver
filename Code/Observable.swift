@@ -1,7 +1,7 @@
 public extension Observable
 {
     func add(_ observer: AnyObject,
-             filter: UpdateFilter? = nil,
+             filter: UpdateFilter?,
              receive: @escaping UpdateReceiver)
     {
         ObservationService.add(observer,
