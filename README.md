@@ -58,7 +58,7 @@ import SwiftObserver
 
 # Get Started 
 
-> No need to learn a bunch of arbitrary metaphors, terms or types. SwiftObserver is simple: **Objects observe other objects**.
+> No need to learn a bunch of arbitrary metaphors, terms or types.<br>SwiftObserver is simple: **Objects observe other objects**.
 
 Or a tad more technically: Observed objects send updates to their observers. That's it. Just readable code:
 
@@ -80,7 +80,7 @@ We'll get to each of these. First, something else ...
 
 # Memory Management
 
-To avoid abandoning observations, you should stop them before their observer or observable die. One way to do that is to stop each observation when it's no longer needed:
+To avoid abandoned observations piling up in memory, you should stop them before their observer or observable die. One way to do that is to stop each observation when it's no longer needed:
 
 ~~~swift
 dog.stopObserving(sky)
@@ -104,7 +104,9 @@ class Sky: Observable {
 }
 ~~~
 
-The above functions are all you need for safe memory management. If you still want to erase observations that you maybe forgot, there are 3 ways to do that:
+Forgetting your observations would almost never eat up significant memory. But you should know, control and explicate the mechanics of your code to a degree that prevents systemic leaks.
+
+The above mentioned functions are all you need for safe memory management. If you still want to erase observations that you may have forgotten, there are 3 ways to do that:
 
 1. Stop observing dead observables: `observer.stopObservingDeadObservables()`
 2. Remove dead observers from an observable: `observable.removeDeadObservers()`
@@ -119,17 +121,17 @@ The above functions are all you need for safe memory management. If you still wa
 A `Var<Value>` has a property `var value: Value?`. You can set `value` via the `<-` operator.
 
 ~~~swift
-let text = Var<String>()	// text.value == nil
+let text = Var<String>()    // text.value == nil
 text.value = "a text"
-let number = Var(23)		// number.value == 23
-number <- 42				// number.value == 42
+let number = Var(23)        // number.value == 23
+number <- 42                // number.value == 42
 ~~~
 
 If your `Var.Value` conforms to [`Numeric`](https://developer.apple.com/documentation/swift/numeric), you can apply `+=` and `-=` directly to the `Var`:
 
 ```swift
 let number = Var(8)
-number += 2	// number.value == 10
+number += 2 // number.value == 10
 ```
 
 ## Variable Updates
