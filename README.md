@@ -159,6 +159,8 @@ class Model: Codable {
    private(set) var text = Var("String Variable")
 }
 
+let model = Model()
+
 if let modelJSON = try? JSONEncoder().encode(model) {
    print(String(data: modelJSON, encoding: .utf8) ?? "error")
    // ^^ {"text":{"storedValue":"String Variable"}}
