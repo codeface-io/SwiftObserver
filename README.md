@@ -145,7 +145,7 @@ You use all *Observables* the same way. There are just a couple things to note:
 To avoid abandoned observations piling up in memory, you should stop them before their observer or observable die. One way to do that is to stop each observation when it's no longer needed:
 
 ```swift
-dog.stopObserving(sky)
+dog.stopObserving(Sky.shared.color)
 ```
 
 An even simpler and safer way is to clean up objects right before they die:
