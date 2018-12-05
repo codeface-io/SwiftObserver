@@ -359,7 +359,7 @@ You may chain *Mappings* together:
 
 ```swift
 Var(false).map {                // a Var<Bool> as the source
-    $0.new == true ? 1 : 0      // Update<Bool> -> Int
+    $0.new == true ? 1 : 0      // Update<Bool?> -> Int
 }.map(prefilter: { $0 > 9 }) {  // only send numbers > 9
     "\($0)"                     // Int -> String
 }.map {
@@ -417,7 +417,7 @@ let number = Var(12)
 let weakNumber = Weak(number)
 
 controller.observe(weakNumber) { update in
-	// process update
+   // process update
 }
 
 var weakNumbers = [Weak<Var<Int>>]()
