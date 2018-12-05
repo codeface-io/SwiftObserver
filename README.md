@@ -32,7 +32,6 @@ SwiftObserver is just 800 lines of production code, but it's also hundreds of ho
     * [Mapping Prefilter](#mapping-prefilter)
     * [Compose Mappings](#compose-mappings)
     * [Prebuilt Mappings](#prebuilt-mappings)
-* [Combined Observation](#combined-observation)
 * [Appendix](#appendix)
     * [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns)
     * [Why the Hell Another Reactive Library?](#why)
@@ -114,6 +113,14 @@ dog.observe(Sky.shared.color, select: .blue) {
 ```
 
 The above observation closure takes no arguments because it only runs for the specified update, in this case `.blue`.
+
+You may start up to three observations with one combined call:
+
+~~~swift
+dog.observe(tv, bowl, doorbell) { image, food, sound in
+   // either the tv's going, I got some food, or the bell rang
+}
+~~~
 
 ## Observables
 
@@ -360,7 +367,7 @@ Var(false).map {                // a Var<Bool> as the source
 // ^^ creates a mapping that sends updates of type [String]
 ```
 
-Chaining *Mappings* together actually composes them into one single *Mapping*. So the `source` of a *Mapping* is never another *Mapping*. It always refers to the original mapped `Observable`. In the above example, the `source` of the created *Mapping* is a `Var<Bool>`.
+Chaining *Mappings* together actually composes them into one single *Mapping*. So the `source` of a *Mapping* is never another *Mapping*. It always refers to the original *Source* `Observable`. In the above example, the `source` of the created *Mapping* is a `Var<Bool>`.
 
 ## Prebuilt Mappings
 
@@ -400,32 +407,6 @@ let title = Var<String>().new().filter{ $0 != nil }.unwrap("")
 // ^^ sends updates of type String, not sending at all for nil values
 ~~~
 
-# Combined Observation
-
-You can observe up to three observable objects:
-
-~~~swift
-let newText = text.new()
-let number = Var(42)
-let model = Model()
-	
-observer.observe(newText, number, model) { textValue, numberUpdate, event in
-   // process new combination of String, number update and event
-}
-~~~
-
-This does not create any new observable object, and the observer won't need to remove itself from anything other than the three observed objects. Of course, memory management is no concern if the observer calls `stopAllObserving()` at some point.
-
-You won't need to distinguish different combining functions.
-
-* Other reactive libraries dump at least `merge`, `zip` and `combineLatest` on your brain. [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) avoids all that by offering the most universal form of combined observation, in which the update trigger can be identified. (In the worst case, you must ensure the involved custom observables send updates of type `Update<_>`.) All other combine functions could be built on top of that using mappings.
-	
-* Anyway, this universal mutual observing is all you need in virtually all cases. You're free to focus on the meaning of combined observations and forget the syntax!
-
-This combined observation does not duplicate the data of any observed object. When one object sends an update, the involved closures pull update information of other observed objects directly from them.
-
-Not having to duplicate data where multiple things must be observed is one of the reasons to use these combined observations. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the data sent from observables.
-
 # Weak Observables
 
 
@@ -451,7 +432,10 @@ What you might like:
 - Use `<-` operator to directly set variable values
 - Recieve old *and* new value from variables
 - No distinction between "hot-" and "cold signals" necessary
-- All the power of combining without a single dedicated combine function
+- All the power of combining without a single dedicated combine function:
+    - Other reactive libraries dump at least `merge`, `zip` and `combineLatest` on your brain. [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) avoids all that by offering the most universal form of combined observation, in which the update trigger can be identified. (In the worst case, you must ensure the involved observables send updates of type `Update<Value>`.) All other combine functions could be built on top of that using mappings.
+    - Combined observation looks exactly like single observation with more parameters, so it imposes no additional cognitive load.
+    - The provided universal combined observation is all you need in virtually all cases. You're free to focus on the meaning of observations and forget its syntax.
 - Combined observations send one update per observable. No tuple destructuring necessary.
 - Optional variable types plus ability to map onto non-optional types. And no other optionals on generics, which avoids optional optionals and gives you full controll over value and update types.
 - Chain mappings together without creating strong references to the mapped objects, without side effects ("mysterious memory magic") and without depending on the existence of the other mappings.
@@ -460,7 +444,9 @@ What you might like:
 - Pure Swift code for clean modelling. Not even dependence on `Foundation`.
 - Call observation and mappings directly on observables (no mediating property)
 - Seemless integration of the *Notifier Pattern*
-- No data duplication for combined observations
+- No data duplication for combined observations:
+    - Combined observation does not duplicate the data of any observed object. When one object sends an update, the involved closures pull update information of other observed objects directly from them.
+    - Not having to duplicate data where multiple things must be observed is one of the reasons to use combined observations in the first place. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the updates sent from observables.
 - The syntax clearly reflects the intent and metaphor of the *Observer Pattern*. Observers are active subjects while observables are passive objects which are unconcerned about being observed: `observer.observe(observable)`
 - SwiftObserver is pragmatic and doesn't overgeneralize the *Observer Pattern*, i.e. it doesn't go overboard with the metaphor of *data streams* but keeps things more object-oriented and simple.
 - Custom observables without having to inherit from any class
