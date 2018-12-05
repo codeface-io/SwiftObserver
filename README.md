@@ -16,6 +16,7 @@ SwiftObserver is just 800 lines of production code, but it's also hundreds of ho
 * [Get Started](#get-started)
     * [Observers](#observers)
     * [Observables](#observers)
+* [Memory Management](#memory-management)
 * [Variables](#variables)
     * [Variable Value](#variable-value)
     * [Variable Updates](#variable-updates) 
@@ -27,7 +28,6 @@ SwiftObserver is just 800 lines of production code, but it's also hundreds of ho
     * [Observable State](#observable-state)
 * [Mappings](#mappings)
 * [Combined Observation](#combined-observation)
-* [Memory Management](#memory-management)
 * [Appendix](#appendix)
     * [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns)
     * [Why the Hell Another Reactive Library?](#why)
@@ -56,7 +56,7 @@ Then, in your Swift files:
 import SwiftObserver
 ~~~
 
-# Get Started 
+# Get Started
 
 > No need to learn a bunch of arbitrary metaphors, terms or types.<br>SwiftObserver is simple: **Objects observe other objects**.
 
@@ -78,7 +78,7 @@ class Dog: Observer {
 
 ## Observers
 
-*Observers* adopt the `Observer` protocol, which gives them functions for beginning and ending observations.
+*Observers* adopt the `Observer` protocol, which gives them functions for starting and ending observations.
 
 After starting to observe some object, the observer must be alive for the observation to continue. There's no awareness after death in memory. But that's a bit easy to overlook when we start observing from within the observer, which is what we often do:
 
@@ -89,8 +89,6 @@ class Dog: Observer {
          // for this closure to run, this Dog must live
       }
    }
-   
-   deinit { stopObserving() }
 }
 ```
 
@@ -110,6 +108,42 @@ You use all *Observables* the same way. There are just a couple things to note:
 - An `Observable` has a property `latestUpdate` of the type of updates it sends. It's a way for clients to actively get the last or "current" update in addition to observing it. ([Combined observations](#combined-observation) also make use of `latestUpdate`.)
 - Generally, an `Observable` sends its updates by itself. But anyone can make it send additional updates via `observable.send(update)`.
 - An `Observable` has a function `send()` which sends the `latestUpdate` (except where you override `send()` in a [Custom *Observable*](#custom-observables)).
+
+# Memory Management
+
+To avoid abandoned observations piling up in memory, you should stop them before their observer or observable die. One way to do that is to stop each observation when it's no longer needed:
+
+```swift
+dog.stopObserving(sky)
+```
+
+An even simpler and safer way is to clean up objects right before they die:
+
+```swift
+class Dog: Observer {
+   deinit {
+      stopObserving() // stops ALL observations this dog is doing
+   } 
+}
+
+class Sky: Observable {
+   deinit {
+      removeObservers() // stops all observations of this sky
+   }
+   
+   // other implementation ...
+}
+```
+
+Forgetting your observations would almost never eat up significant memory. But you should know, control and express the mechanics of your code to a degree that prevents systemic leaks.
+
+The above mentioned functions are all you need for safe memory management. If you still want to erase observations that you may have forgotten, there are 3 ways to do that:
+
+1. Stop observing dead observables: `observer.stopObservingDeadObservables()`
+2. Remove dead observers from an observable: `observable.removeDeadObservers()`
+3. Erase all observations whos observer or observable are dead: `removeAbandonedObservations()`
+
+> Memory management with SwiftObserver is meaningful and safe. There are no contrived constructs like "Disposable" or "DisposeBag". And since you can always flush out orphaned observations, real memory leaks are impossible.
 
 # Variables
 
@@ -240,7 +274,7 @@ let text = Var<String>()
 let textLength = text.map { $0.new?.count ?? 0 } // mapping of `text`
 ~~~
 
-As mentioned above, you use a *Mapping* like any other `Observable`: You hold a strong reference to it somewhere, stop observing it (not its source) at some point, and you can call `latestUpdate`, `send(update)` and `send()`.
+As [mentioned above](#observables), you use a *Mapping* like any other `Observable`: You hold a strong reference to it somewhere, you stop observing it (not its source observable) at some point, and you can call `latestUpdate`, `send(update)` and `send()` on it.
 
 ## Map `Update` Onto `new` Value
 
@@ -367,42 +401,6 @@ You won't need to distinguish different combining functions.
 This combined observation does not duplicate the data of any observed object. When one object sends an update, the involved closures pull update information of other observed objects directly from them.
 
 Not having to duplicate data where multiple things must be observed is one of the reasons to use these combined observations. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the data sent from observables.
-
-# Memory Management
-
-To avoid abandoned observations piling up in memory, you should stop them before their observer or observable die. One way to do that is to stop each observation when it's no longer needed:
-
-```swift
-dog.stopObserving(sky)
-```
-
-An even simpler and safer way is to clean up objects right before they die:
-
-```swift
-class Dog: Observer {
-   deinit {
-      stopObserving() // stops ALL observations this dog is doing
-   } 
-}
-
-class Sky: Observable {
-   deinit {
-      removeObservers() // stops all observations of this sky
-   }
-   
-   // custom observable implementation ...
-}
-```
-
-Forgetting your observations would almost never eat up significant memory. But you should know, control and explicate the mechanics of your code to a degree that prevents systemic leaks.
-
-The above mentioned functions are all you need for safe memory management. If you still want to erase observations that you may have forgotten, there are 3 ways to do that:
-
-1. Stop observing dead observables: `observer.stopObservingDeadObservables()`
-2. Remove dead observers from an observable: `observable.removeDeadObservers()`
-3. Erase all observations whos observer or observable are dead: `removeAbandonedObservations()`
-
-> Memory management with SwiftObserver is meaningful and safe. There are no contrived constructs like "Disposable" or "DisposeBag". And since you can always flush out orphaned observations, real memory leaks are impossible.
 
 # Appendix
 
