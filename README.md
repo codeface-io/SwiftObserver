@@ -424,11 +424,15 @@ var weakNumbers = [Weak<Var<Int>>]()
 weakNumbers.append(weakNumber)
 ~~~
 
-`Weak` is itself an `Observable` and functions as a complete substitute for its wrapped `Observable`, which it holds weakly.
+`Weak` is itself an `Observable` and functions as a complete substitute for its wrapped weak `Observable`, which you can access via the `observable` property:
+
+~~~swift
+let numberIsAlive = weakNumber.observable != nil
+~~~
 
 Since the wrapped `Observable` isn't guaranteed to stay alive, `Weak` has to buffer, and therefore **duplicate**, the `latestUpdate` value. This is a necessary trade-off for holding weak *Observables* in data structures or as a *Mapping Source*.
 
-> Apart from `Weak`, no SwiftObserver type (not even *Mappings*) duplicate the data that is being sent around. This is in stark contrast to other reactive libraries but without compomising functional aspects.
+> Apart from `Weak`, no SwiftObserver type (not even *Mappings*) duplicates the data that is being sent around. This is in stark contrast to other reactive libraries yet without compomising functional aspects.
 
 # Appendix
 
