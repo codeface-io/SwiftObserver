@@ -1,14 +1,3 @@
-// MARK: - Comparable
-
-extension Var: Comparable where Value: Numeric & Comparable
-{
-    public static func < (lhs: Variable<Value>,
-                          rhs: Variable<Value>) -> Bool
-    {
-        return lhs.number < rhs.number
-    }
-}
-
 // MARK: - Value Mutation with Numeric
 
 infix operator +=: AssignmentPrecedence

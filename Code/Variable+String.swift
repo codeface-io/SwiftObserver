@@ -1,3 +1,5 @@
+// MARK: - Other Protocol Conformances
+
 extension Var:
     CustomStringConvertible,
     CustomDebugStringConvertible,
