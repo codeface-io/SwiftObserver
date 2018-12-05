@@ -14,17 +14,35 @@ class ObservationService
                                    filter keep: ((O.UpdateType) -> Bool)? = nil,
                                    receive: @escaping (O.UpdateType) -> Void)
     {
-        observation(of: observable).observerList.add(observer)
+        if let keep = keep
         {
-            guard let update = $0 as? O.UpdateType else
+            observation(of: observable).observerList.add(observer)
             {
-                log(error: "Impossible: Update from observable is not of the observable's update type \(O.UpdateType.self).")
+                guard let update = $0 as? O.UpdateType else
+                {
+                    log(error: "Impossible: Update from observable is not of the observable's update type \(O.UpdateType.self).")
+                    
+                    return
+                }
                 
-                return
+                if keep(update) { receive(update) }
             }
-            
-            if keep?(update) ?? true { receive(update) }
         }
+        else
+        {
+            observation(of: observable).observerList.add(observer)
+            {
+                guard let update = $0 as? O.UpdateType else
+                {
+                    log(error: "Impossible: Update from observable is not of the observable's update type \(O.UpdateType.self).")
+                    
+                    return
+                }
+                
+                receive(update)
+            }
+        }
+        
     }
 
     private static func observation(of observed: AnyObject) -> Observation
