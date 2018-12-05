@@ -297,7 +297,7 @@ Create a new `Observable` that maps (transforms) the updates of a given *Source 
 ~~~swift
 let text = Var<String>()
 let textLength = text.map { $0.new?.count ?? 0 } // textLength.source === text
-// ^^ an `Observable` that sends `Int` updates
+// ^^ an Observable that sends Int updates
 ~~~
 
 You can access the *Source* of a *Mapping* via the `source` property. A *Mapping* holds `source` strongly, just like arrays and other data structures would hold *Observables*. You could rewrite the above example like so:
@@ -318,7 +318,7 @@ You can even reset `source`. When you do, the *Mapping* sends an update (with re
 So, you may create a *Mapping* without knowing what `source` objects it will have over its lifetime. Just use an ad-hoc dummy *Source* to create the *Mapping* and, later, reset `source` as often as you want:
 
 ```swift
-let title = Var<String>().map { // title.source must be a "Var<String>"
+let title = Var<String>().map { // title.source must be a Var<String>
     $0.new ?? "untitled"
 }
 
@@ -339,6 +339,12 @@ let bigNumberString = Var<Int>().map(prefilter: { ($0.new ?? 0) > 9 }) {
 
 A *Mapping* maps and sends only those *Source* updates that pass its *Prefilter*. Of course, the *Prefilter* cannot apply when you actively request the *Mapping's* `latestUpdate`.
 
+You may use the *Mapping's* optional `prefilter` to see which *Source* updates get through:
+
+```swift
+bigNumberString.prefilter?(Update(nil, 9)) ?? true // false
+```
+
 ## Compose Mappings
 
 You may chain *Mappings* together:
@@ -354,7 +360,7 @@ Var(false).map {                // a Var<Bool> as the source
 // ^^ creates a mapping that sends updates of type [String]
 ```
 
-Chaining *Mappings* together actually composes them into one single *Mapping*. So the `source` of a *Mapping* is never another *Mapping*. It always refers to the original mapped `Observable`. In the above example, the source of the created *Mapping* is a `Var<Bool>`.
+Chaining *Mappings* together actually composes them into one single *Mapping*. So the `source` of a *Mapping* is never another *Mapping*. It always refers to the original mapped `Observable`. In the above example, the `source` of the created *Mapping* is a `Var<Bool>`.
 
 ## Prebuilt Mappings
 
@@ -373,7 +379,7 @@ When you only want to filter and not actually transform updates, map the `Observ
 
 ~~~swift
 let text = Var<String>().new().filter { ($0?.count ?? 0) > 4 }
-// ^^ sends updates of type String?, suppressing short strings
+// ^^ sends updates of type String?, suppressing nil and short strings
 ~~~
 
 ### Unwrap
@@ -387,7 +393,7 @@ let title = Var<String>().new().unwrap("untitled")
 // ^^ sends updates of type String, replacing nil with "untitled"
 ~~~
 
-The above example replaces `nil` values with `"untitled"`. If you want `unwrap` to never actually send the default, just filter out `nil` values before:
+If you want `unwrap` to never actually send the default, just filter out `nil` values before:
 
 ~~~swift
 let title = Var<String>().new().filter{ $0 != nil }.unwrap("")
