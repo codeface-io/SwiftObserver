@@ -56,8 +56,8 @@ public class Mapping<O: Observable, MappedUpdate>: Observable
     
     // MARK: - Closures
     
-    let prefilter: O.UpdateFilter?
+    public let prefilter: O.UpdateFilter?
     let map: Mapper
     
-    typealias Mapper = (O.UpdateType) -> MappedUpdate
+    public typealias Mapper = (O.UpdateType) -> MappedUpdate
 }
