@@ -21,6 +21,7 @@ SwiftObserver is just 800 lines of production code, but it's also hundreds of ho
     * [Variable Value](#variable-value)
     * [Variable Updates](#variable-updates) 
     * [Variables are Codable](#variables-are-codable)
+    * [More on Variables](#more-on-variables)
 * [Custom Observables](#custom-observables)
     * [Declare an Observable](#declare-an-observable)
     * [Send Updates](#send-updates)
@@ -28,8 +29,6 @@ SwiftObserver is just 800 lines of production code, but it's also hundreds of ho
 * [Mappings](#mappings)
 * [Combined Observation](#combined-observation)
 * [Appendix](#appendix)
-    * [Beginner Pitfalls](#beginner-pitfalls)
-    * [More on Variables](#more-on-variables)
     * [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns)
     * [Why the Hell Another Reactive Library?](#why)
 
@@ -170,6 +169,10 @@ if let modelJSON = try? JSONEncoder().encode(model) {
 
 Note that `text` is a `var` instead of a `let`. It cannot be constant because the implicit decoder must mutate it. However, clients of `Model` would be supposed to set only `text.value` and not `text` itself, so the setter is private.
 
+## More on Variables
+
+- Internally, a `Var` appends new values to a queue, so all its observers get to process a value change before the next change takes effect. This is for situations when the `Var` has multiple observers and at least one observer changes the `value` in response to a `value` change.
+- A `Var` is a bit more performant than a [custom observable](#custom-observables) because `Var` maintains its own observer list. So if you want to make a super large number of elements in some data structure observable, like particles in a simulation or nodes in a gigantic graph, give those elements a `Var` as an [Owned Messenger](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#owned-messenger). Generally, performance is not an issue since all objects are internally hashed.
 
 # Custom Observables
 
@@ -402,11 +405,6 @@ The above mentioned functions are all you need for safe memory management. If yo
 > Memory management with SwiftObserver is meaningful and safe. There are no contrived constructs like "Disposable" or "DisposeBag". And since you can always flush out orphaned observations, real memory leaks are impossible.
 
 # Appendix
-
-## More on Variables
-
-- A `Var` appends new values to an internal queue, so all its observers get to process a value change before the next change takes effect. This is important when a `Var` has multiple observers and at least one observer changes the `value` in response to a `value` change.
-- A `Var` is more performant than a [custom observable](#custom-observables) because the `Var` maintains its own observer list. So if you want to make a super large number of elements in some data structure observable, like particles in a simulation or nodes in a gigantic graph, give those elements a `Var` as an [Owned Messenger](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#owned-messenger).
 
 ## Specific Patterns
 
