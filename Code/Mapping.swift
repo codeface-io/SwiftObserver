@@ -59,5 +59,5 @@ public class Mapping<O: Observable, MappedUpdate>: Observable
     public let prefilter: O.UpdateFilter?
     let map: Mapper
     
-    public typealias Mapper = (O.UpdateType) -> MappedUpdate
+    typealias Mapper = (O.UpdateType) -> MappedUpdate
 }
