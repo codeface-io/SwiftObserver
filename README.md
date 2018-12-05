@@ -32,6 +32,7 @@ SwiftObserver is just 800 lines of production code, but it's also hundreds of ho
     * [Mapping Prefilter](#mapping-prefilter)
     * [Compose Mappings](#compose-mappings)
     * [Prebuilt Mappings](#prebuilt-mappings)
+* [Weak Observables](#weak-observables)
 * [Appendix](#appendix)
     * [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns)
     * [Why the Hell Another Reactive Library?](#why)
@@ -409,7 +410,25 @@ let title = Var<String>().new().filter{ $0 != nil }.unwrap("")
 
 # Weak Observables
 
+When you want to put *Observables* into some data structure but hold them weakly there, you may wrap them in `Weak`:
 
+~~~swift
+let number = Var(12)
+let weakNumber = Weak(number)
+
+controller.observe(weakNumber) { update in
+	// process update
+}
+
+var weakNumbers = [Weak<Var<Int>>]()
+weakNumbers.append(weakNumber)
+~~~
+
+`Weak` is itself an `Observable` and functions as a complete substitute for its wrapped `Observable`, which it holds weakly.
+
+Since the wrapped `Observable` isn't guaranteed to stay alive, `Weak` has to buffer, and therefore **duplicate**, the `latestUpdate` value. This is a necessary trade-off for holding weak *Observables* in data structures or as a *Mapping Source*.
+
+> Apart from `Weak`, no SwiftObserver type (not even *Mappings*) duplicate the data that is being sent around. This is in stark contrast to other reactive libraries but without compomising functional aspects.
 
 # Appendix
 
