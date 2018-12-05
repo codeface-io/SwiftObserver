@@ -23,6 +23,7 @@
 		9E37EDF921B47AC200A594F1 /* SwiftObserver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E37EDEF21B47AC100A594F1 /* SwiftObserver.framework */; };
 		9E37EDFE21B47AC200A594F1 /* SwiftObserverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E37EDFD21B47AC200A594F1 /* SwiftObserverTests.swift */; };
 		9E37EE0021B47AC200A594F1 /* SwiftObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 9E37EDF221B47AC200A594F1 /* SwiftObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9EA9A0C421B7E9D90067DB30 /* Weak.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EA9A0C321B7E9D90067DB30 /* Weak.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		9E37EDF821B47AC200A594F1 /* SwiftObserverTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftObserverTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E37EDFD21B47AC200A594F1 /* SwiftObserverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftObserverTests.swift; sourceTree = "<group>"; };
 		9E37EDFF21B47AC200A594F1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9EA9A0C321B7E9D90067DB30 /* Weak.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weak.swift; sourceTree = "<group>"; };
 		A4789C8F494749332999804A /* Pods-SwiftObserver.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftObserver.debug.xcconfig"; path = "Target Support Files/Pods-SwiftObserver/Pods-SwiftObserver.debug.xcconfig"; sourceTree = "<group>"; };
 		F4BF92FBB88B2B6F8C2E1733 /* Pods_SwiftObserverTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftObserverTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -100,6 +102,7 @@
 				9E17055921B47C470045581C /* Update.swift */,
 				9E17055A21B47C470045581C /* ObserverList.swift */,
 				9E17055B21B47C470045581C /* Mapping.swift */,
+				9EA9A0C321B7E9D90067DB30 /* Weak.swift */,
 				9E17055C21B47C470045581C /* Mapping+StandardMappings.swift */,
 				9E17055D21B47C470045581C /* Observable+StandardMappings.swift */,
 				9E17055E21B47C470045581C /* Observable.swift */,
@@ -340,6 +343,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9EA9A0C421B7E9D90067DB30 /* Weak.swift in Sources */,
 				9E17056621B47C470045581C /* Mapping.swift in Sources */,
 				9E17056321B47C470045581C /* Variable+Operators.swift in Sources */,
 				9E17056721B47C470045581C /* Mapping+StandardMappings.swift in Sources */,

@@ -4,6 +4,20 @@ import Foundation
 
 class SwiftObserverTests: XCTestCase
 {
+    func testWeakObservable()
+    {
+        var strongObservable: Var<Int>? = Var(10)
+        
+        let weakObservable = Weak(strongObservable!)
+        
+        XCTAssert(strongObservable === weakObservable.observable)
+        
+        strongObservable = nil
+        
+        XCTAssertNil(weakObservable.observable)
+        XCTAssertEqual(weakObservable.latestUpdate.new, 10)
+    }
+    
     func testSettingObservableOfMapping()
     {
         let mapping = Var<String>().new().unwrap("")
