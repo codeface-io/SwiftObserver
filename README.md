@@ -14,6 +14,8 @@ SwiftObserver is just 800 lines of production code, but it's also hundreds of ho
 
 * [Install](#install)
 * [Get Started](#get-started)
+    * [Observers](#observers)
+    * [Observables](#observers)
 * [Memory Management](#memory-management)
 * [Variables](#variables)
     * [Variable Value](#variable-value)
@@ -21,7 +23,6 @@ SwiftObserver is just 800 lines of production code, but it's also hundreds of ho
     * [Variables are Codable](#variables-are-codable)
 * [Custom Observables](#custom-observables)
     * [Declare an Observable](#declare-an-observable)
-    * [The Lastest Update](#the-latest-update)
     * [Send Updates](#send-updates)
     * [Observable State](#observable-state)
 * [Mappings](#mappings)
@@ -60,59 +61,56 @@ import SwiftObserver
 
 > No need to learn a bunch of arbitrary metaphors, terms or types.<br>SwiftObserver is simple: **Objects observe other objects**.
 
-Or a tad more technically: Observed objects send updates to their observers. That's it. Just readable code:
+Or a tad more technically: Observed objects send updates to their observers. 
+
+That's it. Just readable code:
 
 ~~~swift
-dog.observe(sky) { color in
+dog.observe(Sky.shared) { color in
    // marvel at the sky changing its color
 }
-~~~
 
-Observers typically adopt the `Observer` protocol. 
-
-For an object to be observable, it must conform to `Observable`. You get `Observable` objects in three ways:
-
-1. Create a [`Var<Value>`](#variables). It's an `Observable` that holds a value and sends value updates.
-2. Implement a [custom](#custom-observables) `Observable` class.
-3. Create a an `Observable` that [maps](#mappings) (transforms) updates from a source `Observable`.
-
-We'll get to each of these. First, something else ...
-
-# Memory Management
-
-To avoid abandoned observations piling up in memory, you should stop them before their observer or observable die. One way to do that is to stop each observation when it's no longer needed:
-
-~~~swift
-dog.stopObserving(sky)
-~~~
-
-An even simpler and safer way is to clean up objects right before they die:
-
-~~~swift
 class Dog: Observer {
    deinit {
       stopObserving() // stops ALL observations this dog is doing
    } 
 }
-
-class Sky: Observable {
-   deinit {
-      removeObservers() // stops all observations of this sky
-   }
-   
-   // custom observable implementation ...
-}
 ~~~
 
-Forgetting your observations would almost never eat up significant memory. But you should know, control and explicate the mechanics of your code to a degree that prevents systemic leaks.
+## Observers
 
-The above mentioned functions are all you need for safe memory management. If you still want to erase observations that you may have forgotten, there are 3 ways to do that:
+*Observers* adopt the `Observer` protocol, which gives them functions for beginning and ending observations.
 
-1. Stop observing dead observables: `observer.stopObservingDeadObservables()`
-2. Remove dead observers from an observable: `observable.removeDeadObservers()`
-3. Erase all observations whos observer or observable are dead: `removeAbandonedObservations()`
+After starting to observe some object, the observer must be alive for the observation to continue. There's no awareness after death in memory. But that's a bit easy to overlook when we start observing from within the observer, which is what we often do:
 
-> Memory management with SwiftObserver is meaningful and safe. There are no contrived constructs like "Disposable" or "DisposeBag". And since you can always flush out orphaned observations, real memory leaks are impossible.
+```swift
+class Dog: Observer {
+   init {
+      observe(Sky.shared) { color in
+         // for this closure to run, this Dog must live
+      }
+   }
+   
+   deinit { stopObserving() }
+}
+```
+
+## Observables
+
+For objects to be observable, they must conform to `Observable`. 
+
+You get *Observables* in three ways:
+
+1. Create a [*Variable*](#variables). It's an `Observable` that holds a value and sends value updates.
+2. Implement a [custom](#custom-observables) `Observable`.
+3. Create a [*Mapping*](#mappings). It's an `Observable` that transforms updates from a source *Observable*.
+
+You use all *Observables* the same way. There are just a couple things to note:
+
+- Observing an `Observable` does not have the side effect of keeing it alive. Someone must be its owner and have a strong reference to it. (Note that this won't prevent us from chaining [*Mappings*](#mappings) in a single line.)
+- An `Observable` has a property `latestUpdate` of the type of updates it sends. It's a way for clients to actively get the last or "current" update in addition to observing it. ([Combined observations](#combined-observation) also make use of `latestUpdate`.)
+- Generally, an `Observable` sends its updates by itself. But anyone can make it send additional updates via `observable.send(update)`.
+- An `Observable` has a function `send()` which sends the `latestUpdate` (except where you override `send()` in a [Custom *Observable*](#custom-observables)).
 
 # Variables
 
@@ -146,13 +144,11 @@ observer.observe(variable) { update in
 }
 ~~~
 
-A `Var` sends an update whenever its `value` actually changes. Just starting to observe it does **not** trigger an update. This keeps it simple, predictable and consistent, in particular in combination with [mappings](#mappings).
-
-However, you can always call `send()` on an `Observable` to make it send its latest update. `Var.send()` would trigger an `Update` in which `old` and `new` are both the current `value`.
+A `Var` sends an update whenever its `value` actually changes. Just starting to observe it does **not** trigger an update. This keeps it simple, predictable and consistent, in particular in combination with [*Mappings*](#mappings). You can always call `send()` on a `Var` which would trigger an `Update` in which `old` and `new` are both the current `value`.
 
 ## Variables are Codable
 
-`Var` is `Codable`, so when you compose a type of `Var` properties, you can make it `Codable` by simply adopting the `Codable` protocol. To this end, `Var.Value` must be `Codable`:
+`Var` is `Codable`, so when you declare a type with `Var` properties, you can make it `Codable` by simply adopting the `Codable` protocol. To this end, `Var.Value` must be `Codable`:
 
 ~~~swift
 class Model: Codable {
@@ -189,10 +185,6 @@ class Model: Observable {
 ~~~
 
 Swift will infer the associated `UpdateType` from `latestUpdate`, so you don't need to write `typealias UpdateType = Event`.
-
-## The Latest Update
-
-Combined observations sometimes request the latest update from observed objects. So, observables offer the `latestUpdate` property, which is also a way for clients to actively get the latest update in addition to observing it.
 
 `latestUpdate` would typically return the last update that was sent or a value that indicates that nothing changed. It can be optional and may (always) return `nil`:
 
@@ -238,19 +230,15 @@ class Model: Observable {
 
 # Mappings
 
-Create a new observable object by mapping a given one:
+Create a new `Observable` that maps (transforms) the updates of a given one:
 
 ~~~swift
 let text = Var<String>()
-let latestTextLength = text.map { $0.new()?.count ?? 0 }
+let textLength = text.map { $0.new?.count ?? 0 } // mapping of `text`
 ~~~
 
-A mapping is to be used like any other `Observable`:
-​    
-* An observer of the mapping would have to stop observing the mapping itself, not the mapped observable.
-* Observing a mapping does not keep it alive. You must hold a strong reference to a mapping that you want to use.
-* You can call `send(update)` on a mapping as well as any other function or property declared by `Observable`.
-	
+As mentioned above, you use a *Mapping* like any other `Observable`: You hold a strong reference to it somewhere, stop observing it (not its source) at some point, and you can call `latestUpdate`, `send(update)` and `send()`.
+
 ## Map `Update` Onto `new` Value
 
 Often we want to observe only the new value of a variable without the old one. The special mapping `new()` maps a value update onto its new value. It is available for all observables whos update type is `Update<_>` (not just for variables):
@@ -351,7 +339,7 @@ mappedTitle.observable = titleStringVariable
 
 Being able to define observable mappings independent of any underlying mapped observable can help, for instance, in developing view models.
 
-## Combined Observation
+# Combined Observation
 
 You can observe up to three observable objects:
 
@@ -377,29 +365,43 @@ This combined observation does not duplicate the data of any observed object. Wh
 
 Not having to duplicate data where multiple things must be observed is one of the reasons to use these combined observations. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the data sent from observables.
 
+# Memory Management
+
+To avoid abandoned observations piling up in memory, you should stop them before their observer or observable die. One way to do that is to stop each observation when it's no longer needed:
+
+```swift
+dog.stopObserving(sky)
+```
+
+An even simpler and safer way is to clean up objects right before they die:
+
+```swift
+class Dog: Observer {
+   deinit {
+      stopObserving() // stops ALL observations this dog is doing
+   } 
+}
+
+class Sky: Observable {
+   deinit {
+      removeObservers() // stops all observations of this sky
+   }
+   
+   // custom observable implementation ...
+}
+```
+
+Forgetting your observations would almost never eat up significant memory. But you should know, control and explicate the mechanics of your code to a degree that prevents systemic leaks.
+
+The above mentioned functions are all you need for safe memory management. If you still want to erase observations that you may have forgotten, there are 3 ways to do that:
+
+1. Stop observing dead observables: `observer.stopObservingDeadObservables()`
+2. Remove dead observers from an observable: `observable.removeDeadObservers()`
+3. Erase all observations whos observer or observable are dead: `removeAbandonedObservations()`
+
+> Memory management with SwiftObserver is meaningful and safe. There are no contrived constructs like "Disposable" or "DisposeBag". And since you can always flush out orphaned observations, real memory leaks are impossible.
+
 # Appendix
-
-## Beginner Pitfalls
-
-* Be aware that you must hold a strong reference to an object that you want to observe. Just observing it doesn't create a strong reference. For instance, observing an ad-hoc created `Var` makes no sense:
-
-    ~~~swift
-    observer.observe(Var("friday 13")) { update in
-       // FAIL! The observed variable has local scope and will deinit!
-    }
-    ~~~
-
-* Be aware that the observer must be alive for an observation closure to fire. It doesn't make sense to observe something and to expect the "observation" to continue after you die. There's no life after death in main memory. But that's somewhat easy to overlook when you observe other objects from within an observer, which is what you typically do:
-
-     ~~~swift
-     class Controller: Observer {
-        func someFunction {
-           observe(someOtherObject) { update in
-              // to process the update, this Controller must live
-           }
-        }
-     }
-     ~~~
 
 ## More on Variables
 
