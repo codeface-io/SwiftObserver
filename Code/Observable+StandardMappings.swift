@@ -18,8 +18,7 @@ public extension Observable
     }
     
     public func map<MappedUpdate>(prefilter: UpdateFilter? = nil,
-                                  map: @escaping (UpdateType) -> MappedUpdate)
-        -> Mapping<Self, MappedUpdate>
+                                  map: @escaping (UpdateType) -> MappedUpdate) -> Mapping<Self, MappedUpdate>
     {
         return Mapping(self, prefilter: prefilter, map: map)
     }

@@ -21,7 +21,6 @@ class ObservationService
                 guard let update = $0 as? O.UpdateType else
                 {
                     log(error: "Impossible: Update from observable is not of the observable's update type \(O.UpdateType.self).")
-                    
                     return
                 }
                 
@@ -35,14 +34,12 @@ class ObservationService
                 guard let update = $0 as? O.UpdateType else
                 {
                     log(error: "Impossible: Update from observable is not of the observable's update type \(O.UpdateType.self).")
-                    
                     return
                 }
                 
                 receive(update)
             }
         }
-        
     }
 
     private static func observation(of observed: AnyObject) -> Observation
