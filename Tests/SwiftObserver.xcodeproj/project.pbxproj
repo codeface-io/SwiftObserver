@@ -22,6 +22,7 @@
 		9E17056B21B47C470045581C /* ObservationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E17056021B47C470045581C /* ObservationService.swift */; };
 		9E26039421B88D4D00CE4D53 /* Variable+Equatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E26039321B88D4D00CE4D53 /* Variable+Equatable.swift */; };
 		9E26039821B88D7F00CE4D53 /* Variable+ValueAssignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E26039721B88D7F00CE4D53 /* Variable+ValueAssignment.swift */; };
+		9E26039A21B891DA00CE4D53 /* Variable+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E26039921B891DA00CE4D53 /* Variable+String.swift */; };
 		9E37EDF921B47AC200A594F1 /* SwiftObserver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E37EDEF21B47AC100A594F1 /* SwiftObserver.framework */; };
 		9E37EDFE21B47AC200A594F1 /* SwiftObserverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E37EDFD21B47AC200A594F1 /* SwiftObserverTests.swift */; };
 		9E37EE0021B47AC200A594F1 /* SwiftObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 9E37EDF221B47AC200A594F1 /* SwiftObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -56,6 +57,7 @@
 		9E17056021B47C470045581C /* ObservationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObservationService.swift; sourceTree = "<group>"; };
 		9E26039321B88D4D00CE4D53 /* Variable+Equatable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Variable+Equatable.swift"; sourceTree = "<group>"; };
 		9E26039721B88D7F00CE4D53 /* Variable+ValueAssignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Variable+ValueAssignment.swift"; sourceTree = "<group>"; };
+		9E26039921B891DA00CE4D53 /* Variable+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Variable+String.swift"; sourceTree = "<group>"; };
 		9E37EDEF21B47AC100A594F1 /* SwiftObserver.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftObserver.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E37EDF221B47AC200A594F1 /* SwiftObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftObserver.h; sourceTree = "<group>"; };
 		9E37EDF321B47AC200A594F1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -103,6 +105,7 @@
 				9E17055621B47C470045581C /* Observer.swift */,
 				9E17055721B47C470045581C /* Log.swift */,
 				9E17055821B47C470045581C /* Variable+Numeric.swift */,
+				9E26039921B891DA00CE4D53 /* Variable+String.swift */,
 				9E26039321B88D4D00CE4D53 /* Variable+Equatable.swift */,
 				9E26039721B88D7F00CE4D53 /* Variable+ValueAssignment.swift */,
 				9E17055921B47C470045581C /* Update.swift */,
@@ -352,6 +355,7 @@
 				9EA9A0C421B7E9D90067DB30 /* Weak.swift in Sources */,
 				9E17056621B47C470045581C /* Mapping.swift in Sources */,
 				9E17056321B47C470045581C /* Variable+Numeric.swift in Sources */,
+				9E26039A21B891DA00CE4D53 /* Variable+String.swift in Sources */,
 				9E17056721B47C470045581C /* Mapping+StandardMappings.swift in Sources */,
 				9E17056221B47C470045581C /* Log.swift in Sources */,
 				9E17056B21B47C470045581C /* ObservationService.swift in Sources */,
