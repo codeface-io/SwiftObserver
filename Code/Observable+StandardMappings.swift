@@ -21,9 +21,6 @@ public extension Observable
                                   map: @escaping (UpdateType) -> MappedUpdate)
         -> Mapping<Self, MappedUpdate>
     {
-        return Mapping(self,
-                       latestMappedUpdate: map(latestUpdate),
-                       prefilter: prefilter,
-                       map: map)
+        return Mapping(self, prefilter: prefilter, map: map)
     }
 }

@@ -32,12 +32,13 @@ extension Mapping
         
         let composedPrefilter = combineFilters(localPrefilter, addedPrefilter)
         
-        return Mapping<O, ComposedUpdate>(observable,
-                                          latestMappedUpdate: map(latestUpdate),
+        return Mapping<O, ComposedUpdate>(source,
                                           prefilter: composedPrefilter,
                                           map: compose(localMap, map))
     }
 }
+
+// MARK: - Functional Helpers
 
 func combineFilters<T>(_ f1: ((T) -> Bool)?,
                        _ f2: ((T) -> Bool)?) -> ((T) -> Bool)?

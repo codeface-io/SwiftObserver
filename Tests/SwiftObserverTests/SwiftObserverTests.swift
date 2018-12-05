@@ -21,7 +21,6 @@ class SwiftObserverTests: XCTestCase
     func testSettingObservableOfMapping()
     {
         let mapping = Var<String>().new().unwrap("")
-        XCTAssertNil(mapping.observable)
         
         var observedStrings = [String]()
         
@@ -37,7 +36,7 @@ class SwiftObserverTests: XCTestCase
         let initialText = "initial text"
         
         let text = Var(initialText)
-        mapping.observable = text
+        mapping.source = text
         
         XCTAssertEqual(mapping.latestUpdate, initialText)
         XCTAssertEqual(observedStrings, [initialText])
@@ -125,7 +124,7 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual(strongUnwrappedNewNumber.latestUpdate, 9)
         
         number <- nil
-        XCTAssertEqual(strongUnwrappedNewNumber.latestUpdate, 9)
+        XCTAssertEqual(strongUnwrappedNewNumber.latestUpdate, -1)
         
         number <- 10
         XCTAssertEqual(strongUnwrappedNewNumber.latestUpdate, 10)
