@@ -50,26 +50,26 @@ extension Var where Value: Numeric
     }
 }
 
-// MARK: - Composing Pairs of Var<Numeric>
+// MARK: - Composing Pairs of Var<Numeric> Into Numeric
 
 extension Var where Value: Numeric
 {
     public static func + (lhs: Variable<Value>,
-                          rhs: Variable<Value>) -> Var<Value>
+                          rhs: Variable<Value>) -> Value
     {
-        return Var(lhs.number + rhs.number)
+        return lhs.number + rhs.number
     }
     
     public static func - (lhs: Variable<Value>,
-                          rhs: Variable<Value>) -> Var<Value>
+                          rhs: Variable<Value>) -> Value
     {
-        return Var(lhs.number - rhs.number)
+        return lhs.number - rhs.number
     }
     
     public static func * (lhs: Variable<Value>,
-                          rhs: Variable<Value>) -> Var<Value>
+                          rhs: Variable<Value>) -> Value
     {
-        return Var(lhs.number * rhs.number)
+        return lhs.number * rhs.number
     }
 }
 
