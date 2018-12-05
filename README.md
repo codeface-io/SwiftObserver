@@ -6,7 +6,7 @@
 
 SwiftObserver is a lightweight framework for reactive Swift. 
 
-It's unconventional, [covered by tests](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift) and designed to be readable, usable, flexible, non-intrusive, simple and safe.
+It's unconventional, [covered by tests](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift) and designed to be readable, easy, flexible, non-intrusive, simple and safe.
 
 [Reactive programming](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [Dependency Inversion](https://en.wikipedia.org/wiki/Dependency_inversion_principle). SwiftObserver breaks reactive programming down to its essence, which is the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern).
 
@@ -18,7 +18,7 @@ SwiftObserver is just 800 lines of production code, but it's also hundreds of ho
     * [Observables](#observers)
 * [Memory Management](#memory-management)
 * [Variables](#variables)
-    * [Variable Value](#variable-value)
+    * [Set a Variable Value](#set-a-variable-value)
     * [Variable Updates](#variable-updates) 
     * [Variables are Codable](#variables-are-codable)
     * [More on Variables](#more-on-variables)
@@ -27,6 +27,11 @@ SwiftObserver is just 800 lines of production code, but it's also hundreds of ho
     * [Send Updates](#send-updates)
     * [Observable State](#observable-state)
 * [Mappings](#mappings)
+    * [Create a Mapping](#create-a-mapping)
+    * [Change the Mapping Source](#change-the-mapping-source)
+    * [Mapping Prefilter](#mapping-prefilter)
+    * [Compose Mappings](#compose-mappings)
+    * [Prebuilt Mappings](#prebuilt-mappings)
 * [Combined Observation](#combined-observation)
 * [Appendix](#appendix)
     * [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns)
@@ -65,7 +70,7 @@ Or a tad more technically: Observed objects send updates to their observers.
 That's it. Just readable code:
 
 ~~~swift
-dog.observe(Sky.shared) { color in
+dog.observe(Sky.shared.color) { color in
    // marvel at the sky changing its color
 }
 
@@ -80,17 +85,35 @@ class Dog: Observer {
 
 *Observers* adopt the `Observer` protocol, which gives them functions for starting and ending observations.
 
-After starting to observe some object, the observer must be alive for the observation to continue. There's no awareness after death in memory. But that's a bit easy to overlook when we start observing from within the observer, which is what we often do:
+After starting to observe something, the *Observer* must be alive for the observation to continue. There's no awareness after death in memory. But that's a bit easy to overlook when we start observations from within the `Observer`, which is what we often do:
 
 ```swift
 class Dog: Observer {
    init {
-      observe(Sky.shared) { color in
+      observe(Sky.shared.color) { color in
          // for this closure to run, this Dog must live
       }
    }
 }
 ```
+
+An `Observer` may pre-filter updates when starting an observation:
+
+```swift
+dog.observe(Sky.shared.color, filter: { $0.isBright }) { color in
+   // the sky became bright, let's go for a walk!
+}   
+```
+
+An *Observer* may also care for just one specific update:
+
+```swift
+dog.observe(Sky.shared.color, select: .blue) {
+   // the sky became blue, let's go for a walk!
+}
+```
+
+The above observation closure takes no arguments because it only runs for the specified update, in this case `.blue`.
 
 ## Observables
 
@@ -104,7 +127,7 @@ You get *Observables* in three ways:
 
 You use all *Observables* the same way. There are just a couple things to note:
 
-- Observing an `Observable` does not have the side effect of keeing it alive. Someone must be its owner and have a strong reference to it. (Note that this won't prevent us from chaining [*Mappings*](#mappings) in a single line.)
+- Observing an `Observable` does not have the side effect of keeing it alive. Someone must be its owner and have a strong reference to it. (Note that this won't prevent us from [*chaining Mappings*](#compose-mappings) in a single line.)
 - An `Observable` has a property `latestUpdate` of the type of updates it sends. It's a way for clients to actively get the last or "current" update in addition to observing it. ([Combined observations](#combined-observation) also make use of `latestUpdate`.)
 - Generally, an `Observable` sends its updates by itself. But anyone can make it send additional updates via `observable.send(update)`.
 - An `Observable` has a function `send()` which sends the `latestUpdate` (except where you override `send()` in a [Custom *Observable*](#custom-observables)).
@@ -147,7 +170,7 @@ The above mentioned functions are all you need for safe memory management. If yo
 
 # Variables
 
-## Variable Value
+## Set a Variable Value
 
 A `Var<Value>` has a property `var value: Value?`. You can set `value` via the `<-` operator.
 
@@ -167,7 +190,7 @@ number += 2 // number.value == 10
 
 ## Variable Updates
 
-A `Var<Value>` sends updates of type `Update<Var.Value>`, providing the old and new value:
+A `Var<Value>` sends updates of type `Update<Var.Value?>`, providing the old and new value:
 
 ~~~swift
 observer.observe(variable) { update in
@@ -267,114 +290,109 @@ class Model: Observable {
 
 # Mappings
 
-Create a new `Observable` that maps (transforms) the updates of a given one:
+## Create a Mapping
+
+Create a new `Observable` that maps (transforms) the updates of a given *Source Observable*:
 
 ~~~swift
 let text = Var<String>()
-let textLength = text.map { $0.new?.count ?? 0 } // mapping of `text`
+let textLength = text.map { $0.new?.count ?? 0 } // textLength.source === text
+// ^^ an `Observable` that sends `Int` updates
 ~~~
 
-As [mentioned above](#observables), you use a *Mapping* like any other `Observable`: You hold a strong reference to it somewhere, you stop observing it (not its source observable) at some point, and you can call `latestUpdate`, `send(update)` and `send()` on it.
+You can access the *Source* of a *Mapping* via the `source` property. A *Mapping* holds `source` strongly, just like arrays and other data structures would hold *Observables*. You could rewrite the above example like so:
 
-## Map `Update` Onto `new` Value
+```swift
+let textLength = Var<String>().map { $0.new?.count ?? 0 }
+// ^^ textLength.source is of type Var<String>
+```
 
-Often we want to observe only the new value of a variable without the old one. The special mapping `new()` maps a value update onto its new value. It is available for all observables whos update type is `Update<_>` (not just for variables):
+When you want to hold *Observables* weakly, as the *Source* of a *Mapping* or in some data structure, wrap it in [`Weak`](#weak-observables).
 
-~~~swift
-let text = Var<String>()
-let newestTextLength = text.new().map { $0?.count ?? 0 }
-~~~
+As [mentioned earlier](#observables), you use a *Mapping* like any other `Observable`: You hold a strong reference to it somewhere, you stop observing it (not its source) at some point, and you can call `latestUpdate`, `send(_ update: UpdateType)` and `send()` on it. 
 
-## Filter Updates
+## Change the Mapping Source
 
-The `filter(filter)` mapping filters updates:
+You can even reset `source`. When you do, the *Mapping* sends an update (with respect to its [prefilter](#mapping-prefilter)). Although the `source` object is replaceable, it is of a specific type that you determine when creating the *Mapping*.
 
-~~~swift
-let available = Var(100)
-let scarcityWarning = available.new().unwrap(0).filter { $0 < 10 }
-~~~
+So, you may create a *Mapping* without knowing what `source` objects it will have over its lifetime. Just use an ad-hoc dummy *Source* to create the *Mapping* and, later, reset `source` as often as you want:
 
-You can actually apply a prefilter with every general mapping:
-​    
-~~~swift
-let available = Var(100)
-let orderText = available.new().unwrap(0).map(prefilter: { $0 < 10 }) {
-    "Send me \(100 - $0) new ones."
+```swift
+let title = Var<String>().map { // title.source must be a "Var<String>"
+    $0.new ?? "untitled"
 }
-~~~
 
-Observers can also filter single observations without creating any filter mapping at all:
-​    
-~~~swift
-let available = Var(100)
-let latestAvailable = available.new().unwrap(0)
-    
-observer.observe(latestAvailable, filter: { $0 < 10 }) { lowNumber in
-    // oh my god, less than 10 left!
+title.source = someStringVariable
+```
+
+Being able to declare *Mappings* as mere transformations, independent of their concrete *Sources*, can help, for instance, in developing view models.
+
+## Mapping Prefilter
+
+You may give a *Prefilter* to a *Mapping*:
+
+```swift
+let bigNumberString = Var<Int>().map(prefilter: { ($0.new ?? 0) > 9 }) { 
+    "\($0.new ?? 0) is a big number."
 }
-~~~
+```
 
-Observers may also observe one specific event via the `select` parameter:
-​    
-~~~swift
-let available = Var(100)
-let latestAvailable = available.new().unwrap(0)
-    
-observer.observe(latestAvailable, select: 9) {        
-    // oh my god, only 9 left!
+A *Mapping* maps and sends only those *Source* updates that pass its *Prefilter*. Of course, the *Prefilter* cannot apply when you actively request the *Mapping's* `latestUpdate`.
+
+## Compose Mappings
+
+You may chain *Mappings* together:
+
+```swift
+Var(false).map {                // a Var<Bool> as the source
+    $0.new == true ? 1 : 0      // Update<Bool> -> Int
+}.map(prefilter: { $0 > 9 }) {  // only send numbers > 9
+    "\($0)"                     // Int -> String
+}.map {
+    [$0]                        // String -> [String]
 }
-~~~
+// ^^ creates a mapping that sends updates of type [String]
+```
 
-Note that this response closure does not take any arguments because it only gets called for the specified event.
-​    
-## Unwrap Optional Updates
+Chaining *Mappings* together actually composes them into one single *Mapping*. So the `source` of a *Mapping* is never another *Mapping*. It always refers to the original mapped `Observable`. In the above example, the source of the created *Mapping* is a `Var<Bool>`.
 
-The value of a `Var` is always optional. That's why you can create one without initial value and also set its value `nil`:
+## Prebuilt Mappings
 
-~~~swift
-let number = Var<Int>()
-number <- nil
-~~~
+### New
 
-However, we often don't want to deal with optionals down the line. You can easily get rid of the optional with the special mapping `unwrap(default)`:
-​	
-~~~swift
-let latestUnwrappedNumber = number.new().unwrap(0)
-
-observer.observe(latestUnwrappedNumber) { newInteger in
-   // newInteger is not optional!
-}
-~~~
-
-The mapping will replace `nil` values with the default. If you want the mapping to never actively send the default, you can apply a filter before it:
-​    
-~~~swift
-let latestUnwrappedNumber = number.new().filter({ $0 != nil }).unwrap(0)
-~~~
-
-
-## Chain Mappings Together
-
-A mapping holds a `weak` reference to its mapped observable. You can check whether the observable still exists and even reset it via `mapping.observable`. When a mapping's observabe changes, the mapping sends an update.
-
-You must have some strong reference to a mapped observable because the mapping has none. However, when you chain mappings together, you only have to hold the last mapping strongly because chaining actually combines them into one:
+When an `Observable` like a `Var<Value>` sends updates of type `Update<Value?>`, you may only care about the `new` component in `Update<Value?>`. In that case, map the `Observable` with `new()`:
 
 ~~~swift
-let newUnwrappedText = text.new().unwrap("")
+let text = Var<String>().new()
+// ^^ sends updates of type String?
 ~~~
 
-The intermediate mapping created by `new()` will die immediately, but the resulting `newUnwrappedText` will still live and be fully functional.
-​    
-Because chained mappings get combined into one mapping, the `observable` property on a mapping never refers to another mapping. It always refers to the original mapped `Observable`. In the above example, `newUnwrappedText.observable` would refer to `text`.
+### Filter
 
-One useful consequence of this chaining is that you can create a mapping without an actual underlying observable. Use an ad-hoc dummy observable to create the mapping and set the actual observable later:
+When you only want to filter and not actually transform updates, map the `Observable` with a filter:
 
 ~~~swift
-let mappedTitle = Var<String>().new().unwrap("untitled")
-mappedTitle.observable = titleStringVariable
+let text = Var<String>().new().filter { ($0?.count ?? 0) > 4 }
+// ^^ sends updates of type String?, suppressing short strings
 ~~~
 
-Being able to define observable mappings independent of any underlying mapped observable can help, for instance, in developing view models.
+### Unwrap
+
+A `Var<Value>` has a `value: Value?` and sends updates of type `Update<Value?>`. However, we often don't want to deal with optionals down the line.
+
+You may map **any** `Observable` that sends optional updates onto one that unwraps the optionals with a default value:
+
+~~~swift
+let title = Var<String>().new().unwrap("untitled")
+// ^^ sends updates of type String, replacing nil with "untitled"
+~~~
+
+The above example replaces `nil` values with `"untitled"`. If you want `unwrap` to never actually send the default, just filter out `nil` values before:
+
+~~~swift
+let title = Var<String>().new().filter{ $0 != nil }.unwrap("")
+// ^^ sends updates of type String, not sending at all for nil values
+~~~
 
 # Combined Observation
 
@@ -401,6 +419,10 @@ You won't need to distinguish different combining functions.
 This combined observation does not duplicate the data of any observed object. When one object sends an update, the involved closures pull update information of other observed objects directly from them.
 
 Not having to duplicate data where multiple things must be observed is one of the reasons to use these combined observations. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the data sent from observables.
+
+# Weak Observables
+
+
 
 # Appendix
 
