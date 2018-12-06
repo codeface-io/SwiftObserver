@@ -4,13 +4,11 @@
 
 [![badge-pod]](http://cocoapods.org/pods/SwiftObserver) ![badge-pms] ![badge-languages] ![badge-platforms] ![badge-mit]
 
-SwiftObserver is a lightweight framework for reactive Swift. 
+*SwiftObserver* is a lightweight framework for reactive Swift. It's a bit unconventional and designed to be readable, easy, flexible, non-intrusive, simple and safe.
 
-It's unconventional, [covered by tests](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift) and designed to be readable, easy, flexible, non-intrusive, simple and safe.
+[*Reactive Programming*](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [*Dependency Inversion*](https://en.wikipedia.org/wiki/Dependency_inversion_principle). *SwiftObserver* breaks *Reactive Programming* down to its essence, which is the [*Observer Pattern*](https://en.wikipedia.org/wiki/Observer_pattern).
 
-[Reactive programming](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [Dependency Inversion](https://en.wikipedia.org/wiki/Dependency_inversion_principle). SwiftObserver breaks reactive programming down to its essence, which is the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern).
-
-SwiftObserver is just 1100 lines of production code, but it's also hundreds of hours of work, thinking it through, letting features go for the sake of simplicity, documenting it, unit-testing it, and battle-testing it [in practice](http://flowlistapp.com).
+*SwiftObserver* is just about 1000 lines of production code, but it's also hundreds of hours of work, thinking it through, letting features go for the sake of simplicity, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift), and battle-testing it [in practice](http://flowlistapp.com).
 
 * [Install](#install)
 * [Get Started](#get-started)
@@ -63,9 +61,9 @@ import SwiftObserver
 
 # Get Started
 
-> No need to learn a bunch of arbitrary metaphors, terms or types.<br>SwiftObserver is simple: **Objects observe other objects**.
+> No need to learn a bunch of arbitrary metaphors, terms or types.<br>*SwiftObserver* is simple: **Objects observe other objects**.
 
-Or a tad more technically: Observed objects send updates to their observers. 
+Or a tad more technically: Observed objects send updates to their *Observers*. 
 
 That's it. Just readable code:
 
@@ -174,7 +172,7 @@ The above mentioned functions are all you need for safe memory management. If yo
 2. Remove dead *Observers* from an *Observable*: `observable.removeDeadObservers()`
 3. Erase all observations whos *Observer* or *Observable* are dead: `removeAbandonedObservations()`
 
-> Memory management with SwiftObserver is meaningful and safe. There are no contrived constructs like "Disposable" or "DisposeBag". And since you can always flush out orphaned observations, real memory leaks are impossible.
+> Memory management with *SwiftObserver* is meaningful and safe. There are no contrived constructs like "Disposable" or "DisposeBag". And since you can always flush out orphaned observations, real memory leaks are impossible.
 
 # Variables
 
@@ -297,7 +295,7 @@ class StringObservable: Observable {
 
 ## Observable State
 
-Using update type `Update<Value>`, you can inform observers about value changes, similar to how `Var<Value>` does that:
+Using update type `Update<Value>`, you can inform *Observers* about value changes, similar to how `Var<Value>` does that:
 
 ~~~swift
 class Model: Observable {
@@ -452,13 +450,13 @@ let numberIsAlive = weakNumber.observable != nil
 
 Since the wrapped `observable` might die, `Weak` has to buffer, and therefore **duplicate**, the value of `latestUpdate`. This is a necessary price for holding an *Observable* weakly while using it all the same.
 
-> Apart from `Weak`, no SwiftObserver types (not even *Mappings*) duplicate the data that is being sent around. This is in stark contrast to other reactive libraries yet without compomising functional aspects.
+> Apart from `Weak`, no *SwiftObserver* types (not even *Mappings*) duplicate the data that is being sent around. This is in stark contrast to other reactive libraries yet without compomising functional aspects.
 
 # Appendix
 
 ## Specific Patterns
 
-Patterns that emerged from using SwiftObserver [are documented over here](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns).
+Patterns that emerged from using *SwiftObserver* [are documented over here](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns).
 
 ## <a id="why"></a>Why the Hell Another Reactive Library?
 
