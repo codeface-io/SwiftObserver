@@ -1,4 +1,33 @@
+// MARK: - Concatenating
 
+infix operator +: AdditionPrecedence
+
+public func + (strVar: Var<String>?, append: String) -> String
+{
+    return (strVar?.string ?? "") + append
+}
+
+infix operator +=: AssignmentPrecedence
+
+public func += (strVar: Var<String>?, append: String)
+{
+    strVar?.string += append
+}
+
+extension Var where Value == String
+{
+    public static func + (lhs: Variable<Value>,
+                          rhs: Variable<Value>) -> Value
+    {
+        return lhs.string + rhs.string
+    }
+    
+    public static func += (lhs: inout Variable<Value>,
+                           rhs: Variable<Value>)
+    {
+        lhs.string += rhs.string
+    }
+}
 
 // MARK: - Protocol Conformances
 
