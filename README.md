@@ -113,7 +113,7 @@ dog.observe(Sky.shared.color, select: .blue) {
 
 The above observation closure takes no arguments because it only runs for the specified update, in this case `.blue`.
 
-You may start up to three observations with one combined call:
+<a id="combined-observations"></a> You may start up to three observations with one combined call:
 
 ~~~swift
 dog.observe(tv, bowl, doorbell) { image, food, sound in
@@ -129,18 +129,18 @@ You get *Observables* in three ways:
 
 1. Create a [*Variable*](#variables). It's an `Observable` that holds a value and sends value updates.
 2. Implement a [custom](#custom-observables) `Observable`.
-3. Create a [*Mapping*](#mappings). It's an `Observable` that transforms updates from a source *Observable*.
+3. Create a [*Mapping*](#mappings). It's an `Observable` that transforms updates from a *Source Observable*.
 
 You use all *Observables* the same way. There are just a couple things to note:
 
-- Observing an `Observable` does not have the side effect of keeing it alive. Someone must be its owner and have a strong reference to it. (Note that this won't prevent us from [*chaining Mappings*](#compose-mappings) in a single line.)
-- An `Observable` has a property `latestUpdate` of the type of updates it sends. It's a way for clients to actively get the last or "current" update in addition to observing it. ([Combined *Observations*](#combined-observation) also make use of `latestUpdate`.)
-- Generally, an `Observable` sends its updates by itself. But anyone can make it send additional updates via `observable.send(update)`.
-- An `Observable` has a function `send()` which sends the `latestUpdate` (except where you override `send()` in a [custom *Observable*](#custom-observables)).
+- Observing an `Observable` does not have the side effect of keeing it alive. Someone must be its owner and have a strong reference to it. (Note that this won't prevent us from [chaining *Mappings*](#compose-mappings) on a single line.)
+- The property `Observable.latestUpdate` is of the type of updates the `Observable` sends. It's a way for clients to actively get the last or "current" update in addition to observing it. ([Combined observations](#combined-observations) also make use of `latestUpdate`.)
+- Generally, an `Observable` sends its updates by itself. But anyone can make it send additional updates via `Observable.send(_:)`.
+-  `Observable.send()` sends `Observable.latestUpdate`.
 
 # Memory Management
 
-To avoid abandoned *Observations* piling up in memory, you should stop them before their *Observer* or *Observable* die. One way to do that is to stop each observation when it's no longer needed:
+To avoid abandoned observations piling up in memory, you should stop them before their *Observer* or *Observable* die. One way to do that is to stop each observation when it's no longer needed:
 
 ```swift
 dog.stopObserving(Sky.shared.color)
@@ -151,26 +151,25 @@ An even simpler and safer way is to clean up objects right before they die:
 ```swift
 class Dog: Observer {
    deinit {
-      stopObserving() // stops ALL observations this dog is doing
-   } 
+      stopObserving() // stops ALL observations this Dog is doing
+   }
 }
 
 class Sky: Observable {
    deinit {
-      removeObservers() // stops all observations of this sky
+      removeObservers() // stops ALL observations of this Sky
    }
-   
-   // other implementation ...
+   // Sky implementation ...
 }
 ```
 
-Forgetting your observations would almost never eat up significant memory. But you should know, control and express the mechanics of your code to a degree that prevents systemic leaks.
+Forgetting some observations wouldn't waste significant memory. But you should understand, control and express the mechanics of your code to a degree that prevents systemic leaks.
 
-The above mentioned functions are all you need for safe memory management. If you still want to erase observations that you may have forgotten, there are 3 ways to do that:
+The 3 above mentioned functions are all you need for safe memory management. If you still want to erase observations that you may have forgotten, there are 3 other functions for that:
 
-1. Stop observing dead *Observables*: `observer.stopObservingDeadObservables()`
-2. Remove dead *Observers* from an *Observable*: `observable.removeDeadObservers()`
-3. Erase all observations whos *Observer* or *Observable* are dead: `removeAbandonedObservations()`
+1. `Observer.stopObservingDeadObservables()`
+2. `Observable.removeDeadObservers()`
+3. `removeAbandonedObservations()`<br>(Erases **all** observations whos *Observer* or *Observable* are dead)
 
 > Memory management with *SwiftObserver* is meaningful and safe. There are no contrived constructs like "Disposable" or "DisposeBag". And since you can always flush out orphaned observations, real memory leaks are impossible.
 
@@ -189,7 +188,7 @@ number <- 42                // number.value == 42
 
 ### Number Variables
 
-If your `Var.Value` conforms to [`Numeric`](https://developer.apple.com/documentation/swift/numeric), then:
+If your `Var.Value` conforms to [`Numeric`](https://developer.apple.com/documentation/swift/numeric):
 
 1.  `value` is accessible as a non-optional `number: Value`, which interprets `nil` as zero.
 2. You can apply numeric operators `+`, `+=`, `-`, `-=`, `*` and `*=` to almost all pairs of `Var`, `Var?`, `Value` and `Value?`:
@@ -325,7 +324,7 @@ let textLength = text.map { $0.new?.count ?? 0 } // textLength.source === text
 // ^^ an Observable that sends Int updates
 ~~~
 
-You can access the *Source* of a *Mapping* via the `source` property. A *Mapping* holds `source` strongly, just like arrays and other data structures would hold an *Observable*. You could rewrite the above example like so:
+You can access the *Source* of a *Mapping* via the `source` property. A *Mapping* holds the `source` strongly, just like arrays and other data structures would hold an *Observable*. You could rewrite the above example like so:
 
 ```swift
 let textLength = Var<String>().map { $0.new?.count ?? 0 }
@@ -338,9 +337,9 @@ As [mentioned earlier](#observables), you use a *Mapping* like any other `Observ
 
 ## Change the Mapping Source
 
-You can even reset the `source`, causing the *Mapping* to send an update (with respect to its [*Prefilter*](#mapping-prefilter)). Although the `source` is replaceable, it is of a specific type that you determine when creating the *Mapping*.
+You can even reset the `source`, causing the *Mapping* to send an update (with respect to its [*Prefilter*](#mapping-prefilter)). Although the `source` is replaceable, it's of a specific type that you determine by creating the *Mapping*.
 
-So, you may create a *Mapping* without knowing what `source` objects it will have over its lifetime. Just use an ad-hoc dummy *Source* to create the *Mapping* and, later, reset `source` as often as you want:
+So, you may create a *Mapping* without knowing what `source` objects it will have over its lifetime. Just use an ad-hoc dummy *Source* to create the *Mapping* and, later, reset `source` as often as you like:
 
 ```swift
 let title = Var<String>().map { // title.source must be a Var<String>
@@ -355,7 +354,7 @@ Being able to declare *Mappings* as mere transformations, independent of their c
 
 ## Mapping Prefilter
 
-You may give a *Prefilter* to a *Mapping*:
+A *Mapping* can have a *Prefilter*:
 
 ```swift
 let bigNumberString = Var<Int>().map(prefilter: { ($0.new ?? 0) > 9 }) { 
@@ -363,9 +362,9 @@ let bigNumberString = Var<Int>().map(prefilter: { ($0.new ?? 0) > 9 }) {
 }
 ```
 
-A *Mapping* maps and sends only those *Source* updates that pass its *Prefilter*. Of course, the *Prefilter* cannot apply when you actively request the *Mapping's* `latestUpdate`.
+A *Mapping* that has a *Prefilter* maps and sends only those *Source* updates that pass the filter. Of course, the *Prefilter* cannot apply when you actively request the *Mapping's* `latestUpdate`.
 
-You could use a *Mapping's* optional `prefilter` to see which *Source* updates get through:
+You could use a *Mapping's* `prefilter` property to see which *Source* updates get through:
 
 ```swift
 bigNumberString.prefilter?(Update(nil, 9)) ?? true // false
@@ -386,13 +385,13 @@ Var(false).map {                // a Var<Bool> as the source
 // ^^ creates a mapping that sends updates of type [String]
 ```
 
-Chaining *Mappings* together actually composes them into one single *Mapping*. So the `source` of a *Mapping* is never another *Mapping*. It always refers to the original *Source* `Observable`. In the above example, the `source` of the created *Mapping* is a `Var<Bool>`.
+**When you chain *Mappings* together, you actually compose them into one single *Mapping***. So the `source` of a *Mapping* is never another *Mapping*. It always refers to the original *Source* `Observable`. In the above example, the `source` of the created *Mapping* is a `Var<Bool>`.
 
 ## Prebuilt Mappings
 
 ### New
 
-When an `Observable` sends updates of type `Update<SomeType>`, you often only care about the `new` component in `Update<SomeType>`. If so, map the `Observable` with `new()`:
+When an `Observable` sends updates of type `Update<SomeType>`, you often only care about  `Update<SomeType>.new`. If so, use  `Observable.new()`:
 
 ~~~swift
 let text = Var<String>().new()
@@ -401,7 +400,7 @@ let text = Var<String>().new()
 
 ### Filter
 
-When you only want to filter- and not actually transform updates, map the `Observable` with a filter:
+When you only want to filter- and not actually transform updates, use `Observable.filter(_:)`:
 
 ~~~swift
 let text = Var<String>().new().filter { ($0?.count ?? 0) > 4 }
@@ -410,9 +409,9 @@ let text = Var<String>().new().filter { ($0?.count ?? 0) > 4 }
 
 ### Unwrap
 
-A `Var<Value>` has a `value: Value?` and sends updates of type `Update<Value?>`. However, we often don't want to deal with optionals down the line.
+A `Var<Value>` has a `var value: Value?` and sends updates of type `Update<Value?>`. However, we often don't want to deal with optionals down the line.
 
-You may map **any** `Observable` that sends optional updates onto one that unwraps the optionals with a default value:
+You can apply the *Mapping* `Observable.unwrap(_:)` to **any** `Observable` that sends optional updates. It unwraps the optionals using a default value:
 
 ~~~swift
 let title = Var<String>().new().unwrap("untitled")
