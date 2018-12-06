@@ -2,31 +2,36 @@
 
 infix operator +: AdditionPrecedence
 
-public func + (strVar: Var<String>?, append: String) -> String
+public func + (strVar: Var<String>?, str: String?) -> String
 {
-    return (strVar?.string ?? "") + append
+    return (strVar?.string ?? "") + (str ?? "")
+}
+
+public func + (str: String?, strVar: Var<String>?) -> String
+{
+    return (str ?? "") + (strVar?.string ?? "")
+}
+
+public func + (strVar1: Var<String>?, strVar2: Var<String>?) -> String
+{
+    return (strVar1?.string ?? "") + (strVar2?.string ?? "")
 }
 
 infix operator +=: AssignmentPrecedence
 
-public func += (strVar: Var<String>?, append: String)
+public func += (strVar: Var<String>?, str: String?)
 {
-    strVar?.string += append
+    strVar?.string += (str ?? "")
 }
 
-extension Var where Value == String
+public func += (str: inout String, strVar: Var<String>?)
 {
-    public static func + (lhs: Variable<Value>,
-                          rhs: Variable<Value>) -> Value
-    {
-        return lhs.string + rhs.string
-    }
-    
-    public static func += (lhs: inout Variable<Value>,
-                           rhs: Variable<Value>)
-    {
-        lhs.string += rhs.string
-    }
+    str += (strVar?.string ?? "")
+}
+
+public func += (strVar1: Var<String>?, strVar2: Var<String>?)
+{
+    strVar1?.string += (strVar2?.string ?? "")
 }
 
 // MARK: - Protocol Conformances
