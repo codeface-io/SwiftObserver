@@ -4,6 +4,66 @@ import Foundation
 
 class SwiftObserverTests: XCTestCase
 {
+    func testMultiplication()
+    {
+        XCTAssertEqual(Var(2) * Var(7), 14)
+        XCTAssertEqual(Var(2) * 7, 14)
+        XCTAssertEqual(2 * Var(7), 14)
+        
+        var product = 2
+        product *= Var(7)
+        XCTAssertEqual(product, 14)
+        
+        let var1 = Var(2)
+        var1 *= 7
+        XCTAssertEqual(var1.number, 14)
+        
+        var1 <- 2
+        XCTAssertEqual(var1.number, 2)
+        var1 *= Var(7)
+        XCTAssertEqual(var1.number, 14)
+    }
+    
+    func testAddition()
+    {
+        XCTAssertEqual(Var(2) + Var(7), 9)
+        XCTAssertEqual(Var(2) + 7, 9)
+        XCTAssertEqual(2 + Var(7), 9)
+        
+        var sum = 2
+        sum += Var(7)
+        XCTAssertEqual(sum, 9)
+        
+        let var1 = Var(2)
+        var1 += 7
+        XCTAssertEqual(var1.number, 9)
+        
+        var1 <- 2
+        XCTAssertEqual(var1.number, 2)
+        var1 += Var(7)
+        XCTAssertEqual(var1.number, 9)
+    }
+    
+    func testSubtraction()
+    {
+        XCTAssertEqual(Var(7) - Var(2), 5)
+        XCTAssertEqual(Var(7) - 2, 5)
+        XCTAssertEqual(7 - Var(2), 5)
+        
+        var num = 2
+        num -= Var(7)
+        XCTAssertEqual(num, -5)
+        
+        let var1 = Var(2)
+        var1 -= 7
+        XCTAssertEqual(var1.number, -5)
+        
+        var1 <- 2
+        XCTAssertEqual(var1.number, 2)
+        var1 -= Var(7)
+        XCTAssertEqual(var1.number, -5)
+    }
+    
     func testWeakObservable()
     {
         var strongObservable: Var<Int>? = Var(10)

@@ -1,52 +1,145 @@
-// MARK: - Value Mutation with Numeric
+// MARK: - Addition
+
+infix operator +: AdditionPrecedence
+
+public func +<Number: Numeric>(numVar: Var<Number>?,
+                               num: Number?) -> Number
+{
+    return (numVar?.number ?? 0) + (num ?? 0)
+}
+
+public func +<Number: Numeric>(num: Number?,
+                               numVar: Var<Number>?) -> Number
+{
+    return (numVar?.number ?? 0) + (num ?? 0)
+}
 
 infix operator +=: AssignmentPrecedence
 
-public func +=<Number: Numeric>(numVar: Var<Number>?, addition: Number)
+public func +=<Number: Numeric>(numVar: Var<Number>?, num: Number?)
 {
-    guard let numVar = numVar else { return }
-    
-    numVar.number = numVar.number + addition
+    numVar?.number += (num ?? 0)
+}
+
+public func +=<Number: Numeric>(num: inout Number, numVar: Var<Number>?)
+{
+    num += (numVar?.number ?? 0)
+}
+
+// MARK: - Subtraction
+
+infix operator -: AdditionPrecedence
+
+public func -<Number: Numeric>(numVar: Var<Number>?,
+                               num: Number?) -> Number
+{
+    return (numVar?.number ?? 0) - (num ?? 0)
+}
+
+public func -<Number: Numeric>(num: Number?,
+                               numVar: Var<Number>?) -> Number
+{
+    return (num ?? 0) - (numVar?.number ?? 0)
 }
 
 infix operator -=: AssignmentPrecedence
 
-public func -=<Number: Numeric>(numVar: Var<Number>?, subtraction: Number)
+public func -=<Number: Numeric>(numVar: Var<Number>?, num: Number?)
 {
-    guard let numVar = numVar else { return }
-    
-    numVar.number = numVar.number - subtraction
+    numVar?.number -= (num ?? 0)
+}
+
+public func -=<Number: Numeric>(num: inout Number, numVar: Var<Number>?)
+{
+    num -= (numVar?.number ?? 0)
+}
+
+// MARK: - Multiplication
+
+infix operator *: MultiplicationPrecedence
+
+public func *<Number: Numeric>(numVar: Var<Number>?,
+                               num: Number?) -> Number
+{
+    return (numVar?.number ?? 0) * (num ?? 0)
+}
+
+public func *<Number: Numeric>(num: Number?,
+                               numVar: Var<Number>?) -> Number
+{
+    return (numVar?.number ?? 0) * (num ?? 0)
 }
 
 infix operator *=: AssignmentPrecedence
 
-public func *=<Number: Numeric>(numVar: Var<Number>?, factor: Number)
+public func *=<Number: Numeric>(numVar: Var<Number>?, num: Number?)
 {
-    guard let numVar = numVar else { return }
-    
-    numVar.number = numVar.number * factor
+    numVar?.number *= (num ?? 0)
 }
+
+public func *=<Number: Numeric>(num: inout Number, numVar: Var<Number>?)
+{
+    num *= (numVar?.number ?? 0)
+}
+
+// TODO: Allow all operands below to be optional
 
 // MARK: - Value Mutation with Var<Numeric>
 
 extension Var where Value: Numeric
 {
-    public static func += (lhs: inout Variable<Value>,
+    public static func += (lhs: Variable<Value>,
                            rhs: Variable<Value>)
     {
-        lhs.value = lhs.number + rhs.number
+        lhs.number += rhs.number
     }
     
-    public static func -= (lhs: inout Variable<Value>,
-                           rhs: Variable<Value>)
+    public static func += (lhs: Variable<Value>,
+                           rhs: Variable<Value>?)
     {
-        lhs.number = lhs.number - rhs.number
+        lhs.number += (rhs?.number ?? 0)
     }
     
-    public static func *= (lhs: inout Variable<Value>,
+    public static func += (lhs: Variable<Value>?,
                            rhs: Variable<Value>)
     {
-        lhs.number = lhs.number * rhs.number
+        lhs?.number += rhs.number
+    }
+    
+    public static func -= (lhs: Variable<Value>,
+                           rhs: Variable<Value>)
+    {
+        lhs.number -= rhs.number
+    }
+    
+    public static func -= (lhs: Variable<Value>,
+                           rhs: Variable<Value>?)
+    {
+        lhs.number -= (rhs?.number ?? 0)
+    }
+    
+    public static func -= (lhs: Variable<Value>?,
+                           rhs: Variable<Value>)
+    {
+        lhs?.number -= rhs.number
+    }
+    
+    public static func *= (lhs: Variable<Value>,
+                           rhs: Variable<Value>)
+    {
+        lhs.number *= rhs.number
+    }
+    
+    public static func *= (lhs: Variable<Value>,
+                           rhs: Variable<Value>?)
+    {
+        lhs.number *= (rhs?.number ?? 0)
+    }
+    
+    public static func *= (lhs: Variable<Value>?,
+                           rhs: Variable<Value>)
+    {
+        lhs?.number *= rhs.number
     }
 }
 
@@ -65,7 +158,7 @@ extension Var where Value: Numeric
     {
         return lhs.number - rhs.number
     }
-    
+
     public static func * (lhs: Variable<Value>,
                           rhs: Variable<Value>) -> Value
     {
