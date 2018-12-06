@@ -255,14 +255,14 @@ Note that `text` is a `var` instead of a `let`. It cannot be constant because th
 
 - If your `Var.Value` conforms to `Equatable` or `Comparable`, the whole `Var<Value>` will also conform to the respective protocol.
 - Internally, a `Var` appends new values to a queue, so all its *Observers* get to process a value change before the next change takes effect. This is for situations when the `Var` has multiple *Observers* and at least one *Observer* changes the `value` in response to a `value` change.
-- A `Var` is a bit more performant than a [custom *Observable*](#custom-observables) because `Var` maintains its own pool of *Observers*. So if you want to make a super large number of elements in some data structure observable, like particles in a simulation or nodes in a gigantic graph, give those elements a `Var` as an [Owned Messenger](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#owned-messenger).
-- Generally, performance is not an issue. *Observables* and *Observers*are internally hashed by their respective [`ObjectIdentifier`](https://developer.apple.com/documentation/swift/objectidentifier).
+- A `Var` is a bit more performant than a [custom *Observable*](#custom-observables) because `Var` maintains its own pool of *Observers*. So if you want to make a super large number of elements in some data structure observable, like particles in a simulation or nodes in a gigantic graph, give those elements a `Var` as an [*Owned Messenger*](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#owned-messenger).
+- Generally, performance is not an issue. *Observables* and *Observers* are internally hashed by their respective [`ObjectIdentifier`](https://developer.apple.com/documentation/swift/objectidentifier).
 
 # Custom Observables
 
 ## Declare an Observable
 
-Custom *Observables* just need to adopt the `Observable` protocol and provide the property  `latestUpdate` of the type of updates they wish to send:
+Custom *Observables* just need to adopt the `Observable` protocol and provide a property  `latestUpdate` of the type of updates they wish to send:
 
 ~~~swift
 class Model: Observable {
@@ -273,7 +273,7 @@ class Model: Observable {
 
 Swift infers the associated `UpdateType` from `latestUpdate`, so you don't have to write `typealias UpdateType = Event`.
 
-`latestUpdate` would typically return the last update that was sent or a value that indicates that nothing changed. It can be optional and may (always) return `nil`:
+`latestUpdate` typically returns the last update that was sent or a value that indicates that nothing changed. It can be optional and may (always) return `nil`:
 
 ~~~swift
 class MinimalObservable: Observable {
@@ -297,7 +297,7 @@ class StringObservable: Observable {
 
 ## Observable State
 
-Using type `Update<Value>`, you can inform observers about value changes, similar to how `Var<Value>` does that:
+Using update type `Update<Value>`, you can inform observers about value changes, similar to how `Var<Value>` does that:
 
 ~~~swift
 class Model: Observable {
@@ -334,13 +334,13 @@ let textLength = Var<String>().map { $0.new?.count ?? 0 }
 // ^^ textLength.source is of type Var<String>
 ```
 
-When you want to hold *Observables* weakly, as the *Source* of a *Mapping* or in some data structure, wrap it in [`Weak`](#weak-observables).
+When you want to hold an `Observable` weakly, as the *Source* of a *Mapping* or in some data structure, wrap it in [`Weak`](#weak-observables).
 
 As [mentioned earlier](#observables), you use a *Mapping* like any other `Observable`: You hold a strong reference to it somewhere, you stop observing it (not its *Source*) at some point, and you can call `latestUpdate`, `send(_ update: UpdateType)` and `send()` on it. 
 
 ## Change the Mapping Source
 
-You can also reset `source`, causing the *Mapping* to send an update (with respect to its [*Prefilter*](#mapping-prefilter)). Although the `source` object is replaceable, it is of a specific type that you determine when creating the *Mapping*.
+You can even reset the `source`, causing the *Mapping* to send an update (with respect to its [*Prefilter*](#mapping-prefilter)). Although the `source` is replaceable, it is of a specific type that you determine when creating the *Mapping*.
 
 So, you may create a *Mapping* without knowing what `source` objects it will have over its lifetime. Just use an ad-hoc dummy *Source* to create the *Mapping* and, later, reset `source` as often as you want:
 
@@ -367,7 +367,7 @@ let bigNumberString = Var<Int>().map(prefilter: { ($0.new ?? 0) > 9 }) {
 
 A *Mapping* maps and sends only those *Source* updates that pass its *Prefilter*. Of course, the *Prefilter* cannot apply when you actively request the *Mapping's* `latestUpdate`.
 
-You may use the *Mapping's* optional `prefilter` to see which *Source* updates get through:
+You could use a *Mapping's* optional `prefilter` to see which *Source* updates get through:
 
 ```swift
 bigNumberString.prefilter?(Update(nil, 9)) ?? true // false
@@ -403,7 +403,7 @@ let text = Var<String>().new()
 
 ### Filter
 
-When you want to only filter- and not actually transform updates, map the `Observable` with a filter:
+When you only want to filter- and not actually transform updates, map the `Observable` with a filter:
 
 ~~~swift
 let text = Var<String>().new().filter { ($0?.count ?? 0) > 4 }
@@ -430,7 +430,7 @@ let title = Var<String>().new().filter{ $0 != nil }.unwrap("")
 
 # Weak Observables
 
-When you want to put *Observables* into some data structure but hold them weakly there, you may want to wrap them in `Weak`:
+When you want to put an *Observable* into some data structure or as the *Source* into a *Mapping* and hold it there as a `weak`reference, you may want to wrap it in `Weak`:
 
 ~~~swift
 let number = Var(12)
@@ -450,7 +450,7 @@ weakNumbers.append(weakNumber)
 let numberIsAlive = weakNumber.observable != nil
 ~~~
 
-Since the wrapped `observable` might die, `Weak` has to buffer, and therefore **duplicate**, the value of `latestUpdate`. This is a necessary price for weakly holding an *Observable* in a data structure or as the *Source* of a *Mapping*.
+Since the wrapped `observable` might die, `Weak` has to buffer, and therefore **duplicate**, the value of `latestUpdate`. This is a necessary price for holding an *Observable* weakly while using it all the same.
 
 > Apart from `Weak`, no SwiftObserver types (not even *Mappings*) duplicate the data that is being sent around. This is in stark contrast to other reactive libraries yet without compomising functional aspects.
 
