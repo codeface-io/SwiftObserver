@@ -34,11 +34,27 @@ public func += (strVar1: Var<String>?, strVar2: Var<String>?)
     strVar1?.string += (strVar2?.string ?? "")
 }
 
+extension Var: CustomStringConvertible
+    where Value: CustomStringConvertible
+{
+    public var description: String
+    {
+        return value?.description ?? ""
+    }
+}
+
+extension Var: CustomDebugStringConvertible
+    where Value: CustomDebugStringConvertible
+{
+    public var debugDescription: String
+    {
+        return value?.debugDescription ?? ""
+    }
+}
+
 // MARK: - Protocol Conformances
 
 extension Var:
-    CustomStringConvertible,
-    CustomDebugStringConvertible,
     TextOutputStream,
     Sequence,
     Collection,
@@ -106,11 +122,6 @@ extension Var:
         if value == nil { value = "" }
         value?.write(str)
     }
-    
-    // CustomDebugStringConvertible & CustomStringConvertible
-    
-    public var debugDescription: String { return string }
-    public var description: String { return string }
     
     // Non-Optional String
     
