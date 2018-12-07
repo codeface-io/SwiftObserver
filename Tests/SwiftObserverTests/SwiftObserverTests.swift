@@ -4,6 +4,46 @@ import Foundation
 
 class SwiftObserverTests: XCTestCase
 {
+    func testChainingObservationMappers()
+    {
+        var didFire = false
+        
+        let number = Var(42)
+        
+        controller.observe(number).new().unwrap(0).map {
+            "\($0)"               // Int -> String
+        }.filter {
+            $0.count > 1          // filter out single digit integers
+        }.map {
+             Int.init($0)         // String -> Int?
+        }.filter {
+            $0 != nil             // filter out nil values
+        }.unwrap(-1) {            // Int? -> Int
+            didFire = true        // process Int
+        }
+        
+        number <- 10
+        
+        XCTAssert(didFire)
+    }
+    
+    func testChainingObservationMappersWithReceive()
+    {
+        var didFire = false
+        
+        let number = Var(42)
+        
+        controller.observe(number).map {
+            $0.new ?? 0      // Update<Int?> -> Int
+        }.receive {
+            didFire = true   // process Int
+        }
+        
+        number <- 10
+        
+        XCTAssert(didFire)
+    }
+    
     func testObservationMapping()
     {
         let testText = Var<String>()
