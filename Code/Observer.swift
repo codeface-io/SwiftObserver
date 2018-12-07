@@ -23,19 +23,13 @@ public struct ObservationMapping<O: Observable, T>
     {
         observable.add(observer, filter: nil) { if filter($0) { receive($0) } }
     }
+    */
     
-    public func new<V>(receive: @escaping (V?) -> Void) where O == Var<V>
+    public func new<Value>(receive: @escaping (Value) -> Void)
+        where T == Update<Value>
     {
         map({$0.new}, receive: receive)
     }
-    */
-//    public func map<T>(_ map: @escaping (O.UpdateType) -> T) -> ObservationMapping<Mapping<O, T>>
-//    {
-//        let mapping = observable.map(map: map)
-//        
-//        return ObservationMapping<Mapping<O, T>>(observer: observer,
-//                                                 observable: mapping)
-//    }
 
     public func map<U>(_ map: @escaping (T) -> U) -> ObservationMapping<O, U>
     {

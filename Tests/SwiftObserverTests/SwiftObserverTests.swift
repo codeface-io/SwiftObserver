@@ -4,48 +4,6 @@ import Foundation
 
 class SwiftObserverTests: XCTestCase
 {
-    /*
-    func testObservationMappingNew()
-    {
-        let testText = Var<String>()
-        
-        var didFire = false
-        var observedString: String?
-        
-        controller.observe(testText).new
-        {
-            observedString = $0
-            didFire = true
-        }
-        
-        testText <- "test"
-        
-        XCTAssert(didFire)
-        XCTAssertEqual("test", observedString)
-    }
-    
-    func testObservationMappingFilter()
-    {
-        let testText = Var<String>()
-        
-        var didFire = false
-        var observedString: String?
-        
-        controller.observe(testText).filter({ $0.old != nil })
-        {
-            observedString = $0.new
-            didFire = true
-        }
-        
-        testText <- "test"
-        XCTAssert(!didFire)
-        XCTAssertNil(observedString)
-        
-        testText <- "test2"
-        XCTAssert(didFire)
-        XCTAssertEqual("test2", observedString)
-    }
-    */
     func testObservationMapping()
     {
         let testText = Var<String>()
@@ -84,7 +42,48 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual("untitled", observedString)
     }
     
+    func testObservationMappingNew()
+    {
+        let testText = Var<String>()
+        
+        var didFire = false
+        var observedString: String?
+        
+        controller.observe(testText).new
+        {
+            observedString = $0
+            didFire = true
+        }
+        
+        testText <- "test"
+        
+        XCTAssert(didFire)
+        XCTAssertEqual("test", observedString)
+    }
+    
     /*
+    func testObservationMappingFilter()
+    {
+        let testText = Var<String>()
+        
+        var didFire = false
+        var observedString: String?
+        
+        controller.observe(testText).filter({ $0.old != nil })
+        {
+            observedString = $0.new
+            didFire = true
+        }
+        
+        testText <- "test"
+        XCTAssert(!didFire)
+        XCTAssertNil(observedString)
+        
+        testText <- "test2"
+        XCTAssert(didFire)
+        XCTAssertEqual("test2", observedString)
+    }
+    
     func testObservationMappingUnwrap()
     {
         let textMapping = Var("non optional string").new()
