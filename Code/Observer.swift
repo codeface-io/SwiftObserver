@@ -25,6 +25,12 @@ public struct ObservationMapping<O: Observable, T>
     }
     */
     
+    public func new<Value>() -> ObservationMapping<O, Value>
+        where T == Update<Value>
+    {
+        return map({ $0.new })
+    }
+    
     public func new<Value>(receive: @escaping (Value) -> Void)
         where T == Update<Value>
     {

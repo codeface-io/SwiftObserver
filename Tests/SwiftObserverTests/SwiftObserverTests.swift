@@ -61,6 +61,26 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual("test", observedString)
     }
     
+    func testObservationMappingChainAfterNew()
+    {
+        let testText = Var<String>()
+        
+        var didFire = false
+        var observedString: String?
+        
+        controller.observe(testText).new().map({ $0 ?? ""})
+        {
+            observedString = $0
+            
+            didFire = true
+        }
+        
+        testText <- "test"
+        
+        XCTAssert(didFire)
+        XCTAssertEqual("test", observedString)
+    }
+    
     /*
     func testObservationMappingFilter()
     {
