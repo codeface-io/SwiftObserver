@@ -408,16 +408,19 @@ class SwiftObserverTests: XCTestCase
     func testObservingWrongMessage()
     {
         let textMessenger = Var<String>().new()
-        var receivedMessage: String?
+        var didFire = false
         
-        controller.observe(textMessenger).select("wrong message")
+        controller.observe(textMessenger).select("right message")
         {
-            receivedMessage = "wrong message"
+            didFire = true
         }
         
         textMessenger.send("right message")
+        XCTAssert(didFire)
         
-        XCTAssertNil(receivedMessage)
+        didFire = false
+        textMessenger.send("wrong message")
+        XCTAssert(!didFire)
     }
 
     func testHowToUseOptionalVariables()
