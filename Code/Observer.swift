@@ -23,26 +23,26 @@ public struct ObservationMapping<O: Observable, T>
     public func unwrap<Unwrapped>(_ default: Unwrapped) -> ObservationMapping<O, Unwrapped>
         where T == Optional<Unwrapped>
     {
-        return map({$0 ?? `default`})
+        return map {$0 ?? `default`}
     }
     
     public func unwrap<Unwrapped>(_ default: Unwrapped,
                                   receive: @escaping (Unwrapped) -> Void)
         where T == Optional<Unwrapped>
     {
-        map({$0 ?? `default`}, receive: receive)
+        map {$0 ?? `default`}.receive(receive)
     }
     
     public func new<Value>() -> ObservationMapping<O, Value>
         where T == Update<Value>
     {
-        return map({ $0.new })
+        return map { $0.new }
     }
     
     public func new<Value>(receive: @escaping (Value) -> Void)
         where T == Update<Value>
     {
-        map({$0.new}, receive: receive)
+        map {$0.new}.receive(receive)
     }
 
     public func map<U>(_ map: @escaping (T) -> U) -> ObservationMapping<O, U>
@@ -52,14 +52,6 @@ public struct ObservationMapping<O: Observable, T>
         return ObservationMapping<O, U>(observer: observer,
                                         observable: observable,
                                         map: { map(localMap($0)) })
-    }
-    
-    public func map<U>(_ map: @escaping (T) -> U,
-                       receive: @escaping (U) -> Void)
-    {
-        let localMap = self.map
-        
-        observable.add(observer, filter: nil) { receive(map(localMap($0))) }
     }
     
     public func receive(_ receive: @escaping (T) -> Void)
