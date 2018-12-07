@@ -508,15 +508,27 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
 ### Meaningful Expressive Code
 
 - Readable code down to the internals
+
 - Meaningful naming
+
 - SwiftObserver lets you focus on meaning rather than on technicalities
+
 - Very few concepts
+
 - No arbitrary contrived metaphors
+
 - Easy to understand
+
 - Call observation and mappings directly on observables (no mediating property)
 
     - -> comparison to RxSwift would be illuminating here ...
+
 - SwiftObserver is pragmatic and doesn't overgeneralize the *Observer Pattern*, i.e. it doesn't go overboard with the metaphor of *data streams* but keeps things more simple, real-world oriented and meaningful to an actual application domain.
+
+- Create the source with chain of mappings in one line
+
+- Observe an observable using an ad-hoc chain of transformations
+
 - The *SwiftObserver* syntax clearly reflects the intent and metaphor of the *Observer Pattern*: Observers are active subjects while observables are passive objects which are unconcerned about being observed:
 
     ~~~swift
@@ -588,9 +600,7 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
     - However:
         1. variables can hold any type of values and observables can send any type of updates. 
         2. We found that entities active enough to observe or significant enough to be observed are typically not mere values that are being passed around. What's being passed around are the updates that observables send to observers, and those updates are prototypical value types.
-        3. In SwiftObserver, Mappings are first-class observables, and since they hold their source trongly, you can create the source and the mapping in one line
-        4. creating ad-hoc mappings at the moment of observation and bound to the particular observation is actually not just possible in SO but also much more precisely expressed in the syntax: the observe func itself lets the observer specify a mapping
-        5. For fine granular observing, the `Var` type is appropriate, further reducing the "need" (or shall we say "anti pattern"?) to observe value types.
+        3. For fine granular observing, the `Var` type is appropriate, further reducing the "need" (or shall we say "anti pattern"?) to observe value types.
 
 [badge-pod]: https://img.shields.io/cocoapods/v/SwiftObserver.svg?label=version&style=flat-square
 [badge-pms]: https://img.shields.io/badge/supports-CocoaPods%20%7C%20Carthage-green.svg?style=flat-square
