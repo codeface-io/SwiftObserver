@@ -114,12 +114,12 @@ You get *Observables* in three ways:
 2. Implement a [custom](#custom-observables) `Observable`.
 3. Create a [*Mapping*](#mappings). It's an `Observable` that transforms updates from a *Source Observable*.
 
-You use all *Observables* the same way. There are just a couple things to note:
+You use all *Observables* the same way. There are just a couple things to note about `Observable`:
 
 - Observing an `Observable` does not have the side effect of keeing it alive. Someone must be its owner and have a strong reference to it. (Note that this won't prevent us from [chaining *Mappings*](#compose-mappings) on a single line.)
-- The property `Observable.latestUpdate` is of the type of updates the `Observable` sends. It's a way for clients to actively get the last or "current" update in addition to observing it. ([Combined observations](#combined-observations) also make use of `latestUpdate`.)
-- Generally, an `Observable` sends its updates by itself. But anyone can make it send additional updates via `Observable.send(_:)`.
--  `Observable.send()` sends `Observable.latestUpdate`.
+- The property `latestUpdate` is of the type of updates the `Observable` sends. It's a way for clients to actively get the last or "current" update in addition to observing it. ([Combined observations](#combined-observations) also make use of `latestUpdate`.)
+- Generally, an `Observable` sends its updates by itself. But anyone can make it send additional updates via `send(_:)`.
+-  `send()` sends `latestUpdate`.
 
 # Memory Management
 
@@ -150,8 +150,8 @@ Forgetting some observations wouldn't waste significant memory. But you should u
 
 The 3 above mentioned functions are all you need for safe memory management. If you still want to erase observations that you may have forgotten, there are 3 other functions for that:
 
-1. `Observer.stopObservingDeadObservables()`
-2. `Observable.removeDeadObservers()`
+1. `myObservable.stopObservingDeadObservables()`
+2. `myObservable.removeDeadObservers()`
 3. `removeAbandonedObservations()`<br>(Erases **all** observations whos *Observer* or *Observable* are dead)
 
 > Memory management with *SwiftObserver* is meaningful and safe. There are no contrived constructs like "Disposable" or "DisposeBag". And since you can always flush out orphaned observations, real memory leaks are impossible.
@@ -356,7 +356,7 @@ Var(false).map {                  // a Var<Bool> as the source
 
 ### New
 
-When an `Observable` sends updates of type `Update<SomeType>`, you often only care about  `Update<SomeType>.new`. If so, use  `Observable.new()`:
+When an `Observable` sends updates of type `Update<SomeType>`, you often only care about  `Update<SomeType>.new`. If so, use  `new()`:
 
 ~~~swift
 let text = Var<String>().new()
@@ -367,14 +367,14 @@ let text = Var<String>().new()
 
 A `Var<Value>` has a `var value: Value?` and sends updates of type `Update<Value?>`. However, we often don't want to deal with optionals down the line.
 
-You can apply the *Mapping* `Observable.unwrap(_:)` to **any** `Observable` that sends optional updates. It unwraps the optionals using a default value:
+You can apply the *Mapping* `unwrap(_:)` to **any** `Observable` that sends optional updates. It unwraps the optionals using a default value:
 
 ~~~swift
 let title = Var<String>().new().unwrap("untitled")
 // ^^ sends updates of type String, replacing nil with "untitled"
 ~~~
 
-If you want `unwrap` to never actually send the default, just filter out `nil` values before:
+If you want `unwrap(_:)` to never actually send the default, just filter out `nil` values before:
 
 ~~~swift
 let title = Var<String>().new().filter{ $0 != nil }.unwrap("")
