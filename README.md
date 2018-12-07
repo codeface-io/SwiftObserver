@@ -411,14 +411,7 @@ let text = Var<String>().new().filter { ($0?.count ?? 0) > 4 }
 
 ### Select
 
-Create a *Mapping* that only sends one selected update:
-
-```swift
-let text = Var<String>().new().filter { ($0?.count ?? 0) > 4 }
-// ^^ sends updates of type String?, suppressing nil and short strings
-```
-
-`select` is available on *Observables* that send `Equatable` updates. On a `select` *Mapping*, the observation closure takes no arguments:
+Use `select` to create a *Mapping* that only sends one specific update. `select` is available on all *Observables* that send `Equatable` updates. When observing a `select` *Mapping*, the closure takes no arguments:
 
 ```swift
 let notifier = Var<String>().new().select("my notification")
