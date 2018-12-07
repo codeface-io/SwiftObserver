@@ -1,5 +1,29 @@
 public extension Observer
 {
+    public func observe<V>(_ variable: Var<V>) -> ObservationMapping<V>
+    {
+        return ObservationMapping(observer: self, variable: variable)
+    }
+}
+
+public struct ObservationMapping<V: Codable & Equatable>
+{
+    public func new(closure: @escaping (V?) -> Void)
+    {
+        variable.add(observer, filter: nil)
+        {
+            update in
+            
+            closure(update.new)
+        }
+    }
+    
+    var observer: AnyObject
+    var variable: Var<V>
+}
+
+public extension Observer
+{
     func observe<O: Observable>(_ observable: O,
                                 select update: O.UpdateType,
                                 receive: @escaping () -> Void)

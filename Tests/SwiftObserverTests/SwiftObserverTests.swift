@@ -4,6 +4,25 @@ import Foundation
 
 class SwiftObserverTests: XCTestCase
 {
+    func testObservationMapping()
+    {
+        let testText = Var<String>()
+        
+        var didFire = false
+        var observedString: String?
+        
+        controller.observe(testText).new
+        {
+            observedString = $0
+            didFire = true
+        }
+        
+        testText <- "test"
+        
+        XCTAssert(didFire)
+        XCTAssertEqual("test", observedString)
+    }
+    
     func testMultiplication()
     {
         XCTAssertEqual(Var(2) * Var(7), 14)
