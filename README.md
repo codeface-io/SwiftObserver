@@ -150,7 +150,7 @@ Forgetting some observations wouldn't waste significant memory. But you should u
 
 The 3 above mentioned functions are all you need for safe memory management. If you still want to erase observations that you may have forgotten, there are 3 other functions for that:
 
-1. `myObservable.stopObservingDeadObservables()`
+1. `myObserver.stopObservingDeadObservables()`
 2. `myObservable.removeDeadObservers()`
 3. `removeAbandonedObservations()`<br>(Erases **all** observations whos *Observer* or *Observable* are dead)
 
