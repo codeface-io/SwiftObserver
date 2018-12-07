@@ -144,6 +144,25 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual("test2", observedString)
     }
     
+    func testObservationMappingSelect()
+    {
+        let textMapping = Var().new().unwrap("")
+        
+        var didFire = false
+        
+        controller.observe(textMapping).select("test")
+        {
+            didFire = true
+        }
+        
+        textMapping.source <- "test"
+        XCTAssert(didFire)
+        
+        didFire = false
+        textMapping.source <- "test2"
+        XCTAssert(!didFire)
+    }
+    
     func testMultiplication()
     {
         XCTAssertEqual(Var(2) * Var(7), 14)

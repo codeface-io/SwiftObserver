@@ -8,9 +8,39 @@ public extension Observer
                                   filter: nil)
     }
 }
- 
+
+extension ObservationMapping where T: Equatable
+{
+    public func select(_ update: T, receive: @escaping () -> Void)
+    {
+        self.receive { if $0 == update { receive() } }
+    }
+    
+    public func select(_ update: T) -> ObservationMapping
+    {
+        return filter { $0 == update }
+    }
+}
+
 public struct ObservationMapping<O: Observable, T>
 {
+    // MARK: - Filter
+    
+    public func filter(_ filter: @escaping (T) -> Bool) -> ObservationMapping
+    {
+        let localMap = map
+        let localFilter = self.filter
+        
+        let composedFilter = combineFilters(localFilter, { filter(localMap($0)) })
+        
+        return ObservationMapping(observer: observer,
+                                  observable: observable,
+                                  map: map,
+                                  filter: composedFilter)
+    }
+    
+    // MARK: - Map
+    
     public func unwrap<Unwrapped>(_ default: Unwrapped) -> ObservationMapping<O, Unwrapped>
         where T == Optional<Unwrapped>
     {
@@ -35,19 +65,6 @@ public struct ObservationMapping<O: Observable, T>
     {
         map {$0.new}.receive(receive)
     }
-
-    public func filter(_ filter: @escaping (T) -> Bool) -> ObservationMapping
-    {
-        let localMap = map
-        let localFilter = self.filter
-        
-        let composedFilter = combineFilters(localFilter, { filter(localMap($0)) })
-        
-        return ObservationMapping(observer: observer,
-                                  observable: observable,
-                                  map: map,
-                                  filter: composedFilter)
-    }
     
     public func map<U>(_ map: @escaping (T) -> U) -> ObservationMapping<O, U>
     {
@@ -58,6 +75,8 @@ public struct ObservationMapping<O: Observable, T>
                                         map: { map(localMap($0)) },
                                         filter: filter)
     }
+    
+    // MARK: - Basics
     
     public func receive(_ receive: @escaping (T) -> Void)
     {
