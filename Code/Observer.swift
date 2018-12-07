@@ -4,22 +4,13 @@ public extension Observer
     {
         return ObservationMapping(observer: self,
                                   observable: observable,
-                                  map: { $0 })
+                                  map: { $0 },
+                                  filter: nil)
     }
 }
  
 public struct ObservationMapping<O: Observable, T>
 {
-    /*
-    
-    
-    public func filter(_ filter: @escaping (O.UpdateType) -> Bool,
-                       receive: @escaping (O.UpdateType) -> Void)
-    {
-        observable.add(observer, filter: nil) { if filter($0) { receive($0) } }
-    }
-    */
-    
     public func unwrap<Unwrapped>(_ default: Unwrapped) -> ObservationMapping<O, Unwrapped>
         where T == Optional<Unwrapped>
     {
@@ -45,25 +36,44 @@ public struct ObservationMapping<O: Observable, T>
         map {$0.new}.receive(receive)
     }
 
+    public func filter(_ filter: @escaping (T) -> Bool) -> ObservationMapping
+    {
+        let localMap = map
+        let localFilter = self.filter
+        
+        let composedFilter = combineFilters(localFilter, { filter(localMap($0)) })
+        
+        return ObservationMapping(observer: observer,
+                                  observable: observable,
+                                  map: map,
+                                  filter: composedFilter)
+    }
+    
     public func map<U>(_ map: @escaping (T) -> U) -> ObservationMapping<O, U>
     {
         let localMap = self.map
         
         return ObservationMapping<O, U>(observer: observer,
                                         observable: observable,
-                                        map: { map(localMap($0)) })
+                                        map: { map(localMap($0)) },
+                                        filter: filter)
     }
     
     public func receive(_ receive: @escaping (T) -> Void)
     {
         let localMap = self.map
+        let localFilter = self.filter
         
-        observable.add(observer, filter: nil) { receive(localMap($0)) }
+        observable.add(observer, filter: nil)
+        {
+            if localFilter?($0) ?? true { receive(localMap($0)) }
+        }
     }
 
     let observer: AnyObject
     let observable: O
     let map: (O.UpdateType) -> T
+    let filter: ((O.UpdateType) -> Bool)?
 }
 
 public extension Observer

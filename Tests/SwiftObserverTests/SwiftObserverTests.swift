@@ -71,7 +71,7 @@ class SwiftObserverTests: XCTestCase
         var didFire = false
         var observedString: String?
         
-        controller.observe(testText).new().map({ $0 ?? ""})
+        controller.observe(testText).new().map { $0 ?? ""}.receive
         {
             observedString = $0
             
@@ -110,7 +110,7 @@ class SwiftObserverTests: XCTestCase
         var didFire = false
         var observedCount: Int?
         
-        controller.observe(textMapping).unwrap("untitled").map({ $0.count })
+        controller.observe(textMapping).unwrap("untitled").map { $0.count }.receive
         {
             observedCount = $0
             didFire = true
@@ -122,7 +122,6 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual("untitled".count, observedCount)
     }
     
-    /*
     func testObservationMappingFilter()
     {
         let testText = Var<String>()
@@ -130,7 +129,7 @@ class SwiftObserverTests: XCTestCase
         var didFire = false
         var observedString: String?
         
-        controller.observe(testText).filter({ $0.old != nil })
+        controller.observe(testText).filter { $0.old != nil }.receive
         {
             observedString = $0.new
             didFire = true
@@ -145,9 +144,6 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual("test2", observedString)
     }
     
-    
-    
-    */
     func testMultiplication()
     {
         XCTAssertEqual(Var(2) * Var(7), 14)
