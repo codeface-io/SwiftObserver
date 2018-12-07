@@ -548,7 +548,13 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
 
 - Not conform to Rx (the semi standard of reactive programming)
 - SwiftObserver is focused on the foundation of reactive programming. UI bindings are available as [UIObserver](https://github.com/flowtoolz/UIObserver), but that framework is still in its infancy. You're welcome to make PRs.
-- Observers and observables must be objects and cannot be of value types. However, variables can hold any type of values and observables can send any type of updates. Also, we found that entities active enough to observe or significant enough to be observed are typically not mere values that are being passed around. What's being passed around are the updates that observables send to observers, and they are prototypical value types.
+- Observers and observables must be objects and cannot be of value types.
+    - But:
+        1. variables can hold any type of values and observables can send any type of updates. 
+        2. We found that entities active enough to observe or significant enough to be observed are typically not mere values that are being passed around. What's being passed around are the updates that observables send to observers, and those updates are prototypical value types.
+        3. In SwiftObserver, Mappings are first-class observables, and since they hold their source trongly, you can create the source and the mapping in one line
+        4. creating ad-hoc mappings at the moment of observation and bound to the particular observation is actually not just possible in SO but also much more precisely expressed in the syntax: the observe func itself lets the observer specify a mapping
+        5. For fine granular observing, the `Var` type is appropriate, further reducing the "need" (or shall we say "anti pattern"?) to observe value types.
 - Your code must hold a strong references to a mapping that you want to observe. In other libraries, mappings are kept alive as a side effect of observing them, which allows to create and observe a mapping in the same line. However, SwiftObserver tries to avoid side effects. 
 
 [badge-pod]: https://img.shields.io/cocoapods/v/SwiftObserver.svg?label=version&style=flat-square
