@@ -116,7 +116,7 @@ You get *Observables* in three ways:
 
 You use all *Observables* the same way. There are just a couple things to note about `Observable`:
 
-- Observing an `Observable` does not have the side effect of keeing it alive. Someone must be its owner and have a strong reference to it. (Note that this won't prevent us from [chaining *Mappings*](#compose-mappings) on a single line.)
+- Observing an `Observable` does not have the side effect of keeing it alive. Someone must be its owner and have a strong reference to it. (Note that this won't prevent us from [chaining *Mappings*](#chain-mappings) on a single line.)
 - The property `latestUpdate` is of the type of updates the `Observable` sends. It's a way for clients to actively get the last or "current" update in addition to observing it. ([Combined observations](#combined-observations) also make use of `latestUpdate`.)
 - Generally, an `Observable` sends its updates by itself. But anyone can make it send additional updates via `send(_:)`.
 -  `send()` sends `latestUpdate`.
@@ -316,11 +316,11 @@ let textLength = Var<String>().map { $0.new?.count ?? 0 }
 
 When you want to hold an `Observable` weakly, as the *Source* of a *Mapping* or in some data structure, wrap it in [`Weak`](#weak-observables).
 
-As [mentioned earlier](#observables), you use a *Mapping* like any other `Observable`: You hold a strong reference to it somewhere, you stop observing it (not its *Source*) at some point, and you can call `latestUpdate`, `send(_ update: UpdateType)` and `send()` on it. 
+As [mentioned earlier](#observables), you use a *Mapping* like any other `Observable`: You hold a strong reference to it somewhere, you stop observing it (not its *Source*) at some point, and you can call `latestUpdate`, `send(_:)` and `send()` on it.
 
 ## Swap Mapping Sources
 
-You can even reset the `source`, causing the *Mapping* to send an update (with respect to its [*Prefilter*](#mapping-prefilter)). Although the `source` is replaceable, it's of a specific type that you determine by creating the *Mapping*.
+You can even reset the `source`, causing the *Mapping* to send an update (with respect to its [*Filter*](#filter)). Although the `source` is replaceable, it's of a specific type that you determine by creating the *Mapping*.
 
 So, you may create a *Mapping* without knowing what `source` objects it will have over its lifetime. Just use an ad-hoc dummy *Source* to create the *Mapping* and, later, reset `source` as often as you like:
 
@@ -433,7 +433,7 @@ dog.observe(bowl).map({ $0.hasFood }) { dinnerIsReady in
 
 ## Chain Observation Mappers
 
-You map observations with the same transformations that you would use to create [*Mappings*](#mappings): `map`, `new`, `unwrap`, `filter` and `select`. And you may chain them all together:
+You map observations with the same transformations you use to create [*Mappings*](#mappings): `map`, `new`, `unwrap`, `filter` and `select`. And you may chain them all together:
 
 ```swift
 let number = Var(42)
