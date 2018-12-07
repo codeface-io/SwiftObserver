@@ -461,49 +461,95 @@ Patterns that emerged from using *SwiftObserver* [are documented over here](http
 
 SwiftObserver diverges from convention. It follows the reactive idea in generalizing the *Observer Pattern*. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something we love.
 
-What you might like:
+### Meaningful Expressive Code
 
-- Readable code down to the internals, no arbitrary confusing metaphors
-- Super easy to understand and use
-- Remove observer from all observables with 1 function call
-- No cancellables or tokens to pass around and store
-- No irreversible memory leaks, since orphaned observations can always be flushed out via `removeAbandonedObservations()`.
-- Ability to pull current update from observable
+- Readable code down to the internals
+
+- Meaningful naming
+
+- SwiftObserver lets you focus on meaning rather than on technicalities
+
+- Very few concepts
+
+- No arbitrary contrived metaphors
+
+- Easy to understand
+
+- Call observation and mappings directly on observables (no mediating property)
+
+    - -> comparison to RxSwift would be illuminating here ...
+
+- SwiftObserver is pragmatic and doesn't overgeneralize the *Observer Pattern*, i.e. it doesn't go overboard with the metaphor of *data streams* but keeps things more simple, real-world oriented and meaningful to an actual application domain.
+
+- The *SwiftObserver* syntax clearly reflects the intent and metaphor of the *Observer Pattern*: Observers are active subjects while observables are passive objects which are unconcerned about being observed:
+
+    ~~~swift
+    dog.observe(sky)
+    observer.observe(observable)
+    subject.actUpon(object)
+    ~~~
+
+    > Note: Many definitions of the *Observer Pattern*, including [Wikipedia](https://en.wikipedia.org/wiki/Observer_pattern), have the subject / object roles reversed, which we consider not merely a misnomer but, most of all, an inappropriate level of analysis.
+    >
+    > They look at observation from a technical rather than a conceptual point of view, focusing on *how* the problem is being *solved* rather than *what* the solution *means*.
+    >
+    > The illusion we want to create with the *Observer Pattern* is that an observer observes an observable. Linguistically, that is: subject, predicate, object. The subject actively acts on the object, while the object is passively being acted upon.
+    >
+    > Of course, to achieve this under the hood, observables must actively trigger some data propagation. But we should look at the solution more pragmatically in terms of the real(-world) meaning that we set out to model in the first place.
+
+### Ease of Use
+
+- Easy to use
+- No Cancellables, Disposables, DisposeBags or Tokens to pass around and store
 - Use `<-` operator to directly set variable values
+- Variables are `Codable`, so model types are easy to encode and persist.
+
+### Structural Flexibility Makes it Powerful
+
+- No delegate protocols to implement
+- Pure Swift code for clean modelling. Not even dependence on `Foundation`.
+- Maximum freedom for your architectural- and design choices
+    - Because classes have to implement nothing to be observable, you can keep model and logic code independent of any observer frameworks and techniques. If the model layer had to be stuffed with heavyweight constructs just to be observed, it would become a technical issue rather than an easy to change,  meaningful, direct representation of domain-, business- and view logic.
+    - Unlike established Swift implementations of the Redux approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you freely model your domain-, business- and view logic with all your familiar design patterns and types. There are no restrictions on how you organize and store your app state.
+    - Custom observables without having to inherit from any class
+    - Unlike established Swift implementations of the Reactive approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you in control of the ancestral tree of your classes. There is not a single class that you have to inherit. Therefore, all your classes can be directly observed, even views and view controllers.
+- Ability to pull current update from all observable
 - Recieve old *and* new value from variables
-- No distinction between "hot-" and "cold signals" necessary
-- All the power of combining without a single dedicated combine function:
+- No optional generics except for variable values. This plus the ability to map onto non-optional updates greatly avoid optional optionals and give you full controll over value and update types.
+- With Weak, you can chain mappings together without creating strong references to the mapped observables.
+- With Weak, you can put Observables into a data structure like an array and still hold them weakly.
+- Chaining Mappings has no side effects in terms of which objects are being held strongly and who owns whom. The code remains explicit and the coder in control.
+- Mappings are independent of their mapped source observables, to the point where the sources can be freely swapped.
+- Seemless integration of the *Notifier Pattern*
+
+### Structural Simplicity
+
+- No distinction between "hot-" and "cold signals"
+- No distinction between Infinite and Finite "Series"
+- Mappings are first-class Observables that can be treated like any other observable
+- Combined observations send one update per observable. No tuple destructuring necessary.
+- Not a single specific dedicated combine function, just one universal function to observe 1-3 observables (but still all the power of combined observation)
     - Other reactive libraries dump at least `merge`, `zip` and `combineLatest` on your brain. [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) avoids all that by offering the most universal form of combined observation, in which the update trigger can be identified. (In the worst case, you must ensure the involved observables send updates of type `Update<Value>`.) All other combine functions could be built on top of that using mappings.
     - Combined observation looks exactly like single observation with more parameters, so it imposes no additional cognitive load.
     - The provided universal combined observation is all you need in virtually all cases. You're free to focus on the meaning of observations and forget its syntax.
-- Combined observations send one update per observable. No tuple destructuring necessary.
-- Optional variable types plus ability to map onto non-optional types. And no other optionals on generics, which avoids optional optionals and gives you full controll over value and update types.
-- Chain mappings together without creating strong references to the mapped objects, without side effects ("mysterious memory magic") and without depending on the existence of the other mappings.
-- No delegate protocols to implement
-- Variables are `Codable`, so model types are easy to encode and persist.
-- Pure Swift code for clean modelling. Not even dependence on `Foundation`.
-- Call observation and mappings directly on observables (no mediating property)
-- Seemless integration of the *Notifier Pattern*
-- No data duplication for combined observations:
-    - Combined observation does not duplicate the data of any observed object. When one object sends an update, the involved closures pull update information of other observed objects directly from them.
-    - Not having to duplicate data where multiple things must be observed is one of the reasons to use combined observations in the first place. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the updates sent from observables.
-- The syntax clearly reflects the intent and metaphor of the *Observer Pattern*. Observers are active subjects while observables are passive objects which are unconcerned about being observed: `observer.observe(observable)`
-- SwiftObserver is pragmatic and doesn't overgeneralize the *Observer Pattern*, i.e. it doesn't go overboard with the metaphor of *data streams* but keeps things more object-oriented and simple.
-- Custom observables without having to inherit from any class
-- Maximum freedom for your architectural- and design choices
-- UI bindings are available as [UIObserver](https://github.com/flowtoolz/UIObserver), although that framework is still in its infancy.
+- No data duplication:
 
-What you might not like:
+    > This is a consequence of a very simple and universal modelling of the notion of an "Observable". We combined the conventional "push model" in which observables push their updates to observers with a "pull model" in which observers can pull updates from observables, which is what they have always done and what never was the problem, since observers act on observables in the direction of control / dependence. The problem that reactive techiques solve is propagating data **against** the direction of control. Also a pull model is more in line with functional programming: Instead of buffering state, the observer calls and combines functions on observables.
+
+	- Neither combined observations nor mappings duplicate the data they receive from observables. Combined observations pull update information directly from those observables that didn't trigger the received update.
+    - Not having to duplicate data where multiple things must be observed is one of the reasons to use combined observations in the first place. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the updates sent from observables.
+
+### Safe Memory Management
+
+- Remove observer from all observables with 1 function call
+- No irreversible memory leaks, since orphaned observations can always be flushed out via `removeAbandonedObservations()`.
+
+### What you might not like:
 
 - Not conform to Rx (the semi standard of reactive programming)
-- Observers and observables must be objects and cannot be structs. (Of course, variables can hold any type of values and observables can send any type of updates.)
-- For now, your code must hold strong references to mappings that you want to observe. In other libraries, mappings are kept alive as a side effect of observing them.
-
-### Focus On Meaning Not On Technicalities
-
-* Because classes have to implement nothing to be observable, you can keep model and logic code independent of any observer frameworks and techniques. If the model layer had to be stuffed with heavyweight constructs just to be observed, it would become a technical issue instead of an easy to change,  meaningful, direct representation of domain-, business- and view logic.
-* Unlike established Swift implementations of the Redux approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you freely model your domain-, business- and view logic with all your familiar design patterns and types. There are no restrictions on how you organize and store your app state.
-* Unlike established Swift implementations of the Reactive approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you in control of the ancestral tree of your classes. There is not a single class that you have to inherit. Therefore, all your classes can be directly observed, even views and view controllers.
+- SwiftObserver is focused on the foundation of reactive programming. UI bindings are available as [UIObserver](https://github.com/flowtoolz/UIObserver), but that framework is still in its infancy. You're welcome to make PRs.
+- Observers and observables must be objects and cannot be of value types. However, variables can hold any type of values and observables can send any type of updates. Also, we found that entities active enough to observe or significant enough to be observed are typically not mere values that are being passed around. What's being passed around are the updates that observables send to observers, and they are prototypical value types.
+- Your code must hold a strong references to a mapping that you want to observe. In other libraries, mappings are kept alive as a side effect of observing them, which allows to create and observe a mapping in the same line. However, SwiftObserver tries to avoid side effects. 
 
 [badge-pod]: https://img.shields.io/cocoapods/v/SwiftObserver.svg?label=version&style=flat-square
 [badge-pms]: https://img.shields.io/badge/supports-CocoaPods%20%7C%20Carthage-green.svg?style=flat-square
