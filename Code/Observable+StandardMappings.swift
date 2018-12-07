@@ -2,7 +2,7 @@ public extension Observable where UpdateType: Equatable
 {
     public func select(_ default: UpdateType) -> Mapping<Self, Void>
     {
-        return map(prefilter: { $0 == `default` }) { _ in }
+        return Mapping(self, filter: { $0 == `default` }) { _ in }
     }
 }
 
@@ -16,7 +16,7 @@ public extension Observable
     
     public func filter(_ keep: @escaping UpdateFilter) -> Mapping<Self, UpdateType>
     {
-        return map(prefilter: keep) { $0 }
+        return Mapping(self, filter: keep) { $0 }
     }
     
     public func unwrap<Unwrapped>(_ defaultUpdate: Unwrapped) -> Mapping<Self, Unwrapped>
@@ -25,9 +25,8 @@ public extension Observable
         return map { $0 ?? defaultUpdate }
     }
     
-    public func map<MappedUpdate>(prefilter: UpdateFilter? = nil,
-                                  map: @escaping (UpdateType) -> MappedUpdate) -> Mapping<Self, MappedUpdate>
+    public func map<MappedUpdate>(map: @escaping (UpdateType) -> MappedUpdate) -> Mapping<Self, MappedUpdate>
     {
-        return Mapping(self, prefilter: prefilter, map: map)
+        return Mapping(self, map: map)
     }
 }

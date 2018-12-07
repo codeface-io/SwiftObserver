@@ -15,7 +15,7 @@ class SwiftObserverTests: XCTestCase
         }.filter {
             $0.count > 1          // filter out single digit integers
         }.map {
-             Int.init($0)         // String -> Int?
+            Int.init($0)          // String -> Int?
         }.filter {
             $0 != nil             // filter out nil values
         }.unwrap(-1) { _ in       // Int? -> Int

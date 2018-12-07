@@ -2,10 +2,10 @@ public class Mapping<O: Observable, MappedUpdate>: Observable
 {
     // MARK: - Life Cycle
     
-    init(_ source: O, prefilter: O.UpdateFilter? = nil, map: @escaping Mapper)
+    init(_ source: O, filter: O.UpdateFilter? = nil, map: @escaping Mapper)
     {
         self.source = source
-        self.prefilter = prefilter
+        self.filter = filter
         self.map = map
         
         observe(source: source)
@@ -15,6 +15,28 @@ public class Mapping<O: Observable, MappedUpdate>: Observable
     {
         source.remove(self)
         removeObservers()
+    }
+    
+    // MARK: - Chain Mappings
+    
+    func filterMap<ComposedUpdate>(filter: ((MappedUpdate) -> Bool)? = nil,
+                                   map: @escaping (MappedUpdate) -> ComposedUpdate) -> Mapping<O, ComposedUpdate>
+    {
+        let localMap = self.map
+        let localFilter = self.filter
+        
+        let addedFilter: ((O.UpdateType) -> Bool)? =
+        {
+            guard let prefilter = filter else { return nil }
+            
+            return compose(localMap, prefilter)
+        }()
+        
+        let composedFilter = combineFilters(localFilter, addedFilter)
+        
+        return Mapping<O, ComposedUpdate>(source,
+                                          filter: composedFilter,
+                                          map: compose(localMap, map))
     }
     
     // MARK: - Observable
@@ -35,7 +57,7 @@ public class Mapping<O: Observable, MappedUpdate>: Observable
             
             let sourceLatestUpdate = source.latestUpdate
             
-            if prefilter?(sourceLatestUpdate) ?? true
+            if filter?(sourceLatestUpdate) ?? true
             {
                 send(map(sourceLatestUpdate))
             }
@@ -50,7 +72,7 @@ public class Mapping<O: Observable, MappedUpdate>: Observable
             
             guard let self = self else { return }
             
-            if self.prefilter?(update) ?? true
+            if self.filter?(update) ?? true
             {
                 self.send(self.map(update))
             }
@@ -59,7 +81,7 @@ public class Mapping<O: Observable, MappedUpdate>: Observable
     
     // MARK: - Closures
     
-    public let prefilter: O.UpdateFilter?
+    public let filter: O.UpdateFilter?
     let map: Mapper
     
     typealias Mapper = (O.UpdateType) -> MappedUpdate
