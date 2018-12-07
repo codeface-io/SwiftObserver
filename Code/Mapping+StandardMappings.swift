@@ -1,3 +1,11 @@
+extension Mapping where MappedUpdate: Equatable
+{
+    public func select(_ default: MappedUpdate) -> Mapping<O, Void>
+    {
+        return map(prefilter: { $0 == `default` }) { _ in }
+    }
+}
+
 extension Mapping
 {
     public func new<Value>() -> Mapping<O, Value>
