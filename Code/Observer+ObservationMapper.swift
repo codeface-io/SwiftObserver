@@ -1,13 +1,17 @@
+// MARK: - Observer+ObservationMapper
+
 public extension Observer
 {
     public func observe<O>(_ observable: O) -> ObservationMapper<O, O.UpdateType>
     {
         return ObservationMapper(observer: self,
-                                  observable: observable,
-                                  map: { $0 },
-                                  filter: nil)
+                                 observable: observable,
+                                 map: { $0 },
+                                 filter: nil)
     }
 }
+
+// MARK: - Select
 
 extension ObservationMapper where T: Equatable
 {
@@ -21,6 +25,8 @@ extension ObservationMapper where T: Equatable
         return filter { $0 == update }
     }
 }
+
+// MARK: - ObservationMapper
 
 public struct ObservationMapper<O: Observable, T>
 {
@@ -115,8 +121,8 @@ public struct ObservationMapper<O: Observable, T>
         }
     }
 
-    let observer: AnyObject
-    let observable: O
-    let map: (O.UpdateType) -> T
-    let filter: ((O.UpdateType) -> Bool)?
+    fileprivate let observer: AnyObject
+    fileprivate let observable: O
+    fileprivate let map: (O.UpdateType) -> T
+    fileprivate let filter: ((O.UpdateType) -> Bool)?
 }
