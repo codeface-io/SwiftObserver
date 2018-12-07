@@ -1,13 +1,16 @@
 public extension Observer
 {
-    public func observe<O>(_ observable: O) -> ObservationMapping<O>
+    public func observe<O>(_ observable: O) -> ObservationMapping<O, O.UpdateType>
     {
-        return ObservationMapping(observer: self, observable: observable)
+        return ObservationMapping(observer: self,
+                                  observable: observable,
+                                  map: { $0 })
     }
 }
-
-public struct ObservationMapping<O: Observable>
+ 
+public struct ObservationMapping<O: Observable, T>
 {
+    /*
     public func unwrap<Unwrapped>(_ default: Unwrapped,
                                   receive: @escaping (Unwrapped) -> Void)
         where O.UpdateType == Optional<Unwrapped>
@@ -25,15 +28,35 @@ public struct ObservationMapping<O: Observable>
     {
         map({$0.new}, receive: receive)
     }
-    
-    public func map<T>(_ map: @escaping (O.UpdateType) -> T,
-                       receive: @escaping (T) -> Void)
+    */
+//    public func map<T>(_ map: @escaping (O.UpdateType) -> T) -> ObservationMapping<Mapping<O, T>>
+//    {
+//        let mapping = observable.map(map: map)
+//        
+//        return ObservationMapping<Mapping<O, T>>(observer: observer,
+//                                                 observable: mapping)
+//    }
+
+    public func map<U>(_ map: @escaping (T) -> U) -> ObservationMapping<O, U>
     {
-        observable.add(observer, filter: nil) { receive(map($0)) }
+        let localMap = self.map
+        
+        return ObservationMapping<O, U>(observer: observer,
+                                        observable: observable,
+                                        map: { map(localMap($0)) })
     }
     
+    public func map<U>(_ map: @escaping (T) -> U,
+                       receive: @escaping (U) -> Void)
+    {
+        let localMap = self.map
+        
+        observable.add(observer, filter: nil) { receive(map(localMap($0))) }
+    }
+
     var observer: AnyObject
     var observable: O
+    var map: (O.UpdateType) -> T
 }
 
 public extension Observer

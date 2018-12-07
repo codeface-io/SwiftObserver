@@ -4,6 +4,7 @@ import Foundation
 
 class SwiftObserverTests: XCTestCase
 {
+    /*
     func testObservationMappingNew()
     {
         let testText = Var<String>()
@@ -44,7 +45,7 @@ class SwiftObserverTests: XCTestCase
         XCTAssert(didFire)
         XCTAssertEqual("test2", observedString)
     }
-    
+    */
     func testObservationMapping()
     {
         let testText = Var<String>()
@@ -64,6 +65,26 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual("test", observedString)
     }
     
+    func testObservationMappingChained()
+    {
+        let testText = Var("non optional string")
+        
+        var didFire = false
+        var observedString: String?
+        
+        controller.observe(testText).map({ $0.new }).map({ $0 ?? "untitled" })
+        {
+            observedString = $0
+            didFire = true
+        }
+        
+        testText <- nil
+        
+        XCTAssert(didFire)
+        XCTAssertEqual("untitled", observedString)
+    }
+    
+    /*
     func testObservationMappingUnwrap()
     {
         let textMapping = Var("non optional string").new()
@@ -83,6 +104,7 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual("untitled", observedString)
     }
     
+    */
     func testMultiplication()
     {
         XCTAssertEqual(Var(2) * Var(7), 14)
