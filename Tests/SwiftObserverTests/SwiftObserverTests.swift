@@ -11,7 +11,7 @@ class SwiftObserverTests: XCTestCase
         var didFire = false
         var observedString: String?
         
-        controller.observe(testText).map({ $0.new })
+        controller.observe(testText).map { $0.new }.receive
         {
             observedString = $0
             didFire = true
@@ -30,8 +30,11 @@ class SwiftObserverTests: XCTestCase
         var didFire = false
         var observedString: String?
         
-        controller.observe(testText).map({ $0.new }).map({ $0 ?? "untitled" })
-        {
+        controller.observe(testText).map {
+            $0.new
+        }.map {
+            $0 ?? "untitled"
+        }.receive {
             observedString = $0
             didFire = true
         }

@@ -61,6 +61,13 @@ public struct ObservationMapping<O: Observable, T>
         
         observable.add(observer, filter: nil) { receive(map(localMap($0))) }
     }
+    
+    public func receive(_ receive: @escaping (T) -> Void)
+    {
+        let localMap = self.map
+        
+        observable.add(observer, filter: nil) { receive(localMap($0)) }
+    }
 
     let observer: AnyObject
     let observable: O
