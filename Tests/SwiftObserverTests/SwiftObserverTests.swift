@@ -18,7 +18,7 @@ class SwiftObserverTests: XCTestCase
              Int.init($0)         // String -> Int?
         }.filter {
             $0 != nil             // filter out nil values
-        }.unwrap(-1) {            // Int? -> Int
+        }.unwrap(-1) { _ in       // Int? -> Int
             didFire = true        // process Int
         }
         
