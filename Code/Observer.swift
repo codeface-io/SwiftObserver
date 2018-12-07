@@ -1,18 +1,9 @@
 public extension Observer
 {
     func observe<O: Observable>(_ observable: O,
-                                select update: O.UpdateType,
-                                receive: @escaping () -> Void)
-        where O.UpdateType: Equatable
-    {
-        observable.add(self, filter: { $0 == update }) { _ in receive() }
-    }
-    
-    func observe<O: Observable>(_ observable: O,
-                                filter keep: ((O.UpdateType) -> Bool)? = nil,
                                 receive: @escaping (O.UpdateType) -> Void)
     {
-        observable.add(self, filter: keep, receive: receive)
+        observable.add(self, filter: nil, receive: receive)
     }
     
     func observe<O1: Observable, O2: Observable>(

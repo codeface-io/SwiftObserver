@@ -274,7 +274,7 @@ class SwiftObserverTests: XCTestCase
         
         var observedNumbers = [Int]()
         
-        controller.observe(latestUnwrappedNumber, filter: { $0 > 9 })
+        controller.observe(latestUnwrappedNumber).filter({ $0 > 9 })
         {
             observedNumbers.append($0)
         }
@@ -373,7 +373,7 @@ class SwiftObserverTests: XCTestCase
         var receivedMessage: String?
         let expectedMessage = "message"
         
-        controller.observe(textMessenger, select: expectedMessage)
+        controller.observe(textMessenger).select(expectedMessage)
         {
             receivedMessage = expectedMessage
         }
@@ -410,7 +410,7 @@ class SwiftObserverTests: XCTestCase
         let textMessenger = Var<String>().new()
         var receivedMessage: String?
         
-        controller.observe(textMessenger, select: "wrong message")
+        controller.observe(textMessenger).select("wrong message")
         {
             receivedMessage = "wrong message"
         }
