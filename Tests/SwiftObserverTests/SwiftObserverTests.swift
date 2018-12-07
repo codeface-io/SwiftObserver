@@ -182,6 +182,25 @@ class SwiftObserverTests: XCTestCase
         XCTAssert(!didFire)
     }
     
+    func testMappingSelectOnCustomObservable()
+    {
+        let mappedModel = model.select(.didUpdate)
+        
+        var didFire = false
+        
+        controller.observe(mappedModel)
+        {
+            didFire = true
+        }
+        
+        model.send(.didUpdate)
+        XCTAssert(didFire)
+        
+        didFire = false
+        model.send(.didReset)
+        XCTAssert(!didFire)
+    }
+    
     func testMultiplication()
     {
         XCTAssertEqual(Var(2) * Var(7), 14)
@@ -574,12 +593,17 @@ class SwiftObserverTests: XCTestCase
     
     func testObservableMapping()
     {
-        controller.observe(model.map { $0.rawValue })
+        var didFire = false
+        
+        controller.observe(model).map({ $0.rawValue })
         {
             XCTAssertEqual($0, "didUpdate")
+            didFire = true
         }
         
         model.send(.didUpdate)
+        
+        XCTAssert(didFire)
     }
     
     

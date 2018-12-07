@@ -1,4 +1,4 @@
-extension Mapping where MappedUpdate: Equatable
+public extension Mapping where MappedUpdate: Equatable
 {
     public func select(_ default: MappedUpdate) -> Mapping<O, Void>
     {
@@ -6,7 +6,7 @@ extension Mapping where MappedUpdate: Equatable
     }
 }
 
-extension Mapping
+public extension Mapping
 {
     public func new<Value>() -> Mapping<O, Value>
         where MappedUpdate == Update<Value>

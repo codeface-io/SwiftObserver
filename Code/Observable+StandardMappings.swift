@@ -1,3 +1,11 @@
+public extension Observable where UpdateType: Equatable
+{
+    public func select(_ default: UpdateType) -> Mapping<Self, Void>
+    {
+        return map(prefilter: { $0 == `default` }) { _ in }
+    }
+}
+
 public extension Observable
 {
     public func new<MappedUpdate>() -> Mapping<Self, MappedUpdate>
