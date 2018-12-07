@@ -5,7 +5,6 @@ public extension Observable
     {
         ObservationService.add(observer,
                                of: self,
-                               filter: nil,
                                receive: receive)
     }
     
