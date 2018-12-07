@@ -11,7 +11,7 @@ class SwiftObserverTests: XCTestCase
         var didFire = false
         var observedString: String?
         
-        controller.observe(testText).map { $0.new }.receive
+        controller.observe(testText).map({ $0.new })
         {
             observedString = $0
             didFire = true
@@ -71,7 +71,7 @@ class SwiftObserverTests: XCTestCase
         var didFire = false
         var observedString: String?
         
-        controller.observe(testText).new().map { $0 ?? ""}.receive
+        controller.observe(testText).new().map({ $0 ?? ""})
         {
             observedString = $0
             
@@ -110,7 +110,7 @@ class SwiftObserverTests: XCTestCase
         var didFire = false
         var observedCount: Int?
         
-        controller.observe(textMapping).unwrap("untitled").map { $0.count }.receive
+        controller.observe(textMapping).unwrap("untitled").map({ $0.count })
         {
             observedCount = $0
             didFire = true
@@ -129,7 +129,7 @@ class SwiftObserverTests: XCTestCase
         var didFire = false
         var observedString: String?
         
-        controller.observe(testText).filter { $0.old != nil }.receive
+        controller.observe(testText).filter({ $0.old != nil })
         {
             observedString = $0.new
             didFire = true

@@ -39,7 +39,28 @@ public struct ObservationMapping<O: Observable, T>
                                   filter: composedFilter)
     }
     
+    public func filter(_ filter: @escaping (T) -> Bool,
+                       receive: @escaping (T) -> Void)
+    {
+        let localMap = map
+        let localFilter = self.filter
+        
+        let composedFilter = combineFilters(localFilter, { filter(localMap($0)) })
+        
+        observable.add(observer, filter: nil)
+        {
+            if composedFilter?($0) ?? true { receive(localMap($0)) }
+        }
+    }
+    
     // MARK: - Map
+    
+    public func unwrap<Unwrapped>(_ default: Unwrapped,
+                                  receive: @escaping (Unwrapped) -> Void)
+        where T == Optional<Unwrapped>
+    {
+        unwrap(`default`).receive(receive)
+    }
     
     public func unwrap<Unwrapped>(_ default: Unwrapped) -> ObservationMapping<O, Unwrapped>
         where T == Optional<Unwrapped>
@@ -47,23 +68,16 @@ public struct ObservationMapping<O: Observable, T>
         return map {$0 ?? `default`}
     }
     
-    public func unwrap<Unwrapped>(_ default: Unwrapped,
-                                  receive: @escaping (Unwrapped) -> Void)
-        where T == Optional<Unwrapped>
+    public func new<Value>(receive: @escaping (Value) -> Void)
+        where T == Update<Value>
     {
-        map {$0 ?? `default`}.receive(receive)
+        new().receive(receive)
     }
     
     public func new<Value>() -> ObservationMapping<O, Value>
         where T == Update<Value>
     {
         return map { $0.new }
-    }
-    
-    public func new<Value>(receive: @escaping (Value) -> Void)
-        where T == Update<Value>
-    {
-        map {$0.new}.receive(receive)
     }
     
     public func map<U>(_ map: @escaping (T) -> U) -> ObservationMapping<O, U>
@@ -74,6 +88,18 @@ public struct ObservationMapping<O: Observable, T>
                                         observable: observable,
                                         map: { map(localMap($0)) },
                                         filter: filter)
+    }
+    
+    public func map<U>(_ map: @escaping (T) -> U,
+                       receive: @escaping (U) -> Void)
+    {
+        let localMap = self.map
+        let localFilter = self.filter
+        
+        observable.add(observer, filter: nil)
+        {
+            if localFilter?($0) ?? true { receive(map(localMap($0))) }
+        }
     }
     
     // MARK: - Basics
