@@ -8,7 +8,7 @@
 
 [*Reactive Programming*](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [*Dependency Inversion*](https://en.wikipedia.org/wiki/Dependency_inversion_principle). *SwiftObserver* breaks *Reactive Programming* down to its essence, which is the [*Observer Pattern*](https://en.wikipedia.org/wiki/Observer_pattern).
 
-*SwiftObserver* is just about 1000 lines of production code, but it's also hundreds of hours of work, thinking it through, letting features go for the sake of simplicity, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift), and battle-testing it [in practice](http://flowlistapp.com).
+*SwiftObserver* is just about 1100 lines of production code, but it's also hundreds of hours of work, thinking it through, letting features go for the sake of simplicity, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift), and battle-testing it [in practice](http://flowlistapp.com).
 
 * [Install](#install)
 * [Get Started](#get-started)
@@ -87,37 +87,19 @@ After starting to observe something, the *Observer* must be alive for the observ
 
 ```swift
 class Dog: Observer {
-   init {
-      observe(Sky.shared.color) { color in
-         // for this closure to run, this Dog must live
-      }
-   }
+    init {
+        observe(Sky.shared.color) { color in
+            // for this closure to run, this Dog must live
+        }
+    }
 }
 ```
-
-An `Observer` may pre-filter updates when starting an observation:
-
-```swift
-dog.observe(Sky.shared.color, filter: { $0.isBright }) { color in
-   // the sky became bright, let's go for a walk!
-}   
-```
-
-An *Observer* may also care for just one specific update:
-
-```swift
-dog.observe(Sky.shared.color, select: .blue) {
-   // the sky became blue, let's go for a walk!
-}
-```
-
-The above observation closure takes no arguments because it only runs for the specified update, in this case `.blue`.
 
 <a id="combined-observations"></a> You may start up to three observations with one combined call:
 
 ~~~swift
 dog.observe(tv, bowl, doorbell) { image, food, sound in
-   // either the tv's going, I got some food, or the bell rang
+    // either the tv's going, I got some food, or the bell rang
 }
 ~~~
 
@@ -151,13 +133,13 @@ An even simpler and safer way is to clean up objects right before they die:
 ```swift
 class Dog: Observer {
    deinit {
-      stopObserving() // stops ALL observations this Dog is doing
+      stopObserving()  // stops ALL observations this Dog is doing
    }
 }
 
 class Sky: Observable {
    deinit {
-      removeObservers() // stops ALL observations of this Sky
+      removeObservers()  // stops ALL observations of this Sky
    }
    // Sky implementation ...
 }
@@ -194,12 +176,12 @@ If your `Var.Value` conforms to [`Numeric`](https://developer.apple.com/document
 2. You can apply numeric operators `+`, `+=`, `-`, `-=`, `*` and `*=` to almost all pairs of `Var`, `Var?`, `Value` and `Value?`:
 
     ```swift
-    let numVar = Var()            // numVar.value == nil
-    print(numvar.number)          // 0
-    numVar += 10                  // numVar.value == 10
-    numVar -= Var(6)              // numVar.value == 4
-    var number = Var(3) + Var(2)  // number == 5
-    number += Var(5)              // number == 10
+    let numVar = Var()              // numVar.value == nil
+    print(numvar.number)            // 0
+    numVar += 10                    // numVar.value == 10
+    numVar -= Var(6)                // numVar.value == 4
+    var number = Var(3) + Var(2)    // number == 5
+    number += Var(5)                // number == 10
     ```
 
 ### String Variables
@@ -320,7 +302,7 @@ Create a new `Observable` that maps (transforms) the updates of a given *Source 
 
 ~~~swift
 let text = Var<String>()
-let textLength = text.map { $0.new?.count ?? 0 } // textLength.source === text
+let textLength = text.map { $0.new?.count ?? 0 }  // textLength.source === text
 // ^^ an Observable that sends Int updates
 ~~~
 
@@ -342,7 +324,7 @@ You can even reset the `source`, causing the *Mapping* to send an update (with r
 So, you may create a *Mapping* without knowing what `source` objects it will have over its lifetime. Just use an ad-hoc dummy *Source* to create the *Mapping* and, later, reset `source` as often as you like:
 
 ```swift
-let title = Var<String>().map { // title.source must be a Var<String>
+let title = Var<String>().map {  // title.source must be a Var<String>
     $0.new ?? "untitled"
 }
 
@@ -375,12 +357,12 @@ bigNumberString.prefilter?(Update(nil, 9)) ?? true // false
 You may chain *Mappings* together:
 
 ```swift
-Var(false).map {                // a Var<Bool> as the source
-    $0.new == true ? 1 : 0      // Update<Bool?> -> Int
-}.map(prefilter: { $0 > 9 }) {  // only forward integers > 9
-    "\($0)"                     // Int -> String
+Var(false).map {                  // a Var<Bool> as the source
+    $0.new == true ? 1 : 0        // Update<Bool?> -> Int
+}.map(prefilter: { $0 > 9 }) {    // only forward integers > 9
+    "\($0)"                       // Int -> String
 }.map {
-    [$0]                        // String -> [String]
+    [$0]                          // String -> [String]
 }
 // ^^ creates a mapping that sends updates of type [String]
 ```
@@ -396,15 +378,6 @@ When an `Observable` sends updates of type `Update<SomeType>`, you often only ca
 ~~~swift
 let text = Var<String>().new()
 // ^^ sends updates of type String?
-~~~
-
-### Filter
-
-When you only want to filter- and not actually transform updates, use `Observable.filter(_:)`:
-
-~~~swift
-let text = Var<String>().new().filter { ($0?.count ?? 0) > 4 }
-// ^^ sends updates of type String?, suppressing nil and short strings
 ~~~
 
 ### Unwrap
@@ -425,6 +398,93 @@ let title = Var<String>().new().filter{ $0 != nil }.unwrap("")
 // ^^ sends updates of type String, not sending at all for nil values
 ~~~
 
+### Filter
+
+When you only want to filter- and not actually transform updates, use `Observable.filter(_:)`:
+
+```swift
+let text = Var<String>().new().filter { ($0?.count ?? 0) > 4 }
+// ^^ sends updates of type String?, suppressing nil and short strings
+```
+
+### Select
+
+Create a *Mapping* that only sends one selected update:
+
+```swift
+let text = Var<String>().new().filter { ($0?.count ?? 0) > 4 }
+// ^^ sends updates of type String?, suppressing nil and short strings
+```
+
+`select` is available on *Observables* that send `Equatable` updates. On a `select` *Mapping*, the observation closure takes no arguments:
+
+```swift
+let notifier = Var<String>().new().select("my notification")
+
+observer.observe(notifier) {  // nothing going in
+    // somone sent "my notification"
+}
+```
+
+# Observation Mappers
+
+Sometimes an *Observer* wants to transform a particular observation without having to hold or access a dedicated *Mapping*. **The naive approach would fail**:
+
+```swift
+dog.observe(bowl.map({ $0.hasFood })) { dinnerIsReady in
+    /* FAIL: This will never run because noone owns the observed mapping!
+       .map({ $0.hasFood }) creates a mapping which dies immediately */                                                 
+}   
+```
+
+Instead, when you start an observation, you can "bake" a transformation directly into it:
+
+```swift
+dog.observe(bowl).map({ $0.hasFood }) { dinnerIsReady in
+    if dinnerIsReady {
+        // clear bowl in under a minute
+    }
+}   
+```
+
+## Chain Observation Mappers
+
+You map observations with the same transformations that you would use to create [*Mappings*](#mappings): `map`, `new`, `unwrap`, `filter` and `select`. And you may chain them all together:
+
+```swift
+let number = Var(42)
+        
+observer.observe(number).new().unwrap(0).map {
+    "\($0)"         // Int -> String
+}.filter {
+    $0.count > 1    // filter out single digit integers
+}.map {
+    Int.init($0)    // String -> Int?
+}.filter {
+    $0 != nil       // filter out nil values
+}.unwrap(-1) {      // Int? -> Int
+    print($0)       // process Int
+}
+```
+
+`map` and `filter` each take 2 closure arguments. When you add your final update receiver after them, use `receive` to make your code clearer:
+
+~~~swift
+observer.observe(number).map {
+    $0.new ?? 0    // Update<Int?> -> Int
+}.receive {
+    print($0)      // process Int
+}
+~~~
+
+Remember that the closure after a `select` filter takes no arguments because it only runs for the specified update, in the below example: `.blue`
+
+```swift
+dog.observe(Sky.shared.color).select(.blue) {  // no argument in
+    // the sky became blue, let's go for a walk!
+}
+```
+
 # Weak Observables
 
 When you want to put an *Observable* into some data structure or as the *Source* into a *Mapping* and hold it there as a `weak`reference, you may want to wrap it in `Weak`:
@@ -434,7 +494,7 @@ let number = Var(12)
 let weakNumber = Weak(number)
 
 controller.observe(weakNumber) { update in
-   // process update
+    // process update
 }
 
 var weakNumbers = [Weak<Var<Int>>]()
@@ -464,23 +524,15 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
 ### Meaningful Expressive Code
 
 - Readable code down to the internals
-
 - Meaningful naming
-
 - SwiftObserver lets you focus on meaning rather than on technicalities
-
 - Very few concepts
-
 - No arbitrary contrived metaphors
-
 - Easy to understand
-
 - Call observation and mappings directly on observables (no mediating property)
 
     - -> comparison to RxSwift would be illuminating here ...
-
 - SwiftObserver is pragmatic and doesn't overgeneralize the *Observer Pattern*, i.e. it doesn't go overboard with the metaphor of *data streams* but keeps things more simple, real-world oriented and meaningful to an actual application domain.
-
 - The *SwiftObserver* syntax clearly reflects the intent and metaphor of the *Observer Pattern*: Observers are active subjects while observables are passive objects which are unconcerned about being observed:
 
     ~~~swift
@@ -549,13 +601,12 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
 - Not conform to Rx (the semi standard of reactive programming)
 - SwiftObserver is focused on the foundation of reactive programming. UI bindings are available as [UIObserver](https://github.com/flowtoolz/UIObserver), but that framework is still in its infancy. You're welcome to make PRs.
 - Observers and observables must be objects and cannot be of value types.
-    - But:
+    - However:
         1. variables can hold any type of values and observables can send any type of updates. 
         2. We found that entities active enough to observe or significant enough to be observed are typically not mere values that are being passed around. What's being passed around are the updates that observables send to observers, and those updates are prototypical value types.
         3. In SwiftObserver, Mappings are first-class observables, and since they hold their source trongly, you can create the source and the mapping in one line
         4. creating ad-hoc mappings at the moment of observation and bound to the particular observation is actually not just possible in SO but also much more precisely expressed in the syntax: the observe func itself lets the observer specify a mapping
         5. For fine granular observing, the `Var` type is appropriate, further reducing the "need" (or shall we say "anti pattern"?) to observe value types.
-- Your code must hold a strong references to a mapping that you want to observe. In other libraries, mappings are kept alive as a side effect of observing them, which allows to create and observe a mapping in the same line. However, SwiftObserver tries to avoid side effects. 
 
 [badge-pod]: https://img.shields.io/cocoapods/v/SwiftObserver.svg?label=version&style=flat-square
 [badge-pms]: https://img.shields.io/badge/supports-CocoaPods%20%7C%20Carthage-green.svg?style=flat-square
