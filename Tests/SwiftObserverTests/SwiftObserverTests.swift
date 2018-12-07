@@ -81,6 +81,44 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual("test", observedString)
     }
     
+    func testObservationMappingUnwrap()
+    {
+        let textMapping = Var("non optional string").new()
+        
+        var didFire = false
+        var observedString: String?
+        
+        controller.observe(textMapping).unwrap("untitled")
+        {
+            observedString = $0
+            didFire = true
+        }
+        
+        textMapping.source <- nil
+        
+        XCTAssert(didFire)
+        XCTAssertEqual("untitled", observedString)
+    }
+    
+    func testObservationMappingChainAfterUnwrap()
+    {
+        let textMapping = Var("non optional string").new()
+        
+        var didFire = false
+        var observedCount: Int?
+        
+        controller.observe(textMapping).unwrap("untitled").map({ $0.count })
+        {
+            observedCount = $0
+            didFire = true
+        }
+        
+        textMapping.source <- nil
+        
+        XCTAssert(didFire)
+        XCTAssertEqual("untitled".count, observedCount)
+    }
+    
     /*
     func testObservationMappingFilter()
     {
@@ -104,24 +142,7 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual("test2", observedString)
     }
     
-    func testObservationMappingUnwrap()
-    {
-        let textMapping = Var("non optional string").new()
-        
-        var didFire = false
-        var observedString: String?
-        
-        controller.observe(textMapping).unwrap("untitled")
-        {
-            observedString = $0
-            didFire = true
-        }
-        
-        textMapping.source <- nil
-        
-        XCTAssert(didFire)
-        XCTAssertEqual("untitled", observedString)
-    }
+    
     
     */
     func testMultiplication()

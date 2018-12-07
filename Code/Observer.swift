@@ -11,12 +11,7 @@ public extension Observer
 public struct ObservationMapping<O: Observable, T>
 {
     /*
-    public func unwrap<Unwrapped>(_ default: Unwrapped,
-                                  receive: @escaping (Unwrapped) -> Void)
-        where O.UpdateType == Optional<Unwrapped>
-    {
-        map({$0 ?? `default`}, receive: receive)
-    }
+    
     
     public func filter(_ filter: @escaping (O.UpdateType) -> Bool,
                        receive: @escaping (O.UpdateType) -> Void)
@@ -24,6 +19,19 @@ public struct ObservationMapping<O: Observable, T>
         observable.add(observer, filter: nil) { if filter($0) { receive($0) } }
     }
     */
+    
+    public func unwrap<Unwrapped>(_ default: Unwrapped) -> ObservationMapping<O, Unwrapped>
+        where T == Optional<Unwrapped>
+    {
+        return map({$0 ?? `default`})
+    }
+    
+    public func unwrap<Unwrapped>(_ default: Unwrapped,
+                                  receive: @escaping (Unwrapped) -> Void)
+        where T == Optional<Unwrapped>
+    {
+        map({$0 ?? `default`}, receive: receive)
+    }
     
     public func new<Value>() -> ObservationMapping<O, Value>
         where T == Update<Value>
@@ -54,9 +62,9 @@ public struct ObservationMapping<O: Observable, T>
         observable.add(observer, filter: nil) { receive(map(localMap($0))) }
     }
 
-    var observer: AnyObject
-    var observable: O
-    var map: (O.UpdateType) -> T
+    let observer: AnyObject
+    let observable: O
+    let map: (O.UpdateType) -> T
 }
 
 public extension Observer
