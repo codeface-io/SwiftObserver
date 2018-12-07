@@ -28,6 +28,7 @@
 		9E37EE0021B47AC200A594F1 /* SwiftObserver.h in Headers */ = {isa = PBXBuildFile; fileRef = 9E37EDF221B47AC200A594F1 /* SwiftObserver.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9EA9A0C421B7E9D90067DB30 /* Weak.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EA9A0C321B7E9D90067DB30 /* Weak.swift */; };
 		9EE889FC21BAC7E10056340A /* Observer+ObservationMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE889FB21BAC7E10056340A /* Observer+ObservationMapper.swift */; };
+		9EE889FE21BACF9C0056340A /* ObservationMapper+StandardMappings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE889FD21BACF9C0056340A /* ObservationMapper+StandardMappings.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +68,7 @@
 		9E37EDFF21B47AC200A594F1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9EA9A0C321B7E9D90067DB30 /* Weak.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weak.swift; sourceTree = "<group>"; };
 		9EE889FB21BAC7E10056340A /* Observer+ObservationMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Observer+ObservationMapper.swift"; sourceTree = "<group>"; };
+		9EE889FD21BACF9C0056340A /* ObservationMapper+StandardMappings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ObservationMapper+StandardMappings.swift"; sourceTree = "<group>"; };
 		A4789C8F494749332999804A /* Pods-SwiftObserver.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftObserver.debug.xcconfig"; path = "Target Support Files/Pods-SwiftObserver/Pods-SwiftObserver.debug.xcconfig"; sourceTree = "<group>"; };
 		F4BF92FBB88B2B6F8C2E1733 /* Pods_SwiftObserverTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftObserverTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -106,6 +108,7 @@
 			children = (
 				9E17055621B47C470045581C /* Observer.swift */,
 				9EE889FB21BAC7E10056340A /* Observer+ObservationMapper.swift */,
+				9EE889FD21BACF9C0056340A /* ObservationMapper+StandardMappings.swift */,
 				9E17055821B47C470045581C /* Variable+Numeric.swift */,
 				9E26039B21B89BBD00CE4D53 /* Variable+Comparable.swift */,
 				9E26039921B891DA00CE4D53 /* Variable+String.swift */,
@@ -360,6 +363,7 @@
 				9E17056621B47C470045581C /* Mapping.swift in Sources */,
 				9E17056321B47C470045581C /* Variable+Numeric.swift in Sources */,
 				9E26039A21B891DA00CE4D53 /* Variable+String.swift in Sources */,
+				9EE889FE21BACF9C0056340A /* ObservationMapper+StandardMappings.swift in Sources */,
 				9E17056721B47C470045581C /* Mapping+StandardMappings.swift in Sources */,
 				9E26039C21B89BBD00CE4D53 /* Variable+Comparable.swift in Sources */,
 				9E17056B21B47C470045581C /* ObservationService.swift in Sources */,
