@@ -28,8 +28,10 @@
     * [Create a Mapping](#create-a-mapping)
     * [Change the Mapping Source](#change-the-mapping-source)
     * [Mapping Prefilter](#mapping-prefilter)
-    * [Compose Mappings](#compose-mappings)
+    * [Chain Mappings](#chain-mappings)
     * [Prebuilt Mappings](#prebuilt-mappings)
+* [Observation Mappers](#observation-mappers)
+    * [Chain Observation Mappers](#chain-observation-mappers)
 * [Weak Observables](#weak-observables)
 * [Appendix](#appendix)
     * [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns)
@@ -352,7 +354,7 @@ You could use a *Mapping's* `prefilter` property to see which *Source* updates g
 bigNumberString.prefilter?(Update(nil, 9)) ?? true // false
 ```
 
-## Compose Mappings
+## Chain Mappings
 
 You may chain *Mappings* together:
 
