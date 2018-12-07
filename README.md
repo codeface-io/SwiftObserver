@@ -16,20 +16,19 @@
     * [Observables](#observers)
 * [Memory Management](#memory-management)
 * [Variables](#variables)
-    * [Set a Variable Value](#set-a-variable-value)
-    * [Variable Updates](#variable-updates) 
+    * [Set Variable Values](#set-variable-values)
+    * [Observe Variables](#observe-variables) 
     * [Variables are Codable](#variables-are-codable)
     * [More on Variables](#more-on-variables)
 * [Custom Observables](#custom-observables)
-    * [Declare an Observable](#declare-an-observable)
-    * [Send Updates](#send-updates)
-    * [Observable State](#observable-state)
+    * [Declare Custom Observables](#declare-custom-observables)
+    * [Send Custom Updates](#send-custom-updates)
+    * [Make State Observable](#make-state-observable)
 * [Mappings](#mappings)
-    * [Create a Mapping](#create-a-mapping)
-    * [Change the Mapping Source](#change-the-mapping-source)
-    * [Mapping Prefilter](#mapping-prefilter)
+    * [Create Mappings](#create-a-mapping)
+    * [Swap Mapping Sources](#swap-mapping-sources)
     * [Chain Mappings](#chain-mappings)
-    * [Prebuilt Mappings](#prebuilt-mappings)
+    * [Use Prebuilt Mappings](#use-prebuilt-mappings)
 * [Observation Mappers](#observation-mappers)
     * [Chain Observation Mappers](#chain-observation-mappers)
 * [Weak Observables](#weak-observables)
@@ -159,7 +158,7 @@ The 3 above mentioned functions are all you need for safe memory management. If 
 
 # Variables
 
-## Set a Variable Value
+## Set Variable Values
 
 A `Var<Value>` has a property `var value: Value?`. You can set `value` via the `<-` operator.
 
@@ -170,7 +169,7 @@ let number = Var(23)        // number.value == 23
 number <- 42                // number.value == 42
 ~~~
 
-### Number Variables
+### Numbers
 
 If your `Var.Value` conforms to [`Numeric`](https://developer.apple.com/documentation/swift/numeric):
 
@@ -186,7 +185,7 @@ If your `Var.Value` conforms to [`Numeric`](https://developer.apple.com/document
     number += Var(5)                // number == 10
     ```
 
-### String Variables
+### Strings
 
 If your `Var` is a `Var<String>`:
 
@@ -194,7 +193,7 @@ If your `Var` is a `Var<String>`:
 2. Representing its `String` value, the `Var` conforms to `BidirectionalCollection` and, thereby, also to `Collection` and `Sequence`.
 3. You can apply concatenation operators `+` and `+=` to almost all pairs of `Var`, `Var?`, `String` and `String?`. 
 
-## Variable Updates
+## Observe Variables
 
 A `Var<Value>` sends updates of type `Update<Var.Value?>`, providing the old and new value:
 
@@ -241,7 +240,7 @@ Note that `text` is a `var` instead of a `let`. It cannot be constant because th
 
 # Custom Observables
 
-## Declare an Observable
+## Declare Custom Observables
 
 Custom *Observables* just need to adopt the `Observable` protocol and provide a property  `latestUpdate` of the type of updates they wish to send:
 
@@ -262,7 +261,7 @@ class MinimalObservable: Observable {
 }
 ~~~
 
-## Send Updates
+## Send Custom Updates
 
 Updates are custom and yet fully typed. An `Observable` sends whatever it likes whenever it wants via `send(_ update: UpdateType)`. This `Observable` sends updates of type `String?`:
 
@@ -276,7 +275,7 @@ class StringObservable: Observable {
 }
 ~~~
 
-## Observable State
+## Make State Observable
 
 Using update type `Update<Value>`, you can inform *Observers* about value changes, similar to how `Var<Value>` does that:
 
@@ -298,7 +297,7 @@ class Model: Observable {
 
 # Mappings
 
-## Create a Mapping
+## Create Mappings
 
 Create a new `Observable` that maps (transforms) the updates of a given *Source Observable*:
 
@@ -319,7 +318,7 @@ When you want to hold an `Observable` weakly, as the *Source* of a *Mapping* or 
 
 As [mentioned earlier](#observables), you use a *Mapping* like any other `Observable`: You hold a strong reference to it somewhere, you stop observing it (not its *Source*) at some point, and you can call `latestUpdate`, `send(_ update: UpdateType)` and `send()` on it. 
 
-## Change the Mapping Source
+## Swap Mapping Sources
 
 You can even reset the `source`, causing the *Mapping* to send an update (with respect to its [*Prefilter*](#mapping-prefilter)). Although the `source` is replaceable, it's of a specific type that you determine by creating the *Mapping*.
 
@@ -335,24 +334,6 @@ title.source = titleSource
 ```
 
 Being able to declare *Mappings* as mere transformations, independent of their concrete *Sources*, can help, for instance, in developing view models.
-
-## Mapping Prefilter
-
-A *Mapping* can have a *Prefilter*:
-
-```swift
-let bigNumberString = Var<Int>().map(prefilter: { ($0.new ?? 0) > 9 }) { 
-    "\($0.new ?? 0) is a big number."
-}
-```
-
-A *Mapping* that has a *Prefilter* maps and sends only those *Source* updates that pass the filter. Of course, the *Prefilter* cannot apply when you actively request the *Mapping's* `latestUpdate`.
-
-You could use a *Mapping's* `prefilter` property to see which *Source* updates get through:
-
-```swift
-bigNumberString.prefilter?(Update(nil, 9)) ?? true // false
-```
 
 ## Chain Mappings
 
@@ -371,7 +352,7 @@ Var(false).map {                  // a Var<Bool> as the source
 
 **When you chain *Mappings* together, you actually compose them into one single *Mapping***. So the `source` of a *Mapping* is never another *Mapping*. It always refers to the original *Source* `Observable`. In the above example, the `source` of the created *Mapping* is a `Var<Bool>`.
 
-## Prebuilt Mappings
+## Use Prebuilt Mappings
 
 ### New
 
@@ -402,22 +383,30 @@ let title = Var<String>().new().filter{ $0 != nil }.unwrap("")
 
 ### Filter
 
-When you only want to filter- and not actually transform updates, use `Observable.filter(_:)`:
+When you just want to filter- and not actually transform updates, use `filter`:
 
 ```swift
-let text = Var<String>().new().filter { ($0?.count ?? 0) > 4 }
-// ^^ sends updates of type String?, suppressing nil and short strings
+let shortText = Var<String>().new().unwrap("").filter { $0.count > 4 }
+// ^^ sends updates of type String, suppressing short strings
+```
+
+A *Mapping* that has a *Filter* maps and sends only those *Source* updates that pass the *Filter*. Of course, the *Filter* cannot apply when you actively request the *Mapping's* `latestUpdate`.
+
+You could use a *Mapping's* `filter` property to see which *Source* updates get through:
+
+```swift
+shortText.filter?(Update(nil, "this is too long")) ?? true // false
 ```
 
 ### Select
 
-Use `select` to create a *Mapping* that only sends one specific update. `select` is available on all *Observables* that send `Equatable` updates. When observing a `select` *Mapping*, the closure takes no arguments:
+Use the `select` filter to receive only one specific update. `select` is available on all *Observables* that send `Equatable` updates. When observing a *Mapping* produced by `select`, the closure takes no arguments:
 
 ```swift
 let notifier = Var<String>().new().select("my notification")
 
 observer.observe(notifier) {  // nothing going in
-    // somone sent "my notification"
+    // someone sent "my notification"
 }
 ```
 
