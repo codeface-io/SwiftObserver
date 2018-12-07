@@ -15,6 +15,12 @@ public struct ObservationMapping<O: Observable>
         map({$0 ?? `default`}, receive: receive)
     }
     
+    public func filter(_ filter: @escaping (O.UpdateType) -> Bool,
+                       receive: @escaping (O.UpdateType) -> Void)
+    {
+        observable.add(observer, filter: nil) { if filter($0) { receive($0) } }
+    }
+    
     public func new<V>(receive: @escaping (V?) -> Void) where O == Var<V>
     {
         map({$0.new}, receive: receive)
