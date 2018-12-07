@@ -1,25 +1,33 @@
 public extension Observer
 {
-    public func observe<V>(_ variable: Var<V>) -> ObservationMapping<V>
+    public func observe<O>(_ observable: O) -> ObservationMapping<O>
     {
-        return ObservationMapping(observer: self, variable: variable)
+        return ObservationMapping(observer: self, observable: observable)
     }
 }
 
-public struct ObservationMapping<V: Codable & Equatable>
+public struct ObservationMapping<O: Observable>
 {
-    public func new(closure: @escaping (V?) -> Void)
+    public func unwrap<Unwrapped>(_ default: Unwrapped,
+                                  receive: @escaping (Unwrapped) -> Void)
+        where O.UpdateType == Optional<Unwrapped>
     {
-        variable.add(observer, filter: nil)
-        {
-            update in
-            
-            closure(update.new)
-        }
+        map({$0 ?? `default`}, receive: receive)
+    }
+    
+    public func new<V>(receive: @escaping (V?) -> Void) where O == Var<V>
+    {
+        map({$0.new}, receive: receive)
+    }
+    
+    public func map<T>(_ map: @escaping (O.UpdateType) -> T,
+                       receive: @escaping (T) -> Void)
+    {
+        observable.add(observer, filter: nil) { receive(map($0)) }
     }
     
     var observer: AnyObject
-    var variable: Var<V>
+    var observable: O
 }
 
 public extension Observer
