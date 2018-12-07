@@ -2,9 +2,9 @@
     
     # meta infos
     s.name             = "SwiftObserver"
-    s.version          = "3.1.0"
-    s.summary          = "A Reactive Swift Toolbox"
-    s.description      = "A Sweet Little 'Use and Forget' Toolbox for Reactive Swift Programming"
+    s.version          = "4.0.0"
+    s.summary          = "The Elegant Approach to Reactive Swift"
+    s.description      = "SwiftObserver is a lightweight framework for reactive Swift. It's a bit unconventional and designed to be readable, easy, flexible, non-intrusive, simple and safe."
     s.homepage         = "http://flowtoolz.com"
     s.license          = 'MIT'
     s.author           = { "Flowtoolz" => "contact@flowtoolz.com" }
@@ -27,5 +27,5 @@
     s.source_files = 'Code/**/*.swift'
 
     # dependencies
-    s.dependency 'SwiftyToolz', '~> 1.3.0'
+    s.dependency 'SwiftyToolz', '~> 1.4'
 end

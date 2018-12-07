@@ -69,6 +69,7 @@
 		9EA9A0C321B7E9D90067DB30 /* Weak.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weak.swift; sourceTree = "<group>"; };
 		9EE889FB21BAC7E10056340A /* Observer+ObservationMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Observer+ObservationMapper.swift"; sourceTree = "<group>"; };
 		9EE889FD21BACF9C0056340A /* ObservationMapper+StandardMappings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ObservationMapper+StandardMappings.swift"; sourceTree = "<group>"; };
+		9EE889FF21BAD7080056340A /* SwiftObserver.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; name = SwiftObserver.podspec; path = ../SwiftObserver.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		A4789C8F494749332999804A /* Pods-SwiftObserver.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftObserver.debug.xcconfig"; path = "Target Support Files/Pods-SwiftObserver/Pods-SwiftObserver.debug.xcconfig"; sourceTree = "<group>"; };
 		F4BF92FBB88B2B6F8C2E1733 /* Pods_SwiftObserverTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftObserverTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -131,6 +132,7 @@
 		9E37EDE521B47AC100A594F1 = {
 			isa = PBXGroup;
 			children = (
+				9EE889FF21BAD7080056340A /* SwiftObserver.podspec */,
 				9E37EDFC21B47AC200A594F1 /* SwiftObserverTests */,
 				9E17055521B47C470045581C /* Code */,
 				9E37EDF121B47AC100A594F1 /* SwiftObserver */,
