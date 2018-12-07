@@ -35,7 +35,7 @@ class SwiftObserverTests: XCTestCase
         
         controller.observe(number).map {
             $0.new ?? 0      // Update<Int?> -> Int
-        }.receive {
+        }.receive { _ in
             didFire = true   // process Int
         }
         
