@@ -44,13 +44,16 @@ public class Mapping<O: Observable, MappedUpdate>: Observable
     
     private func observe(source: O)
     {
-        source.add(self, filter: prefilter)
+        source.add(self)
         {
             [weak self] update in
             
             guard let self = self else { return }
             
-            self.send(self.map(update))
+            if self.prefilter?(update) ?? true
+            {
+                self.send(self.map(update))
+            }
         }
     }
     

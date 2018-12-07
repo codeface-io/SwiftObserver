@@ -1,12 +1,11 @@
 public extension Observable
 {
     func add(_ observer: AnyObject,
-             filter: UpdateFilter?,
              receive: @escaping UpdateReceiver)
     {
         ObservationService.add(observer,
                                of: self,
-                               filter: filter,
+                               filter: nil,
                                receive: receive)
     }
     
@@ -39,7 +38,6 @@ public extension Observable
 public protocol Observable: ObserverRemover
 {
     func add(_ observer: AnyObject,
-             filter: UpdateFilter?,
              receive: @escaping UpdateReceiver)
     
     func send()

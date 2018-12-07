@@ -3,7 +3,7 @@ public extension Observer
     func observe<O: Observable>(_ observable: O,
                                 receive: @escaping (O.UpdateType) -> Void)
     {
-        observable.add(self, filter: nil, receive: receive)
+        observable.add(self, receive: receive)
     }
     
     func observe<O1: Observable, O2: Observable>(
@@ -11,7 +11,7 @@ public extension Observer
         _ observable2: O2,
         _ receive: @escaping (O1.UpdateType, O2.UpdateType) -> Void)
     {
-        observable1.add(self, filter: nil)
+        observable1.add(self)
         {
             [weak observable2] in
             
@@ -20,7 +20,7 @@ public extension Observer
             receive($0, o2.latestUpdate)
         }
         
-        observable2.add(self, filter: nil)
+        observable2.add(self)
         {
             [weak observable1] in
             
@@ -36,7 +36,7 @@ public extension Observer
         _ observable3: O3,
         _ receive: @escaping (O1.UpdateType, O2.UpdateType, O3.UpdateType) -> Void)
     {
-        observable1.add(self, filter: nil)
+        observable1.add(self)
         {
             [weak observable2, weak observable3] in
             
@@ -45,7 +45,7 @@ public extension Observer
             receive($0, o2.latestUpdate, o3.latestUpdate)
         }
         
-        observable2.add(self, filter: nil)
+        observable2.add(self)
         {
             [weak observable1, weak observable3] in
             
@@ -54,7 +54,7 @@ public extension Observer
             receive(o1.latestUpdate, $0, o3.latestUpdate)
         }
         
-        observable3.add(self, filter: nil)
+        observable3.add(self)
         {
             [weak observable1, weak observable2] in
             

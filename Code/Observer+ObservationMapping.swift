@@ -47,7 +47,7 @@ public struct ObservationMapping<O: Observable, T>
         
         let composedFilter = combineFilters(localFilter, { filter(localMap($0)) })
         
-        observable.add(observer, filter: nil)
+        observable.add(observer)
         {
             if composedFilter?($0) ?? true { receive(localMap($0)) }
         }
@@ -96,7 +96,7 @@ public struct ObservationMapping<O: Observable, T>
         let localMap = self.map
         let localFilter = self.filter
         
-        observable.add(observer, filter: nil)
+        observable.add(observer)
         {
             if localFilter?($0) ?? true { receive(map(localMap($0))) }
         }
@@ -109,7 +109,7 @@ public struct ObservationMapping<O: Observable, T>
         let localMap = self.map
         let localFilter = self.filter
         
-        observable.add(observer, filter: nil)
+        observable.add(observer)
         {
             if localFilter?($0) ?? true { receive(localMap($0)) }
         }
