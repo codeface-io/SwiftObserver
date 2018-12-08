@@ -32,16 +32,15 @@ textMessenger.send("some message")
 An `Observer` can use the select filter to observe one specific message:
 
 ~~~swift
-observer.observe(textMessenger, select: "event name") {
+observer.observe(textMessenger).select("event name") {
     // respond to "event name"
 }
 ~~~
     
-Of course, if you wanna acces the latest message, just backup the messenger with a variable:
+Of course, you can access the latest message through the messenger's source:
 
 ~~~swift
-let currentMessage = Var<String>()
-let textMessenger = currentMessage.new()
+let latestMessage = textMessenger.source.new
 ~~~
 
 ## Owned Messenger
