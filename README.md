@@ -450,7 +450,7 @@ observer.observe(number).new().unwrap(0).map {
 
 Effectively, each of those transform functions comes in 2 versions:
 
-1. One that enables chaining. It produces an `ObservationMapper` on which you can call the next mapper function.
+1. One that enables chaining. It produces an `ObservationMapper` on which you can call the next transform function.
 
 2. And one that takes your final update receiver in an additional closure argument.
 
