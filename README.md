@@ -474,24 +474,25 @@ dog.observe(Sky.shared.color).select(.blue) {  // no argument in
 
 # Weak Observables
 
-When you want to put an `Observable` into some data structure or as the *Source* into a *Mapping* and hold it there as a `weak`reference, you may want to wrap it in `Weak`:
+When you want to put an `Observable` into some data structure or as the *Source* into a *Mapping* and hold it there as a `weak` reference, you may want to wrap it in `Weak<O: Observable>`:
 
 ~~~swift
 let number = Var(12)
 let weakNumber = Weak(number)
 
 controller.observe(weakNumber) { update in
-    // process update
+    // process update of type Update<Int?>
 }
 
 var weakNumbers = [Weak<Var<Int>>]()
 weakNumbers.append(weakNumber)
 ~~~
 
-`Weak` is itself an `Observable` and functions as a complete substitute for its wrapped weak `Observable`, which you can access via the `observable` property:
+`Weak<O: Observable>` is itself an `Observable` and functions as a complete substitute for its wrapped `weak` `Observable`, which you can access via the `observable` property:
 
 ~~~swift
 let numberIsAlive = weakNumber.observable != nil
+let numberValue = weakNumber.observable?.value
 ~~~
 
 Since the wrapped `observable` might die, `Weak` has to buffer, and therefore **duplicate**, the value of `latestUpdate`. This is a necessary price for holding an `Observable` weakly while using it all the same.
