@@ -29,8 +29,7 @@
     * [Swap Mapping Sources](#swap-mapping-sources)
     * [Chain Mappings](#chain-mappings)
     * [Use Prebuilt Mappings](#use-prebuilt-mappings)
-* [Observation Mappers](#observation-mappers)
-    * [Chain Observation Mappers](#chain-observation-mappers)
+* [Ad Hoc Mapping](#ad-hoc-mapping)
 * [Weak Observables](#weak-observables)
 * [Appendix](#appendix)
     * [Specific Patterns](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns)
@@ -410,9 +409,9 @@ observer.observe(notifier) {  // nothing going in
 }
 ```
 
-# Observation Mappers
+# Ad Hoc Mapping
 
-Sometimes an *Observer* wants to transform a particular observation without having to hold or access a dedicated *Mapping*. **The naive approach would fail**:
+Sometimes, an *Observer* wants to transform the updates for a particular observation without having to deal with a dedicated *Mapping*. **The naive approach would fail**:
 
 ```swift
 dog.observe(bowl.map({ $0.hasFood })) { dinnerIsReady in
@@ -421,7 +420,7 @@ dog.observe(bowl.map({ $0.hasFood })) { dinnerIsReady in
 }   
 ```
 
-Instead, when you start an observation, you can "bake" a transformation directly into it:
+Instead, when you start the observation, you directly "bake" a transformation into it:
 
 ```swift
 dog.observe(bowl).map({ $0.hasFood }) { dinnerIsReady in
@@ -431,9 +430,7 @@ dog.observe(bowl).map({ $0.hasFood }) { dinnerIsReady in
 }   
 ```
 
-## Chain Observation Mappers
-
-You transform observations in the same terms in which you create [*Mappings*](#mappings): With `map`, `new`, `unwrap`, `filter` and `select`. And you may chain them all together:
+You do this ad hoc mapping in the same terms in which you create stand-alone [*Mappings*](#mappings): With `map`, `new`, `unwrap`, `filter` and `select`. And you also chain transformations together:
 
 ```swift
 let number = Var(42)
@@ -451,7 +448,7 @@ observer.observe(number).new().unwrap(0).map {
 }
 ```
 
-Effectively, each of those mapper functions comes in 2 versions:
+Effectively, each of those transform functions comes in 2 versions:
 
 1. One that enables chaining. It produces an `ObservationMapper` on which you can call the next mapper function.
 
@@ -467,7 +464,7 @@ observer.observe(number).map {
 }
 ~~~
 
-Remember that the closure after a `select` filter takes no arguments because it only runs for the specified update, in the below example: `.blue`
+Remember that a `select` closure takes no arguments because it only runs for the specified update, in the below example: `.blue`
 
 ```swift
 dog.observe(Sky.shared.color).select(.blue) {  // no argument in
