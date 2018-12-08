@@ -340,14 +340,14 @@ Being able to declare *Mappings* as mere transformations, independent of their c
 You may chain *Mappings* together:
 
 ```swift
-Var(false).map {                  // a Var<Bool> as the source
-    $0.new == true ? 1 : 0        // Update<Bool?> -> Int
-}.map(prefilter: { $0 > 9 }) {    // only forward integers > 9
-    "\($0)"                       // Int -> String
+let mapping = Var(Int).map {    // mapping.source is a Var<Int>
+    $0.new ?? 0                 // Update<Int?> -> Int
+}.filter {
+    $0 > 9                      // only forward integers > 9
 }.map {
-    [$0]                          // String -> [String]
+    "\($0)"                     // Int -> String
 }
-// ^^ creates a mapping that sends updates of type [String]
+// ^^ mapping sends updates of type String
 ```
 
 **When you chain *Mappings* together, you actually compose them into one single *Mapping***. So the `source` of a *Mapping* is never another *Mapping*. It always refers to the original *Source* `Observable`. In the above example, the `source` of the created *Mapping* is a `Var<Bool>`.
@@ -508,27 +508,17 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
 ### Meaningful Expressive Code
 
 - Readable code down to the internals
-
 - Meaningful naming
-
 - SwiftObserver lets you focus on meaning rather than on technicalities
-
 - Very few concepts
-
 - No arbitrary contrived metaphors
-
 - Easy to understand
-
 - Call observation and mappings directly on observables (no mediating property)
 
     - -> comparison to RxSwift would be illuminating here ...
-
 - SwiftObserver is pragmatic and doesn't overgeneralize the *Observer Pattern*, i.e. it doesn't go overboard with the metaphor of *data streams* but keeps things more simple, real-world oriented and meaningful to an actual application domain.
-
 - Create the source with chain of mappings in one line
-
 - Observe an observable using an ad-hoc chain of transformations
-
 - The *SwiftObserver* syntax clearly reflects the intent and metaphor of the *Observer Pattern*: Observers are active subjects while observables are passive objects which are unconcerned about being observed:
 
     ~~~swift
@@ -545,12 +535,13 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
     >
     > Of course, to achieve this under the hood, observables must actively trigger some data propagation. But we should look at the solution more pragmatically in terms of the real(-world) meaning that we set out to model in the first place.
 
-### Ease of Use
+### Easy to Handle
 
-- Easy to use
 - No Cancellables, Disposables, DisposeBags or Tokens to pass around and store
 - Use `<-` operator to directly set variable values
 - Variables are `Codable`, so model types are easy to encode and persist.
+- Remove observer from all observables with 1 function call
+- No irreversible memory leaks, since orphaned observations can always be flushed out via `removeAbandonedObservations()`.
 
 ### Structural Flexibility Makes it Powerful
 
@@ -586,11 +577,6 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
 
 	- Neither combined observations nor mappings duplicate the data they receive from observables. Combined observations pull update information directly from those observables that didn't trigger the received update.
     - Not having to duplicate data where multiple things must be observed is one of the reasons to use combined observations in the first place. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the updates sent from observables.
-
-### Safe Memory Management
-
-- Remove observer from all observables with 1 function call
-- No irreversible memory leaks, since orphaned observations can always be flushed out via `removeAbandonedObservations()`.
 
 ### What you might not like:
 
