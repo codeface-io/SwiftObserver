@@ -411,20 +411,20 @@ observer.observe(notifier) {  // nothing going in
 
 # Ad Hoc Mapping
 
-At the very moment we start a particular observation, we often want to apply common transformations to it. But **observing an ad hoc created *Mapping* makes no sense**:
+At the very moment we start a particular observation, we often want to apply common transformations to it. Of course, **we can't observe an ad hoc created [*Mapping*](#mappings)**:
 
 ```swift
-dog.observe(bowl.map({ $0.hasFood })) { dinnerIsReady in
+dog.observe(bowl.map({ $0 == .wasFilled })) { bowlWasFilled in
     // FAIL: This closure will never run since no one holds the observed mapping!
-    // .map({ $0.hasFood }) creates a mapping which immediately dies                       
+    // .map({ $0 == .wasFilled }) creates a mapping which immediately dies                       
 }   
 ```
 
-Instead of holding a dedicated *Mapping* somewhere, you can map the observation itself:
+Instead of holding a dedicated [*Mapping*](#mappings) somewhere, you can map the observation itself:
 
 ```swift
-dog.observe(bowl).map({ $0.hasFood }) { dinnerIsReady in
-    if dinnerIsReady {
+dog.observe(bowl).map({ $0 == .wasFilled }) { bowlWasFilled in
+    if bowlWasFilled {
         // clear bowl in under a minute
     }
 }   
