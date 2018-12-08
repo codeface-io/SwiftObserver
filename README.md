@@ -464,7 +464,7 @@ observer.observe(number).map {
 }
 ~~~
 
-Remember that a `select` closure takes no arguments because it only runs for the specified update, in the below example: `.blue`
+Remember that a `select` closure takes no arguments because it only runs for the specified update:
 
 ```swift
 dog.observe(Sky.shared.color).select(.blue) {  // no argument in
