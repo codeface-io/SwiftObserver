@@ -350,7 +350,7 @@ let mapping = Var(Int).map {    // mapping.source is a Var<Int>
 // ^^ mapping sends updates of type String
 ```
 
-**When you chain *Mappings* together, you actually compose them into one single *Mapping***. So the `source` of a *Mapping* is never another *Mapping*. It always refers to the original *Source* `Observable`. In the above example, the `source` of the created *Mapping* is a `Var<Bool>`.
+**When you chain *Mappings* together, you actually compose them into one single *Mapping***. So the `source` of a *Mapping* is never another *Mapping*. It always refers to the original *Source* `Observable`. In the above example, the `source` of the created *Mapping* is a `Var<Int>`.
 
 ## Use Prebuilt Mappings
 
