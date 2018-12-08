@@ -4,6 +4,14 @@ import Foundation
 
 class SwiftObserverTests: XCTestCase
 {
+    func testStringVariableStringAccess()
+    {
+        let text = Var("1234567")
+        
+        XCTAssertEqual(text.count, 7)
+        XCTAssertEqual(text[text.startIndex], "1")
+    }
+    
     func testChainingObservationMappers()
     {
         var didFire = false
