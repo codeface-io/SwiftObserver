@@ -40,7 +40,7 @@
 Via [Carthage](https://github.com/Carthage/Carthage): Add this line to your [Cartfile](https://github.com/Carthage/Carthage/blob/master/Documentation/Artifacts.md#cartfile):
 
 ~~~
-github "flowtoolz/SwiftObserver" ~> 2.0
+github "flowtoolz/SwiftObserver" ~> 4.1
 ~~~
 
 Via [Cocoapods](https://cocoapods.org): Adjust your [Podfile](https://guides.cocoapods.org/syntax/podfile.html):
@@ -49,7 +49,7 @@ Via [Cocoapods](https://cocoapods.org): Adjust your [Podfile](https://guides.coc
 use_frameworks!
 
 target "MyAppTarget" do
-  pod "SwiftObserver", "~> 2.0"
+  pod "SwiftObserver", "~> 4.1"
 end
 ~~~
 
@@ -411,16 +411,16 @@ observer.observe(notifier) {  // nothing going in
 
 # Ad Hoc Mapping
 
-Sometimes, an *Observer* wants to transform the updates for a particular observation without having to deal with a dedicated *Mapping*. **The naive approach would fail**:
+At the very moment we start a particular observation, we often want to apply common transformations to it. But **observing an ad hoc created *Mapping* makes no sense**:
 
 ```swift
 dog.observe(bowl.map({ $0.hasFood })) { dinnerIsReady in
-    /* FAIL: This will never run because noone owns the observed mapping!
-       .map({ $0.hasFood }) creates a mapping which dies immediately */                                                 
+    // FAIL: This closure will never run since no one holds the observed mapping!
+    // .map({ $0.hasFood }) creates a mapping which immediately dies                       
 }   
 ```
 
-Instead, when you start the observation, you directly "bake" a transformation into it:
+Instead of holding a dedicated *Mapping* somewhere, you can map the observation itself:
 
 ```swift
 dog.observe(bowl).map({ $0.hasFood }) { dinnerIsReady in
@@ -430,7 +430,7 @@ dog.observe(bowl).map({ $0.hasFood }) { dinnerIsReady in
 }   
 ```
 
-You do this ad hoc mapping in the same terms in which you create stand-alone [*Mappings*](#mappings): With `map`, `new`, `unwrap`, `filter` and `select`. And you also chain transformations together:
+You do this *Ad Hoc Mapping* in the same terms in which you create stand-alone [*Mappings*](#mappings): With `map`, `new`, `unwrap`, `filter` and `select`. And you also chain these transformations together:
 
 ```swift
 let number = Var(42)
@@ -448,13 +448,13 @@ observer.observe(number).new().unwrap(0).map {
 }
 ```
 
-Effectively, each of those transform functions comes in 2 versions:
+Consequently, each transform function comes in 2 variants:
 
-1. One that enables chaining. It produces an `ObservationMapper` on which you can call the next transform function.
+1. The chaining variant returns a result on which you call the next transform function.
+2. The terminating variant takes your actual update receiver in an additional closure argument.
 
-2. And one that takes your final update receiver in an additional closure argument.
 
-So, in version *(2)*, `map` and `filter` take 2 closure arguments. When you want to process the final result directly after `map` or `filter`, use `receive` to stick with trailing closures and keep the code pretty:
+When the chain is supposed to end on `map` or `filter`, let `receive` terminate it to stick with [trailing closures](https://docs.swift.org/swift-book/LanguageGuide/Closures.html#ID102):
 
 ~~~swift
 observer.observe(number).map {
@@ -464,7 +464,7 @@ observer.observe(number).map {
 }
 ~~~
 
-Remember that a `select` closure takes no arguments because it only runs for the specified update:
+Remember that a `select` closure takes no arguments because it runs only for the selected update:
 
 ```swift
 dog.observe(Sky.shared.color).select(.blue) {  // no argument in
