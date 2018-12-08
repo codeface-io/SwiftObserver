@@ -433,7 +433,7 @@ dog.observe(bowl).map({ $0.hasFood }) { dinnerIsReady in
 
 ## Chain Observation Mappers
 
-You map observations with the same transformations you use to create [*Mappings*](#mappings): `map`, `new`, `unwrap`, `filter` and `select`. And you may chain them all together:
+You transform observations in the same terms in which you create [*Mappings*](#mappings): With `map`, `new`, `unwrap`, `filter` and `select`. And you may chain them all together:
 
 ```swift
 let number = Var(42)
@@ -446,12 +446,18 @@ observer.observe(number).new().unwrap(0).map {
     Int.init($0)    // String -> Int?
 }.filter {
     $0 != nil       // filter out nil values
-}.unwrap(-1) {      // Int? -> Int
+}.unwrap(-1) {      // Int? -> Int, and pass final update receiver
     print($0)       // process Int
 }
 ```
 
-`map` and `filter` each take 2 closure arguments. When you add your final update receiver after them, use `receive` to make your code clearer:
+Effectively, each of those mapper functions comes in 2 versions:
+
+1. One that enables chaining. It produces an `ObservationMapper` on which you can call the next mapper function.
+
+2. And one that takes your final update receiver in an additional closure argument.
+
+So, in version *(2)*, `map` and `filter` take 2 closure arguments. When you want to process the final result directly after `map` or `filter`, use `receive` to stick with trailing closures and keep the code pretty:
 
 ~~~swift
 observer.observe(number).map {
@@ -471,7 +477,7 @@ dog.observe(Sky.shared.color).select(.blue) {  // no argument in
 
 # Weak Observables
 
-When you want to put an *Observable* into some data structure or as the *Source* into a *Mapping* and hold it there as a `weak`reference, you may want to wrap it in `Weak`:
+When you want to put an `Observable` into some data structure or as the *Source* into a *Mapping* and hold it there as a `weak`reference, you may want to wrap it in `Weak`:
 
 ~~~swift
 let number = Var(12)
@@ -491,7 +497,7 @@ weakNumbers.append(weakNumber)
 let numberIsAlive = weakNumber.observable != nil
 ~~~
 
-Since the wrapped `observable` might die, `Weak` has to buffer, and therefore **duplicate**, the value of `latestUpdate`. This is a necessary price for holding an *Observable* weakly while using it all the same.
+Since the wrapped `observable` might die, `Weak` has to buffer, and therefore **duplicate**, the value of `latestUpdate`. This is a necessary price for holding an `Observable` weakly while using it all the same.
 
 > Apart from `Weak`, no *SwiftObserver* types (not even *Mappings*) duplicate the data that is being sent around. This is in stark contrast to other reactive libraries yet without compomising functional aspects.
 
@@ -514,6 +520,7 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
 - No arbitrary contrived metaphors
 - Easy to understand
 - Call observation and mappings directly on observables (no mediating property)
+
    - -> comparison to RxSwift would be illuminating here ...
 - SwiftObserver is pragmatic and doesn't overgeneralize the *Observer Pattern*, i.e. it doesn't go overboard with the metaphor of *data streams* but keeps things more simple, real-world oriented and meaningful to an actual application domain.
 - Create the source with chain of mappings in one line
@@ -573,15 +580,14 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
 - No data duplication:
    - Neither combined observations nor mappings duplicate the data they receive from observables. Combined observations pull update information directly from those observables that didn't trigger the received update.
    - Not having to duplicate data where multiple things must be observed is one of the reasons to use combined observations in the first place. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the updates sent from observables.
-  
-   > This is a result of a very simple and universal modelling of the notion of an "Observable". We combined the conventional "push model" in which observables push their updates to observers with a "pull model" in which observers can pull updates from observables, which is what they have always done and what never was the problem, since observers act on observables in the direction of control / dependence. The problem that reactive techiques solve is propagating data **against** the direction of control. Also a pull model is more in line with functional programming: Instead of buffering state, the observer calls and combines functions on observables.
+   - This is a result of a very simple and universal modelling of the notion of an "Observable". We combined the conventional "push model" in which observables push their updates to observers with a "pull model" in which observers can pull updates from observables, which is what they have always done and what never was the problem, since observers act on observables in the direction of control / dependence. The problem that reactive techiques solve is propagating data **against** the direction of control. Also a pull model is more in line with functional programming: Instead of buffering state, the observer calls and combines functions on observables.
 
 ### What you might not like:
 
 - Not conform to Rx (the semi standard of reactive programming)
 - SwiftObserver is focused on the foundation of reactive programming. UI bindings are available as [UIObserver](https://github.com/flowtoolz/UIObserver), but that framework is still in its infancy. You're welcome to make PRs.
 - Observers and observables must be objects and cannot be of value types. However:
-   
+  
    1. variables can hold any type of values and observables can send any type of updates. 
    2. We found that entities active enough to observe or significant enough to be observed are typically not mere values that are being passed around. What's being passed around are the updates that observables send to observers, and those updates are prototypical value types.
    3. For fine granular observing, the `Var` type is appropriate, further reducing the "need" (or shall we say "anti pattern"?) to observe value types.
