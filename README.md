@@ -115,7 +115,7 @@ You get *Observables* in three ways:
 
 You use all *Observables* the same way. There are just a couple things to note about `Observable`:
 
-- Observing an `Observable` does not have the side effect of keeing it alive. Someone must be its owner and have a strong reference to it. (Note that this won't prevent us from [chaining *Mappings*](#chain-mappings) on a single line.)
+- Observing an `Observable` does not have the side effect of keeping it alive. Someone must own it via a strong reference. (Note that this won't prevent us from [observing with a chain of transformations](#ad-hoc-mapping) all in a single line.)
 - The property `latestUpdate` is of the type of updates the `Observable` sends. It's a way for clients to actively get the last or "current" update in addition to observing it. ([Combined observations](#combined-observations) also make use of `latestUpdate`.)
 - Generally, an `Observable` sends its updates by itself. But anyone can make it send additional updates via `send(_:)`.
 -  `send()` sends `latestUpdate`.
@@ -513,13 +513,15 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
 
 - Readable code down to the internals
 - Meaningful naming
-- SwiftObserver lets you focus on meaning rather than on technicalities
-- Very few concepts
-- No arbitrary contrived metaphors
-- Easy to understand
+- Focus on meaning rather than on technicalities
+- Very few but universal concepts / types
+- No arbitrary, contrived or technical metaphors (like disposable, dispose bag, signal, emitter, stream ...)
+
+   > A note on "signals": Many reactive libraries use "signal" as a metaphor, but in an incorrect and, therefor, more confusing than helpful way, suggesting the signal is what's being observed. Our appropriate context of reference here is information theory, where a signal is what's being technically transmitted from a source to a receiver. By observing the source, the receiver receives a signal which conveys messages. One observes the lighthouse itself, not the light it emits. So: When correctly applying the metaphor to reactive programming, the signal corresponds to the actual data that observables send to observers.
+
 - Call observation and mappings directly on observables (no mediating property)
 
-   - -> comparison to RxSwift would be illuminating here ...
+   - (comparison to RxSwift would be illuminating here ...)
 - SwiftObserver is pragmatic and doesn't overgeneralize the *Observer Pattern*, i.e. it doesn't go overboard with the metaphor of *data streams* but keeps things more simple, real-world oriented and meaningful to an actual application domain.
 - Create the source with chain of mappings in one line
 - Observe an observable using an ad-hoc chain of transformations
