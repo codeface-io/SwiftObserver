@@ -69,13 +69,13 @@ That's it. Just readable code:
 
 ~~~swift
 dog.observe(Sky.shared.color) { color in
-   // marvel at the sky changing its color
+    // marvel at the sky changing its color
 }
 
 class Dog: Observer {
-   deinit {
-      stopObserving() // stops ALL observations this Dog is doing
-   } 
+    deinit {
+        stopObserving() // stops ALL observations this Dog is doing
+    } 
 }
 ~~~
 
@@ -132,16 +132,16 @@ An even simpler and safer way is to clean up objects right before they die:
 
 ```swift
 class Dog: Observer {
-   deinit {
-      stopObserving()  // stops ALL observations this Dog is doing
-   }
+    deinit {
+        stopObserving()  // stops ALL observations this Dog is doing
+    }
 }
 
 class Sky: Observable {
-   deinit {
-      removeObservers()  // stops ALL observations of this Sky
-   }
-   // Sky implementation ...
+    deinit {
+        removeObservers()  // stops ALL observations of this Sky
+    }
+    // Sky implementation ...
 }
 ```
 
@@ -172,11 +172,11 @@ number <- 42                // number.value == 42
 
 If your `Var.Value` conforms to [`Numeric`](https://developer.apple.com/documentation/swift/numeric):
 
-1.  `value` is accessible as a non-optional `number: Value`, which interprets `nil` as zero.
+1.  `value` is accessible as a non-optional `number: Value`, interpreting `nil` as zero.
 2. You can apply numeric operators `+`, `+=`, `-`, `-=`, `*` and `*=` to almost all pairs of `Var`, `Var?`, `Value` and `Value?`:
 
     ```swift
-    let numVar = Var()              // numVar.value == nil
+    let numVar = Var<Int>()         // numVar.value == nil
     print(numvar.number)            // 0
     numVar += 10                    // numVar.value == 10
     numVar -= Var(6)                // numVar.value == 4
@@ -188,8 +188,8 @@ If your `Var.Value` conforms to [`Numeric`](https://developer.apple.com/document
 
 If your `Var` is a `Var<String>`:
 
-1. `value` is accessible as a non-optional `string: String`, which interprets `nil` as `""`.
-2. Representing its `String` value, the `Var` conforms to `BidirectionalCollection` and, thereby, also to `Collection` and `Sequence`.
+1. `value` is accessible as a non-optional `string: String`, interpreting `nil` as `""`.
+2. Representing its `String` value, the `Var` conforms to `BidirectionalCollection`, `Collection` and `Sequence`.
 3. You can apply concatenation operators `+` and `+=` to almost all pairs of `Var`, `Var?`, `String` and `String?`. 
 
 ## Observe Variables
@@ -198,9 +198,9 @@ A `Var<Value>` sends updates of type `Update<Var.Value?>`, providing the old and
 
 ~~~swift
 observer.observe(variable) { update in
-   if update.old == update.new {
-       // update was manually triggered, no value change
-   }
+    if update.old == update.new {
+        // update was manually triggered, no value change
+    }
 }
 ~~~
 
@@ -212,19 +212,19 @@ A `Var` sends an update whenever its `value` actually changes. Just starting to 
 
 ~~~swift
 class Model: Codable {
-   private(set) var text = Var("String Variable")
+    private(set) var text = Var("String Variable")
 }
 
 let model = Model()
 
 if let modelJSON = try? JSONEncoder().encode(model) {
-   print(String(data: modelJSON, encoding: .utf8) ?? "error")
-   // ^^ {"text":{"storedValue":"String Variable"}}
+    print(String(data: modelJSON, encoding: .utf8) ?? "error")
+    // ^^ {"text":{"storedValue":"String Variable"}}
             
-   if let decodedModel = try? JSONDecoder().decode(Model.self, from: modelJSON) {
-      print(decodedModel.text.value ?? "error")
-      // ^^ String Variable
-   }
+    if let decodedModel = try? JSONDecoder().decode(Model.self, from: modelJSON) {
+        print(decodedModel.text.value ?? "error")
+        // ^^ String Variable
+    }
 }
 ~~~
 
@@ -256,7 +256,7 @@ Swift infers the associated `UpdateType` from `latestUpdate`, so you don't have 
 
 ~~~swift
 class MinimalObservable: Observable {
-   let latestUpdate: Int? = nil
+    let latestUpdate: Int? = nil
 }
 ~~~
 
@@ -266,11 +266,11 @@ Updates are custom and yet fully typed. An `Observable` sends whatever it likes 
 
 ~~~swift
 class StringObservable: Observable {
-   var latestUpdate: String?
+    var latestUpdate: String?
     
-   init { send("did init") }
-   func foo() { send(nil) }
-   deinit { send("will deinit") }
+    init { send("did init") }
+    func foo() { send(nil) }
+    deinit { send("will deinit") }
 }
 ~~~
 
@@ -280,17 +280,17 @@ Using update type `Update<Value>`, you can inform *Observers* about value change
 
 ~~~swift
 class Model: Observable {
-   var latestUpdate: Update<String?> {
-      return Update(state, state)
-   }
+    var latestUpdate: Update<String?> {
+        return Update(state, state)
+    }
    
-   var state: String? {
-      didSet {
-         if oldValue != state {
-            send(Update(oldValue, state))
-         }
-      }
-   }
+    var state: String? {
+        didSet {
+            if oldValue != state {
+                send(Update(oldValue, state))
+            }
+        }
+    }
 }
 ~~~
 
@@ -521,6 +521,7 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
 
 - No inconsistent metaphors, meaning: no combination of incompatible metaphors that stem from completely different domains like: "subscribing" to a "signal"
 - Call observation and mappings directly on observables (no mediating property)
+
    - (comparison to RxSwift would be illuminating here ...)
 - SwiftObserver is pragmatic and doesn't overgeneralize the *Observer Pattern*, i.e. it doesn't go overboard with the metaphor of *data streams* but keeps things more simple, real-world oriented and meaningful to an actual application domain.
 - Create the source with chain of mappings in one line
