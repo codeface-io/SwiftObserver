@@ -74,7 +74,7 @@ dog.observe(Sky.shared.color) { color in
 
 class Dog: Observer {
    deinit {
-      stopObserving() // stops ALL observations this dog is doing
+      stopObserving() // stops ALL observations this Dog is doing
    } 
 }
 ~~~
@@ -151,7 +151,7 @@ The 3 above mentioned functions are all you need for safe memory management. If 
 
 1. `myObserver.stopObservingDeadObservables()`
 2. `myObservable.removeDeadObservers()`
-3. `removeAbandonedObservations()`<br>(Erases **all** observations whos *Observer* or *Observable* are dead)
+3. `removeAbandonedObservations()` (Erases **all** observations whos *Observer* or *Observable* are dead)
 
 > Memory management with *SwiftObserver* is meaningful and safe. There are no contrived constructs like "Disposable" or "DisposeBag". And since you can always flush out orphaned observations, real memory leaks are impossible.
 
