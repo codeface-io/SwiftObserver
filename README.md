@@ -385,8 +385,8 @@ let title = Var<String>().new().filter{ $0 != nil }.unwrap("")
 When you just want to filter- and not actually transform updates, use `filter`:
 
 ```swift
-let shortText = Var<String>().new().unwrap("").filter { $0.count > 4 }
-// ^^ sends updates of type String, suppressing short strings
+let shortText = Var<String>().new().unwrap("").filter { $0.count < 5 }
+// ^^ sends updates of type String, suppressing long strings
 ```
 
 A *Mapping* that has a *Filter* maps and sends only those *Source* updates that pass the *Filter*. Of course, the *Filter* cannot apply when you actively request the *Mapping's* `latestUpdate`.
