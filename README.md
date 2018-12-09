@@ -515,12 +515,12 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
 - Meaningful naming
 - Focus on meaning rather than on technicalities
 - Very few but universal concepts / types
-- No arbitrary, contrived or technical metaphors (like disposable, dispose bag, signal, emitter, stream ...)
+- No arbitrary, contrived or technical metaphors (like disposable, dispose bag, signal, emitter, stream, subscribing etc.)
 
    > A note on "signals": Many reactive libraries use "signal" as a metaphor, but in an incorrect and, therefor, more confusing than helpful way, suggesting the signal is what's being observed. Our appropriate context of reference here is information theory, where a signal is what's being technically transmitted from a source to a receiver. By observing the source, the receiver receives a signal which conveys messages. One observes the lighthouse itself, not the light it emits. So: When correctly applying the metaphor to reactive programming, the signal corresponds to the actual data that observables send to observers.
 
+- No inconsistent metaphors, meaning: no combination of incompatible metaphors that stem from completely different domains like: "subscribing" to a "signal"
 - Call observation and mappings directly on observables (no mediating property)
-
    - (comparison to RxSwift would be illuminating here ...)
 - SwiftObserver is pragmatic and doesn't overgeneralize the *Observer Pattern*, i.e. it doesn't go overboard with the metaphor of *data streams* but keeps things more simple, real-world oriented and meaningful to an actual application domain.
 - Create the source with chain of mappings in one line
