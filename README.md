@@ -6,11 +6,11 @@
 
 *SwiftObserver* is a lightweight framework for reactive Swift. Its design goals make it easy to learn and a joy to use:
 
-1. **Meaningful Code**: SwiftObserver values meaning over technicalities. It uses self-explaining names and metaphors and produces highly readable code.
-2. **Non-intrusive Design**: SwiftObserver doesn't limit or even modulate design choices. It just makes it easy to implement the dependencies that make your ideal architecture.
-3. **Simplicity**: SwiftObserver employs very few simple concepts and applies them consistently without exceptions.
-4. **Flexibility**: SwiftObserver's types are simple but also universal and composable, making them applicable to a wide range of situations.
-5. **Safety**: SwiftObserver makes memory management meaningful and easy, as well as making real memory leaks impossible.
+1. [**Meaningful Code**](#meaningful-code): SwiftObserver values meaning over technicalities. It uses self-explaining names and metaphors and produces highly readable code.
+2. [**Non-intrusive Design**](#non-intrusive-design): SwiftObserver doesn't limit or modulate your design. It just makes it easy to implement the dependencies that make your ideal architecture.
+3. [**Simplicity**](#simplicity): SwiftObserver employs very few simple concepts and applies them consistently without exceptions.
+4. [**Flexibility**](#flexibility): SwiftObserver's types are simple but also universal and composable, making them applicable in many situations.
+5. [**Safety**](#safety): SwiftObserver makes memory management meaningful and easy. Oh, and real memory leaks are impossible.
 
 [*Reactive Programming*](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [*Dependency Inversion*](https://en.wikipedia.org/wiki/Dependency_inversion_principle). *SwiftObserver* breaks *Reactive Programming* down to its essence, which is the [*Observer Pattern*](https://en.wikipedia.org/wiki/Observer_pattern).
 
@@ -522,7 +522,7 @@ The following is still an incoherent brainstorm, outlining the goodies of SwiftO
 
 - No arbitrary, contrived or technical metaphors (like disposable, dispose bag, signal, emitter, stream, subscribing etc.)
 
-   > A note on "signals": In the tradition of Elm and the origins of reactive programming,  many reactive libraries use "signal" as a metaphor, but how they appl ythe term is mostly inaccurate and, therefor, more confusing than helpful, for instance when it's suggested that the signal is what's being observed.
+   > A note on "signals": In the tradition of Elm and the origins of reactive programming,  many reactive libraries use "signal" as a metaphor, but how they apply the term is mostly inaccurate and, therefor, more confusing than helpful, for instance when it's suggested that the signal is what's being observed.
    >
    > The appropriate context of reference here is information theory, where a signal is what's being technically transmitted from a source to a receiver. By observing the source, the receiver receives a signal which conveys messages. Practically speaking: One observes the lighthouse itself, not the light it emits.
    >
