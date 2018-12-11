@@ -1,11 +1,8 @@
 public extension Observable
 {
-    func add(_ observer: AnyObject,
-             receive: @escaping UpdateReceiver)
+    func add(_ observer: AnyObject, receive: @escaping UpdateReceiver)
     {
-        ObservationService.add(observer,
-                               of: self,
-                               receive: receive)
+        ObservationService.add(observer, of: self, receive: receive)
     }
     
     func remove(_ observer: AnyObject)
