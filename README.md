@@ -310,7 +310,7 @@ let textLength = text.map { $0.new?.count ?? 0 }  // textLength.source === text
 // ^^ an Observable that sends Int updates
 ~~~
 
-You can access the *Source* of a *Mapping* via the `source` property. A *Mapping* holds the `source` strongly, just like arrays and other data structures would hold an *Observable*. You could rewrite the above example like so:
+You can access the *Source* of a *Mapping* via the `source` property. A *Mapping* holds the `source` strongly, just like arrays and other data structures would hold an `Observable`. You could rewrite the above example like so:
 
 ```swift
 let textLength = Var<String>().map { $0.new?.count ?? 0 }
