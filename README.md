@@ -73,7 +73,7 @@ Or a tad more technically: Observed objects send updates to their *Observers*.
 That's it. Just readable code:
 
 ~~~swift
-dog.observe(Sky.shared.color) { color in
+dog.observe(Sky.shared) { color in
     // marvel at the sky changing its color
 }
 
@@ -93,7 +93,7 @@ After starting to observe something, the *Observer* must be alive for the observ
 ```swift
 class Dog: Observer {
     init {
-        observe(Sky.shared.color) { color in
+        observe(Sky.shared) { color in
             // for this closure to run, this Dog must live
         }
     }
@@ -130,7 +130,7 @@ You use all *Observables* the same way. There are just a couple things to note a
 To avoid abandoned observations piling up in memory, you should stop them before their *Observer* or *Observable* die. One way to do that is to stop each observation when it's no longer needed:
 
 ```swift
-dog.stopObserving(Sky.shared.color)
+dog.stopObserving(Sky.shared)
 ```
 
 An even simpler and safer way is to clean up objects right before they die:
@@ -199,7 +199,7 @@ If your `Var` is a `Var<String>`:
 
 ## Observe Variables
 
-A `Var<Value>` sends updates of type `Update<Var.Value?>`, providing the old and new value:
+A `Var<Value>` sends updates of type `Update<Value?>`, providing the old and new value:
 
 ~~~swift
 observer.observe(variable) { update in
@@ -360,7 +360,7 @@ let mapping = Var(Int).map {    // mapping.source is a Var<Int>
 
 ### New
 
-When an `Observable` sends updates of type `Update<SomeType>`, you often only care about  `Update<SomeType>.new`. If so, use  `new()`:
+When an `Observable` sends updates of type `Update<SomeType>`, you often only care about  the `new` value in that update. If so, use `new()`:
 
 ~~~swift
 let text = Var<String>().new()
@@ -472,7 +472,7 @@ observer.observe(number).map {
 Remember that a `select` closure takes no arguments because it runs only for the selected update:
 
 ```swift
-dog.observe(Sky.shared.color).select(.blue) {  // no argument in
+dog.observe(Sky.shared).select(.blue) {  // no argument in
     // the sky became blue, let's go for a walk!
 }
 ```
@@ -534,8 +534,8 @@ The following is still an incoherent brainstorm, outlining the goodies of SwiftO
 
 - No technical boiler plate code at the point of use
 
-    - Create the source with chain of mappings in one line
-    - Call observation and mappings directly on observables (no mediating property)
+    - Create an abservable plus a chain of mappings in one line
+    - Start observation and create mappings directly on observables, without a mediating property
         - (comparison to RxSwift would be illuminating here ...)
     - Observe an observable using an ad-hoc chain of transformations
     - No Cancellables, Disposables, DisposeBags or Tokens to pass around and store
@@ -548,7 +548,7 @@ The following is still an incoherent brainstorm, outlining the goodies of SwiftO
     subject.actUpon(object)
     ~~~
 
-    > Note: Many definitions of the *Observer Pattern*, including [Wikipedia](https://en.wikipedia.org/wiki/Observer_pattern), have the subject / object roles reversed, which we consider not merely a misnomer but, most of all, an inappropriate level of analysis.
+    > Note: Many definitions of the *Observer Pattern*, including [Wikipedia](https://en.wikipedia.org/wiki/Observer_pattern), have the subject / object roles reversed, which we consider not merely a misnomer but, above all, a secondary level of analysis.
     >
     > They look at observation from a technical rather than a conceptual point of view, focusing on *how* the problem is being *solved* rather than *what* the solution *means*.
     >
@@ -564,7 +564,7 @@ The following is still an incoherent brainstorm, outlining the goodies of SwiftO
     - Unlike established Swift implementations of the Redux approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you freely model your domain-, business- and view logic with all your familiar design patterns and types. There are no restrictions on how you organize and store your app state.
     - Custom observables without having to inherit from any class
     - Unlike established Swift implementations of the Reactive approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you in control of the ancestral tree of your classes. There is not a single class that you have to inherit. Therefore, all your classes can be directly observed, even views and view controllers.
-* No optional generics except for variable values. This plus the ability to map onto non-optional updates greatly avoid optional optionals and give you full controll over value and update types.
+* No optional generics except for variable values. This plus the ability to map onto non-optional updates greatly avoids optional optionals and gives you full controll over value and update types.
 
 ## Simplicity
 
@@ -607,7 +607,7 @@ The following is still an incoherent brainstorm, outlining the goodies of SwiftO
 - SwiftObserver is focused on the foundation of reactive programming. UI bindings are available as [UIObserver](https://github.com/flowtoolz/UIObserver), but that framework is still in its infancy. You're welcome to make PRs.
 - Observers and observables must be objects and cannot be of value types. However:
   
-   1. variables can hold any type of values and observables can send any type of updates. 
+   1. Variables can hold any type of values and observables can send any type of updates. 
    2. We found that entities active enough to observe or significant enough to be observed are typically not mere values that are being passed around. What's being passed around are the updates that observables send to observers, and those updates are prototypical value types.
    3. For fine granular observing, the `Var` type is appropriate, further reducing the "need" (or shall we say "anti pattern"?) to observe value types.
 
