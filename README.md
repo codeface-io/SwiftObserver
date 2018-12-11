@@ -118,12 +118,11 @@ You get *Observables* in three ways:
 2. Implement a [custom](#custom-observables) `Observable`.
 3. Create a [*Mapping*](#mappings). It's an `Observable` that transforms updates from a *Source Observable*.
 
-You use all *Observables* the same way. There are just a couple things to note about `Observable`:
+You use all *Observables* the same way. There are only 3 things to note about `Observable`:
 
 - Observing an `Observable` does not have the side effect of keeping it alive. Someone must own it via a strong reference. (Note that this won't prevent us from [observing with a chain of transformations](#ad-hoc-mapping) all in a single line.)
-- The property `latestUpdate` is of the type of updates the `Observable` sends. It's a way for clients to actively get the last or "current" update in addition to observing it. ([Combined observations](#combined-observations) also make use of `latestUpdate`.)
-- Generally, an `Observable` sends its updates by itself. But anyone can make it send additional updates via `send(_:)`.
--  `send()` sends `latestUpdate`.
+- The property `latestUpdate` is of the type of updates the `Observable` sends. It's a way for clients to request (pull) the last or "current" update, as opposed to waiting for the `Observable` to send (push) it. ([Combined observations](#combined-observations) also pull `latestUpdate`.)
+- Generally, an `Observable` sends its updates by itself. But anyone can make it send  `latestUpdate` via `send()` or any other update via `send(_:)`.
 
 # Memory Management
 
