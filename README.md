@@ -343,12 +343,12 @@ Being able to declare *Mappings* as mere transformations, independent of their c
 You may chain *Mappings* together:
 
 ```swift
-let mapping = Var(Int).map {    // mapping.source is a Var<Int>
-    $0.new ?? 0                 // Update<Int?> -> Int
+let mapping = Var<Int>().map {    // mapping.source is a Var<Int>
+    $0.new ?? 0                   // Update<Int?> -> Int
 }.filter {
-    $0 > 9                      // only forward integers > 9
+    $0 > 9                        // only forward integers > 9
 }.map {
-    "\($0)"                     // Int -> String
+    "\($0)"                       // Int -> String
 }
 // ^^ mapping sends updates of type String
 ```
@@ -368,7 +368,7 @@ let text = Var<String>().new()
 
 ### Unwrap
 
-A `Var<Value>` has a `var value: Value?` and sends updates of type `Update<Value?>`. However, we often don't want to deal with optionals down the line.
+A `Var<Value>` has a `value` of type `Value?` and sends updates of type `Update<Value?>`. However, we often don't want to deal with optionals down the line.
 
 You can apply the *Mapping* `unwrap(_:)` to **any** `Observable` that sends optional updates. It unwraps the optionals using a default value:
 
