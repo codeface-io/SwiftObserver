@@ -36,11 +36,11 @@ observer.observe(textMessenger).select("event name") {
     // respond to "event name"
 }
 ~~~
-    
-Of course, you can access the latest message through the messenger's source:
+
+You may access the latest message through the *Mapping's* `source` or `latestUpdate`:
 
 ~~~swift
-let latestMessage = textMessenger.source.new
+let latestMessage = textMessenger.source.value // or textMessenger.latestUpdate.new
 ~~~
 
 ## Owned Messenger
