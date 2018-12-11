@@ -527,7 +527,10 @@ The following is still an incoherent brainstorm, outlining the goodies of SwiftO
    >
    > So: Would we correctly apply the metaphor to reactive programming, the signal would correspond to the actual data that observables send to observers. But anyway, we consider the metaphor to be too technical to be generally meaningful to actual application domains.
 
-- No inconsistent metaphors, meaning: no combination of incompatible metaphors that stem from completely different domains. A common and nonsensical mixture is "subscribing" to a "signal". Even Elm, which had signals and still has subscriptions, never mixed the two.
+- No inconsistent metaphors, meaning: no combination of incompatible metaphors that stem from completely different domains.
+
+    - A common and nonsensical mixture is "subscribing" to a "signal". Even Elm, which had signals and still has subscriptions, never mixed the two.
+    - "subscribing" to an "observable" doesn't make much sense either. Why isn't it a "Subscribable" then? And why is it a radical idea to "observe" an "Observable"? Is the "Observable" a publication or what?
 
 - SwiftObserver is pragmatic and doesn't overgeneralize the *Observer Pattern*, i.e. it doesn't go overboard with the metaphor of "streams" but keeps things more simple, real-world oriented and meaningful to actual application domains.
 
