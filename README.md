@@ -95,14 +95,13 @@ dog.observe(tv, bowl, doorbell) { image, food, sound in
 }
 ~~~
 
-After starting an observation, the *Observer* must be alive to process updates. There's no awareness after death in memory:
+To process updates from an *Observable*, the *Observer* must be alive. There's no awareness after death in memory:
 
 ```swift
 class Dog: Observer {
     init {
         observe(Sky.shared) { color in
-            // for this closure to even be called, this Dog must live
-            // (irrespective of whether the closure references (weak) self)
+            // for this closure to be called, this Dog must live
         }
     }
 }
