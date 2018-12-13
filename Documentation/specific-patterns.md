@@ -6,6 +6,8 @@ In general, SwiftObserver meets almost all needs for callbacks and continuous pr
 
 ## Messenger
 
+### The Messenger Pattern
+
 When observer and observable need to be more decoupled, it is common to use a mediating observable through which any object can anonymously send updates. An example of this mediator is `Foundation`'s `NotificationCenter`.
 
 This extension of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, *Dispatcher*, *Event Emitter* or *Decoupler*. Its main differences to direct observation are:
@@ -17,18 +19,20 @@ This extension of the *Observer Pattern* is sometimes called *Messenger*, *Notif
 - Every object can trigger updates, without adopting any protocol.
 - Multiple objects may share the same update type and trigger the same updates.
 
-You can simply use a (mapped) `Variable` as a mediating messenger:
+### A Simple Messenger Implementation
+
+You could use a (mapped) `Variable` as a mediating messenger:
 
 ~~~swift
 let textMessenger = Var<String>().new()
 
-observer.observe(textMessenger) { textMessage in
+observer.observe(textMessenger) { message in
     // respond to text message
 }
     
-textMessenger.send("some message")
+textMessenger.send("text message")
 ~~~
-    
+
 An `Observer` can use the select filter to observe one specific message:
 
 ~~~swift
@@ -37,18 +41,39 @@ observer.observe(textMessenger).select("event name") {
 }
 ~~~
 
-This sort of *Messenger* doesn't duplicate the messages it sends. If you want `latestUpdate` to return the last message that was sent, for instance for combined observations, store messages in the source `Var` instead of just sending them. The latest message is then available through  `source` and `latestUpdate`:
+This sort of *Messenger* implementation doesn't duplicate the messages it sends. If you want `latestUpdate` to return the last message that was sent, for instance for combined observations, store messages in the source `Var` instead of just sending them. The latest message is then available through  `source` and `latestUpdate`:
 
 ~~~swift
 textMessenger.source <- "some message"
 let latestMessage = textMessenger.latestUpdate.new // or: textMessenger.source.value
 ~~~
 
+### The Messenger Class
+
+To implement the *Messenger Pattern*, you **can** also use class `Messenger`, which stores (duplicates) the last sent message but offers a few advantages:
+
+1. The intended use of the object is more explicit.
+2. All sent messages become `latestUpdate` (also guaranteeing that `send()` resends the last sent message).
+3. The message type doesn't need to be `Codable`
+4. You don't need to map onto `new`
+
+~~~swift
+let textMessenger = Messenger<String>()
+
+observer.observe(textMessenger) { message in
+    // respond to message
+}
+        
+textMessenger.send("my text message")
+let lastMessage = textMessenger.latestUpdate // "my text message"
+~~~
+
+
 ## Owned Messenger
 
 An *Owned Messenger* is a helpful, and sometimes necessary, application of the *Messenger* pattern.
 
-Instead of making a class `C` directly observable you give it an observable messenger as a constant. `C` sends its updates via its messenger, and observers of `C` actually observe the messenger of `C`. We recommend using a `Variable` for this:
+Instead of making a class `C` directly observable you give it an observable messenger as a constant. `C` sends its updates via its messenger, and observers of `C` actually observe the messenger of `C`:
 
 ~~~swift
 class C {
