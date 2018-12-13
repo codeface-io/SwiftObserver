@@ -7,6 +7,13 @@ public class Messenger<Message>: ObservableObject<Message>
         super.init()
     }
     
+    public override func send(_ update: Message)
+    {
+        message = update
+        
+        super.send(update)
+    }
+    
     public override var latestUpdate: Message
     {
         return message
