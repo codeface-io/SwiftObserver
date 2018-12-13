@@ -1,4 +1,4 @@
-public class Mapping<O: Observable, MappedUpdate>: Observable
+public class Mapping<O: Observable, MappedUpdate>: ObservableObject<MappedUpdate>
 {
     // MARK: - Life Cycle
     
@@ -8,14 +8,12 @@ public class Mapping<O: Observable, MappedUpdate>: Observable
         self.filter = filter
         self.map = map
         
+        super.init()
+        
         observe(source: source)
     }
     
-    deinit
-    {
-        source.remove(self)
-        removeObservers()
-    }
+    deinit { source.remove(self) }
     
     // MARK: - Chain Mappings
     
@@ -41,7 +39,7 @@ public class Mapping<O: Observable, MappedUpdate>: Observable
     
     // MARK: - Observable
     
-    public var latestUpdate: MappedUpdate
+    public override var latestUpdate: MappedUpdate
     {
         return map(source.latestUpdate)
     }
