@@ -4,6 +4,21 @@ import Foundation
 
 class SwiftObserverTests: XCTestCase
 {
+    func testSendOnVariable()
+    {
+        let initialText = "initial text"
+        
+        let text = Var(initialText)
+        
+        var observedText: String?
+        
+        controller.observe(text) { observedText = $0.new }
+        
+        text.send()
+        
+        XCTAssertEqual(observedText, initialText)
+    }
+    
     func testStringVariableStringAccess()
     {
         let text = Var("1234567")
