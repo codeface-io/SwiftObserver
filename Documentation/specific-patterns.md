@@ -50,12 +50,12 @@ let latestMessage = textMessenger.latestUpdate.new // or: textMessenger.source.v
 
 ### The Messenger Class
 
-To implement the *Messenger Pattern*, you **can** also use class `Messenger`, which stores (duplicates) the last sent message but offers a few advantages:
+Instead of implementing the *Messenger* yourself, you **can** also use  `Messenger`, which stores (duplicates) the last sent message but offers some advantages:
 
-1. The intended use of the object is more explicit.
-2. All sent messages become `latestUpdate` (also guaranteeing that `send()` resends the last sent message).
+1. The intended use of the object is more explicit
+2. All sent messages become `latestUpdate` (also guaranteeing that `send()` resends the last sent message)
 3. The message type doesn't need to be `Codable`
-4. You don't need to map onto `new`
+4. You don't need to map onto `new`, neither when creating the *Messenger* nor when retrieving its last message
 
 ~~~swift
 let textMessenger = Messenger<String>()
