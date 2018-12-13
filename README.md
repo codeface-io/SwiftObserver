@@ -25,7 +25,6 @@
     * [Set Variable Values](#set-variable-values)
     * [Observe Variables](#observe-variables) 
     * [Variables are Codable](#variables-are-codable)
-    * [More on Variables](#more-on-variables)
 * [Custom Observables](#custom-observables)
     * [Declare Custom Observables](#declare-custom-observables)
     * [Send Custom Updates](#send-custom-updates)
