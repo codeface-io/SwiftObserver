@@ -162,9 +162,11 @@ The 3 above mentioned functions are all you need for safe memory management. If 
 
 # Variables
 
+A `Var<Value>` has a property `value: Value?`. If `Var.Value` conforms to `Equatable` or `Comparable`, the whole `Var<Value>` will also conform to the respective protocol.
+
 ## Set Variable Values
 
-A `Var<Value>` has a property `var value: Value?`. You can set `value` via the `<-` operator.
+You can set `value` directly, via initializer and via the `<-` operator:
 
 ~~~swift
 let text = Var<String>()    // text.value == nil
@@ -173,9 +175,9 @@ let number = Var(23)        // number.value == 23
 number <- 42                // number.value == 42
 ~~~
 
-### Numbers
+### Number Values
 
-If your `Var.Value` conforms to [`Numeric`](https://developer.apple.com/documentation/swift/numeric):
+If `Var.Value` conforms to [`Numeric`](https://developer.apple.com/documentation/swift/numeric):
 
 1.  `value` is accessible as a non-optional `number: Value`, interpreting `nil` as zero.
 2. You can apply numeric operators `+`, `+=`, `-`, `-=`, `*` and `*=` to almost all pairs of `Var`, `Var?`, `Value` and `Value?`:
@@ -189,9 +191,9 @@ If your `Var.Value` conforms to [`Numeric`](https://developer.apple.com/document
     number += Var(5)                // number == 10
     ```
 
-### Strings
+### String Values
 
-If your `Var` is a `Var<String>`:
+If `Var.Value` is `String`:
 
 1. `value` is accessible as a non-optional `string: String`, interpreting `nil` as `""`.
 2. Representing its `String` value, the `Var` conforms to `BidirectionalCollection`, `Collection` and `Sequence`.
@@ -210,6 +212,8 @@ observer.observe(variable) { update in
 ~~~
 
 A `Var` sends an update whenever its `value` actually changes. Just starting to observe it does **not** trigger an update. This keeps it simple, predictable and consistent, in particular in combination with [*Mappings*](#mappings). You can always call `send()` on a `Var<Value>`, sending an `Update<Value?>` in which `old` and `new` are both the current `value`.
+
+Internally, a `Var` appends new values to a queue, so all its *Observers* get to process a value change before the next change takes effect. This is for situations when the `Var` has multiple *Observers* and at least one *Observer* changes the `value` in response to a `value` change.
 
 ## Variables are Codable
 
@@ -234,12 +238,6 @@ if let modelJSON = try? JSONEncoder().encode(model) {
 ~~~
 
 Note that `text` is a `var` instead of a `let`. It cannot be constant because the implicit decoder must mutate it. However, clients of `Model` would be supposed to set only `text.value` and not `text` itself, so the setter is private.
-
-## More on Variables
-
-- If your `Var.Value` conforms to `Equatable` or `Comparable`, the whole `Var<Value>` will also conform to the respective protocol.
-- Internally, a `Var` appends new values to a queue, so all its *Observers* get to process a value change before the next change takes effect. This is for situations when the `Var` has multiple *Observers* and at least one *Observer* changes the `value` in response to a `value` change.
-- A `Var` is a bit more performant than a [custom *Observable*](#custom-observables) because each `Var` maintains its own pool of *Observers*. So if you want to make a super large number of elements in some data structure observable, like particles in a simulation or nodes in a gigantic graph, give those elements a `Var` as an [*Owned Messenger*](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#owned-messenger). Generally, performance is not an issue. *Observables* and *Observers* are internally hashed by their respective [`ObjectIdentifier`](https://developer.apple.com/documentation/swift/objectidentifier).
 
 # Custom Observables
 
@@ -297,6 +295,12 @@ class Model: Observable {
     }
 }
 ~~~
+
+> Note: A custom *Observable* that just adopts the `Observable` protocol is a bit less performant than other `Observable` types, because it doesn't maintain its own dedicated pool of *Observers*. 
+>
+> If you want to make a super large number of elements in some data structure observable, like particles in a simulation or nodes in a gigantic graph, give those elements an [*Owned Messenger*](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#owned-messenger). 
+>
+> Generally, performance is not an issue. *Observables* and *Observers* are internally hashed by their respective [`ObjectIdentifier`](https://developer.apple.com/documentation/swift/objectidentifier).
 
 # Mappings
 
