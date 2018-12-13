@@ -37,10 +37,11 @@ observer.observe(textMessenger).select("event name") {
 }
 ~~~
 
-You may access the latest message through the *Mapping's* `source` or `latestUpdate`:
+This sort of *Messenger* doesn't duplicate the messages it sends. If you want `latestUpdate` to return the last message that was sent, for instance for combined observations, store messages in the source `Var` instead of just sending them. The latest message is then available through  `source` and `latestUpdate`:
 
 ~~~swift
-let latestMessage = textMessenger.source.value // or textMessenger.latestUpdate.new
+textMessenger.source <- "some message"
+let latestMessage = textMessenger.latestUpdate.new // or: textMessenger.source.value
 ~~~
 
 ## Owned Messenger
