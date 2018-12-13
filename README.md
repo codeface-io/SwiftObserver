@@ -568,7 +568,11 @@ The following is still an incoherent brainstorm, outlining the goodies of SwiftO
     - Unlike established Swift implementations of the Redux approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you freely model your domain-, business- and view logic with all your familiar design patterns and types. There are no restrictions on how you organize and store your app state.
     - Custom observables without having to inherit from any class
     - Unlike established Swift implementations of the Reactive approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you in control of the ancestral tree of your classes. There is not a single class that you have to inherit. Therefore, all your classes can be directly observed, even views and view controllers.
-* No optional generics except for variable values. This plus the ability to map onto non-optional updates greatly avoids optional optionals and gives you full controll over value and update types.
+* SwiftObserver avoids **optional optionals** and, thereby, gives you full controll over value and update types.
+    * No optionals on generic types
+        * `Variable` values and `Messenger` updates are optional but the types of these values and updates are guaranteed to be non-optional
+    * You can always map map optional updates onto non-optional updates
+    * The pull model integrated in SwiftObserver allows combined observations to pull updates from the involved observables. So you can have optional update types, but combined observation don't wrap the updates in additional optionals.
 
 ## Simplicity
 

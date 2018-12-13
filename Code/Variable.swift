@@ -1,11 +1,20 @@
+import SwiftyToolz
+
 public typealias Var = Variable
 
 public class Variable<Value: Equatable & Codable>: ObservableObject<Update<Value?>>, Codable
 {
     // MARK: - Initialization
     
-    public init(_ value: Value? = nil)
+    public init(_ value: Value? = nil,
+                file: String = #file,
+                line: Int = #line)
     {
+        if isOptional(Value.self)
+        {
+            fatalError("SwiftObserver.Variable: Value types are not supposed to be optional. Type: \(String(describing: Value.self)), File: \(file), line \(line)")
+        }
+        
         storedValue = value
         
         super.init()
