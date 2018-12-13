@@ -39,11 +39,6 @@ public class Variable<Value: Equatable & Codable>: Observable, Codable
         observerList.removeNilObservers()
     }
     
-    public func send()
-    {
-        send(latestUpdate)
-    }
-    
     public func send(_ update: Update<Value?>)
     {
         observerList.receive(update)

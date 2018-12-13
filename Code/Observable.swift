@@ -1,5 +1,15 @@
+
 public extension Observable
 {
+    // Convenience
+    
+    func send()
+    {
+        send(latestUpdate)
+    }
+    
+    // Default Implementation of Observable
+    
     func add(_ observer: AnyObject, receive: @escaping UpdateReceiver)
     {
         ObservationService.add(observer, of: self, receive: receive)
@@ -20,11 +30,6 @@ public extension Observable
         ObservationService.removeDeadObservers(of: self)
     }
     
-    func send()
-    {
-        send(latestUpdate)
-    }
-    
     func send(_ update: UpdateType)
     {
         ObservationService.send(update, toObserversOf: self)
@@ -36,7 +41,6 @@ public protocol Observable: ObserverRemover
     func add(_ observer: AnyObject,
              receive: @escaping UpdateReceiver)
     
-    func send()
     func send(_ update: UpdateType)
     
     var latestUpdate: UpdateType { get }
