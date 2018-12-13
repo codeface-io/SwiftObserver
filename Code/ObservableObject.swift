@@ -9,6 +9,7 @@ public class ObservableObject<Update>: Observable
     
     deinit
     {
+        removeObservers()
         ObservationService.unregister(observable: self)
     }
     

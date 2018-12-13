@@ -1,54 +1,19 @@
 public typealias Var = Variable
 
-public class Variable<Value: Equatable & Codable>: Observable, Codable
+public class Variable<Value: Equatable & Codable>: ObservableObject<Update<Value?>>, Codable
 {
-    // MARK: Life Cycle
+    // MARK: - Initialization
     
     public init(_ value: Value? = nil)
     {
         storedValue = value
-        ObservationService.register(observable: self)
+        
+        super.init()
     }
     
-    deinit
-    {
-        removeObservers()
-        ObservationService.unregister(observable: self)
-    }
-    
-    // MARK: Observable
-    
-    public func add(_ observer: AnyObject,
-                    receive: @escaping UpdateReceiver)
-    {
-        observerList.add(observer, receive: receive)
-    }
-    
-    public func remove(_ observer: AnyObject)
-    {
-        observerList.remove(observer)
-    }
-    
-    public func removeObservers()
-    {
-        observerList.removeAll()
-    }
-    
-    public func removeDeadObservers()
-    {
-        observerList.removeNilObservers()
-    }
-    
-    public func send(_ update: Update<Value?>)
-    {
-        observerList.receive(update)
-    }
-    
-    private let observerList = ObserverList<Update<Value?>>()
-    
-    // MARK: Value Access
+    // MARK: - Value Access
 
-    public var latestUpdate: Update<Value?>
+    public override var latestUpdate: Update<Value?>
     {
         return Update(value, value)
     }
