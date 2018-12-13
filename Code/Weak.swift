@@ -1,4 +1,4 @@
-public class Weak<O: Observable>: Observer, Observable
+public class Weak<O: Observable>: ObservableObject<O.UpdateType>, Observer
 {
     // MARK: - Life Cycle
     
@@ -6,6 +6,8 @@ public class Weak<O: Observable>: Observer, Observable
     {
         self.observable = observable
         self.latestStoredUpdate = observable.latestUpdate
+        
+        super.init()
         
         observe(observable) { [weak self] in self?.send($0) }
     }
@@ -26,7 +28,7 @@ public class Weak<O: Observable>: Observer, Observable
     
     // MARK: - Latest Update
     
-    public var latestUpdate: O.UpdateType
+    public override var latestUpdate: O.UpdateType
     {
         refreshLatestStoredUpdate()
         
