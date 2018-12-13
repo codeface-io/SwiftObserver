@@ -44,7 +44,7 @@
 Via [Carthage](https://github.com/Carthage/Carthage): Add this line to your [Cartfile](https://github.com/Carthage/Carthage/blob/master/Documentation/Artifacts.md#cartfile):
 
 ~~~
-github "flowtoolz/SwiftObserver" ~> 4.1
+github "flowtoolz/SwiftObserver" ~> 4.2
 ~~~
 
 Via [Cocoapods](https://cocoapods.org): Adjust your [Podfile](https://guides.cocoapods.org/syntax/podfile.html):
@@ -53,7 +53,7 @@ Via [Cocoapods](https://cocoapods.org): Adjust your [Podfile](https://guides.coc
 use_frameworks!
 
 target "MyAppTarget" do
-  pod "SwiftObserver", "~> 4.1"
+  pod "SwiftObserver", "~> 4.2"
 end
 ~~~
 
