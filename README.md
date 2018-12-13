@@ -88,18 +88,6 @@ class Dog: Observer {
 
 *Observers* adopt the `Observer` protocol, which gives them functions for starting and ending observations.
 
-After starting an observation, the *Observer* must be alive to receive updates. There's no awareness after death in memory:
-
-```swift
-class Dog: Observer {
-    init {
-        observe(Sky.shared) { color in
-            // for this closure to run, this Dog must live
-        }
-    }
-}
-```
-
 <a id="combined-observations"></a> You may start up to three observations with one combined call:
 
 ~~~swift
@@ -107,6 +95,19 @@ dog.observe(tv, bowl, doorbell) { image, food, sound in
     // either the tv's going, I got some food, or the bell rang
 }
 ~~~
+
+After starting an observation, the *Observer* must be alive to process updates. There's no awareness after death in memory:
+
+```swift
+class Dog: Observer {
+    init {
+        observe(Sky.shared) { color in
+            // for this closure to even be called, this Dog must live
+            // (irrespective of whether the closure references (weak) self)
+        }
+    }
+}
+```
 
 ## Observables
 
@@ -238,7 +239,7 @@ Note that `text` is a `var` instead of a `let`. It cannot be constant because th
 
 - If your `Var.Value` conforms to `Equatable` or `Comparable`, the whole `Var<Value>` will also conform to the respective protocol.
 - Internally, a `Var` appends new values to a queue, so all its *Observers* get to process a value change before the next change takes effect. This is for situations when the `Var` has multiple *Observers* and at least one *Observer* changes the `value` in response to a `value` change.
-- A `Var` is a bit more performant than a [custom *Observable*](#custom-observables) because `Var` maintains its own pool of *Observers*. So if you want to make a super large number of elements in some data structure observable, like particles in a simulation or nodes in a gigantic graph, give those elements a `Var` as an [*Owned Messenger*](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#owned-messenger). Generally, performance is not an issue. *Observables* and *Observers* are internally hashed by their respective [`ObjectIdentifier`](https://developer.apple.com/documentation/swift/objectidentifier).
+- A `Var` is a bit more performant than a [custom *Observable*](#custom-observables) because each `Var` maintains its own pool of *Observers*. So if you want to make a super large number of elements in some data structure observable, like particles in a simulation or nodes in a gigantic graph, give those elements a `Var` as an [*Owned Messenger*](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#owned-messenger). Generally, performance is not an issue. *Observables* and *Observers* are internally hashed by their respective [`ObjectIdentifier`](https://developer.apple.com/documentation/swift/objectidentifier).
 
 # Custom Observables
 
