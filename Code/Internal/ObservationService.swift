@@ -1,10 +1,5 @@
 import SwiftyToolz
 
-public func removeAbandonedObservations()
-{
-    ObservationService.removeAbandonedObservations()
-}
-
 class ObservationService
 {
     // MARK: - Add Observers
@@ -114,7 +109,7 @@ class ObservationService
     
     // MARK: - Global Clean Up
     
-    fileprivate static func removeAbandonedObservations()
+    static func removeAbandonedObservations()
     {
         observations.values.forEach { $0.observerList.removeNilObservers() }
         observations.remove { $0.observed == nil || $0.observerList.isEmpty }

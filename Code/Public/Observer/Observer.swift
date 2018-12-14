@@ -81,3 +81,8 @@ public extension Observer
 }
 
 public protocol Observer: AnyObject {}
+
+public func removeAbandonedObservations()
+{
+    ObservationService.removeAbandonedObservations()
+}

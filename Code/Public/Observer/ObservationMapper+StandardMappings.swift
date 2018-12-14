@@ -1,4 +1,4 @@
-extension ObservationMapper where T: Equatable
+public extension ObservationMapper where T: Equatable
 {
     // MARK: - Select
     
@@ -13,7 +13,7 @@ extension ObservationMapper where T: Equatable
     }
 }
 
-extension ObservationMapper
+public extension ObservationMapper
 {
     // MARK: - Filter
     

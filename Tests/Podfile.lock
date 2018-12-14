@@ -1,5 +1,5 @@
 PODS:
-  - SwiftyToolz (1.4.0)
+  - SwiftyToolz (1.4.2)
 
 DEPENDENCIES:
   - SwiftyToolz (~> 1.4)
@@ -9,7 +9,7 @@ SPEC REPOS:
     - SwiftyToolz
 
 SPEC CHECKSUMS:
-  SwiftyToolz: b5cc68957fb2defb23d2a8250c6bc9145de74fbc
+  SwiftyToolz: c9e9eac8e2e59ca5e2c293593b336a0253603bbd
 
 PODFILE CHECKSUM: 924040763b9b86b14909ef10107580d77dd3b3b1
 

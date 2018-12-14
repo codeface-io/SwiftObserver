@@ -7,8 +7,7 @@ public class Variable<Value: Equatable & Codable>: ObservableObject<Update<Value
     // MARK: - Initialization
     
     public init(_ value: Value? = nil,
-                file: String = #file,
-                line: Int = #line)
+                file: String = #file, line: Int = #line)
     {
         if isOptional(Value.self)
         {

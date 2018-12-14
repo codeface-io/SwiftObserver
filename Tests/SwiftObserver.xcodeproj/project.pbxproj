@@ -113,26 +113,8 @@
 		9E17055521B47C470045581C /* Code */ = {
 			isa = PBXGroup;
 			children = (
-				9E17055621B47C470045581C /* Observer.swift */,
-				9EE889FB21BAC7E10056340A /* Observer+ObservationMapper.swift */,
-				9EE889FD21BACF9C0056340A /* ObservationMapper+StandardMappings.swift */,
-				9E17055821B47C470045581C /* Variable+Numeric.swift */,
-				9E26039B21B89BBD00CE4D53 /* Variable+Comparable.swift */,
-				9E26039921B891DA00CE4D53 /* Variable+String.swift */,
-				9E26039321B88D4D00CE4D53 /* Variable+Equatable.swift */,
-				9E26039721B88D7F00CE4D53 /* Variable+ValueAssignment.swift */,
-				9E17055921B47C470045581C /* Update.swift */,
-				9E17055A21B47C470045581C /* ObserverList.swift */,
-				9E17055B21B47C470045581C /* Mapping.swift */,
-				9EA9A0C321B7E9D90067DB30 /* Weak.swift */,
-				9E17055C21B47C470045581C /* Mapping+StandardMappings.swift */,
-				9E28F80721BB023300A19578 /* FunctionalHelpers.swift */,
-				9E17055D21B47C470045581C /* Observable+StandardMappings.swift */,
-				9E17055E21B47C470045581C /* Observable.swift */,
-				9E17055F21B47C470045581C /* Variable.swift */,
-				9E2D86E621C2AB4500658CA1 /* Messenger.swift */,
-				9E2D86E821C2B6BE00658CA1 /* ObservableObject.swift */,
-				9E17056021B47C470045581C /* ObservationService.swift */,
+				9EA3E75521C34A9D0005A17F /* Public */,
+				9EA3E75421C348EB0005A17F /* Internal */,
 			);
 			name = Code;
 			path = ../Code;
@@ -176,6 +158,72 @@
 				9E37EDFF21B47AC200A594F1 /* Info.plist */,
 			);
 			path = SwiftObserverTests;
+			sourceTree = "<group>";
+		};
+		9EA3E75421C348EB0005A17F /* Internal */ = {
+			isa = PBXGroup;
+			children = (
+				9E17056021B47C470045581C /* ObservationService.swift */,
+				9E17055A21B47C470045581C /* ObserverList.swift */,
+				9E28F80721BB023300A19578 /* FunctionalHelpers.swift */,
+			);
+			path = Internal;
+			sourceTree = "<group>";
+		};
+		9EA3E75521C34A9D0005A17F /* Public */ = {
+			isa = PBXGroup;
+			children = (
+				9EA3E75721C34D1C0005A17F /* Observer */,
+				9EA3E75621C34CDC0005A17F /* Variable */,
+				9EA3E75921C34E750005A17F /* Mapping */,
+				9EA3E75821C34D530005A17F /* Observable */,
+				9E2D86E621C2AB4500658CA1 /* Messenger.swift */,
+				9EA9A0C321B7E9D90067DB30 /* Weak.swift */,
+				9E17055921B47C470045581C /* Update.swift */,
+			);
+			path = Public;
+			sourceTree = "<group>";
+		};
+		9EA3E75621C34CDC0005A17F /* Variable */ = {
+			isa = PBXGroup;
+			children = (
+				9E26039921B891DA00CE4D53 /* Variable+String.swift */,
+				9E17055821B47C470045581C /* Variable+Numeric.swift */,
+				9E26039B21B89BBD00CE4D53 /* Variable+Comparable.swift */,
+				9E26039321B88D4D00CE4D53 /* Variable+Equatable.swift */,
+				9E26039721B88D7F00CE4D53 /* Variable+ValueAssignment.swift */,
+				9E17055F21B47C470045581C /* Variable.swift */,
+			);
+			path = Variable;
+			sourceTree = "<group>";
+		};
+		9EA3E75721C34D1C0005A17F /* Observer */ = {
+			isa = PBXGroup;
+			children = (
+				9EE889FB21BAC7E10056340A /* Observer+ObservationMapper.swift */,
+				9EE889FD21BACF9C0056340A /* ObservationMapper+StandardMappings.swift */,
+				9E17055621B47C470045581C /* Observer.swift */,
+			);
+			path = Observer;
+			sourceTree = "<group>";
+		};
+		9EA3E75821C34D530005A17F /* Observable */ = {
+			isa = PBXGroup;
+			children = (
+				9E2D86E821C2B6BE00658CA1 /* ObservableObject.swift */,
+				9E17055D21B47C470045581C /* Observable+StandardMappings.swift */,
+				9E17055E21B47C470045581C /* Observable.swift */,
+			);
+			path = Observable;
+			sourceTree = "<group>";
+		};
+		9EA3E75921C34E750005A17F /* Mapping */ = {
+			isa = PBXGroup;
+			children = (
+				9E17055C21B47C470045581C /* Mapping+StandardMappings.swift */,
+				9E17055B21B47C470045581C /* Mapping.swift */,
+			);
+			path = Mapping;
 			sourceTree = "<group>";
 		};
 		D8E3DC067226836B85B834D5 /* Pods */ = {
