@@ -14,7 +14,7 @@ public class Weak<O: Observable>: ObservableObject<O.UpdateType>, Observer
     
     deinit
     {
-        if let observable = observable
+        if observable != nil
         {
             stopObserving(observable)
         }
@@ -22,8 +22,6 @@ public class Weak<O: Observable>: ObservableObject<O.UpdateType>, Observer
         {
             stopObservingDeadObservables()
         }
-        
-        removeObservers()
     }
     
     // MARK: - Latest Update

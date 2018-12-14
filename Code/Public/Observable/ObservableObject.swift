@@ -9,7 +9,6 @@ public class ObservableObject<Update>: Observable
     
     deinit
     {
-        removeObservers()
         ObservationService.unregister(observable: self)
     }
     
@@ -31,6 +30,8 @@ public class ObservableObject<Update>: Observable
     
     public func removeObservers()
     {
+        if observerList.isEmpty { return }
+        
         observerList.removeAll()
     }
     
