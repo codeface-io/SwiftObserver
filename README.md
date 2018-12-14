@@ -513,38 +513,34 @@ Patterns that emerged from using *SwiftObserver* [are documented over here](http
 
 SwiftObserver diverges from convention. It follows the reactive idea in generalizing the *Observer Pattern*. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something we love.
 
-The following is still an incoherent brainstorm, outlining the goodies of SwiftObserver ...
+**The following incoherent brainstorm outlines the goodies of SwiftObserver.**
 
 ## Meaningful Code
 
 - Readable code down to the internals
 
-- Meaningful names and metaphors
+- No arbitrary, contrived or technical metaphors like "disposable", "dispose bag", "signal", "emitter" or "stream"
 
-- No arbitrary, contrived or technical metaphors (like disposable, dispose bag, signal, emitter, stream, subscribing etc.)
-
-   > A note on "signals": In the tradition of Elm and the origins of reactive programming,  many reactive libraries use "signal" as a metaphor, but how they apply the term is mostly inaccurate and, therefor, more confusing than helpful, for instance when it's suggested that the signal is what's being observed.
+   > A note on "signals": In the tradition of Elm and the origins of reactive programming,  many reactive libraries use "signal" as a metaphor, but how they apply the term is more confusing than helpful, in particular when they suggest that the "signal" is what's being observed.
    >
-   > The appropriate context of reference here is information theory, where a signal is what's being technically transmitted from a source to a receiver. By observing the source, the receiver receives a signal which conveys messages. Practically speaking: One observes the lighthouse itself, not the light it emits.
-   >
-   > So: Would we correctly apply the metaphor to reactive programming, the signal would correspond to the actual data that observables send to observers. But anyway, we consider the metaphor to be too technical to be generally meaningful to actual application domains.
+   > Our closest context of reference here is information theory, where a signal is what's being technically transmitted from a source to a receiver. By observing the source, the receiver receives a signal which conveys messages. Would we apply the metaphor to reactive programming, the signal would rather correspond to the actual data that *observables* send to *observers*.
 
-- No inconsistent metaphors, meaning: no combination of incompatible metaphors that stem from completely different domains.
+- No inconsistent metaphors, i.e. no combination of incompatible metaphors that stem from completely different domains
 
-    - A common and nonsensical mixture is "subscribing" to a "signal". Even Elm, which had signals and still has subscriptions, never mixed the two.
-    - "subscribing" to an "observable" doesn't make much sense either. Why isn't it a "Subscribable" then? And why is it a radical idea to "observe" an "Observable"? Is the "Observable" a publication or what?
+    > A common and nonsensical mixture is "subscribing" to a "signal". Even Elm, which had signals and still has subscriptions, never mixed the two.
+    >
+    > "subscribing" to an "observable" doesn't make much sense either. Why isn't it a "subscribable" then? Why is it a radical idea to "observe" an "observable"? Is an "observable" a publication?
 
-- SwiftObserver is pragmatic and doesn't overgeneralize the *Observer Pattern*, i.e. it doesn't go overboard with the metaphor of "streams" but keeps things more simple, real-world oriented and meaningful to actual application domains.
+- No overgeneralization of the *Observer Pattern*. SwiftObserver doesn't go overboard with the model of "streams" but keeps things more simple, real-world oriented and meaningful to actual application domains.
 
-- No technical boiler plate code at the point of use
+- No technical boilerplate code at the point of use
 
-    - Create an abservable plus a chain of mappings in one line
-    - Start observation and create mappings directly on observables, without a mediating property
+    - No mediating property on *Observables* for starting observations or creating mappings
         - (comparison to RxSwift would be illuminating here ...)
-    - Observe an observable using an ad-hoc chain of transformations
-    - No Cancellables, Disposables, DisposeBags or Tokens to pass around and store
+    - No "tokens" and the like to pass around or store
+    - No memory management boilerplate code at the point of observation
 
-- The *SwiftObserver* syntax clearly reflects the intent and metaphor of the *Observer Pattern*: Observers are active subjects while observables are passive objects which are unconcerned about being observed:
+- The syntax reflects the intent and metaphor of the *Observer Pattern*: Observers are active subjects while observables are passive objects which are unconcerned about being observed:
 
     ~~~swift
     dog.observe(sky)
@@ -558,21 +554,28 @@ The following is still an incoherent brainstorm, outlining the goodies of SwiftO
     >
     > The illusion we want to create with the *Observer Pattern* is that an observer observes an observable. Linguistically, that is: subject, predicate, object. The subject actively acts on the object, while the object is passively being acted upon.
     >
-    > Of course, to achieve this under the hood, observables must actively trigger some data propagation. But we should look at the solution more pragmatically in terms of the real(-world) meaning that we set out to model in the first place.
+    > Of course, to achieve this under the hood, observables must actively trigger some data propagation. But we should look at the solution more pragmatically in terms of the real-world meaning that we set out to model in the first place.
 
 ## Non-intrusive Design
 
 * No delegate protocols to implement
-* Maximum freedom for your architectural- and design choices
-    - Because classes have to implement nothing to be observable, you can keep model and logic code independent of any observer frameworks and techniques. If the model layer had to be stuffed with heavyweight constructs just to be observed, it would become a technical issue rather than an easy to change,  meaningful, direct representation of domain-, business- and view logic.
-    - Unlike established Swift implementations of the Redux approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you freely model your domain-, business- and view logic with all your familiar design patterns and types. There are no restrictions on how you organize and store your app state.
-    - Custom observables without having to inherit from any class
-    - Unlike established Swift implementations of the Reactive approach, [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) lets you in control of the ancestral tree of your classes. There is not a single class that you have to inherit. Therefore, all your classes can be directly observed, even views and view controllers.
-* SwiftObserver avoids **optional optionals** and, thereby, gives you full controll over value and update types.
+
+* Custom observables without having to inherit from any base class
+
+    * You're in control of the ancestral tree of your classes
+    * All classes can easily be observed, even views and view controllers.
+
+    > You can keep model and logic code independent of any observer frameworks and techniques. If the model layer had to be stuffed with heavyweight constructs just to be observed, it would become a technical issue rather than an easy to change,  meaningful, direct representation of domain-, business- and view logic.
+
+* No restrictions on how you organize, store and persist the state of your your app
+
+    > You can freely model your domain-, business- and view logic with all your familiar design patterns and types.
+
+* No **optional optionals**. You have full control over value and update types.
     * No optionals on generic types
-        * `Variable` values and `Messenger` updates are optional but the types of these values and updates are guaranteed to be non-optional
-    * You can always map map optional updates onto non-optional updates
-    * The pull model integrated in SwiftObserver allows combined observations to pull updates from the involved observables. So you can have optional update types, but combined observation don't wrap the updates in additional optionals.
+        * `Variable` values and `Messenger` updates are stored as optionals, but their types are guaranteed to be non-optional
+    * You can always map optional updates onto non-optional updates via `unwrap`.
+    * You may have optional update types, but neither single- **nor combined observations** wrap your updates in additional optionals. This is possible due to the integration of a pull model of updates.
 
 ## Simplicity
 
@@ -594,6 +597,8 @@ The following is still an incoherent brainstorm, outlining the goodies of SwiftO
 
 ## Flexibility
 
+- Create an observable plus a chain of mappings in one line
+- Observe an observable using an ad-hoc chain of transformations
 - Use `<-` operator to directly set variable values
 - Variables are `Codable`, so model types are easy to encode and persist.
 - Ability to pull current update from all observable
