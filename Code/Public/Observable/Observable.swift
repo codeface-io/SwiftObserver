@@ -1,4 +1,3 @@
-
 public extension Observable
 {
     // Convenience

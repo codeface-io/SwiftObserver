@@ -51,7 +51,10 @@ class ObservationService
     
     static func remove(_ observer: AnyObject, of observed: AnyObject)
     {
-        guard let observation = observations[hashValue(observed)] else { return }
+        guard let observation = observations[hashValue(observed)] else
+        {
+            return
+        }
         
         observation.observerList.remove(observer)
         
@@ -68,12 +71,16 @@ class ObservationService
     
     static func removeObserver(_ observer: AnyObject)
     {
+        removeFromExternalObservables(observer)
+
         observations.values.forEach { $0.observerList.remove(observer) }
         observations.remove { $0.observerList.isEmpty }
     }
     
     static func removeObservationsOfDeadObservables()
     {
+        unregisterDeadExternalObservables()
+        
         observations.remove { $0.observed == nil }
     }
     
@@ -129,10 +136,27 @@ class ObservationService
     
     // MARK: - External Observables
     
+    private static func removeFromExternalObservables(_ observer: AnyObject)
+    {
+        unregisterDeadExternalObservables()
+        
+        // TODO: introduce second index structure (hash map) to speed up access when the observer is given (like a list of observations, hashed by observer)
+        externalObservables.values.forEach { $0.observable?.remove(observer) }
+    }
+    
     private static func removeDeadObserversFromExternalObservables()
     {
+        unregisterDeadExternalObservables()
+        
+        externalObservables.values.forEach
+        {
+            $0.observable?.removeDeadObservers()
+        }
+    }
+    
+    private static func unregisterDeadExternalObservables()
+    {
         externalObservables.remove { $0.observable == nil }
-        externalObservables.values.forEach { $0.observable?.removeDeadObservers() }
     }
     
     static func register<O: Observable>(observable: O)
