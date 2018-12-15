@@ -511,7 +511,7 @@ Patterns that emerged from using *SwiftObserver* [are documented over here](http
 
 # <a id="why"></a>Why the Hell Another Reactive Library?
 
-SwiftObserver diverges from convention. It follows the reactive idea in generalizing the *Observer Pattern*. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something we love.
+SwiftObserver diverges from convention. It follows the reactive idea in generalizing the *Observer Pattern*. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something different, something we **love** to work with. Leaving out the right kind of fancyness unveils the right kind of simplicity, a simplicity which is powerful.
 
 **The following incoherent brainstorm outlines the goodies of SwiftObserver.**
 
@@ -539,6 +539,7 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
         - (comparison to RxSwift would be illuminating here ...)
     - No "tokens" and the like to pass around or store
     - No memory management boilerplate code at the point of observation
+    - Combined observations send one update per *observable*. No tuple destructuring necessary.
 
 - The syntax reflects the intent and metaphor of the *Observer Pattern*: Observers are active subjects while observables are passive objects which are unconcerned about being observed:
 
@@ -571,7 +572,7 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
 
     > You can freely model your domain-, business- and view logic with all your familiar design patterns and types.
 
-* No **optional optionals**. You have full control over value and update types.
+* No **optional optionals**, so you have full control over value and update types.
     * No optionals on generic types
         * `Variable` values and `Messenger` updates are stored as optionals, but their types are guaranteed to be non-optional
     * You can always map optional updates onto non-optional updates via `unwrap`.
@@ -580,33 +581,65 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
 ## Simplicity
 
 - Very few but universal concepts / types
-- Pure Swift code for clean modelling. Not even dependence on `Foundation`.
+
+- Pure Swift code for clean modelling, not even any dependence on `Foundation`.
+
 - No distinction between "hot-" and "cold signals"
-- No distinction between Infinite and Finite "Series"
-- Mappings are first-class Observables that can be treated like any other observable
-- Combined observations send one update per observable. No tuple destructuring necessary.
-- map Mappings, other observables and observations in the exact same terms and with the same chaining syntax.
-- No specialized combine function, just one universal function to observe 1-3 observables, yet all the power of combined observation
-    - Other reactive libraries dump at least `merge`, `zip` and `combineLatest` on your brain. [SwiftObserver](https://github.com/flowtoolz/SwiftObserver) avoids all that by offering the most universal form of combined observation, in which the update trigger can be identified. (In the worst case, you must ensure the involved observables send updates of type `Update<Value>`.) All other combine functions could be built on top of that using mappings.
-    - Combined observation looks exactly like single observation but with more parameters, so it imposes no additional cognitive load.
-    - The provided universal combined observation is all you need in virtually all cases. You're free to focus on the meaning of observations and forget its syntax.
-- No data duplication:
-   - Neither combined observations nor mappings duplicate the data they receive from observables. Combined observations pull update information directly from those observables that didn't trigger the received update.
-   - Not having to duplicate data where multiple things must be observed is one of the reasons to use combined observations in the first place. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the updates sent from observables.
-   - This is a result of a very simple and universal modelling of the notion of an "Observable". We combined the conventional "push model" in which observables push their updates to observers with a "pull model" in which observers can pull updates from observables, which is what they have always done and what never was the problem, since observers act on observables in the direction of control / dependence. The problem that reactive techiques solve is propagating data **against** the direction of control. Also a pull model is more in line with functional programming: Instead of buffering state, the observer calls and combines functions on observables.
+
+- No distinction between infinite- and finite series
+
+- No data duplication. Neither combined observations nor mappings duplicate the data they receive from observables.
+
+   > Note: Not having to duplicate data where multiple things must be observed is one of the reasons to use combined observations in the first place. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the updates sent from observables.
+   >
+   > SwiftObserver not only leverages object-orientation, it also combines the typical reactive "push model" in which observables push their updates to observers with a regular "pull model" in which observers can pull updates from observables.
+   >
+   > "Pulling" just reflects the natural way objects operate. Observers can act on observables without problem, since that is the actual technical direction of control and dependence. The problem that reactive techiques solve is propagating data **against** the direction of control. 
+   >
+   > A "pull model" is also more in line with functional programming: Instead of buffering state, the observer calls and combines functions on observables.
 
 ## Flexibility
 
+- Mappings are first-class *Observables* that can be treated like any other *Observable*.
+
+- Wherever you map updates, you do it in the same terms and with the same chaining syntax: on a mapping, on another observable or on an observation.
+
+- Simple (combined) observation
+
+    - Just one universal function to observe 1-3 observables
+
+    - Yet you get all the power of combined observation
+
+    - Combined observation has no special syntax and imposes no additional cognitive load.
+
+        > Note: Other reactive libraries dump at least `merge`, `zip` and `combineLatest` on your brain. However, SwiftObserver's universal observation covers practically all cases in which you might want to combine observations. This gets even more amplified by the fact that the pull model, as manifested in `latestUpdate`, further reduces the need to combine observations.
+        >
+        > As the author of SwiftObserver, I even have to note, that I don't use combined observation anymore at all. It never offers me a benefit over single observation in practice. To the contrary: Managing observations proves to be harder when they're coupled. 
+        >
+        > My hunch is that `merge`, `zip` and `combineLatest` originate less from practical need and more from a desire to gerneralize and to max out the metaphor of "**data** streams". The underlying conceptual mis-alignment here might be that, updates in an observer-observable relationship are **supposed** to function as **messages** or events rather than as **data**.
+        >
+        > All that is required for dependency inversion is that the Observer gets informed about changes that he might need to react to. The observer then decides whether to act at all, how to act and what data he requires, and he pulls exactly that data from wherever it needs to, including from observables. It is not the job of the observable to presume what data any observer might need. It's not supposed to depend on these higher-level concerns, which is the whole reason why we apply the observer pattern. The Observable's job is just to tell what happened. So, updates typically function as messages rather than as data streams, and combining messages isn't as meaningful or helpful.
+
 - Create an observable plus a chain of mappings in one line
+
 - Observe an observable using an ad-hoc chain of transformations
+
 - Use `<-` operator to directly set variable values
+
 - Variables are `Codable`, so model types are easy to encode and persist.
+
 - Ability to pull current update from all observable
+
 - Recieve old *and* new value from variables
+
 - With Weak, you can chain mappings together without creating strong references to the mapped observables.
+
 - With Weak, you can put Observables into a data structure like an array and still hold them weakly.
+
 - Chaining Mappings has no side effects in terms of which objects are being held strongly and who owns whom. The code remains explicit and the coder in control.
+
 - Mappings are independent of their mapped source observables, to the point where the sources can be freely swapped.
+
 - Seemless integration of the *Notifier Pattern*
 
 ## Safety
