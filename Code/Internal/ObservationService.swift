@@ -73,9 +73,9 @@ class ObservationService
     
     private static func observableList(for observer: AnyObject) -> ObservableList
     {
-        let observerHash = hashValue(observer)
+        let observerKey = hashValue(observer)
         
-        if let list = observableLists[observerHash], list.observer != nil
+        if let list = observableLists[observerKey], list.observer != nil
         {
             return list
         }
@@ -83,7 +83,7 @@ class ObservationService
         {
             let newList = ObservableList(observer: observer)
             
-            observableLists[observerHash] = newList
+            observableLists[observerKey] = newList
             
             return newList
         }
@@ -117,6 +117,8 @@ class ObservationService
         weak var obserbable: RegisteredObservable?
     }
 }
+
+// MARK: - Protocol RegisteredObservable
 
 protocol RegisteredObservable: AnyObject
 {
