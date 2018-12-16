@@ -52,7 +52,7 @@ class SwiftObserverTests: XCTestCase
         
         let number = Var(42)
         
-        controller.observe(number).new().unwrap(0).map {
+        controller.observe(number).new().map {
             "\($0)"               // Int -> String
         }.filter {
             $0.count > 1          // filter out single digit integers
@@ -76,7 +76,7 @@ class SwiftObserverTests: XCTestCase
         let number = Var(42)
         
         controller.observe(number).map {
-            $0.new ?? 0      // Update<Int?> -> Int
+            $0.new           // Update<Int> -> Int
         }.receive { _ in
             didFire = true   // process Int
         }
@@ -88,7 +88,7 @@ class SwiftObserverTests: XCTestCase
     
     func testObservationMapping()
     {
-        let testText = Var<String>()
+        let testText = Var<String?>()
         
         var didFire = false
         var observedString: String?
@@ -107,7 +107,7 @@ class SwiftObserverTests: XCTestCase
     
     func testObservationMappingChained()
     {
-        let testText = Var("non optional string")
+        let testText = Var<String?>("non optional string")
         
         var didFire = false
         var observedString: String?
@@ -129,7 +129,7 @@ class SwiftObserverTests: XCTestCase
     
     func testObservationMappingNew()
     {
-        let testText = Var<String>()
+        let testText = Var<String?>()
         
         var didFire = false
         var observedString: String?
@@ -148,7 +148,7 @@ class SwiftObserverTests: XCTestCase
     
     func testObservationMappingChainAfterNew()
     {
-        let testText = Var<String>()
+        let testText = Var<String?>()
         
         var didFire = false
         var observedString: String?
@@ -168,7 +168,7 @@ class SwiftObserverTests: XCTestCase
     
     func testObservationMappingUnwrap()
     {
-        let textMapping = Var("non optional string").new()
+        let textMapping = Var<String?>("non optional string").new()
         
         var didFire = false
         var observedString: String?
@@ -187,7 +187,7 @@ class SwiftObserverTests: XCTestCase
     
     func testObservationMappingChainAfterUnwrap()
     {
-        let textMapping = Var("non optional string").new()
+        let textMapping = Var<String?>("non optional string").new()
         
         var didFire = false
         var observedCount: Int?
@@ -206,7 +206,7 @@ class SwiftObserverTests: XCTestCase
     
     func testObservationMappingFilter()
     {
-        let testText = Var<String>()
+        let testText = Var<String?>()
         
         var didFire = false
         var observedString: String?
@@ -361,7 +361,7 @@ class SwiftObserverTests: XCTestCase
     
     func testSettingObservableOfMapping()
     {
-        let mapping = Var<String>().new().unwrap("")
+        let mapping = Var("").new()
         
         var observedStrings = [String]()
         
@@ -391,7 +391,7 @@ class SwiftObserverTests: XCTestCase
     
     func testSingleObservationFilter()
     {
-        let number = Var(99)
+        let number = Var<Int?>(99)
         let latestUnwrappedNumber = number.new().unwrap(0)
         
         var observedNumbers = [Int]()
@@ -413,7 +413,7 @@ class SwiftObserverTests: XCTestCase
     
     func testMappingsIncludingFilter()
     {
-        let number = Var(99)
+        let number = Var<Int?>(99)
         let doubleDigits = number.new().unwrap(0).filter { $0 > 9 }
         
         var observedNumbers = [Int]()
@@ -435,9 +435,9 @@ class SwiftObserverTests: XCTestCase
     
     func testCombineMappingsByChainingThem()
     {
-        let number = Var<Int>()
+        let number = Var<Int?>()
         
-        var strongNewNumber: Mapping<Variable<Int>, Int?>? = number.new()
+        var strongNewNumber: Mapping<Var<Int?>, Int?>? = number.new()
         weak var weakNewNumber = strongNewNumber
         
         guard let strongUnwrappedNewNumber = weakNewNumber?.filter({ $0 != nil }).unwrap(-1) else
@@ -475,7 +475,7 @@ class SwiftObserverTests: XCTestCase
     
     func testSimpleMessenger()
     {
-        let textMessenger = Var<String>().new()
+        let textMessenger = Var<String?>().new()
         var receivedMessage: String?
         let expectedMessage = "message"
         
@@ -491,7 +491,7 @@ class SwiftObserverTests: XCTestCase
     
     func testSimpleMessengerWithSpecificMessage()
     {
-        let textMessenger = Var<String>().new()
+        let textMessenger = Var<String?>().new()
         var receivedMessage: String?
         let expectedMessage = "message"
         
@@ -529,7 +529,7 @@ class SwiftObserverTests: XCTestCase
     
     func testObservingWrongMessage()
     {
-        let textMessenger = Var<String>().new()
+        let textMessenger = Var<String?>().new()
         var didFire = false
         
         controller.observe(textMessenger).select("right message")
@@ -547,7 +547,7 @@ class SwiftObserverTests: XCTestCase
 
     func testHowToUseOptionalVariables()
     {
-        let text = Var("initial value")
+        let text = Var<String?>("initial value")
         
         text <- nil
         
@@ -570,7 +570,7 @@ class SwiftObserverTests: XCTestCase
     
     func testHowToMapVariablesToNonOptionalValues()
     {
-        let text = Var<String>()
+        let text = Var<String?>()
         
         let nonOptionalText = text.map { $0.new ?? "" }
         
@@ -590,7 +590,7 @@ class SwiftObserverTests: XCTestCase
     
     func testHowToUseUnwrapMapping()
     {
-        let text = Var<String>()
+        let text = Var<String?>()
         let unwrappedText = text.new().unwrap("")
         
         var didUpdate = false
@@ -661,7 +661,7 @@ class SwiftObserverTests: XCTestCase
     
     func testObservingVariableValueChange()
     {
-        let text = Var<String>()
+        let text = Var<String?>()
         
         var observedNewValue: String?
         var observedOldValue: String?
@@ -700,7 +700,7 @@ class SwiftObserverTests: XCTestCase
     func testObservingTwoObservables()
     {
         let testModel = ObservableModel()
-        let number = Var<Int>()
+        let number = Var<Int?>()
         
         var didFire = false
         var lastObservedEvent: ObservableModel.Event?
@@ -788,9 +788,9 @@ class SwiftObserverTests: XCTestCase
     
     func testObservingThreeVariables()
     {
-        let var1 = Var<Bool>()
-        let var2 = Var<Int>()
-        let var3 = Var<String>()
+        let var1 = Var<Bool?>()
+        let var2 = Var<Int?>()
+        let var3 = Var<String?>()
         
         let observer = Controller()
         
@@ -813,8 +813,8 @@ class SwiftObserverTests: XCTestCase
     
     class CodableModel: Codable
     {
-        private(set) var text = Var<String>()
-        private(set) var number = Var<Int>()
+        private(set) var text = Var<String?>()
+        private(set) var number = Var<Int?>()
     }
     
     class MinimalModel: CustomObservable

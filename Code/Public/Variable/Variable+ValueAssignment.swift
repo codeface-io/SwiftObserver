@@ -1,6 +1,6 @@
 infix operator <-: AssignmentPrecedence
 
-public func <-<Value>(variable: Var<Value>?, value: Value?)
+public func <-<Value>(variable: Var<Value>?, value: Value)
 {
     variable?.value = value
 }

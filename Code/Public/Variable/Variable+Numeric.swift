@@ -172,12 +172,12 @@ extension Var where Value: Numeric
 {
     public var number: Value
     {
-        get { return value ?? 0 }
+        get { return value }
         set { value = newValue }
     }
     
     public var magnitude: Value.Magnitude
     {
-        return value?.magnitude ?? 0
+        return value.magnitude
     }
 }

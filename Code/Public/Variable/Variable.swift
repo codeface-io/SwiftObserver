@@ -2,20 +2,17 @@ import SwiftyToolz
 
 public typealias Var = Variable
 
-public class Variable<Value: Equatable & Codable>: ObservableObject<Update<Value?>>, Codable
+public class Variable<Value: Equatable & Codable>: ObservableObject<Update<Value>>, Codable
 {
     // MARK: - Initialization
     
-    // TODO: remove whole optional dance like we did on Messenger... store value without optional
-    
-    public init(_ value: Value? = nil,
-                file: String = #file, line: Int = #line)
+    public convenience init<Wrapped>() where Value == Optional<Wrapped>
     {
-        if isOptional(Value.self)
-        {
-            fatalError("SwiftObserver.Variable: Value types are not supposed to be optional. Type: \(String(describing: Value.self)), File: \(file), line \(line)")
-        }
-        
+        self.init(nil)
+    }
+    
+    public init(_ value: Value)
+    {
         storedValue = value
         
         super.init()
@@ -23,12 +20,12 @@ public class Variable<Value: Equatable & Codable>: ObservableObject<Update<Value
     
     // MARK: - Value Access
 
-    public override var latestUpdate: Update<Value?>
+    public override var latestUpdate: Update<Value>
     {
         return Update(value, value)
     }
     
-    public var value: Value?
+    public var value: Value
     {
         get { return storedValue }
         
@@ -48,13 +45,13 @@ public class Variable<Value: Equatable & Codable>: ObservableObject<Update<Value
         }
     }
     
-    private var valueQueue = [Value?]()
+    private var valueQueue = [Value]()
     
     // MARK: Stored Value
     
     private enum CodingKeys: CodingKey { case storedValue }
     
-    private var storedValue: Value?
+    private var storedValue: Value
     {
         didSet
         {

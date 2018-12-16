@@ -54,7 +54,8 @@ class ObservationService
     
     // MARK: - Private
     
-    static func register(observer: AnyObject, of observable: RegisteredObservable)
+    private static func register(observer: AnyObject,
+                                 of observable: RegisteredObservable)
     {
         let observerHash = hashValue(observer)
         
@@ -73,7 +74,8 @@ class ObservationService
         }
     }
     
-    static func unregister(observers: [HashValue], of observable: RegisteredObservable)
+    private static func unregister(observers: [HashValue],
+                                   of observable: RegisteredObservable)
     {
         observers.forEach
         {
