@@ -8,12 +8,19 @@
                                                       receive: receive)
     }
     
-    func remove(_ observer: AnyObject)
+    @discardableResult
+    func remove(_ observer: AnyObject) -> Bool
     {
-        observers[hashValue(observer)] = nil
+        if observers[hashValue(observer)] != nil
+        {
+            observers[hashValue(observer)] = nil
+            return true
+        }
+        
+        return false
     }
     
-    func removeNilObservers()
+    func removeDeadObservers()
     {
         observers.remove { $0.observer == nil }
     }

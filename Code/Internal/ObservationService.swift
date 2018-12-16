@@ -2,109 +2,119 @@ import SwiftyToolz
 
 class ObservationService
 {
-    // MARK: - For Clients to Reach Observables
+    // MARK: - Globally Remove Observers
     
     static func remove(observer: AnyObject)
     {
-        let observerHash = hashValue(observer)
+        let observerKey = hashValue(observer)
         
-        observations[observerHash]?.observables.forEach
+        observableLists[observerKey]?.observables.forEach
         {
-            $0.observable?.removeFromRegisteredObservables(observer)
+            $0.value.obserbable?.observationServiceWillRemove(observer)
         }
         
-        observations[observerHash] = nil
+        observableLists[observerKey] = nil
     }
 
     static func removeDeadObservers()
     {
-        observations.values.forEach
+        observables.forEach
         {
-            if $0.observer == nil
-            {
-                $0.observables.forEach
-                {
-                    $0.observable?.removeDeadObserversFromRegisteredObservables()
-                }
-            }
+            $0.value.obserbable?.observationServiceWillRemoveDeadObservers()
         }
         
-        observations.remove { $0.observer == nil }
+        observableLists.remove { $0.observer == nil }
     }
     
-    // MARK: - For Observables
+    // MARK: - Track Observations (Observers)
     
-    static func willDeinit(_ observable: RegisteredObservable,
-                           with observers: [HashValue])
-    {
-        unregister(observers: observers, of: observable)
-    }
-    
-    static func didAdd(observer: AnyObject,
+    static func didAdd(_ observer: AnyObject,
                        to observable: RegisteredObservable)
     {
-        register(observer: observer, of: observable)
+        let observableKey = hashValue(observable)
+        
+        let list = observableList(for: observer)
+        
+        list.observables[observableKey] = WeakObservable(observable)
     }
     
-    static func didRemove(observers: [HashValue],
+    static func didRemove(_ observers: [HashValue],
                           from observable: RegisteredObservable)
     {
-        unregister(observers: observers, of: observable)
+        let observableKey = hashValue(observable)
+        
+        observers.forEach
+        {
+            let list = observableLists[$0]
+                
+            list?.observables[observableKey] = nil
+            
+            if list?.observables.isEmpty ?? false
+            {
+                observableLists[$0] = nil
+            }
+        }
     }
     
-    // MARK: - Private
-    
-    private static func register(observer: AnyObject,
-                                 of observable: RegisteredObservable)
+    private static func observableList(for observer: AnyObject) -> ObservableList
     {
         let observerHash = hashValue(observer)
         
-        let weakObservable = WeakObservable(observable: observable)
-        
-        let observation = observations[observerHash]
-        
-        if observation == nil || observation?.observer == nil
+        if let list = observableLists[observerHash], list.observer != nil
         {
-            observations[observerHash] = Observation(observer: observer,
-                                                     observables: [weakObservable])
+            return list
         }
         else
         {
-            observations[observerHash]?.observables.append(weakObservable)
-        }
-    }
-    
-    private static func unregister(observers: [HashValue],
-                                   of observable: RegisteredObservable)
-    {
-        observers.forEach
-        {
-            observations[$0]?.observables.remove { $0.observable === observable }
+            let newList = ObservableList(observer: observer)
             
-            if observations[$0]?.observables.isEmpty ?? true
-            {
-                observations[$0] = nil
-            }
+            observableLists[observerHash] = newList
+            
+            return newList
         }
     }
     
-    private static var observations = [HashValue : Observation]()
+    private static var observableLists = [HashValue : ObservableList]()
     
-    private struct Observation
+    private class ObservableList
     {
+        init(observer: AnyObject)
+        {
+            self.observer = observer
+        }
+        
         weak var observer: AnyObject?
         
-        var observables = [WeakObservable]()
+        var observables = [HashValue : WeakObservable]()
     }
+    
+    // MARK: - Track Existing Observables
+    
+    static func register(observable: RegisteredObservable)
+    {
+        observables[hashValue(observable)] = WeakObservable(observable)
+    }
+    
+    static func unregister(observable: RegisteredObservable)
+    {
+        observables[hashValue(observable)] = nil
+    }
+    
+    private static var observables = [HashValue : WeakObservable]()
     
     private struct WeakObservable
     {
-        weak var observable: RegisteredObservable?
+        init(_ observable: RegisteredObservable)
+        {
+            self.obserbable = observable
+        }
+        
+        weak var obserbable: RegisteredObservable?
     }
 }
 
 protocol RegisteredObservable: AnyObject
 {
-    func removeFromRegisteredObservables(_ observer: AnyObject)
-    func removeDeadObserversFromRegisteredObservables()
+    func observationServiceWillRemove(_ observer: AnyObject)
+    func observationServiceWillRemoveDeadObservers()
 }

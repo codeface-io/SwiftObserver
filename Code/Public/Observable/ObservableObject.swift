@@ -2,23 +2,26 @@ import SwiftyToolz
 
 extension ObservableObject: RegisteredObservable
 {
-    func removeFromRegisteredObservables(_ observer: AnyObject)
+    func observationServiceWillRemove(_ observer: AnyObject)
     {
         observerList.remove(observer)
     }
     
-    func removeDeadObserversFromRegisteredObservables()
+    func observationServiceWillRemoveDeadObservers()
     {
-        observerList.removeNilObservers()
+        observerList.removeDeadObservers()
     }
 }
 
 public class ObservableObject<Update>: Observable
 {
-    deinit
-    {
-        ObservationService.willDeinit(self, with: observerList.hashValues)
-    }
+    // MARK: - Register in Observation Service
+    
+    init() { ObservationService.register(observable: self) }
+    
+    deinit { ObservationService.unregister(observable: self) }
+   
+    // MARK: - Observable
     
     public var latestUpdate: Update
     {
@@ -29,29 +32,38 @@ public class ObservableObject<Update>: Observable
                     receive: @escaping (Update) -> Void)
     {
         observerList.add(observer, receive: receive)
-        ObservationService.didAdd(observer: observer, to: self)
+        
+        ObservationService.didAdd(observer, to: self)
     }
     
     public func remove(_ observer: AnyObject)
     {
-        observerList.remove(observer)
-        ObservationService.didRemove(observers: [hashValue(observer)], from: self)
+        if observerList.remove(observer)
+        {
+            ObservationService.didRemove([hashValue(observer)], from: self)
+        }
     }
     
     public func removeObservers()
     {
-        if observerList.isEmpty { return }
+        let observerHashs = observerList.hashValues
         
-        let observers = observerList.hashValues
+        guard !observerHashs.isEmpty else { return }
+        
         observerList.removeAll()
-        ObservationService.didRemove(observers: observers, from: self)
+        
+        ObservationService.didRemove(observerHashs, from: self)
     }
     
     public func removeDeadObservers()
     {
-        let observers = observerList.hashValuesOfNilObservers
-        observerList.removeNilObservers()
-        ObservationService.didRemove(observers: observers, from: self)
+        let observerHashs = observerList.hashValuesOfNilObservers
+        
+        guard !observerHashs.isEmpty else { return }
+        
+        observerList.removeDeadObservers()
+        
+        ObservationService.didRemove(observerHashs, from: self)
     }
     
     public func send(_ update: Update)
