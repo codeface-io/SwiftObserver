@@ -16,7 +16,7 @@ public class Messenger<Message>: ObservableObject<Message>
     
     public override func send(_ update: Message)
     {
-        if remembersLatestMessages { latestMessage = update }
+        if remembersLatestMessage { latestMessage = update }
         
         super.send(update)
     }
@@ -26,7 +26,6 @@ public class Messenger<Message>: ObservableObject<Message>
         return latestMessage
     }
     
-    public var remembersLatestMessages = true
-    
-    public private(set) var latestMessage: Message
+    public var remembersLatestMessage = true
+    public var latestMessage: Message
 }
