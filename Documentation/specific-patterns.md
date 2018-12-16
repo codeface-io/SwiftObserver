@@ -61,14 +61,15 @@ textMessenger.send("my text message")
 let lastMessage = textMessenger.latestUpdate // "my text message"
 ~~~
 
+### Subscribe to One Notification
+
 No matter how you implement your messenger, you may use `select` to observe (subscribe to-) one specific message:
 
 ~~~swift
-observer.observe(textMessenger).select("my event") {
-    // respond to "my event"
+observer.observe(textMessenger).select("my notification") {
+    // respond to "my notification"
 }
 ~~~
-
 
 ## Owned Messenger
 
@@ -78,7 +79,7 @@ Instead of making a class `C` directly observable through `CustomObservable`, yo
 
 ~~~swift
 class C {
-   let messenger = Messenger<Event?>() // C is indirectly observable
+   let messenger = Messenger<Event?>() // C is indirectly observable via messenger
 }
 ~~~
 
@@ -165,4 +166,4 @@ observe(textView.messenger) { textEvent in
 
 Consider this case: I have a generic class `Tree`. It is a `CustomObservable`, so tree nodes can observe their branches. Then I have an `Item` which derives from `Tree`. `Item` cannot extend or override the `Tree.UpdateType`.
 
-In order to further specify what items can send to their observers, the `Tree` must has to use its messenger without direct conformance to `CustomObservable`. This tree messenger should (somewhat redundantly) be named after its class: `treeMessenger`, so that there's no confusion in inheriting classes about which ancestor owns the messenger.
+In order to further specify what items can send to their observers, the `Tree` must to use its messenger without direct conformance to `CustomObservable`. This tree messenger should (somewhat redundantly) be named after its class: `treeMessenger`, so that there's no confusion in inheriting classes about which ancestor owns the messenger.

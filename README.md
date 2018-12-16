@@ -28,6 +28,7 @@
 * [Custom Observables](#custom-observables)
     * [Declare Custom Observables](#declare-custom-observables)
     * [Send Custom Updates](#send-custom-updates)
+    * [The Latest Update](#the-latest-update)
     * [Make State Observable](#make-state-observable)
 * [Mappings](#mappings)
     * [Create Mappings](#create-a-mapping)
@@ -273,7 +274,9 @@ By default, a `Messenger` remembers the last update it sent, therefore `latestUp
 
 ~~~swift
 class NoDuplication: CustomObservable {
-	init { messenger.remembersLatestMessage = false	} // self.latestUpdate stays nil
+    init {
+        messenger.remembersLatestMessage = false  // self.latestUpdate stays nil
+    }
 
     let messenger = Messenger<String?>()
     typealias UpdateType = String?
@@ -284,7 +287,7 @@ If your `UpdateType` is optional, you can also erase the buffered update at any 
 
 ## Make State Observable
 
-To inform *Observers* about value changes, similar to how `Var<Value>`, you would use `Update<Value>`, and you might want to customize `latestUpdate` so that it returns the current value rather than the last sent update:
+To inform *Observers* about value changes, similar to `Var<Value>`, you would use `Update<Value>`, and you might want to customize `latestUpdate` so that it returns the current value rather than the last sent update:
 
 ~~~swift
 class Model: CustomObservable {
@@ -335,7 +338,7 @@ You can even reset the `source`, causing the *Mapping* to send an update (with r
 So, you may create a *Mapping* without knowing what `source` objects it will have over its lifetime. Just use an ad-hoc dummy *Source* to create the *Mapping* and, later, reset `source` as often as you like:
 
 ```swift
-let title = Var<String?>().map {  // title.source must be a Var<String>
+let title = Var<String?>().map {  // title.source must be a Var<String?>
     $0.new ?? "untitled"
 }
 
@@ -350,7 +353,7 @@ Being able to declare *Mappings* as mere transformations, independent of their c
 You may chain *Mappings* together:
 
 ```swift
-let mapping = Var<Int?>().map {   // mapping.source is a Var<Int>
+let mapping = Var<Int?>().map {   // mapping.source is a Var<Int?>
     $0.new ?? 0                   // Update<Int?> -> Int
 }.filter {
     $0 > 9                        // only forward integers > 9
@@ -360,7 +363,7 @@ let mapping = Var<Int?>().map {   // mapping.source is a Var<Int>
 // ^^ mapping sends updates of type String
 ```
 
-**When you chain *Mappings* together, you actually compose them into one single *Mapping***. So the `source` of a *Mapping* is never another *Mapping*. It always refers to the original *Source* `Observable`. In the above example, the `source` of the created *Mapping* is a `Var<Int>`.
+**When you chain *Mappings* together, you actually compose them into one single *Mapping***. So the `source` of a *Mapping* is never another *Mapping*. It always refers to the original *Source* `Observable`. In the above example, the `source` of the created *Mapping* is a `Var<Int?>`.
 
 ## Use Prebuilt Mappings
 
@@ -512,7 +515,9 @@ Patterns that emerged from using *SwiftObserver* [are documented over here](http
 
 # <a id="why"></a>Why the Hell Another Reactive Library?
 
-SwiftObserver diverges from convention. It follows the reactive idea in generalizing the *Observer Pattern*. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something different, something we **love** to work with. Leaving out the right kind of fancyness leaves us with the right kind of simplicity, a simplicity which is powerful.
+SwiftObserver diverges from convention. It follows the reactive idea in generalizing the *Observer Pattern*. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something different, something we **love** to work with.
+
+Leaving out the right kind of fancyness leaves us with the right kind of simplicity, a simplicity which is powerful.
 
 **The following incoherent brainstorm outlines the goodies of SwiftObserver.**
 
@@ -578,7 +583,15 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
     * You can make your update types optional. SwiftObserver will never spit them back at you wrapped in additional optionals, not even in combined observations.
     * Also, you can easily unwrap optional updates via the mapping `unwrap`.
 
-* Minimal duplication. *SwiftObserver* practically never duplicates the updates that are being sent around, in particular not in [combined observations](#combined-observations) and [*mappings*](#mappings). This is in stark contrast to other reactive libraries yet without compomising functional aspects. The only cases that duplicate updates are `latestUpdate` on `Weak` and on `Messenger` (if you don't change `remembersLatestMessage`).
+* Minimal duplication. *SwiftObserver* practically never duplicates the updates that are being sent around, in particular not in [combined observations](#combined-observations) and [*mappings*](#mappings). This is in stark contrast to other reactive libraries yet without compomising functional aspects. The only cases that duplicate updates are `latestUpdate` on `Weak` and (if you don't change `remembersLatestMessage`) on `Messenger`.
+
+   > Note: Not having to duplicate data where multiple things must be observed is one of the reasons to use combined observations in the first place. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the updates sent from observables.
+   >
+   > SwiftObserver not only leverages object-orientation, it also combines the typical reactive "push model" in which observables push their updates to observers with a regular "pull model" in which observers can pull updates from observables.
+   >
+   > "Pulling" just reflects the natural way objects operate. Observers can act on observables without problem, since that is the actual technical direction of control and dependence. The problem that reactive techiques solve is propagating data **against** the direction of control. 
+   >
+   > A "pull model" is also more in line with functional programming: Instead of buffering state, the observer calls and combines functions on observables.
 
 ## Simplicity
 
@@ -589,16 +602,6 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
 - No distinction between "hot-" and "cold signals"
 
 - No distinction between infinite- and finite series
-
-- No data duplication. Neither combined observations nor mappings duplicate the data they receive from observables.
-
-   > Note: Not having to duplicate data where multiple things must be observed is one of the reasons to use combined observations in the first place. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the updates sent from observables.
-   >
-   > SwiftObserver not only leverages object-orientation, it also combines the typical reactive "push model" in which observables push their updates to observers with a regular "pull model" in which observers can pull updates from observables.
-   >
-   > "Pulling" just reflects the natural way objects operate. Observers can act on observables without problem, since that is the actual technical direction of control and dependence. The problem that reactive techiques solve is propagating data **against** the direction of control. 
-   >
-   > A "pull model" is also more in line with functional programming: Instead of buffering state, the observer calls and combines functions on observables.
 
 ## Flexibility
 
@@ -614,7 +617,7 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
 
     - Combined observation has no special syntax and imposes no additional cognitive load.
 
-        > Note: Other reactive libraries dump at least `merge`, `zip` and `combineLatest` on your brain. Assuming that `latestUpdate` really provides the latest update (which is true for `Var` and `Messenger` sources and depends on your implementation for custom observable sources), the provided combined observation is equivalent to `latestUpdate`, which is by far the most used combine function in practice. 
+        > Note: Other reactive libraries dump at least `merge`, `zip` and `combineLatest` on your brain. Since `latestUpdate` generally provides the latest update, the provided combined observation is equivalent to `combineLatest`, which is by far the most used combine function in practice. 
         >
         > You could implement `merge` and `zip` through a custom observable. However, SwiftObserver's universal observation covers almost all practical needs for combined observation. This gets even amplified by the fact that the pull model, as manifested in `latestUpdate`, reduces the need to combine observations at all, since the interesting data can always be pulled from the observables.
         >
@@ -622,7 +625,7 @@ SwiftObserver diverges from convention. It follows the reactive idea in generali
         >
         > My hunch is that `merge`, `zip` and `combineLatest` originate less from practical need and more from a desire to gerneralize and to max out the metaphor of "**data** streams". The underlying conceptual mis-alignment here might be, that updates in an observer-observable relationship are **supposed** to function as **messages** or events rather than as **data**.
         >
-        > All that is required for dependency inversion is that the observer gets informed about changes that he might need to react to. The observer then decides whether to act at all, how to act and what data he requires, and he pulls exactly that data from wherever it needs to, including from observables. It is not the job of the observable to presume what data any observer might need. It's not supposed to depend on these higher-level concerns, which is the whole reason why we apply the observer pattern. The observable's job is just to tell what happened. So, updates typically function as messages rather than as data streams, and combining messages isn't as meaningful or helpful.
+        > And here is why: All that is required for dependency inversion is that the observer gets informed about changes that he might need to react to. The observer then decides whether to act at all, how to act and what data it requires, and it pulls exactly that data from wherever it needs to, including from observables. It is not the job of the observable to presume what data any observer might need. It's not supposed to depend on the observer's concerns, which is the whole reason why we invert that dependency through the observer pattern. The observable's job is just to tell what happened. So, updates naturally function as messages rather than as data streams, and combining messages wouldn't be as meaningful or helpful.
 
 - Create an observable plus a chain of mappings in one line
 
