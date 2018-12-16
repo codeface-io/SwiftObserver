@@ -1,5 +1,10 @@
 public struct Update<Value>
 {
+    public init<Wrapped>() where Value == Optional<Wrapped>
+    {
+        self.init(nil, nil)
+    }
+    
     public init(_ old: Value, _ new: Value)
     {
         self.old = old
