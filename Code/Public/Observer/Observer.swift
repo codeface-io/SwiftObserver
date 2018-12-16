@@ -69,14 +69,9 @@ public extension Observer
         observable?.remove(self)
     }
     
-    func stopObservingDeadObservables()
-    {
-        ObservationService.removeObservationsOfDeadObservables()
-    }
-    
     func stopObserving()
     {
-        ObservationService.removeObserver(self)
+        ObservationService.remove(observer: self)
     }
 }
 
@@ -84,5 +79,5 @@ public protocol Observer: AnyObject {}
 
 public func removeAbandonedObservations()
 {
-    ObservationService.removeAbandonedObservations()
+    ObservationService.removeDeadObservers()
 }

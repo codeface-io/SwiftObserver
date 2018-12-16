@@ -1,28 +1,32 @@
 import SwiftyToolz
 
-public class Messenger<Message>: ObservableObject<Message?>
+public class Messenger<Message>: ObservableObject<Message>
 {
-    public init(file: String = #file, line: Int = #line)
+    public convenience init<Wrapped>() where Message == Optional<Wrapped>
     {
-        if isOptional(Message.self)
-        {
-            fatalError("SwiftObserver.Messenger: Message types are not supposed to be optional. Type: \(String(describing: Message.self)), File: \(file), line \(line)")
-        }
+        self.init(nil)
+    }
+    
+    public init(_ initialMessage: Message)
+    {
+        latestMessage = initialMessage
         
         super.init()
     }
     
-    public override func send(_ update: Message?)
+    public override func send(_ update: Message)
     {
-        message = update
+        if remembersLatestMessages { latestMessage = update }
         
         super.send(update)
     }
     
-    public override var latestUpdate: Message?
+    public override var latestUpdate: Message
     {
-        return message
+        return latestMessage
     }
     
-    private var message: Message?
+    public var remembersLatestMessages = true
+    
+    public private(set) var latestMessage: Message
 }

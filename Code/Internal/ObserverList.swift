@@ -23,6 +23,21 @@
         observers.removeAll()
     }
     
+    var hashValues: [HashValue]
+    {
+        return Array(observers.keys)
+    }
+    
+    var hashValuesOfNilObservers: [HashValue]
+    {
+        let keys = observers.compactMap
+        {
+            return $1.observer == nil ? $0 : nil
+        }
+        
+        return Array(keys)
+    }
+    
     var isEmpty: Bool { return observers.isEmpty }
     
     func receive(_ update: Update)

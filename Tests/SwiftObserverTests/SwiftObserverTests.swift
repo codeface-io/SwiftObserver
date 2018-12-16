@@ -6,7 +6,7 @@ class SwiftObserverTests: XCTestCase
 {
     func testMessenger()
     {
-        let textMessenger = Messenger<String>()
+        let textMessenger = Messenger<String?>()
         
         let message = "latest message"
         
@@ -266,6 +266,8 @@ class SwiftObserverTests: XCTestCase
     
     func testMappingSelectOnCustomObservable()
     {
+        let model = ObservableModel()
+        
         let mappedModel = model.select(.didUpdate)
         
         var didFire = false
@@ -626,6 +628,8 @@ class SwiftObserverTests: XCTestCase
     
     func testObservingTheModel()
     {
+        let model = ObservableModel()
+        
         var didUpdate = false
         
         controller.observe(model)
@@ -657,16 +661,18 @@ class SwiftObserverTests: XCTestCase
     
     func testObservingVariableValueChange()
     {
+        let text = Var<String>()
+        
         var observedNewValue: String?
         var observedOldValue: String?
         
-        controller.observe(model.text)
+        controller.observe(text)
         {
             observedOldValue = $0.old
             observedNewValue = $0.new
         }
         
-        model.text <- "new text"
+        text <- "new text"
         
         XCTAssertEqual(observedOldValue, nil)
         XCTAssertEqual(observedNewValue, "new text")
@@ -675,6 +681,8 @@ class SwiftObserverTests: XCTestCase
     
     func testObservableMapping()
     {
+        let model = ObservableModel()
+        
         var didFire = false
         
         controller.observe(model).map({ $0.rawValue })
@@ -691,11 +699,11 @@ class SwiftObserverTests: XCTestCase
     
     func testObservingTwoObservables()
     {
-        let testModel = Model()
+        let testModel = ObservableModel()
         let number = Var<Int>()
         
         var didFire = false
-        var lastObservedEvent: Model.Event?
+        var lastObservedEvent: ObservableModel.Event?
         var lastObservedNumber: Int?
         
         controller.observe(testModel, number)
@@ -749,6 +757,8 @@ class SwiftObserverTests: XCTestCase
     
     func testCodingTheModel()
     {
+        let model = CodableModel()
+        
         var didEncode = false
         var didDecode = false
         
@@ -763,7 +773,8 @@ class SwiftObserverTests: XCTestCase
             
             didEncode = true
             
-            if let decodedModel = try? JSONDecoder().decode(Model.self, from: modelJson)
+            if let decodedModel = try? JSONDecoder().decode(CodableModel.self,
+                                                            from: modelJson)
             {
                 XCTAssertEqual(decodedModel.text.value, "123")
                 XCTAssertEqual(decodedModel.number.value, 123)
@@ -799,25 +810,35 @@ class SwiftObserverTests: XCTestCase
         XCTAssert(didFire)
         XCTAssertEqual(observedString, "test")
     }
-
-    let model = Model()
     
-    let controller = Controller()
-    
-    class Model: Observable, Codable
+    class CodableModel: Codable
     {
-        var latestUpdate: Event { return .didNothing }
-        
-        enum Event: String { case didUpdate, didReset, didNothing }
-        
         private(set) var text = Var<String>()
         private(set) var number = Var<Int>()
     }
     
+    class MinimalModel: CustomObservable
+    {
+        typealias UpdateType = Int?
+        
+        let messenger = Messenger<Int?>()
+    }
+    
+    class ObservableModel: CustomObservable
+    {
+        typealias UpdateType = Event
+        
+        let messenger = Messenger(Event.didNothing)
+        
+        enum Event: String { case didUpdate, didReset, didNothing }
+    }
+    
     let customObservable = ModelWithState()
     
-    class ModelWithState: Observable
+    class ModelWithState: CustomObservable
     {
+        let messenger = Messenger(Update("", ""))
+        
         var latestUpdate: Update<String>
         {
             return Update(state, state)
@@ -834,6 +855,8 @@ class SwiftObserverTests: XCTestCase
             }
         }
     }
+    
+    let controller = Controller()
  
     class Controller: Observer
     {

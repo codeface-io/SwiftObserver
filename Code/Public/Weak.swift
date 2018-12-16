@@ -12,17 +12,7 @@ public class Weak<O: Observable>: ObservableObject<O.UpdateType>, Observer
         observe(observable) { [weak self] in self?.send($0) }
     }
     
-    deinit
-    {
-        if observable != nil
-        {
-            stopObserving(observable)
-        }
-        else
-        {
-            stopObservingDeadObservables()
-        }
-    }
+    deinit { stopObserving(observable) }
     
     // MARK: - Latest Update
     
