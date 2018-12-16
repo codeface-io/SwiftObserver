@@ -19,7 +19,8 @@ public class ObservableObject<Update>: Observable
     
     init() { ObservationService.register(observable: self) }
     
-    deinit { ObservationService.unregister(observable: self) }
+    deinit { ObservationService.unregister(observable: self,
+                                           with: observerList.hashValues) }
    
     // MARK: - Observable
     

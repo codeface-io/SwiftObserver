@@ -26,6 +26,21 @@ class ObservationService
         observableLists.remove { $0.observer == nil }
     }
     
+    // MARK: - Register/Unregister Observables
+    
+    static func register(observable: RegisteredObservable)
+    {
+        observables[hashValue(observable)] = WeakObservable(observable)
+    }
+    
+    static func unregister(observable: RegisteredObservable,
+                           with observers: [HashValue])
+    {
+        didRemove(observers, from: observable)
+        
+        observables[hashValue(observable)] = nil
+    }
+    
     // MARK: - Track Observations (Observers)
     
     static func didAdd(_ observer: AnyObject,
@@ -88,17 +103,7 @@ class ObservationService
         var observables = [HashValue : WeakObservable]()
     }
     
-    // MARK: - Track Existing Observables
-    
-    static func register(observable: RegisteredObservable)
-    {
-        observables[hashValue(observable)] = WeakObservable(observable)
-    }
-    
-    static func unregister(observable: RegisteredObservable)
-    {
-        observables[hashValue(observable)] = nil
-    }
+    // MARK: - Registered Observables
     
     private static var observables = [HashValue : WeakObservable]()
     
