@@ -105,21 +105,21 @@ extension Var: StringValue,
     }
 }
 
-extension Optional: StringValue where Wrapped: StringValue
-{
-    public var string: String
-    {
-        get { return self?.string ?? "" }
-        set { self?.string = newValue }
-    }
-}
-
 extension String: StringValue
 {
     public var string: String
     {
         get { return self }
         set { self = newValue }
+    }
+}
+
+extension Optional: StringValue where Wrapped: StringValue
+{
+    public var string: String
+    {
+        get { return self?.string ?? "" }
+        set { self?.string = newValue }
     }
 }
 
