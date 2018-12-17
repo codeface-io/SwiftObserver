@@ -411,7 +411,7 @@ dog.observe(Sky.shared).select(.blue) {  // no argument in
 
 ## The Messenger Pattern
 
-When *observer* and *observable* need to be more decoupled, it is common to use a mediating *observable* through which any object can anonymously send updates. An example of this mediator is the [`NotificationCenter`](#https://developer.apple.com/documentation/foundation/notificationcenter).
+When *observer* and *observable* need to be more decoupled, it is common to use a mediating *observable* through which any object can anonymously send updates. An example of this mediator is the [`NotificationCenter`](https://developer.apple.com/documentation/foundation/notificationcenter).
 
 This use of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, *Dispatcher*, *Event Emitter* or *Decoupler*. Its main differences to direct observation are:
 
