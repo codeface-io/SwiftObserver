@@ -297,12 +297,12 @@ class SwiftObserverTests: XCTestCase
         
         let var1 = Var(2)
         var1 *= 7
-        XCTAssertEqual(var1.number, 14)
+        XCTAssertEqual(var1.int, 14)
         
         var1 <- 2
-        XCTAssertEqual(var1.number, 2)
+        XCTAssertEqual(var1.int, 2)
         var1 *= Var(7)
-        XCTAssertEqual(var1.number, 14)
+        XCTAssertEqual(var1.int, 14)
     }
     
     func testAddition()
@@ -317,12 +317,12 @@ class SwiftObserverTests: XCTestCase
         
         let var1 = Var(2)
         var1 += 7
-        XCTAssertEqual(var1.number, 9)
+        XCTAssertEqual(var1.int, 9)
         
         var1 <- 2
-        XCTAssertEqual(var1.number, 2)
+        XCTAssertEqual(var1.int, 2)
         var1 += Var(7)
-        XCTAssertEqual(var1.number, 9)
+        XCTAssertEqual(var1.int, 9)
     }
     
     func testSubtraction()
@@ -337,12 +337,12 @@ class SwiftObserverTests: XCTestCase
         
         let var1 = Var(2)
         var1 -= 7
-        XCTAssertEqual(var1.number, -5)
+        XCTAssertEqual(var1.int, -5)
         
         var1 <- 2
-        XCTAssertEqual(var1.number, 2)
+        XCTAssertEqual(var1.int, 2)
         var1 -= Var(7)
-        XCTAssertEqual(var1.number, -5)
+        XCTAssertEqual(var1.int, -5)
     }
     
     func testWeakObservable()
