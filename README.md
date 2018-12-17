@@ -32,6 +32,8 @@
     * [Use Prebuilt Mappings](#use-prebuilt-mappings)
 * [Ad Hoc Mapping](#ad-hoc-mapping)
 * [Messengers](#messengers)
+    * [The Messenger Pattern](#the-messenger-pattern)
+    * [Using Messengers](#using-messengers)
 * [Custom Observables](#custom-observables)
     * [Declare Custom Observables](#declare-custom-observables)
     * [Send Custom Updates](#send-custom-updates)
@@ -144,7 +146,7 @@ class Dog: Observer {
 }
 ```
 
-When *Observables* die, you don't need to do anything. Their observations stop automatically.
+On the side of *observables*, you don't need to do anything. The observations that an *observable* is part of stop automatically when the *observable* dies.
 
 Forgetting some observations wouldn't waste significant memory. But you should understand, control and express the mechanics of your code to a degree that prevents systemic leaks.
 
@@ -420,7 +422,9 @@ This use of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, 
 - Every object can trigger updates, without adopting any protocol.
 - Multiple sending objects trigger the same type of updates.
 
-## Implement a Messenger
+## Using Messengers
+
+### Use a Variable as a Messenger
 
 You could use a [mapped](#mappings) `Var` as a mediating messenger:
 
@@ -441,7 +445,7 @@ textMessenger.source <- "some message" // sends the message
 let latestMessage = textMessenger.latestUpdate // or: textMessenger.source.value
 ```
 
-## Use the Messenger Class
+### Use the Messenger Class
 
 You can also use `Messenger`, which offers some advantages over a simple `Var("").new()`:
 
@@ -462,7 +466,7 @@ textMessenger.send("my text message")
 let lastMessage = textMessenger.latestUpdate // "my text message"
 ```
 
-## Receive One Specific Notification
+### Receive One Specific Notification
 
 No matter how you implement your messenger, you may use `select` to observe (subscribe to-) one specific message:
 
