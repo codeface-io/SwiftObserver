@@ -174,19 +174,23 @@ number <- 42                // number.value == 42
 
 ### Number Values
 
-If `Var.Value` conforms to [`Numeric`](https://developer.apple.com/documentation/swift/numeric), you can apply numeric operators `+`, `+=`, `-`, `-=`, `*` and `*=` to pairs of `Var` and `Value`:
+If `Value` is either `Int`, `Float` or `Double`:
+
+1. Every `Var<Value>`, `Var<Value?>`, `Var<Value>?` and `Var<Value?>?` has either `var int: Int`, `var float: Float` or `var double: Double` which is non-optional and interprets `nil` values as zero.
+
+2. You can apply numeric operators `+`, `+=`, `-`, `-=`, `*`, `*=`, `/` and `/=` to all pairs of `Value`, `Value?`, `Var<Value>`, `Var<Value?>`, `Var<Value>?` and `Var<Value?>?`.
 
 1. ```swift
-    let numVar = Var(-1)            // numVar.value == -1
-    numVar += 11                    // numVar.value == 10
-    numVar -= Var(6)                // numVar.value == 4
+    let numVar = Var<Int?>()        // numVar.value == nil
+    print(numVar.int)               // 0
+    numVar += Var(7)                // numVar.value == 7
     var number = Var(3) + Var(2)    // number == 5
     number += Var(5)                // number == 10
     ```
 
 ### String Values
 
-1. Every `Var<String>`, `Var<String?>`, `Var<String>?` and `Var<String?>?` has a non-optional `var string: String` which interprets `nil` values as `""`.
+1. Every `Var<String>`, `Var<String?>`, `Var<String>?` and `Var<String?>?` has a `var string: String` which is non-optional and interprets `nil` values as `""`.
 2. Representing its `string` property, every `Var<String>` and `Var<String?>` conforms to `BidirectionalCollection`, `Collection` and `Sequence`.
 3. You can apply concatenation operators `+` and `+=` to all pairs of `String`, `String?`, `Var<String>`, `Var<String?>`, `Var<String>?` and `Var<String?>?`.
 
