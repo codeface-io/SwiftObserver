@@ -109,15 +109,7 @@ extension Optional: StringValue where Wrapped: StringValue
 {
     public var string: String
     {
-        get
-        {
-            switch self
-            {
-            case .none: return ""
-            case .some(let stringValue): return stringValue.string
-            }
-        }
-        
+        get { return self?.string ?? "" }
         set { self?.string = newValue }
     }
 }
