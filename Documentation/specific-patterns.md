@@ -4,76 +4,9 @@ This document describes a few patterns that emerged from usage.
 
 In general, SwiftObserver meets almost all needs for callbacks and continuous propagation of data up the control hierarchy (against the direction of control). Typical applications are the propagation of data from domain model to use cases, from use cases to view models, from view models to views, and from views to view controllers.
 
-## Messenger
+## Stored Messenger
 
-### The Messenger Pattern
-
-When observer and observable need to be more decoupled, it is common to use a mediating observable through which any object can anonymously send updates. An example of this mediator is `Foundation`'s `NotificationCenter`.
-
-This extension of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, *Dispatcher*, *Event Emitter* or *Decoupler*. Its main differences to direct observation are:
-
-- An observer may indirectly observe multiple other objects.
-- Observers don't care who triggered an update.
-- Observer types don't need to depend on the types that trigger updates.
-- Updates function more as messages (notifications, events) than as artifacts of raw data.
-- Every object can trigger updates, without adopting any protocol.
-- Multiple objects may share the same update type and trigger the same updates.
-
-### A Simple Messenger Implementation
-
-You could use a mapped `Variable` as a mediating messenger:
-
-~~~swift
-let textMessenger = Var("").new()
-
-observer.observe(textMessenger) { message in
-    // respond to text message
-}
-    
-textMessenger.send("text message")
-~~~
-
-This sort of implementation doesn't duplicate messages. If you want `latestUpdate` to return the last message that was sent, for instance for combined observations, you'd have to store messages in the source `Var` instead of just sending them. The latest message is then available through `source` and `latestUpdate`:
-
-~~~swift
-textMessenger.source <- "some message" // sends the message
-let latestMessage = textMessenger.latestUpdate // or: textMessenger.source.value
-~~~
-
-### The Messenger Class
-
-You can also use `Messenger`, which offers some advantages over a simple `Var("").new()`:
-
-1. The intended use of the object is explicit
-2. All sent messages become `latestUpdate` (also guaranteeing that `send()` resends the last sent message)
-3. You have the option to deactivate update buffering via `remembersLatestMessage = false`
-4. You can reset the latest update without triggering a send. In particular, optional update types allow to erase the buffered update: `latestMessage = nil`.
-5. The message type doesn't need to be `Codable`
-
-~~~swift
-let textMessenger = Messenger("")
-
-observer.observe(textMessenger) { message in
-    // respond to message
-}
-        
-textMessenger.send("my text message")
-let lastMessage = textMessenger.latestUpdate // "my text message"
-~~~
-
-### Subscribe to One Notification
-
-No matter how you implement your messenger, you may use `select` to observe (subscribe to-) one specific message:
-
-~~~swift
-observer.observe(textMessenger).select("my notification") {
-    // respond to "my notification"
-}
-~~~
-
-## Owned Messenger
-
-An *Owned Messenger* is a helpful, and sometimes necessary, alternative to `CustomObservable`.
+A *Stored Messenger* is the bare bone pattern used by `CustomObservable`. Sometimes we have to implement it manually, without conforming to `CustomObservable`.
 
 Instead of making a class `C` directly observable through `CustomObservable`, you just give it a messenger as a property. `C` sends its updates via its messenger, and observers of `C` actually observe the messenger of `C`:
 
@@ -83,7 +16,7 @@ class C {
 }
 ~~~
 
-And why would you want that? An plain old *Owned Messenger* is necessary in three scenarios ...
+And why would you want that? An plain old *Stored Messenger* is necessary in three scenarios ...
 
 ### 1. Require Specific Observability in an Interface
 
@@ -148,7 +81,7 @@ observe(textView) { textEvent in
 // objc[89748]: Cannot form weak reference to instance (0x600000c8a5e0) of class NSTextView. It is possible that this object was over-released, or is in the process of deallocation.
 ~~~
 
-So, once again, we use an owned messenger but without direct conformance to `CustomObservable`:
+So, once again, we use a stored messenger without direct conformance to `CustomObservable`:
 
 ~~~swift
 class MyTextView: NSTextView {

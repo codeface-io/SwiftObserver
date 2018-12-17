@@ -25,17 +25,18 @@
     * [Set Variable Values](#set-variable-values)
     * [Observe Variables](#observe-variables) 
     * [Variables are Codable](#variables-are-codable)
-* [Custom Observables](#custom-observables)
-    * [Declare Custom Observables](#declare-custom-observables)
-    * [Send Custom Updates](#send-custom-updates)
-    * [The Latest Update](#the-latest-update)
-    * [Make State Observable](#make-state-observable)
 * [Mappings](#mappings)
     * [Create Mappings](#create-a-mapping)
     * [Swap Mapping Sources](#swap-mapping-sources)
     * [Chain Mappings](#chain-mappings)
     * [Use Prebuilt Mappings](#use-prebuilt-mappings)
 * [Ad Hoc Mapping](#ad-hoc-mapping)
+* [Messengers](#messengers)
+* [Custom Observables](#custom-observables)
+    * [Declare Custom Observables](#declare-custom-observables)
+    * [Send Custom Updates](#send-custom-updates)
+    * [The Latest Update](#the-latest-update)
+    * [Make State Observable](#make-state-observable)
 * [Weak Observables](#weak-observables)
 * [Specific Patterns](#specific-patterns)
 * [Why the Hell Another Reactive Library?](#why)
@@ -112,17 +113,18 @@ class Dog: Observer {
 
 For objects to be observable, they must conform to `Observable`. 
 
-You get *Observables* in three ways:
+You get *observables* in four ways:
 
 1. Create a [*Variable*](#variables). It's an `Observable` that holds a value and sends value updates.
-2. Implement a [custom `Observable`](#custom-observables) by conforming to `CustomObservable`.
-3. Create a [*Mapping*](#mappings). It's an `Observable` that transforms updates from a *Source Observable*.
+2. Create a [*Mapping*](#mappings). It's an `Observable` that transforms updates from a *source observable*.
+3. Create a [*Messenger*](#messengers). It's an `Observable` through which other objects communicate.
+4. Implement a [custom `Observable`](#custom-observables) by conforming to `CustomObservable`.
 
-You use all *Observables* the same way. There are only 3 things to note about `Observable`:
+You use all *Observables* the same way. There are only three things to note about `Observable`:
 
 - Observing an `Observable` does not have the side effect of keeping it alive. Someone must own it via a strong reference. (Note that this won't prevent us from [observing with a chain of transformations](#ad-hoc-mapping) all in a single line.)
 - The property `latestUpdate` is of the type of updates the `Observable` sends. It typically returns the last update that was sent or a value that indicates that nothing changed. It's a way for clients to request (pull) the last or "current" update, as opposed to waiting for the `Observable` to send (push) the next. ([Combined observations](#combined-observations) also pull `latestUpdate`.)
-- Generally, an `Observable` sends its updates by itself. But anyone can make it send  `latestUpdate` via `send()` or any other update via `send(_:)`.
+- Typically, an `Observable` sends its updates by itself. But anyone can make it send  `latestUpdate` via `send()` or any other update via `send(_:)`.
 
 # Memory Management
 
@@ -226,87 +228,6 @@ if let modelJSON = try? JSONEncoder().encode(model) {
 ~~~
 
 Note that `text` is a `var` instead of a `let`. It cannot be constant because the implicit decoder must mutate it. However, clients of `Model` would be supposed to set only `text.value` and not `text` itself, so the setter is private.
-
-# Custom Observables
-
-## Declare Custom Observables
-
-Implement your own `Observable` by conforming to `CustomObservable`. A custom *observable* just needs to specify its `UpdateType` and provide a `Messenger` of that type. Here's a minimal custom *observable*:
-
-~~~swift
-class Minimal: CustomObservable {
-    let messenger = Messenger<String?>()
-    typealias UpdateType = String?
-}
-~~~
-
-A typical `UpdateType` would be some `enum`:
-
-~~~swift
-class Model: CustomObservable {
-    let messenger = Messenger(Event.didInit)
-    typealias UpdateType = Event
-    
-    enum Event { case didInit, didUpdate, willDeinit }
-}
-~~~
-
-## Send Custom Updates
-
-Updates are custom and yet fully typed. An `Observable` sends whatever it likes whenever it wants via `send(_ update: UpdateType)`. This `Observable` sends optional strings:
-
-~~~swift
-class Model: CustomObservable {
-    init { send("did init") }
-    func foo() { send(nil) }
-    deinit { send("will deinit") }
-    
-    let messenger = Messenger<String?>()
-    typealias UpdateType = String?
-}
-~~~
-
-## The Latest Update
-
-A custom *observable* uses its `Messenger` to implement `Observable`. For instance, `send(_:)`  on a custom *observable* internally calls `messenger.send(_:)`. 
-
-By default, a `Messenger` remembers the last update it sent, therefore `latestUpdate` on your custom *observable* works as expected, in particular for combined observations. However, the custom *observable* is in control of that duplication and can always deactivate it:
-
-~~~swift
-class NoDuplication: CustomObservable {
-    init {
-        messenger.remembersLatestMessage = false  // self.latestUpdate stays nil
-    }
-
-    let messenger = Messenger<String?>()
-    typealias UpdateType = String?
-}
-~~~
-
-If your `UpdateType` is optional, you can also erase the buffered update at any point via `messenger.latestMessage = nil`.
-
-## Make State Observable
-
-To inform *Observers* about value changes, similar to `Var<Value>`, you would use `Update<Value>`, and you might want to customize `latestUpdate` so that it returns the current value rather than the last sent update:
-
-~~~swift
-class Model: CustomObservable {
-    var latestUpdate: Update<String?> {
-        return Update(state, state)
-    }
-       
-    var state: String? {
-        didSet {
-            if oldValue != state {
-                send(Update(oldValue, state))
-            }
-        }
-    }
-        
-    let messenger = Messenger(Update<String?>())
-    typealias UpdateType = Update<String?>
-}
-~~~
 
 # Mappings
 
@@ -484,6 +405,154 @@ dog.observe(Sky.shared).select(.blue) {  // no argument in
 }
 ```
 
+# Messengers
+
+## The Messenger Pattern
+
+When *observer* and *observable* need to be more decoupled, it is common to use a mediating *observable* through which any object can anonymously send updates. An example of this mediator is the [`NotificationCenter`](#https://developer.apple.com/documentation/foundation/notificationcenter).
+
+This use of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, *Dispatcher*, *Event Emitter* or *Decoupler*. Its main differences to direct observation are:
+
+- The actual *observable*, which is the messenger, sends no updates by itself.
+- An *observer* may indirectly observe multiple other objects through one observation.
+- *Observers* don't care who triggered an update.
+- *Observer* types don't need to depend on the types that trigger updates.
+- Every object can trigger updates, without adopting any protocol.
+- Multiple sending objects trigger the same type of updates.
+
+## Implement a Messenger
+
+You could use a [mapped](#mappings) `Var` as a mediating messenger:
+
+```swift
+let textMessenger = Var("").new()
+
+observer.observe(textMessenger) { message in
+    // respond to text message
+}
+    
+textMessenger.send("text message")
+```
+
+This sort of implementation doesn't duplicate messages. If you want `latestUpdate` to return the last message that was sent, for instance for combined observations, you'd have to store messages in the `Var` instead of just sending them. The latest message is then available through `source` and `latestUpdate`:
+
+```swift
+textMessenger.source <- "some message" // sends the message
+let latestMessage = textMessenger.latestUpdate // or: textMessenger.source.value
+```
+
+## Use the Messenger Class
+
+You can also use `Messenger`, which offers some advantages over a simple `Var("").new()`:
+
+1. The intended use of the object is explicit
+2. All sent messages become `latestUpdate` (also guaranteeing that `send()` resends the last sent message)
+3. You have the option to deactivate update buffering via `remembersLatestMessage = false`
+4. You can reset the latest update without triggering a send. In particular, optional update types allow to erase the buffered update: `latestMessage = nil`.
+5. The message type doesn't need to be `Codable`
+
+```swift
+let textMessenger = Messenger("")
+
+observer.observe(textMessenger) { message in
+    // respond to message
+}
+        
+textMessenger.send("my text message")
+let lastMessage = textMessenger.latestUpdate // "my text message"
+```
+
+## Receive One Specific Notification
+
+No matter how you implement your messenger, you may use `select` to observe (subscribe to-) one specific message:
+
+```swift
+observer.observe(textMessenger).select("my notification") {
+    // respond to "my notification"
+}
+```
+
+# Custom Observables
+
+## Declare Custom Observables
+
+Implement your own `Observable` by conforming to `CustomObservable`. A custom *observable* just needs to specify its `UpdateType` and store a `Messenger` of that type. Here's a minimal custom *observable*:
+
+~~~swift
+class Minimal: CustomObservable {
+    let messenger = Messenger<String?>()
+    typealias UpdateType = String?
+}
+~~~
+
+A typical `UpdateType` would be some `enum`:
+
+~~~swift
+class Model: CustomObservable {
+    let messenger = Messenger(Event.didInit)
+    typealias UpdateType = Event
+    
+    enum Event { case didInit, didUpdate, willDeinit }
+}
+~~~
+
+## Send Custom Updates
+
+Updates are custom and yet fully typed. An `Observable` sends whatever it likes whenever it wants via `send(_ update: UpdateType)`. This `Observable` sends optional strings:
+
+~~~swift
+class Model: CustomObservable {
+    init { send("did init") }
+    func foo() { send(nil) }
+    deinit { send("will deinit") }
+    
+    let messenger = Messenger<String?>()
+    typealias UpdateType = String?
+}
+~~~
+
+## The Latest Update
+
+A custom *observable* uses its `messenger` to implement `Observable`. For instance, `send(_:)`  on a custom *observable* internally calls `messenger.send(_:)`. 
+
+By default, a `Messenger` remembers the last update it sent, therefore `latestUpdate` on a `CustomObservable` works as expected, in particular for combined observations. However, the `CustomObservable` is in control of that duplication and can always deactivate it:
+
+~~~swift
+class NoDuplication: CustomObservable {
+    init {
+        remembersLatestUpdate = false  // latestUpdate stays nil
+    }
+
+    let messenger = Messenger<String?>()
+    typealias UpdateType = String?
+}
+~~~
+
+If your `UpdateType` is optional, you can also erase the buffered update at any point via `messenger.latestMessage = nil`.
+
+## Make State Observable
+
+To inform *Observers* about value changes, similar to `Var<Value>`, you would use `Update<Value>`, and you might want to customize `latestUpdate` so that it returns the current value rather than the last sent update:
+
+~~~swift
+class Model: CustomObservable {
+    var latestUpdate: Update<String?> {
+        return Update(state, state)
+    }
+       
+    var state: String? {
+        didSet {
+            if oldValue != state {
+                send(Update(oldValue, state))
+            }
+        }
+    }
+        
+    let messenger = Messenger(Update<String?>())
+    typealias UpdateType = Update<String?>
+}
+~~~
+
 # Weak Observables
 
 When you want to put an `Observable` into some data structure or as the *Source* into a *Mapping* and hold it there as a `weak` reference, you may want to wrap it in `Weak<O: Observable>`:
@@ -623,9 +692,9 @@ Leaving out the right kind of fancyness leaves us with the right kind of simplic
         >
         > As the author of SwiftObserver, I even have to note, that I don't use combined observation anymore at all. It never offers me a benefit over single observation in practice. To the contrary: Managing observations proves to be harder when they're coupled. 
         >
-        > My hunch is that `merge`, `zip` and `combineLatest` originate less from practical need and more from a desire to gerneralize and to max out the metaphor of "**data** streams". The underlying conceptual mis-alignment here might be, that updates in an observer-observable relationship are **supposed** to function as **messages** or events rather than as **data**.
+        > My hunch is that `merge`, `zip` and `combineLatest` originate less from practical need and more from a desire to gerneralize and to max out the metaphor of "**data** streams". The underlying conceptual mis-alignment here would be, that updates in an observer-observable relationship are **supposed** to function as **messages** or events rather than as **data**. And here is why:
         >
-        > And here is why: All that is required for dependency inversion is that the observer gets informed about changes that he might need to react to. The observer then decides whether to act at all, how to act and what data it requires, and it pulls exactly that data from wherever it needs to, including from observables. It is not the job of the observable to presume what data any observer might need. It's not supposed to depend on the observer's concerns, which is the whole reason why we invert that dependency through the observer pattern. The observable's job is just to tell what happened. So, updates naturally function as messages rather than as data streams, and combining messages wouldn't be as meaningful or helpful.
+        > All that is required for dependency inversion is that the *observer* gets informed about changes that it might need to react to. The *observer* then decides whether to act at all, how to act and what data it requires, and it pulls exactly that data from wherever it needs to, including from *observables*. It is not the job of the *observable* to presume what data any observer might need. It's not supposed to depend on the *observer's* concerns, which is the whole reason why we invert that dependency through the *observer pattern*. The *observable's* job is just to tell what happened. So, updates naturally function as messages rather than as data streams, and combining messages wouldn't be as meaningful or helpful.
 
 - Create an observable plus a chain of mappings in one line
 
