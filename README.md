@@ -14,7 +14,7 @@
 
 [*Reactive Programming*](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [*Dependency Inversion*](https://en.wikipedia.org/wiki/Dependency_inversion_principle). *SwiftObserver* breaks *Reactive Programming* down to its essence, which is the [*Observer Pattern*](https://en.wikipedia.org/wiki/Observer_pattern).
 
-*SwiftObserver* is just about 1100 lines of production code, but it's also hundreds of hours of work, thinking it through, letting features go for the sake of simplicity, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift), and battle-testing it [in practice](http://flowlistapp.com).
+*SwiftObserver* is just about 1100 lines of production code, but it also approaches a 1000 hours of work, thinking it through, letting go of fancy features, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift), and battle-testing it [in practice](http://flowlistapp.com).
 
 * [Install](#install)
 * [Get Started](#get-started)
@@ -411,16 +411,16 @@ dog.observe(Sky.shared).select(.blue) {  // no argument in
 
 ## The Messenger Pattern
 
-When *observer* and *observable* need to be more decoupled, it is common to use a mediating *observable* through which any object can anonymously send updates. An example of this mediator is the [`NotificationCenter`](https://developer.apple.com/documentation/foundation/notificationcenter).
+When *observer* and *observable* need to be more decoupled, it is common to use a mediating *observable* through which any object can anonymously send updates. An example of this mediator is [`NotificationCenter`](https://developer.apple.com/documentation/foundation/notificationcenter).
 
 This use of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, *Dispatcher*, *Event Emitter* or *Decoupler*. Its main differences to direct observation are:
 
 - The actual *observable*, which is the messenger, sends no updates by itself.
+- Every object can trigger updates, without adopting any protocol.
+- Multiple sending objects trigger the same type of updates.
 - An *observer* may indirectly observe multiple other objects through one observation.
 - *Observers* don't care who triggered an update.
 - *Observer* types don't need to depend on the types that trigger updates.
-- Every object can trigger updates, without adopting any protocol.
-- Multiple sending objects trigger the same type of updates.
 
 ## Using Messengers
 
@@ -727,7 +727,7 @@ Leaving out the right kind of fancyness leaves us with the right kind of simplic
 - Remove observer from all observables with 1 function call
 - No irreversible memory leaks, since orphaned observations can always be flushed out via `removeAbandonedObservations()`.
 
-## What you might not like:
+## What You Might Not Like
 
 - Not conform to Rx (the semi standard of reactive programming)
 - SwiftObserver is focused on the foundation of reactive programming. UI bindings are available as [UIObserver](https://github.com/flowtoolz/UIObserver), but that framework is still in its infancy. You're welcome to make PRs.
