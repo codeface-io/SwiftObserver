@@ -1,38 +1,20 @@
 // MARK: - Concatenating
 
-infix operator +: AdditionPrecedence
-
-public func + (strVar: Var<String>?, str: String?) -> String
-{
-    return (strVar?.string ?? "") + (str ?? "")
-}
-
-public func + (str: String?, strVar: Var<String>?) -> String
-{
-    return (str ?? "") + (strVar?.string ?? "")
-}
-
-public func + (strVar1: Var<String>?, strVar2: Var<String>?) -> String
-{
-    return (strVar1?.string ?? "") + (strVar2?.string ?? "")
-}
-
 infix operator +=: AssignmentPrecedence
 
-public func += (strVar: Var<String>?, str: String?)
+public func +=<S1: StringValue, S2: StringValue>(str1: inout S1, str2: S2)
 {
-    strVar?.string += (str ?? "")
+    str1.string = str1.string + str2.string
 }
 
-public func += (str: inout String, strVar: Var<String>?)
+infix operator +: AdditionPrecedence
+
+public func +<S1: StringValue, S2: StringValue>(str1: S1, str2: S2) -> String
 {
-    str += (strVar?.string ?? "")
+    return str1.string + str2.string
 }
 
-public func += (strVar1: Var<String>?, strVar2: Var<String>?)
-{
-    strVar1?.string += (strVar2?.string ?? "")
-}
+// MARK: - Protocol Conformances
 
 extension Var: CustomStringConvertible
     where Value: CustomStringConvertible
@@ -52,14 +34,12 @@ extension Var: CustomDebugStringConvertible
     }
 }
 
-// MARK: - Protocol Conformances
-
-extension Var:
+extension Var: StringValue,
     TextOutputStream,
     Sequence,
     Collection,
     BidirectionalCollection
-    where Value == String
+    where Value: StringValue
 {
     // BidirectionalCollection
     
@@ -113,14 +93,45 @@ extension Var:
     
     public func write(_ str: String)
     {
-        value.write(str)
+        string.write(str)
     }
     
-    // Non-Optional String
+    // StringValue
     
-    var string: String
+    public var string: String
     {
-        get { return value }
-        set { value = newValue }
+        get { return value.string }
+        set { value.string = newValue }
     }
+}
+
+extension Optional: StringValue where Wrapped: StringValue
+{
+    public var string: String
+    {
+        get
+        {
+            switch self
+            {
+            case .none: return ""
+            case .some(let stringValue): return stringValue.string
+            }
+        }
+        
+        set { self?.string = newValue }
+    }
+}
+
+extension String: StringValue
+{
+    public var string: String
+    {
+        get { return self }
+        set { self = newValue }
+    }
+}
+
+public protocol StringValue
+{
+    var string: String { get set }
 }
