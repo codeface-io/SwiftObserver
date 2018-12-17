@@ -1,5 +1,15 @@
 public extension CustomObservable
 {
+    // MARK: - Convenience
+    
+    public var remembersLatestUpdate: Bool
+    {
+        get { return messenger.remembersLatestMessage }
+        set { messenger.remembersLatestMessage = newValue }
+    }
+    
+    // MARK: - Observable
+    
     public var latestUpdate: UpdateType
     {
         return messenger.latestUpdate
