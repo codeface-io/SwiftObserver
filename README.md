@@ -186,10 +186,9 @@ If `Var.Value` conforms to [`Numeric`](https://developer.apple.com/documentation
 
 ### String Values
 
-If `Var.Value` is `String`:
-
-1. Representing its `String` value, the `Var` conforms to `BidirectionalCollection`, `Collection` and `Sequence`.
-2. You can apply concatenation operators `+` and `+=` to pairs of `Var` and `String`. 
+1. Every `Var<String>`, `Var<String?>`, `Var<String>?` and `Var<String?>?` has a non-optional `var string: String` which interprets `nil` values as `""`.
+2. Representing its `string` property, every `Var<String>` and `Var<String?>` conforms to `BidirectionalCollection`, `Collection` and `Sequence`.
+3. You can apply concatenation operators `+` and `+=` to all pairs of `String`, `String?`, `Var<String>`, `Var<String?>`, `Var<String>?` and `Var<String?>?`.
 
 ## Observe Variables
 
