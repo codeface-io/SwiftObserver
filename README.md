@@ -47,9 +47,9 @@ SwiftObserver is just about 1300 lines of production code, but it also approache
 
 SwiftObserver diverges from convention. It follows the reactive idea in generalizing the *Observer Pattern*. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something different, something we **love** to work with.
 
-Leaving out the right kind of fancyness leaves us with the right kind of simplicity, a simplicity which is powerful.
+Leaving out the right kind of fancyness leaves us with the right kind of simplicity, a simplicity which is powerful. 
 
-More on the philosophy of SwiftObserver [is documented over here](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#the-philosophy-of-swiftobserver)
+Read more about the [philosophy and features of SwiftObserver](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#the-philosophy-of-swiftobserver).
 
 # Get Started
 
@@ -154,7 +154,7 @@ class Dog: Observer {
 }
 ```
 
-The observations in which an *observable* is involved stop automatically when the *observable* dies, so it doesn't need to do anything in `deinit`. But it can always stop all its observations via `stopObservations()`.
+The observations in which an *observable* is involved stop automatically when the *observable* dies, so it doesn't need to do anything in `deinit`. But it can always stop all its observations via `observable.stopObservations()`.
 
 Forgetting some observations wouldn't waste significant memory. But you should understand, control and express the mechanics of your code to a degree that prevents systemic leaks.
 

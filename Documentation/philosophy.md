@@ -1,16 +1,27 @@
-# The Philosophy of SwiftObserver
+# Philosophy and Features
 
 This is the opinionated side of SwiftObserver. I invite you put it on like a shoe. See if it fits, take it for what it's worth and evolve it via PR or email: <contact@flowtoolz.com>.
 
+* [What You Might Like](#what-you-might-like)
+  * [Meaningful Code](#meaningful-code)
+  * [Non-intrusive Design](#non-intrusive-design)
+  * [Simplicity and Flexibility](#simplicity-and-flexibility)
+  * [Safety](#safety)
+* [Combined Observation is Overrated](#combined-observation-is-overrated)
+* [What You Might Not Like](#what-you-might-not-like)
+
+# What You Might Like
+
 ## Meaningful Code
 
-- Readable code down to the internals
+* Readable code down to the internals
 
   > We comb internal code with as much regularity and care as if it was public API, so you can peek under the hood to understand SwiftObserver perfectly.
 
-- Meaningful expressive metaphors
+* Meaningful expressive metaphors
 
-  > No arbitrary, contrived or technical metaphors like "disposable", "dispose bag", "signal", "emitter", "stream" or "sequence"
+  * No arbitrary, contrived or technical metaphors like "disposable", "dispose bag", "signal", "emitter", "stream" or "sequence"
+
 
   > A note on "signals": In the tradition of Elm and the origins of reactive programming,  many reactive libraries use "signal" as a metaphor, but how they apply the term is more confusing than helpful, in particular when they suggest that the "signal" is what's being observed.
   >
@@ -18,7 +29,7 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 
 - Meaningful (semantically consistent) metaphor combinations
 
-  > Meaning: no combination of incompatible metaphors that stem from completely different domains
+  > That is: no combination of incompatible metaphors that stem from completely different domains
 
   > A common and nonsensical mixture is "subscribing" to a "signal". Even Elm, which had signals and still has subscriptions, never mixed the two.
   >
@@ -30,11 +41,11 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 
 - Meaningful code at the point of use (no technical boilerplate)
 
-  - For example:
-    - No mediating property on *observables* for starting observations or creating mappings
-    - No "tokens" and the like to pass around or store
-    - No memory management boilerplate code at the point of observation
-    - No tuple destructuring in combined observations
+  - For example ...
+  - No mediating property on *observables* for starting observations or creating mappings
+  - No "tokens" and the like to pass around or store
+  - No memory management boilerplate code at the point of observation
+  - No tuple destructuring in combined observations
 
 - Meaningful syntax
 
@@ -46,13 +57,13 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
     subject.actUpon(object)
     ```
 
-		> Note: Many definitions of the *Observer Pattern*, including [Wikipedia](https://en.wikipedia.org/wiki/Observer_pattern), have the subject / object roles reversed, which we consider not merely a misnomer but, above all, a secondary level of analysis.
-		>
-		> They look at observation from a technical rather than a conceptual point of view, focusing on *how* the problem is being *solved* rather than *what* the solution *means*.
-		>
-		> The illusion the *Observer Pattern* is supposed to create is that an *observer* observes an *observable*. Linguistically, that is: subject, predicate, object. The subject actively acts on the object, while the object is passively being acted upon.
-		>
-		> Of course, to achieve this under the hood, *observables* must actively trigger some data propagation. But we should look at the solution more pragmatically in terms of the real-world meaning that we set out to model in the first place.
+  > Note: Many definitions of the *Observer Pattern*, including [Wikipedia](https://en.wikipedia.org/wiki/Observer_pattern), have the subject / object roles reversed, which we consider not merely a misnomer but, above all, a secondary level of analysis.
+  >
+  > They look at observation from a technical rather than a conceptual point of view, focusing on *how* the problem is being *solved* rather than *what* the solution *means*.
+  >
+  > The illusion the *Observer Pattern* is supposed to create is that an *observer* observes an *observable*. Linguistically, that is: subject, predicate, object. The subject actively acts on the object, while the object is passively being acted upon.
+  >
+  > Of course, to achieve this under the hood, *observables* must actively trigger some data propagation. But we should look at the solution more pragmatically in terms of the real-world meaning that we set out to model in the first place.
 
 ## Non-intrusive Design
 
@@ -62,12 +73,13 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 
   - You're in control of the ancestral tree of your classes.
   - All classes can easily be observed, even views and view controllers.
+  - You can keep model and logic code independent of any observer frameworks and techniques.
 
-  > You can keep model and logic code independent of any observer frameworks and techniques. If the model layer had to be stuffed with heavyweight constructs just to be observed, it would become a technical issue rather than an easy to change,  meaningful, direct representation of domain-, business- and view logic.
+  > If the model layer had to be stuffed with heavyweight constructs just to be observed, it would become a technical issue rather than an easy to change,  meaningful, direct representation of domain-, business- and view logic.
 
 - No restrictions on how you organize, store or persist the state of your your app
 
-  > You can freely model your domain-, business- and view logic with all your familiar design patterns and types.
+  * You can freely model your domain-, business- and view logic with all your familiar design patterns and types.
 
 - No optional optionals
 
@@ -75,7 +87,10 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
   - You can make your message types optional. SwiftObserver will never spit them back at you wrapped in additional optionals, not even in combined observations.
   - You can easily unwrap optional messages via the mapping `unwrap`.
 
-- No under the hood side effects in terms of ownership and life cycles. You stay in control of when objects die an who owns whom. Your code stays explicit.
+- No under the hood side effects in terms of ownership and life cycles
+
+  * You stay in control of when objects die and of who owns whom.
+  * Your code stays explicit.
 
 - Minimal duplication
 
@@ -162,7 +177,7 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 - Remove **all** abandoned observations of an *observable* with **one** call: `observable.stopAbandonedObservations()`
 - Real memory leaks are impossible, since you can always flush out **all** orphaned observations of **all** *observables* with **one** call: `stopAllAbandonedObservations()`.
 
-## Combined Observation is Overrated
+# Combined Observation is Overrated
 
 At one point, I was convinced combined observations are an essential part of reactive programming. Practical application updated my mind.
 
@@ -178,7 +193,7 @@ All that is required for dependency inversion is that the *observer* gets inform
 
 So, in a clean decoupled design that adheres to the idea of the *ObserverPattern*, *observables* naturally send **messages** rather than **data**, and combining *messages* wouldn't be as meaningful or helpful.
 
-## What You Might Not Like
+# What You Might Not Like
 
 - Not conform to Rx (the semi standard of reactive programming)
 - SwiftObserver is focused on the foundation of reactive programming. UI bindings are available as [UIObserver](https://github.com/flowtoolz/UIObserver), but that framework is still in its infancy. You're welcome to make PRs.
