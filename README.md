@@ -36,8 +36,8 @@
     * [Using Messengers](#using-messengers)
 * [Custom Observables](#custom-observables)
     * [Declare Custom Observables](#declare-custom-observables)
-    * [Send Custom Updates](#send-custom-updates)
-    * [The Latest Update](#the-latest-update)
+    * [Send Custom Messages](#send-custom-messages)
+    * [The Latest Message](#the-latest-message)
     * [Make State Observable](#make-state-observable)
 * [Weak Observables](#weak-observables)
 * [Specific Patterns](#specific-patterns)
@@ -71,7 +71,7 @@ import SwiftObserver
 
 > No need to learn a bunch of arbitrary metaphors, terms or types.<br>*SwiftObserver* is simple: **Objects observe other objects**.
 
-Or a tad more technically: Observed objects send updates to their *Observers*. 
+Or a tad more technically: Observed objects send *messages* to their *observers*. 
 
 That's it. Just readable code:
 
@@ -99,7 +99,7 @@ dog.observe(tv, bowl, doorbell) { image, food, sound in
 }
 ~~~
 
-To process updates from an *Observable*, the *Observer* must be alive. There's no awareness after death in memory:
+To process messages from an *Observable*, the *Observer* must be alive. There's no awareness after death in memory:
 
 ```swift
 class Dog: Observer {
@@ -117,16 +117,16 @@ For objects to be observable, they must conform to `Observable`.
 
 You get *observables* in four ways:
 
-1. Create a [*Variable*](#variables). It's an `Observable` that holds a value and sends value updates.
-2. Create a [*Mapping*](#mappings). It's an `Observable` that transforms updates from a *source observable*.
+1. Create a [*Variable*](#variables). It's an `Observable` that holds a value and sends value changes.
+2. Create a [*Mapping*](#mappings). It's an `Observable` that transforms messages from a *source observable*.
 3. Create a [*Messenger*](#messengers). It's an `Observable` through which other objects communicate.
 4. Implement a [custom `Observable`](#custom-observables) by conforming to `CustomObservable`.
 
 You use all *Observables* the same way. There are only three things to note about `Observable`:
 
 - Observing an `Observable` does not have the side effect of keeping it alive. Someone must own it via a strong reference. (Note that this won't prevent us from [observing with a chain of transformations](#ad-hoc-mapping) all in a single line.)
-- The property `latestUpdate` is of the type of updates the `Observable` sends. It typically returns the last update that was sent or a value that indicates that nothing changed. It's a way for clients to request (pull) the last or "current" update, as opposed to waiting for the `Observable` to send (push) the next. ([Combined observations](#combined-observations) also pull `latestUpdate`.)
-- Typically, an `Observable` sends its updates by itself. But anyone can make it send  `latestUpdate` via `send()` or any other update via `send(_:)`.
+- The property `latestMessage` is of the type of messages the `Observable` sends. It typically returns the last message that was sent or a value that indicates that nothing changed. It's a way for clients to request (pull) the last or "current" message, as opposed to waiting for the `Observable` to send (push) the next. ([Combined observations](#combined-observations) also pull `latestMessage`.)
+- Typically, an `Observable` sends its messages by itself. But anyone can make it send  `latestMessage` via `send()` or any other message via `send(_:)`.
 
 # Memory Management
 
@@ -168,8 +168,8 @@ You can set `value` directly, via initializer and via the `<-` operator:
 ~~~swift
 let text = Var<String?>()    // text.value == nil
 text.value = "a text"
-let number = Var(23)        // number.value == 23
-number <- 42                // number.value == 42
+let number = Var(23)         // number.value == 23
+number <- 42                 // number.value == 42
 ~~~
 
 ### Number Values
@@ -196,17 +196,17 @@ If `Value` is either `Int`, `Float` or `Double`:
 
 ## Observe Variables
 
-A `Var<Value>` sends updates of type `Update<Value>`, providing the old and new value:
+A `Var<Value>` sends messages of type `Change<Value>`, providing the old and new value:
 
 ~~~swift
-observer.observe(variable) { update in
-    if update.old == update.new {
-        // update was manually triggered, no value change
+observer.observe(variable) { change in
+    if change.old == change.new {
+        // message was manually sent, no value change
     }
 }
 ~~~
 
-A `Var` sends an update whenever its `value` actually changes. Just starting to observe it does **not** trigger an update. This keeps it simple, predictable and consistent, in particular in combination with [*Mappings*](#mappings). You can always call `send()` on a `Var<Value>`, sending an `Update<Value>` in which `old` and `new` are both the current `value`.
+A `Var` sends a change message whenever its `value` actually changes. Just starting to observe it does **not** trigger a message. This keeps it simple, predictable and consistent, in particular in combination with [*Mappings*](#mappings). You can always call `send()` on a `Var<Value>`, sending an `Change<Value>` in which `old` and `new` are both the current `value`.
 
 Internally, a `Var` appends new values to a queue, so all its *Observers* get to process a value change before the next change takes effect. This is for situations when the `Var` has multiple *Observers* and at least one *Observer* changes the `value` in response to a `value` change.
 
@@ -238,12 +238,12 @@ Note that `text` is a `var` instead of a `let`. It cannot be constant because th
 
 ## Create Mappings
 
-Create a new `Observable` that maps (transforms) the updates of a given *Source Observable*:
+Create a new `Observable` that maps (transforms) the messages of a given *Source Observable*:
 
 ~~~swift
 let text = Var<String?>()
 let textLength = text.map { $0.new?.count ?? 0 }  // textLength.source === text
-// ^^ an Observable that sends Int updates
+// ^^ an Observable that sends Int messages
 ~~~
 
 You can access the *Source* of a *Mapping* via the `source` property. A *Mapping* holds the `source` strongly, just like arrays and other data structures would hold an `Observable`. You could rewrite the above example like so:
@@ -255,11 +255,11 @@ let textLength = Var<String?>().map { $0.new?.count ?? 0 }
 
 When you want to hold an `Observable` weakly, as the *Source* of a *Mapping* or in some data structure, wrap it in [`Weak`](#weak-observables).
 
-As [mentioned earlier](#observables), you use a *Mapping* like any other `Observable`: You hold a strong reference to it somewhere, you stop observing it (not its *Source*) at some point, and you can call `latestUpdate`, `send(_:)` and `send()` on it.
+As [mentioned earlier](#observables), you use a *Mapping* like any other `Observable`: You hold a strong reference to it somewhere, you stop observing it (not its *Source*) at some point, and you can call `latestMessage`, `send(_:)` and `send()` on it.
 
 ## Swap Mapping Sources
 
-You can even reset the `source`, causing the *Mapping* to send an update (with respect to its [*Filter*](#filter)). Although the `source` is replaceable, it's of a specific type that you determine by creating the *Mapping*.
+You can even reset the `source`, causing the *Mapping* to send a message (with respect to its [*Filter*](#filter)). Although the `source` is replaceable, it's of a specific type that you determine by creating the *Mapping*.
 
 So, you may create a *Mapping* without knowing what `source` objects it will have over its lifetime. Just use an ad-hoc dummy *Source* to create the *Mapping* and, later, reset `source` as often as you like:
 
@@ -280,13 +280,13 @@ You may chain *Mappings* together:
 
 ```swift
 let mapping = Var<Int?>().map {   // mapping.source is a Var<Int?>
-    $0.new ?? 0                   // Update<Int?> -> Int
+    $0.new ?? 0                   // Change<Int?> -> Int
 }.filter {
     $0 > 9                        // only forward integers > 9
 }.map {
     "\($0)"                       // Int -> String
 }
-// ^^ mapping sends updates of type String
+// ^^ mapping sends messages of type String
 ```
 
 **When you chain *Mappings* together, you actually compose them into one single *Mapping***. So the `source` of a *Mapping* is never another *Mapping*. It always refers to the original *Source* `Observable`. In the above example, the `source` of the created *Mapping* is a `Var<Int?>`.
@@ -295,49 +295,49 @@ let mapping = Var<Int?>().map {   // mapping.source is a Var<Int?>
 
 ### New
 
-When an `Observable` sends updates of type `Update<SomeType>`, you often only care about  the `new` value in that update. If so, use `new()`:
+When an `Observable` sends messages of type `Change<Value>`, you often only care about  the `new` value of that change. If so, use `new()`:
 
 ~~~swift
 let text = Var<String?>().new()
-// ^^ sends updates of type String?
+// ^^ sends messages of type String?
 ~~~
 
 ### Unwrap
 
-Sometimes, we make updates type optional, inparticular when they have no meaningful initial value. But we often don't want to deal with optionals down the line. You can apply the *Mapping* `unwrap(_:)` to **any** `Observable` that sends optional updates. It unwraps the optionals using a default value:
+Sometimes, we make message types optional, in particular when they have no meaningful initial value. But we often don't want to deal with optionals down the line. You can apply the *Mapping* `unwrap(_:)` to **any** `Observable` that sends optional messages. It unwraps the optionals using a default value:
 
 ~~~swift
 let title = Var<String?>().new().unwrap("untitled")
-// ^^ sends updates of type String, replacing nil with "untitled"
+// ^^ sends messages of type String, replacing nil with "untitled"
 ~~~
 
 If you want `unwrap(_:)` to never actually send the default, just filter out `nil` values before:
 
 ~~~swift
 let title = Var<String?>().new().filter{ $0 != nil }.unwrap("")
-// ^^ sends updates of type String, not sending at all for nil values
+// ^^ sends messages of type String, not sending at all for nil values
 ~~~
 
 ### Filter
 
-When you just want to filter- and not actually transform updates, use `filter`:
+When you just want to filter- and not actually transform messages, use `filter`:
 
 ```swift
 let shortText = Var("").new().filter { $0.count < 5 }
-// ^^ sends updates of type String, suppressing long strings
+// ^^ sends messages of type String, suppressing long strings
 ```
 
-A *Mapping* that has a *Filter* maps and sends only those *Source* updates that pass the *Filter*. Of course, the *Filter* cannot apply when you actively request the *Mapping's* `latestUpdate`.
+A *Mapping* that has a *Filter* maps and sends only those *Source* messages that pass the *Filter*. Of course, the *Filter* cannot apply when you actively request the *Mapping's* `latestMessage`.
 
-You could use a *Mapping's* `filter` property to see which *Source* updates get through:
+You could use a *Mapping's* `filter` property to see which *Source* messages get through:
 
 ```swift
-shortText.filter?(Update(nil, "this is too long")) ?? true // false
+shortText.filter?(Change(nil, "this is too long")) ?? true // false
 ```
 
 ### Select
 
-Use the `select` filter to receive only one specific update. `select` is available on all *Observables* that send `Equatable` updates. When observing a *Mapping* produced by `select`, the closure takes no arguments:
+Use the `select` filter to receive only one specific message. `select` is available on all *Observables* that send `Equatable` messages. When observing a *Mapping* produced by `select`, the closure takes no arguments:
 
 ```swift
 let notifier = Var("").new().select("my notification")
@@ -381,7 +381,7 @@ observer.observe(number).new().map {
     Int.init($0)    // String -> Int?
 }.filter {
     $0 != nil       // filter out nil values
-}.unwrap(-1) {      // Int? -> Int, and pass final update receiver
+}.unwrap(-1) {      // Int? -> Int, and pass final message receiver
     print($0)       // process Int
 }
 ```
@@ -389,20 +389,20 @@ observer.observe(number).new().map {
 Consequently, each transform function comes in 2 variants:
 
 1. The chaining variant returns a result on which you call the next transform function.
-2. The terminating variant takes your actual update receiver in an additional closure argument.
+2. The terminating variant takes your actual message receiver in an additional closure argument.
 
 
 When the chain is supposed to end on `map` or `filter`, let `receive` terminate it to stick with [trailing closures](https://docs.swift.org/swift-book/LanguageGuide/Closures.html#ID102):
 
 ~~~swift
 observer.observe(number).map {
-    $0.new                        // Update<Int> -> Int
+    $0.new                        // Change<Int> -> Int
 }.receive {
     print($0)                     // process Int
 }
 ~~~
 
-Remember that a `select` closure takes no arguments because it runs only for the selected update:
+Remember that a `select` closure takes no arguments because it runs only for the selected message:
 
 ```swift
 dog.observe(Sky.shared).select(.blue) {  // no argument in
@@ -414,16 +414,16 @@ dog.observe(Sky.shared).select(.blue) {  // no argument in
 
 ## The Messenger Pattern
 
-When *observer* and *observable* need to be more decoupled, it is common to use a mediating *observable* through which any object can anonymously send updates. An example of this mediator is [`NotificationCenter`](https://developer.apple.com/documentation/foundation/notificationcenter).
+When *observer* and *observable* need to be more decoupled, it is common to use a mediating *observable* through which any object can anonymously send messages. An example of this mediator is [`NotificationCenter`](https://developer.apple.com/documentation/foundation/notificationcenter).
 
 This use of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, *Dispatcher*, *Event Emitter* or *Decoupler*. Its main differences to direct observation are:
 
-- The actual *observable*, which is the messenger, sends no updates by itself.
-- Every object can trigger updates, without adopting any protocol.
-- Multiple sending objects trigger the same type of updates.
+- The actual *observable*, which is the messenger, sends no messages by itself.
+- Every object can trigger messages, without adopting any protocol.
+- Multiple sending objects trigger the same type of messages.
 - An *observer* may indirectly observe multiple other objects through one observation.
-- *Observers* don't care who triggered an update.
-- *Observer* types don't need to depend on the types that trigger updates.
+- *Observers* don't care who triggered a message.
+- *Observer* types don't need to depend on the types that trigger messages.
 
 ## Using Messengers
 
@@ -441,11 +441,11 @@ observer.observe(textMessenger) { message in
 textMessenger.send("text message")
 ```
 
-This sort of implementation doesn't duplicate messages. If you want `latestUpdate` to return the last message that was sent, for instance for combined observations, you'd have to store messages in the `Var` instead of just sending them. The latest message is then available through `source` and `latestUpdate`:
+This sort of implementation doesn't duplicate messages. If you want `latestMessage` to return the last message that was sent, for instance for combined observations, you'd have to store messages in the `Var` instead of just sending them. The latest message is then available through `source` and `latestMessage`:
 
 ```swift
 textMessenger.source <- "some message" // sends the message
-let latestMessage = textMessenger.latestUpdate // or: textMessenger.source.value
+let latestMessage = textMessenger.latestMessage // or: textMessenger.source.value
 ```
 
 ### Use the Messenger Class
@@ -453,9 +453,9 @@ let latestMessage = textMessenger.latestUpdate // or: textMessenger.source.value
 You can also use `Messenger`, which offers some advantages over a simple `Var("").new()`:
 
 1. The intended use of the object is explicit
-2. All sent messages become `latestUpdate` (also guaranteeing that `send()` resends the last sent message)
-3. You have the option to deactivate update buffering via `remembersLatestMessage = false`
-4. You can reset the latest update without triggering a send. In particular, optional update types allow to erase the buffered update: `latestMessage = nil`.
+2. All sent messages become `latestMessage` (also guaranteeing that `send()` resends the last sent message)
+3. You have the option to deactivate message buffering via `remembersLatestMessage = false`
+4. You can reset the latest message without triggering a send. In particular, optional message types allow to erase the buffered message via `latestMessage = nil`.
 5. The message type doesn't need to be `Codable`
 
 ```swift
@@ -466,7 +466,7 @@ observer.observe(textMessenger) { message in
 }
         
 textMessenger.send("my text message")
-let lastMessage = textMessenger.latestUpdate // "my text message"
+let lastMessage = textMessenger.latestMessage // "my text message"
 ```
 
 ### Receive One Specific Notification
@@ -483,29 +483,29 @@ observer.observe(textMessenger).select("my notification") {
 
 ## Declare Custom Observables
 
-Implement your own `Observable` by conforming to `CustomObservable`. A custom *observable* just needs to specify its `UpdateType` and store a `Messenger` of that type. Here's a minimal custom *observable*:
+Implement your own `Observable` by conforming to `CustomObservable`. A custom *observable* just needs to specify its `Message` and store a `Messenger<Message>`. Here's a minimal custom *observable*:
 
 ~~~swift
 class Minimal: CustomObservable {
     let messenger = Messenger<String?>()
-    typealias UpdateType = String?
+    typealias Message = String?
 }
 ~~~
 
-A typical `UpdateType` would be some `enum`:
+A typical `Message` would be some `enum`:
 
 ~~~swift
 class Model: CustomObservable {
     let messenger = Messenger(Event.didInit)
-    typealias UpdateType = Event
+    typealias Message = Event
     
     enum Event { case didInit, didUpdate, willDeinit }
 }
 ~~~
 
-## Send Custom Updates
+## Send Custom Messages
 
-Updates are custom and yet fully typed. An `Observable` sends whatever it likes whenever it wants via `send(_ update: UpdateType)`. This `Observable` sends optional strings:
+Messages are custom and yet fully typed. An `Observable` sends whatever it likes whenever it wants via `send(_ message: Message)`. This `Observable` sends optional strings:
 
 ~~~swift
 class Model: CustomObservable {
@@ -514,51 +514,52 @@ class Model: CustomObservable {
     deinit { send("will deinit") }
     
     let messenger = Messenger<String?>()
-    typealias UpdateType = String?
+    typealias Message = String?
 }
 ~~~
 
-## The Latest Update
+## The Latest Message
 
 A custom *observable* uses its `messenger` to implement `Observable`. For instance, `send(_:)`  on a custom *observable* internally calls `messenger.send(_:)`. 
 
-By default, a `Messenger` remembers the last update it sent, therefore `latestUpdate` on a `CustomObservable` works as expected, in particular for combined observations. However, the `CustomObservable` is in control of that duplication and can always deactivate it:
+By default, a `Messenger` remembers the last message it sent, therefore `latestMessage` on a `CustomObservable` works as expected, in particular for combined observations. However, the `CustomObservable` is in control of that duplication and can always deactivate it:
 
 ~~~swift
 class NoDuplication: CustomObservable {
     init {
-        remembersLatestUpdate = false  // latestUpdate stays nil
+        remembersLatestMessage = false  // latestMessage stays nil
     }
 
     let messenger = Messenger<String?>()
-    typealias UpdateType = String?
+    typealias Message = String?
 }
 ~~~
 
-If your `UpdateType` is optional, you can also erase the buffered update at any point via `messenger.latestMessage = nil`.
+If your `Message` is optional, you can also erase the buffered message at any point via `messenger.latestMessage = nil`.
 
 ## Make State Observable
 
-To inform *Observers* about value changes, similar to `Var<Value>`, you would use `Update<Value>`, and you might want to customize `latestUpdate` so that it returns the current value rather than the last sent update:
+To inform *Observers* about value changes, similar to `Var<Value>`, you would use `Change<Value>`, and you might want to customize `latestMessage` so it returns the latest value rather than the last sent message:
 
 ~~~swift
 class Model: CustomObservable {
-    var latestUpdate: Update<String?> {
-        return Update(state, state)
+    var latestMessage: Change<String?> {
+        return Change(state, state)
     }
        
     var state: String? {
         didSet {
             if oldValue != state {
-                send(Update(oldValue, state))
+                send(Change(oldValue, state))
             }
         }
     }
         
-    let messenger = Messenger(Update<String?>())
-    typealias UpdateType = Update<String?>
+    let messenger = Messenger(Change<String?>())
 }
 ~~~
+
+Note that Swift can (as of now) not infer the `associatedtype` `Message` from a generic property like `messenger`, but it can infer `Message` from `latestMessage`. So the above example doesn't need this: `typealias Message = Change<String?>`.
 
 # Weak Observables
 
@@ -568,8 +569,8 @@ When you want to put an `Observable` into some data structure or as the *Source*
 let number = Var(12)
 let weakNumber = Weak(number)
 
-controller.observe(weakNumber) { update in
-    // process update of type Update<Int>
+controller.observe(weakNumber) { message in
+    // process message of type Change<Int>
 }
 
 var weakNumbers = [Weak<Var<Int>>]()
@@ -583,7 +584,7 @@ let numberIsAlive = weakNumber.observable != nil
 let numberValue = weakNumber.observable?.value
 ~~~
 
-Since the wrapped `observable` might die, `Weak` has to buffer, and therefore **duplicate**, the value of `latestUpdate`. This is a necessary price for holding an `Observable` weakly while using it all the same.
+Since the wrapped `observable` might die, `Weak` has to buffer, and therefore **duplicate**, the value of `latestMessage`. This is a necessary price for holding an `Observable` weakly while using it all the same.
 
 # Specific Patterns
 
@@ -621,7 +622,7 @@ Leaving out the right kind of fancyness leaves us with the right kind of simplic
         - (comparison to RxSwift would be illuminating here ...)
     - No "tokens" and the like to pass around or store
     - No memory management boilerplate code at the point of observation
-    - Combined observations send one update per *observable*. No tuple destructuring necessary.
+    - Combined observations send one message per *observable*. No tuple destructuring necessary.
 
 - The syntax reflects the intent and metaphor of the *Observer Pattern*: Observers are active subjects while observables are passive objects which are unconcerned about being observed:
 
@@ -654,16 +655,16 @@ Leaving out the right kind of fancyness leaves us with the right kind of simplic
 
     > You can freely model your domain-, business- and view logic with all your familiar design patterns and types.
 
-* No **optional optionals**, so you have full control over value and update types.
+* No **optional optionals**, so you have full control over value and message types.
 
-    * You can make your update types optional. SwiftObserver will never spit them back at you wrapped in additional optionals, not even in combined observations.
-    * Also, you can easily unwrap optional updates via the mapping `unwrap`.
+    * You can make your message types optional. SwiftObserver will never spit them back at you wrapped in additional optionals, not even in combined observations.
+    * Also, you can easily unwrap optional messages via the mapping `unwrap`.
 
-* Minimal duplication. *SwiftObserver* practically never duplicates the updates that are being sent around, in particular not in [combined observations](#combined-observations) and [*mappings*](#mappings). This is in stark contrast to other reactive libraries yet without compomising functional aspects. The only cases that duplicate updates are `latestUpdate` on `Weak` and (if you don't change `remembersLatestMessage`) on `Messenger`.
+* Minimal duplication. *SwiftObserver* practically never duplicates the messages that are being sent around, in particular not in [combined observations](#combined-observations) and [*mappings*](#mappings). This is in stark contrast to other reactive libraries yet without compomising functional aspects. The only cases that duplicate messages are `latestMessage` on `Weak` and (if you don't change `remembersLatestMessage`) on `Messenger`.
 
-   > Note: Not having to duplicate data where multiple things must be observed is one of the reasons to use combined observations in the first place. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the updates sent from observables.
+   > Note: Not having to duplicate data where multiple things must be observed is one of the reasons to use combined observations in the first place. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the messages sent from observables.
    >
-   > SwiftObserver not only leverages object-orientation, it also combines the typical reactive "push model" in which observables push their updates to observers with a regular "pull model" in which observers can pull updates from observables.
+   > SwiftObserver not only leverages object-orientation, it also combines the typical reactive "push model" in which observables push their messages to observers with a regular "pull model" in which observers can pull messages from observables.
    >
    > "Pulling" just reflects the natural way objects operate. Observers can act on observables without problem, since that is the actual technical direction of control and dependence. The problem that reactive techiques solve is propagating data **against** the direction of control. 
    >
@@ -683,7 +684,7 @@ Leaving out the right kind of fancyness leaves us with the right kind of simplic
 
 - Mappings are first-class *Observables* that can be treated like any other *Observable*.
 
-- Wherever you map updates, you do it in the same terms and with the same chaining syntax: on a mapping, on another observable or on an observation.
+- Wherever you map messages, you do it in the same terms and with the same chaining syntax: on a mapping, on another observable or on an observation.
 
 - Simple (combined) observation
 
@@ -693,15 +694,15 @@ Leaving out the right kind of fancyness leaves us with the right kind of simplic
 
     - Combined observation has no special syntax and imposes no additional cognitive load.
 
-        > Note: Other reactive libraries dump at least `merge`, `zip` and `combineLatest` on your brain. Since `latestUpdate` generally provides the latest update, the provided combined observation is equivalent to `combineLatest`, which is by far the most used combine function in practice. 
+        > Note: Other reactive libraries dump at least `merge`, `zip` and `combineLatest` on your brain. Since `latestMessage` generally provides the latest message, the provided combined observation is equivalent to `combineLatest`, which is by far the most used combine function in practice. 
         >
-        > You could implement `merge` and `zip` through a custom observable. However, SwiftObserver's universal observation covers almost all practical needs for combined observation. This gets even amplified by the fact that the pull model, as manifested in `latestUpdate`, reduces the need to combine observations at all, since the interesting data can always be pulled from the observables.
+        > You could implement `merge` and `zip` through a custom observable. However, SwiftObserver's universal observation covers almost all practical needs for combined observation. This gets even amplified by the fact that the pull model, as manifested in `latestMessage`, reduces the need to combine observations at all, since the interesting data can always be pulled from the observables.
         >
         > As the author of SwiftObserver, I even have to note, that I don't use combined observation anymore at all. It never offers me a benefit over single observation in practice. To the contrary: Managing observations proves to be harder when they're coupled. 
         >
-        > My hunch is that `merge`, `zip` and `combineLatest` originate less from practical need and more from a desire to gerneralize and to max out the metaphor of "**data** streams". The underlying conceptual mis-alignment here would be, that updates in an observer-observable relationship are **supposed** to function as **messages** or events rather than as **data**. And here is why:
+        > My hunch is that `merge`, `zip` and `combineLatest` originate less from practical need and more from a desire to gerneralize and to max out the metaphor of "**data** streams". The underlying conceptual mis-alignment here would be, that the things observables send in an observer-observable relationship are **supposed** to function as **messages** or events rather than as **data**. And here is why:
         >
-        > All that is required for dependency inversion is that the *observer* gets informed about changes that it might need to react to. The *observer* then decides whether to act at all, how to act and what data it requires, and it pulls exactly that data from wherever it needs to, including from *observables*. It is not the job of the *observable* to presume what data any observer might need. It's not supposed to depend on the *observer's* concerns, which is the whole reason why we invert that dependency through the *observer pattern*. The *observable's* job is just to tell what happened. So, updates naturally function as messages rather than as data streams, and combining messages wouldn't be as meaningful or helpful.
+        > All that is required for dependency inversion is that the *observer* gets informed about changes that it might need to react to. The *observer* then decides whether to act at all, how to act and what data it requires, and it pulls exactly that data from wherever it needs to, including from *observables*. It is not the job of the *observable* to presume what data any observer might need. It's not supposed to depend on the *observer's* concerns, which is the whole reason why we invert that dependency through the *observer pattern*. The *observable's* job is just to tell what happened. So, messages naturally function as messages rather than as data streams, and combining messages wouldn't be as meaningful or helpful.
 
 - Create an observable plus a chain of mappings in one line
 
@@ -711,7 +712,7 @@ Leaving out the right kind of fancyness leaves us with the right kind of simplic
 
 - Variables are `Codable`, so model types are easy to encode and persist.
 
-- Ability to pull current update from all observable
+- Ability to pull current message from all observable
 
 - Recieve old *and* new value from variables
 
@@ -736,8 +737,8 @@ Leaving out the right kind of fancyness leaves us with the right kind of simplic
 - SwiftObserver is focused on the foundation of reactive programming. UI bindings are available as [UIObserver](https://github.com/flowtoolz/UIObserver), but that framework is still in its infancy. You're welcome to make PRs.
 - Observers and observables must be objects and cannot be of value types. However:
   
-   1. Variables can hold any type of values and observables can send any type of updates. 
-   2. We found that entities active enough to observe or significant enough to be observed are typically not mere values that are being passed around. What's being passed around are the updates that observables send to observers, and those updates are prototypical value types.
+   1. Variables can hold any type of values and observables can send any type of messages. 
+   2. We found that entities active enough to observe or significant enough to be observed are typically not mere values that are being passed around. What's being passed around are the messages that observables send to observers, and those messages are prototypical value types.
    3. For fine granular observing, the `Var` type is appropriate, further reducing the "need" (or shall we say "anti pattern"?) to observe value types.
 
 [badge-pod]: https://img.shields.io/cocoapods/v/SwiftObserver.svg?label=version&style=flat-square
