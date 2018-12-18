@@ -1,6 +1,6 @@
 public extension Observer
 {
-    public func observe<O>(_ observable: O) -> ObservationMapper<O, O.UpdateType>
+    public func observe<O>(_ observable: O) -> ObservationMapper<O, O.Message>
     {
         return ObservationMapper(observer: self,
                                  observable: observable,
@@ -24,6 +24,6 @@ public struct ObservationMapper<O: Observable, T>
 
     let observer: AnyObject
     let observable: O
-    let map: (O.UpdateType) -> T
-    let filter: ((O.UpdateType) -> Bool)?
+    let map: (O.Message) -> T
+    let filter: ((O.Message) -> Bool)?
 }

@@ -1,8 +1,8 @@
  import SwiftyToolz
  
- class ObserverList<Update>
+ class ObserverList<Message>
  {
-    func add(_ observer: AnyObject, receive: @escaping (Update) -> Void)
+    func add(_ observer: AnyObject, receive: @escaping (Message) -> Void)
     {
         observers[hashValue(observer)] = ObserverInfo(observer: observer,
                                                       receive: receive)
@@ -47,18 +47,18 @@
     
     var isEmpty: Bool { return observers.isEmpty }
     
-    func receive(_ update: Update)
+    func receive(_ message: Message)
     {
         for (observerHash, observerInfo) in observers
         {
             guard observerInfo.observer != nil else
             {
-                log(warning: "Tried so send update to dead observer. Will remove observer.")
+                log(warning: "Tried so send message to dead observer. Will remove observer.")
                 observers[observerHash] = nil
                 continue
             }
             
-            observerInfo.receive(update)
+            observerInfo.receive(message)
         }
     }
     
@@ -66,13 +66,13 @@
     
     private class ObserverInfo
     {
-        init(observer: AnyObject, receive: @escaping (Update) -> Void)
+        init(observer: AnyObject, receive: @escaping (Message) -> Void)
         {
             self.observer = observer
             self.receive = receive
         }
         
         weak var observer: AnyObject?
-        let receive: (Update) -> Void
+        let receive: (Message) -> Void
     }
 }

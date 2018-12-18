@@ -1,4 +1,4 @@
-public struct Update<Value>
+public struct Change<Value>
 {
     public init<Wrapped>() where Value == Optional<Wrapped>
     {

@@ -1,7 +1,7 @@
 public extension Observer
 {
     func observe<O: Observable>(_ observable: O,
-                                receive: @escaping (O.UpdateType) -> Void)
+                                receive: @escaping (O.Message) -> Void)
     {
         observable.add(self, receive: receive)
     }
@@ -9,7 +9,7 @@ public extension Observer
     func observe<O1: Observable, O2: Observable>(
         _ observable1: O1,
         _ observable2: O2,
-        _ receive: @escaping (O1.UpdateType, O2.UpdateType) -> Void)
+        _ receive: @escaping (O1.Message, O2.Message) -> Void)
     {
         observable1.add(self)
         {
@@ -17,7 +17,7 @@ public extension Observer
             
             guard let o2 = observable2 else { return }
             
-            receive($0, o2.latestUpdate)
+            receive($0, o2.latestMessage)
         }
         
         observable2.add(self)
@@ -26,7 +26,7 @@ public extension Observer
             
             guard let o1 = observable1 else { return }
             
-            receive(o1.latestUpdate, $0)
+            receive(o1.latestMessage, $0)
         }
     }
     
@@ -34,7 +34,7 @@ public extension Observer
         _ observable1: O1,
         _ observable2: O2,
         _ observable3: O3,
-        _ receive: @escaping (O1.UpdateType, O2.UpdateType, O3.UpdateType) -> Void)
+        _ receive: @escaping (O1.Message, O2.Message, O3.Message) -> Void)
     {
         observable1.add(self)
         {
@@ -42,7 +42,7 @@ public extension Observer
             
             guard let o2 = observable2, let o3 = observable3 else { return }
             
-            receive($0, o2.latestUpdate, o3.latestUpdate)
+            receive($0, o2.latestMessage, o3.latestMessage)
         }
         
         observable2.add(self)
@@ -51,7 +51,7 @@ public extension Observer
             
             guard let o1 = observable1, let o3 = observable3 else { return }
             
-            receive(o1.latestUpdate, $0, o3.latestUpdate)
+            receive(o1.latestMessage, $0, o3.latestMessage)
         }
         
         observable3.add(self)
@@ -60,7 +60,7 @@ public extension Observer
             
             guard let o1 = observable1, let o2 = observable2 else { return }
             
-            receive(o1.latestUpdate, o2.latestUpdate, $0)
+            receive(o1.latestMessage, o2.latestMessage, $0)
         }
     }
     

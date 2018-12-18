@@ -11,7 +11,6 @@
 		5114F2F616B6F98651E20CB3 /* Pods_SwiftObserver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14B81A4C7EEF746AC0D289A2 /* Pods_SwiftObserver.framework */; };
 		9E17056121B47C470045581C /* Observer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E17055621B47C470045581C /* Observer.swift */; };
 		9E17056321B47C470045581C /* Variable+Int.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E17055821B47C470045581C /* Variable+Int.swift */; };
-		9E17056421B47C470045581C /* Update.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E17055921B47C470045581C /* Update.swift */; };
 		9E17056521B47C470045581C /* ObserverList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E17055A21B47C470045581C /* ObserverList.swift */; };
 		9E17056621B47C470045581C /* Mapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E17055B21B47C470045581C /* Mapping.swift */; };
 		9E17056721B47C470045581C /* Mapping+StandardMappings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E17055C21B47C470045581C /* Mapping+StandardMappings.swift */; };
@@ -35,6 +34,7 @@
 		9EB7F5B221C5DD08001CDAE2 /* CustomObservable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EB7F5B121C5DD08001CDAE2 /* CustomObservable.swift */; };
 		9EE889FC21BAC7E10056340A /* Observer+ObservationMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE889FB21BAC7E10056340A /* Observer+ObservationMapper.swift */; };
 		9EE889FE21BACF9C0056340A /* ObservationMapper+StandardMappings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE889FD21BACF9C0056340A /* ObservationMapper+StandardMappings.swift */; };
+		9EE8E21A21C86526004781BF /* Change.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE8E21921C86526004781BF /* Change.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,7 +54,6 @@
 		7F1DD4355E7C4BAC45278D14 /* Pods-SwiftObserver.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftObserver.release.xcconfig"; path = "Target Support Files/Pods-SwiftObserver/Pods-SwiftObserver.release.xcconfig"; sourceTree = "<group>"; };
 		9E17055621B47C470045581C /* Observer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Observer.swift; sourceTree = "<group>"; };
 		9E17055821B47C470045581C /* Variable+Int.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Variable+Int.swift"; sourceTree = "<group>"; };
-		9E17055921B47C470045581C /* Update.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Update.swift; sourceTree = "<group>"; };
 		9E17055A21B47C470045581C /* ObserverList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObserverList.swift; sourceTree = "<group>"; };
 		9E17055B21B47C470045581C /* Mapping.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mapping.swift; sourceTree = "<group>"; };
 		9E17055C21B47C470045581C /* Mapping+StandardMappings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Mapping+StandardMappings.swift"; sourceTree = "<group>"; };
@@ -82,6 +81,7 @@
 		9EE889FB21BAC7E10056340A /* Observer+ObservationMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Observer+ObservationMapper.swift"; sourceTree = "<group>"; };
 		9EE889FD21BACF9C0056340A /* ObservationMapper+StandardMappings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ObservationMapper+StandardMappings.swift"; sourceTree = "<group>"; };
 		9EE889FF21BAD7080056340A /* SwiftObserver.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; name = SwiftObserver.podspec; path = ../SwiftObserver.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9EE8E21921C86526004781BF /* Change.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Change.swift; sourceTree = "<group>"; };
 		A4789C8F494749332999804A /* Pods-SwiftObserver.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftObserver.debug.xcconfig"; path = "Target Support Files/Pods-SwiftObserver/Pods-SwiftObserver.debug.xcconfig"; sourceTree = "<group>"; };
 		F4BF92FBB88B2B6F8C2E1733 /* Pods_SwiftObserverTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftObserverTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -184,8 +184,8 @@
 				9EA3E75921C34E750005A17F /* Mapping */,
 				9EA3E75821C34D530005A17F /* Observable */,
 				9E2D86E621C2AB4500658CA1 /* Messenger.swift */,
+				9EE8E21921C86526004781BF /* Change.swift */,
 				9EA9A0C321B7E9D90067DB30 /* Weak.swift */,
-				9E17055921B47C470045581C /* Update.swift */,
 			);
 			path = Public;
 			sourceTree = "<group>";
@@ -443,8 +443,8 @@
 				9E17056921B47C470045581C /* Observable.swift in Sources */,
 				9E26039421B88D4D00CE4D53 /* Variable+Equatable.swift in Sources */,
 				9E17056821B47C470045581C /* Observable+StandardMappings.swift in Sources */,
-				9E17056421B47C470045581C /* Update.swift in Sources */,
 				9E688E0721C811CA00C499BC /* Variable+Double.swift in Sources */,
+				9EE8E21A21C86526004781BF /* Change.swift in Sources */,
 				9E26039821B88D7F00CE4D53 /* Variable+ValueAssignment.swift in Sources */,
 				9E17056121B47C470045581C /* Observer.swift in Sources */,
 				9E17056521B47C470045581C /* ObserverList.swift in Sources */,

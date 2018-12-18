@@ -1,11 +1,11 @@
-public class Weak<O: Observable>: ObservableObject<O.UpdateType>, Observer
+public class Weak<O: Observable>: ObservableObject<O.Message>, Observer
 {
     // MARK: - Life Cycle
     
     public init(_ observable: O)
     {
         self.observable = observable
-        self.latestStoredUpdate = observable.latestUpdate
+        self.storedLatestMessage = observable.latestMessage
         
         super.init()
         
@@ -14,24 +14,24 @@ public class Weak<O: Observable>: ObservableObject<O.UpdateType>, Observer
     
     deinit { stopObserving(observable) }
     
-    // MARK: - Latest Update
+    // MARK: - Latest Message
     
-    public override var latestUpdate: O.UpdateType
+    public override var latestMessage: O.Message
     {
-        refreshLatestStoredUpdate()
+        refreshLatestStoredMessage()
         
-        return latestStoredUpdate
+        return storedLatestMessage
     }
     
-    private func refreshLatestStoredUpdate()
+    private func refreshLatestStoredMessage()
     {
-        if let latestOriginalUpdate = observable?.latestUpdate
+        if let latestOriginalMessage = observable?.latestMessage
         {
-            latestStoredUpdate = latestOriginalUpdate
+            storedLatestMessage = latestOriginalMessage
         }
     }
     
-    private var latestStoredUpdate: O.UpdateType
+    private var storedLatestMessage: O.Message
     
     // MARK: - Observable
     

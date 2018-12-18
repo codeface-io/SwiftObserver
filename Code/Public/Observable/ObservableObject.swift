@@ -13,7 +13,7 @@ extension ObservableObject: RegisteredObservable
     }
 }
 
-public class ObservableObject<Update>: Observable
+public class ObservableObject<Message>: Observable
 {
     // MARK: - Register in Observation Service
     
@@ -24,13 +24,13 @@ public class ObservableObject<Update>: Observable
    
     // MARK: - Observable
     
-    public var latestUpdate: Update
+    public var latestMessage: Message
     {
-        fatalError("\(typeName(self)) is an abstract class. Just override `latestUpdate`.")
+        fatalError("\(typeName(self)) is an abstract class. Just override `latestMessage`.")
     }
     
     public func add(_ observer: AnyObject,
-                    receive: @escaping (Update) -> Void)
+                    receive: @escaping (Message) -> Void)
     {
         observerList.add(observer, receive: receive)
         
@@ -67,10 +67,10 @@ public class ObservableObject<Update>: Observable
         ObservationService.didRemove(observerHashs, from: self)
     }
     
-    public func send(_ update: Update)
+    public func send(_ message: Message)
     {
-        observerList.receive(update)
+        observerList.receive(message)
     }
     
-    private let observerList = ObserverList<Update>()
+    private let observerList = ObserverList<Message>()
 }

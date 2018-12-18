@@ -2,14 +2,14 @@ public extension ObservationMapper where T: Equatable
 {
     // MARK: - Select
     
-    public func select(_ update: T, receive: @escaping () -> Void)
+    public func select(_ message: T, receive: @escaping () -> Void)
     {
-        self.receive { if $0 == update { receive() } }
+        self.receive { if $0 == message { receive() } }
     }
     
-    public func select(_ update: T) -> ObservationMapper
+    public func select(_ message: T) -> ObservationMapper
     {
-        return filter { $0 == update }
+        return filter { $0 == message }
     }
 }
 
@@ -22,12 +22,13 @@ public extension ObservationMapper
         let localMap = map
         let localFilter = self.filter
         
-        let composedFilter = combineFilters(localFilter, { filter(localMap($0)) })
+        let composedFilter = combineFilters(localFilter,
+                                            { filter(localMap($0)) })
         
         return ObservationMapper(observer: observer,
-                                  observable: observable,
-                                  map: map,
-                                  filter: composedFilter)
+                                 observable: observable,
+                                 map: map,
+                                 filter: composedFilter)
     }
     
     public func filter(_ filter: @escaping (T) -> Bool,
@@ -36,7 +37,8 @@ public extension ObservationMapper
         let localMap = map
         let localFilter = self.filter
         
-        let composedFilter = combineFilters(localFilter, { filter(localMap($0)) })
+        let composedFilter = combineFilters(localFilter,
+                                            { filter(localMap($0)) })
         
         observable.add(observer)
         {
@@ -60,13 +62,13 @@ public extension ObservationMapper
     }
     
     public func new<Value>(receive: @escaping (Value) -> Void)
-        where T == Update<Value>
+        where T == Change<Value>
     {
         new().receive(receive)
     }
     
     public func new<Value>() -> ObservationMapper<O, Value>
-        where T == Update<Value>
+        where T == Change<Value>
     {
         return map { $0.new }
     }

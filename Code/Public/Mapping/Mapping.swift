@@ -1,8 +1,8 @@
-public class Mapping<O: Observable, MappedUpdate>: ObservableObject<MappedUpdate>
+public class Mapping<O: Observable, MappedMessage>: ObservableObject<MappedMessage>
 {
     // MARK: - Life Cycle
     
-    init(_ source: O, filter: O.UpdateFilter? = nil, map: @escaping Mapper)
+    init(_ source: O, filter: O.Filter? = nil, map: @escaping Mapper)
     {
         self.source = source
         self.filter = filter
@@ -17,13 +17,13 @@ public class Mapping<O: Observable, MappedUpdate>: ObservableObject<MappedUpdate
     
     // MARK: - Chain Mappings
     
-    func filterMap<ComposedUpdate>(filter: ((MappedUpdate) -> Bool)? = nil,
-                                   map: @escaping (MappedUpdate) -> ComposedUpdate) -> Mapping<O, ComposedUpdate>
+    func filterMap<ComposedMessage>(filter: ((MappedMessage) -> Bool)? = nil,
+                                    map: @escaping (MappedMessage) -> ComposedMessage) -> Mapping<O, ComposedMessage>
     {
         let localMap = self.map
         let localFilter = self.filter
         
-        let addedFilter: ((O.UpdateType) -> Bool)? =
+        let addedFilter: ((O.Message) -> Bool)? =
         {
             guard let prefilter = filter else { return nil }
             
@@ -32,16 +32,16 @@ public class Mapping<O: Observable, MappedUpdate>: ObservableObject<MappedUpdate
         
         let composedFilter = combineFilters(localFilter, addedFilter)
         
-        return Mapping<O, ComposedUpdate>(source,
-                                          filter: composedFilter,
-                                          map: compose(localMap, map))
+        return Mapping<O, ComposedMessage>(source,
+                                           filter: composedFilter,
+                                           map: compose(localMap, map))
     }
     
     // MARK: - Observable
     
-    public override var latestUpdate: MappedUpdate
+    public override var latestMessage: MappedMessage
     {
-        return map(source.latestUpdate)
+        return map(source.latestMessage)
     }
 
     public var source: O
@@ -53,11 +53,11 @@ public class Mapping<O: Observable, MappedUpdate>: ObservableObject<MappedUpdate
             oldValue.remove(self)
             observe(source: source)
             
-            let sourceLatestUpdate = source.latestUpdate
+            let sourceLatestMessage = source.latestMessage
             
-            if filter?(sourceLatestUpdate) ?? true
+            if filter?(sourceLatestMessage) ?? true
             {
-                send(map(sourceLatestUpdate))
+                send(map(sourceLatestMessage))
             }
         }
     }
@@ -66,21 +66,21 @@ public class Mapping<O: Observable, MappedUpdate>: ObservableObject<MappedUpdate
     {
         source.add(self)
         {
-            [weak self] update in
+            [weak self] message in
             
             guard let self = self else { return }
             
-            if self.filter?(update) ?? true
+            if self.filter?(message) ?? true
             {
-                self.send(self.map(update))
+                self.send(self.map(message))
             }
         }
     }
     
     // MARK: - Closures
     
-    public let filter: O.UpdateFilter?
+    public let filter: O.Filter?
     let map: Mapper
     
-    typealias Mapper = (O.UpdateType) -> MappedUpdate
+    typealias Mapper = (O.Message) -> MappedMessage
 }

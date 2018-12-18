@@ -12,7 +12,7 @@ class SwiftObserverTests: XCTestCase
         
         textMessenger.send(message)
         
-        XCTAssertEqual(textMessenger.latestUpdate, message)
+        XCTAssertEqual(textMessenger.latestMessage, message)
         
         var observedMessage: String?
         
@@ -376,7 +376,7 @@ class SwiftObserverTests: XCTestCase
         strongObservable = nil
         
         XCTAssertNil(weakObservable.observable)
-        XCTAssertEqual(weakObservable.latestUpdate.new, 10)
+        XCTAssertEqual(weakObservable.latestMessage.new, 10)
     }
     
     func testSettingObservableOfMapping()
@@ -399,13 +399,13 @@ class SwiftObserverTests: XCTestCase
         let text = Var(initialText)
         mapping.source = text
         
-        XCTAssertEqual(mapping.latestUpdate, initialText)
+        XCTAssertEqual(mapping.latestMessage, initialText)
         XCTAssertEqual(observedStrings, [initialText])
         
         let newText = "new text"
         text <- newText
         
-        XCTAssertEqual(mapping.latestUpdate, newText)
+        XCTAssertEqual(mapping.latestMessage, newText)
         XCTAssertEqual(observedStrings, [initialText, newText])
     }
     
@@ -479,16 +479,16 @@ class SwiftObserverTests: XCTestCase
         strongNewNumber = nil
         XCTAssertNil(weakNewNumber)
 
-        XCTAssertEqual(strongUnwrappedNewNumber.latestUpdate, -1)
+        XCTAssertEqual(strongUnwrappedNewNumber.latestMessage, -1)
         
         number <- 9
-        XCTAssertEqual(strongUnwrappedNewNumber.latestUpdate, 9)
+        XCTAssertEqual(strongUnwrappedNewNumber.latestMessage, 9)
         
         number <- nil
-        XCTAssertEqual(strongUnwrappedNewNumber.latestUpdate, -1)
+        XCTAssertEqual(strongUnwrappedNewNumber.latestMessage, -1)
         
         number <- 10
-        XCTAssertEqual(strongUnwrappedNewNumber.latestUpdate, 10)
+        XCTAssertEqual(strongUnwrappedNewNumber.latestMessage, 10)
         
         XCTAssertEqual(observedNumbers, [9, 10])
     }
@@ -530,7 +530,7 @@ class SwiftObserverTests: XCTestCase
         let textMessage = Var<String>("initial message")
         let textMessenger = textMessage.new()
         
-        XCTAssertEqual(textMessenger.latestUpdate, "initial message")
+        XCTAssertEqual(textMessenger.latestMessage, "initial message")
         
         var receivedMessage: String?
         
@@ -543,7 +543,7 @@ class SwiftObserverTests: XCTestCase
         
         textMessage <- "user error"
         
-        XCTAssertEqual(textMessenger.latestUpdate, "user error")
+        XCTAssertEqual(textMessenger.latestMessage, "user error")
         XCTAssertEqual(receivedMessage, "user error")
     }
     
@@ -839,14 +839,13 @@ class SwiftObserverTests: XCTestCase
     
     class MinimalModel: CustomObservable
     {
-        typealias UpdateType = Int?
-        
         let messenger = Messenger<Int?>()
+        typealias Message = Int?
     }
     
     class ObservableModel: CustomObservable
     {
-        typealias UpdateType = Event
+        typealias Message = Event
         
         let messenger = Messenger(Event.didNothing)
         
@@ -857,11 +856,9 @@ class SwiftObserverTests: XCTestCase
     
     class ModelWithState: CustomObservable
     {
-        let messenger = Messenger(Update("", ""))
-        
-        var latestUpdate: Update<String>
+        var latestMessage: Change<String>
         {
-            return Update(state, state)
+            return Change(state, state)
         }
         
         var state = "initial state"
@@ -870,10 +867,12 @@ class SwiftObserverTests: XCTestCase
             {
                 if oldValue != state
                 {
-                    send(Update(oldValue, state))
+                    send(Change(oldValue, state))
                 }
             }
         }
+        
+        let messenger = Messenger(Change("", ""))
     }
     
     let controller = Controller()

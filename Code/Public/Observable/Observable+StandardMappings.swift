@@ -1,6 +1,6 @@
-public extension Observable where UpdateType: Equatable
+public extension Observable where Message: Equatable
 {
-    public func select(_ default: UpdateType) -> Mapping<Self, Void>
+    public func select(_ default: Message) -> Mapping<Self, Void>
     {
         return Mapping(self, filter: { $0 == `default` }) { _ in }
     }
@@ -8,24 +8,24 @@ public extension Observable where UpdateType: Equatable
 
 public extension Observable
 {
-    public func new<MappedUpdate>() -> Mapping<Self, MappedUpdate>
-        where UpdateType == Update<MappedUpdate>
+    public func new<MappedMessage>() -> Mapping<Self, MappedMessage>
+        where Message == Change<MappedMessage>
     {
         return map { $0.new }
     }
     
-    public func filter(_ keep: @escaping UpdateFilter) -> Mapping<Self, UpdateType>
+    public func filter(_ keep: @escaping Filter) -> Mapping<Self, Message>
     {
         return Mapping(self, filter: keep) { $0 }
     }
     
-    public func unwrap<Unwrapped>(_ defaultUpdate: Unwrapped) -> Mapping<Self, Unwrapped>
-        where Self.UpdateType == Optional<Unwrapped>
+    public func unwrap<Unwrapped>(_ default: Unwrapped) -> Mapping<Self, Unwrapped>
+        where Self.Message == Optional<Unwrapped>
     {
-        return map { $0 ?? defaultUpdate }
+        return map { $0 ?? `default` }
     }
     
-    public func map<MappedUpdate>(map: @escaping (UpdateType) -> MappedUpdate) -> Mapping<Self, MappedUpdate>
+    public func map<MappedMessage>(map: @escaping (Message) -> MappedMessage) -> Mapping<Self, MappedMessage>
     {
         return Mapping(self, map: map)
     }

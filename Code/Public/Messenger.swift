@@ -9,23 +9,25 @@ public class Messenger<Message>: ObservableObject<Message>
     
     public init(_ initialMessage: Message)
     {
-        latestMessage = initialMessage
+        storedLatestMessage = initialMessage
         
         super.init()
     }
     
-    public override func send(_ update: Message)
+    public override func send(_ message: Message)
     {
-        if remembersLatestMessage { latestMessage = update }
+        if remembersLatestMessage { storedLatestMessage = message }
         
-        super.send(update)
+        super.send(message)
     }
     
-    public override var latestUpdate: Message
+    public override var latestMessage: Message
     {
-        return latestMessage
+        get { return storedLatestMessage }
+        set { storedLatestMessage = newValue }
     }
     
     public var remembersLatestMessage = true
-    public var latestMessage: Message
+    
+    private var storedLatestMessage: Message
 }

@@ -1,20 +1,20 @@
 public extension Observable
 {
-    func send() { send(latestUpdate) }
+    func send() { send(latestMessage) }
 }
 
 public protocol Observable: AnyObject
 {
-    func add(_ observer: AnyObject, receive: @escaping UpdateReceiver)
+    func add(_ observer: AnyObject, receive: @escaping Receiver)
     
     func remove(_ observer: AnyObject)
     func removeObservers()
     func removeDeadObservers()
     
-    func send(_ update: UpdateType)
-    var latestUpdate: UpdateType { get }
+    func send(_ message: Message)
+    var latestMessage: Message { get }
     
-    typealias UpdateFilter = (UpdateType) -> Bool
-    typealias UpdateReceiver = (UpdateType) -> Void
-    associatedtype UpdateType: Any
+    typealias Filter = (Message) -> Bool
+    typealias Receiver = (Message) -> Void
+    associatedtype Message: Any
 }

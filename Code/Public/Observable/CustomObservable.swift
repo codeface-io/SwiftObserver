@@ -2,7 +2,7 @@ public extension CustomObservable
 {
     // MARK: - Convenience
     
-    public var remembersLatestUpdate: Bool
+    public var remembersLatestMessage: Bool
     {
         get { return messenger.remembersLatestMessage }
         set { messenger.remembersLatestMessage = newValue }
@@ -10,12 +10,12 @@ public extension CustomObservable
     
     // MARK: - Observable
     
-    public var latestUpdate: UpdateType
+    public var latestMessage: Message
     {
-        return messenger.latestUpdate
+        return messenger.latestMessage
     }
     
-    func add(_ observer: AnyObject, receive: @escaping (UpdateType) -> Void)
+    func add(_ observer: AnyObject, receive: @escaping (Message) -> Void)
     {
         messenger.add(observer, receive: receive)
     }
@@ -35,13 +35,13 @@ public extension CustomObservable
         messenger.removeDeadObservers()
     }
 
-    func send(_ update: UpdateType)
+    func send(_ message: Message)
     {
-        messenger.send(update)
+        messenger.send(message)
     }
 }
 
 public protocol CustomObservable: Observable
 {
-    var messenger: Messenger<UpdateType> { get }
+    var messenger: Messenger<Message> { get }
 }
