@@ -40,9 +40,8 @@ SwiftObserver is just about 1300 lines of production code, but it also approache
     * [The Latest Message](#the-latest-message)
     * [Make State Observable](#make-state-observable)
 * [Weak Observables](#weak-observables)
-* Appendix
-    * [Why the Hell Another Reactive Library?](#why)
-    * [Specific Patterns](#specific-patterns)
+* [Specific Patterns](#specific-patterns)
+* [Why the Hell Another Reactive Library?](#why)
 
 # Install
 
@@ -593,19 +592,17 @@ let numberValue = weakNumber.observable?.value
 
 Since the wrapped `observable` might die, `Weak` has to buffer, and therefore **duplicate**, the value of `latestMessage`. This is a necessary price for holding an `Observable` weakly while using it all the same.
 
-# Appendix
+# Specific Patterns
 
-## <a id="why"></a>Why the Hell Another Reactive Library?
+Patterns that emerged from using SwiftObserver [are documented over here](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns).
+
+# <a id="why"></a>Why the Hell Another Reactive Library?
 
 SwiftObserver diverges from convention. It follows the reactive idea in generalizing the *Observer Pattern*. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something different, something we **love** to work with.
 
 Leaving out the right kind of fancyness leaves us with the right kind of simplicity, a simplicity which is powerful.
 
 More on the philosophy of SwiftObserver [is documented over here](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#the-philosophy-of-swiftobserver)
-
-## Specific Patterns
-
-Patterns that emerged from using SwiftObserver [are documented over here](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns).
 
 [badge-pod]: https://img.shields.io/cocoapods/v/SwiftObserver.svg?label=version&style=flat-square
 [badge-pms]: https://img.shields.io/badge/supports-CocoaPods%20%7C%20Carthage-green.svg?style=flat-square

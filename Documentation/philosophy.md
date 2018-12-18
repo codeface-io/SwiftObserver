@@ -1,6 +1,6 @@
 # The Philosophy of SwiftObserver
 
-This is the oppinionated side and philosophy of SwiftObserver. I invite you put it on like a shoe. See if it fits, take it for what it's worth and evolve it via PR or email: contact@flowtoolz.com.
+This is the opinionated side of SwiftObserver. I invite you put it on like a shoe. See if it fits, take it for what it's worth and evolve it via PR or email: <contact@flowtoolz.com>.
 
 ## Meaningful Code
 
@@ -46,13 +46,13 @@ This is the oppinionated side and philosophy of SwiftObserver. I invite you put 
     subject.actUpon(object)
     ```
 
-  > Note: Many definitions of the *Observer Pattern*, including [Wikipedia](https://en.wikipedia.org/wiki/Observer_pattern), have the subject / object roles reversed, which we consider not merely a misnomer but, above all, a secondary level of analysis.
-  >
-  > They look at observation from a technical rather than a conceptual point of view, focusing on *how* the problem is being *solved* rather than *what* the solution *means*.
-  >
-  > The illusion the *Observer Pattern* is supposed to create is that an *observer* observes an *observable*. Linguistically, that is: subject, predicate, object. The subject actively acts on the object, while the object is passively being acted upon.
-  >
-  > Of course, to achieve this under the hood, *observables* must actively trigger some data propagation. But we should look at the solution more pragmatically in terms of the real-world meaning that we set out to model in the first place.
+		> Note: Many definitions of the *Observer Pattern*, including [Wikipedia](https://en.wikipedia.org/wiki/Observer_pattern), have the subject / object roles reversed, which we consider not merely a misnomer but, above all, a secondary level of analysis.
+		>
+		> They look at observation from a technical rather than a conceptual point of view, focusing on *how* the problem is being *solved* rather than *what* the solution *means*.
+		>
+		> The illusion the *Observer Pattern* is supposed to create is that an *observer* observes an *observable*. Linguistically, that is: subject, predicate, object. The subject actively acts on the object, while the object is passively being acted upon.
+		>
+		> Of course, to achieve this under the hood, *observables* must actively trigger some data propagation. But we should look at the solution more pragmatically in terms of the real-world meaning that we set out to model in the first place.
 
 ## Non-intrusive Design
 
