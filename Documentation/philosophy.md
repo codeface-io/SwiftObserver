@@ -171,11 +171,12 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 ## Safety
 
 - When an *observable* dies, **all** its observations stop automatically.
+- Real memory leaks are impossible, since you can always flush out all orphaned observations.
 - Stop observations in the same expressive way you start them: `observer.stopObserving(observable)`
-- Make an *observer* stop **all** its observations with **one** call: `observer.stopObserving()`
+- Stop **all** observations an *observer* started with **one** call: `observer.stopObserving()`
 - Stop **all** observations of an observable with **one** call: `observable.stopObservations()`
-- Remove **all** abandoned observations of an *observable* with **one** call: `observable.stopAbandonedObservations()`
-- Real memory leaks are impossible, since you can always flush out **all** orphaned observations of **all** *observables* with **one** call: `stopAllAbandonedObservations()`.
+- Stop **all** abandoned observations of an *observable* with **one** call: `observable.stopAbandonedObservations()`
+- Stop **all** abandoned observations of **all** *observables* with **one** call: `stopAllAbandonedObservations()`.
 
 # Combined Observation is Overrated
 
