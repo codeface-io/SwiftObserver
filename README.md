@@ -206,7 +206,7 @@ observer.observe(variable) { change in
 }
 ~~~
 
-A `Var` sends a change message whenever its `value` actually changes. Just starting to observe it does **not** trigger a message. This keeps it simple, predictable and consistent, in particular in combination with [*Mappings*](#mappings). You can always call `send()` on a `Var<Value>`, sending an `Change<Value>` in which `old` and `new` are both the current `value`.
+A `Var` sends a change message whenever its `value` actually changes. Just starting to observe it does **not** trigger a message. This keeps it simple, predictable and consistent, in particular in combination with [*Mappings*](#mappings). You can always call `send()` on a `Var<Value>`, sending a `Change<Value>` in which `old` and `new` are both the current `value`.
 
 Internally, a `Var` appends new values to a queue, so all its *observers* get to process a value change before the next change takes effect. This is for situations when the `Var` has multiple *Observers* and at least one *observer* changes the `value` in response to a `value` change.
 
