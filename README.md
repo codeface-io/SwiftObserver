@@ -6,11 +6,11 @@
 
 SwiftObserver is a lightweight framework for reactive Swift. Its design goals make it easy to learn and a joy to use:
 
-1. [**Meaningful Code**](#meaningful-code): SwiftObserver promotes meaningful metaphors, names and syntax, producing highly readable code.
-2. [**Non-intrusive Design**](#non-intrusive-design): SwiftObserver doesn't limit or modulate your design. It just makes it easy to do the right thing.
-3. [**Simplicity**](#simplicity): SwiftObserver employs very few simple concepts and applies them consistently without exceptions.
-4. [**Flexibility**](#flexibility): SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
-5. [**Safety**](#safety): SwiftObserver makes memory management meaningful and easy. Oh yeah, real memory leaks are impossible.
+1. [**Meaningful Code**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#meaningful-code): SwiftObserver promotes meaningful metaphors, names and syntax, producing highly readable code.
+2. [**Non-intrusive Design**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#non-intrusive-design): SwiftObserver doesn't limit or modulate your design. It just makes it easy to do the right thing.
+3. [**Simplicity**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility): SwiftObserver employs very few simple concepts and applies them consistently without exceptions.
+4. [**Flexibility**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility): SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
+5. [**Safety**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#safety): SwiftObserver makes memory management meaningful and easy. Oh yeah, real memory leaks are impossible.
 
 [*Reactive Programming*](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [*Dependency Inversion*](https://en.wikipedia.org/wiki/Dependency_inversion_principle). SwiftObserver breaks *Reactive Programming* down to its essence, which is the [*Observer Pattern*](https://en.wikipedia.org/wiki/Observer_pattern).
 
@@ -40,8 +40,9 @@ SwiftObserver is just about 1300 lines of production code, but it also approache
     * [The Latest Message](#the-latest-message)
     * [Make State Observable](#make-state-observable)
 * [Weak Observables](#weak-observables)
-* [Specific Patterns](#specific-patterns)
-* [Why the Hell Another Reactive Library?](#why)
+* Appendix
+    * [Why the Hell Another Reactive Library?](#why)
+    * [Specific Patterns](#specific-patterns)
 
 # Install
 
@@ -136,7 +137,7 @@ To avoid abandoned observations piling up in memory, *observers* should, before 
 dog.stopObserving(Sky.shared)
 ```
 
-An even simpler and safer way is to let an *observer* stop all its observations right before it dies:
+An even simpler and safer way is to let *observers*, right before they die, stop all their observations:
 
 ```swift
 class Dog: Observer {
@@ -146,14 +147,14 @@ class Dog: Observer {
 }
 ```
 
-On the side of *observables*, you don't need to do anything. The observations that an *observable* is part of stop automatically when the *observable* dies.
+The observations in which an *observable* is involved stop automatically when the *observable* dies, so it doesn't need to do anything in `deinit`. But it can always stop all its observations via `stopObservations()`.
 
 Forgetting some observations wouldn't waste significant memory. But you should understand, control and express the mechanics of your code to a degree that prevents systemic leaks.
 
-The two above mentioned functions are all you need for safe memory management. If you still want to erase observations that you may have forgotten, there are two other functions for that:
+The three above mentioned functions are all you need for safe memory management. If you still want to erase observations that you may have forgotten, there are two other functions for that:
 
-1. `myObservable.removeDeadObservers()`
-2. `removeAbandonedObservations()` (Erases **every** observation whos *observer* is dead)
+1. `observable.stopAbandonedObservations()`
+2. `stopAllAbandonedObservations()` (Erases **every** observation whos *observer* is dead)
 
 > Memory management with SwiftObserver is meaningful and safe. There are no contrived constructs like "Disposable" or "DisposeBag". And since you can always flush out orphaned observations, real memory leaks are impossible.
 
@@ -253,9 +254,15 @@ let textLength = Var<String?>().map { $0.new?.count ?? 0 }
 // ^^ textLength.source is of type Var<String?>
 ```
 
-When you want to hold an `Observable` weakly, as the *Source* of a *Mapping* or in some data structure, wrap it in [`Weak`](#weak-observables).
+When you want to hold an `Observable` weakly, wrap it in [`Weak`](#weak-observables). For instance, you can let a *mapping* hold its source weakly:
 
-As [mentioned earlier](#observables), you use a *Mapping* like any other `Observable`: You hold a strong reference to it somewhere, you stop observing it (not its *Source*) at some point, and you can call `latestMessage`, `send(_:)` and `send()` on it.
+```swift
+let toString = Weak(Var<Int?>()).new().unwrap(0).map { "\($0)" }
+let sourceIsDead = toString.source.observable == nil // true
+// ^^ no one holds Var<Int?>(), so it dies
+```
+
+As [mentioned earlier](#observables), you use a *Mapping* like any other `Observable`: You hold a strong reference to it somewhere, you stop observing it (not its *source*) at some point, and you can call `latestMessage`, `send(_:)` and `send()` on it.
 
 ## Swap Mapping Sources
 
@@ -586,160 +593,19 @@ let numberValue = weakNumber.observable?.value
 
 Since the wrapped `observable` might die, `Weak` has to buffer, and therefore **duplicate**, the value of `latestMessage`. This is a necessary price for holding an `Observable` weakly while using it all the same.
 
-# Specific Patterns
+# Appendix
 
-Patterns that emerged from using SwiftObserver [are documented over here](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns).
-
-# <a id="why"></a>Why the Hell Another Reactive Library?
+## <a id="why"></a>Why the Hell Another Reactive Library?
 
 SwiftObserver diverges from convention. It follows the reactive idea in generalizing the *Observer Pattern*. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something different, something we **love** to work with.
 
 Leaving out the right kind of fancyness leaves us with the right kind of simplicity, a simplicity which is powerful.
 
-**The following incoherent brainstorm outlines the goodies of SwiftObserver.**
+More on the philosophy of SwiftObserver [is documented over here](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#the-philosophy-of-swiftobserver)
 
-## Meaningful Code
+## Specific Patterns
 
-- Readable code down to the internals
-
-- No arbitrary, contrived or technical metaphors like "disposable", "dispose bag", "signal", "emitter" or "stream"
-
-   > A note on "signals": In the tradition of Elm and the origins of reactive programming,  many reactive libraries use "signal" as a metaphor, but how they apply the term is more confusing than helpful, in particular when they suggest that the "signal" is what's being observed.
-   >
-   > Our closest context of reference here is information theory, where a signal is what's being technically transmitted from a source to a receiver. By observing the source, the receiver receives a signal which conveys messages. Would we apply the metaphor to reactive programming, the signal would rather correspond to the actual data that *observables* send to *observers*.
-
-- No inconsistent metaphors, i.e. no combination of incompatible metaphors that stem from completely different domains
-
-    > A common and nonsensical mixture is "subscribing" to a "signal". Even Elm, which had signals and still has subscriptions, never mixed the two.
-    >
-    > "subscribing" to an "observable" doesn't make much sense either. Why isn't it a "subscribable" then? Why is it a radical idea to "observe" an "observable"? Is an "observable" a publication?
-
-- No overgeneralization of the *Observer Pattern*. SwiftObserver doesn't go overboard with the model of "streams" but keeps things more simple, real-world oriented and meaningful to actual application domains.
-
-- No technical boilerplate code at the point of use
-
-    - No mediating property on *observables* for starting observations or creating mappings
-        - (comparison to RxSwift would be illuminating here ...)
-    - No "tokens" and the like to pass around or store
-    - No memory management boilerplate code at the point of observation
-    - Combined observations send one message per *observable*. No tuple destructuring necessary.
-
-- The syntax reflects the intent and metaphor of the *Observer Pattern*: Observers are active subjects while observables are passive objects which are unconcerned about being observed:
-
-    ~~~swift
-    dog.observe(sky)
-    observer.observe(observable)
-    subject.actUpon(object)
-    ~~~
-
-    > Note: Many definitions of the *Observer Pattern*, including [Wikipedia](https://en.wikipedia.org/wiki/Observer_pattern), have the subject / object roles reversed, which we consider not merely a misnomer but, above all, a secondary level of analysis.
-    >
-    > They look at observation from a technical rather than a conceptual point of view, focusing on *how* the problem is being *solved* rather than *what* the solution *means*.
-    >
-    > The illusion we want to create with the *Observer Pattern* is that an observer observes an observable. Linguistically, that is: subject, predicate, object. The subject actively acts on the object, while the object is passively being acted upon.
-    >
-    > Of course, to achieve this under the hood, observables must actively trigger some data propagation. But we should look at the solution more pragmatically in terms of the real-world meaning that we set out to model in the first place.
-
-## Non-intrusive Design
-
-* No delegate protocols to implement
-
-* Custom observables without having to inherit from any base class
-
-    * You're in control of the ancestral tree of your classes
-    * All classes can easily be observed, even views and view controllers.
-
-    > You can keep model and logic code independent of any observer frameworks and techniques. If the model layer had to be stuffed with heavyweight constructs just to be observed, it would become a technical issue rather than an easy to change,  meaningful, direct representation of domain-, business- and view logic.
-
-* No restrictions on how you organize, store or persist the state of your your app
-
-    > You can freely model your domain-, business- and view logic with all your familiar design patterns and types.
-
-* No **optional optionals**, so you have full control over value and message types.
-
-    * You can make your message types optional. SwiftObserver will never spit them back at you wrapped in additional optionals, not even in combined observations.
-    * Also, you can easily unwrap optional messages via the mapping `unwrap`.
-
-* Minimal duplication. SwiftObserver practically never duplicates the messages that are being sent around, in particular not in [combined observations](#combined-observations) and [*mappings*](#mappings). This is in stark contrast to other reactive libraries yet without compomising functional aspects. The only cases that duplicate messages are `latestMessage` on `Weak` and (if you don't change `remembersLatestMessage`) on `Messenger`.
-
-   > Note: Not having to duplicate data where multiple things must be observed is one of the reasons to use combined observations in the first place. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the messages sent from observables.
-   >
-   > SwiftObserver not only leverages object-orientation, it also combines the typical reactive "push model" in which observables push their messages to observers with a regular "pull model" in which observers can pull messages from observables.
-   >
-   > "Pulling" just reflects the natural way objects operate. Observers can act on observables without problem, since that is the actual technical direction of control and dependence. The problem that reactive techiques solve is propagating data **against** the direction of control. 
-   >
-   > A "pull model" is also more in line with functional programming: Instead of buffering state, the observer calls and combines functions on observables.
-
-## Simplicity
-
-- Very few but universal concepts / types
-
-- Pure Swift code for clean modelling, not even any dependence on `Foundation`.
-
-- No distinction between "hot-" and "cold signals"
-
-- No distinction between infinite- and finite series
-
-## Flexibility
-
-- Mappings are first-class *observables* that can be treated like any other *observable*.
-
-- Wherever you map messages, you do it in the same terms and with the same chaining syntax: on a mapping, on another observable or on an observation.
-
-- Simple (combined) observation
-
-    - Just one universal function to observe 1-3 observables
-
-    - Yet you get all the power of combined observation
-
-    - Combined observation has no special syntax and imposes no additional cognitive load.
-
-        > Note: Other reactive libraries dump at least `merge`, `zip` and `combineLatest` on your brain. Since `latestMessage` generally provides the latest message, the provided combined observation is equivalent to `combineLatest`, which is by far the most used combine function in practice. 
-        >
-        > You could implement `merge` and `zip` through a custom observable. However, SwiftObserver's universal observation covers almost all practical needs for combined observation. This gets even amplified by the fact that the pull model, as manifested in `latestMessage`, reduces the need to combine observations at all, since the interesting data can always be pulled from the observables.
-        >
-        > As the author of SwiftObserver, I even have to note, that I don't use combined observation anymore at all. It never offers me a benefit over single observation in practice. To the contrary: Managing observations proves to be harder when they're coupled. 
-        >
-        > My hunch is that `merge`, `zip` and `combineLatest` originate less from practical need and more from a desire to gerneralize and to max out the metaphor of "**data** streams". The underlying conceptual mis-alignment here would be, that the things observables send in an observer-observable relationship are **supposed** to function as **messages** or events rather than as **data**. And here is why:
-        >
-        > All that is required for dependency inversion is that the *observer* gets informed about changes that it might need to react to. The *observer* then decides whether to act at all, how to act and what data it requires, and it pulls exactly that data from wherever it needs to, including from *observables*. It is not the job of the *observable* to presume what data any observer might need. It's not supposed to depend on the *observer's* concerns, which is the whole reason why we invert that dependency through the *observer pattern*. The *observable's* job is just to tell what happened. So, messages naturally function as messages rather than as data streams, and combining messages wouldn't be as meaningful or helpful.
-
-- Create an observable plus a chain of mappings in one line
-
-- Observe an observable using an ad-hoc chain of transformations
-
-- Use `<-` operator to directly set variable values
-
-- Variables are `Codable`, so model types are easy to encode and persist.
-
-- Ability to pull current message from all observable
-
-- Recieve old *and* new value from variables
-
-- With Weak, you can chain mappings together without creating strong references to the mapped observables.
-
-- With Weak, you can put Observables into a data structure like an array and still hold them weakly.
-
-- Chaining Mappings has no side effects in terms of which objects are being held strongly and who owns whom. The code remains explicit and the coder in control.
-
-- Mappings are independent of their mapped source observables, to the point where the sources can be freely swapped.
-
-- Seemless integration of the *Notifier Pattern*
-
-## Safety
-
-- Remove observer from all observables with 1 function call
-- No irreversible memory leaks, since orphaned observations can always be flushed out via `removeAbandonedObservations()`.
-
-## What You Might Not Like
-
-- Not conform to Rx (the semi standard of reactive programming)
-- SwiftObserver is focused on the foundation of reactive programming. UI bindings are available as [UIObserver](https://github.com/flowtoolz/UIObserver), but that framework is still in its infancy. You're welcome to make PRs.
-- Observers and observables must be objects and cannot be of value types. However:
-  
-   1. Variables can hold any type of values and observables can send any type of messages. 
-   2. We found that entities active enough to observe or significant enough to be observed are typically not mere values that are being passed around. What's being passed around are the messages that observables send to observers, and those messages are prototypical value types.
-   3. For fine granular observing, the `Var` type is appropriate, further reducing the "need" (or shall we say "anti pattern"?) to observe value types.
+Patterns that emerged from using SwiftObserver [are documented over here](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns).
 
 [badge-pod]: https://img.shields.io/cocoapods/v/SwiftObserver.svg?label=version&style=flat-square
 [badge-pms]: https://img.shields.io/badge/supports-CocoaPods%20%7C%20Carthage-green.svg?style=flat-square
