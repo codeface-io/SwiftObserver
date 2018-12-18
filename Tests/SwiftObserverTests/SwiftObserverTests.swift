@@ -325,6 +325,26 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual(var1.int, 9)
     }
     
+    func testAdditionOnOptionalInt()
+    {
+        XCTAssertEqual(Var<Int?>(2) + Var<Int?>(7), 9)
+        XCTAssertEqual(Var<Int?>(2) + 7, 9)
+        XCTAssertEqual(2 + Var<Int?>(7), 9)
+        
+        var sum = 2
+        sum += Var<Int?>(7)
+        XCTAssertEqual(sum, 9)
+        
+        let var1 = Var<Int?>(2)
+        var1 += 7
+        XCTAssertEqual(var1.int, 9)
+        
+        var1 <- 2
+        XCTAssertEqual(var1.int, 2)
+        var1 += Var<Int?>(7)
+        XCTAssertEqual(var1.int, 9)
+    }
+    
     func testSubtraction()
     {
         XCTAssertEqual(Var(7) - Var(2), 5)
