@@ -4,6 +4,15 @@ import Foundation
 
 class SwiftObserverTests: XCTestCase
 {
+    func testWeakMappingSource()
+    {
+        let toString = Weak(Var<Int?>()).new().unwrap(0).map { "\($0)" }
+        
+        let sourceIsDead = toString.source.observable == nil
+        
+        XCTAssert(sourceIsDead)
+    }
+    
     func testMessenger()
     {
         let textMessenger = Messenger<String?>()
