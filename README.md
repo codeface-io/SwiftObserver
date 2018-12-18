@@ -16,10 +16,11 @@ SwiftObserver is a lightweight framework for reactive Swift. Its design goals ma
 
 SwiftObserver is just about 1300 lines of production code, but it also approaches a 1000 hours of work, thinking it through, letting go of fancy features, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift), and battle-testing it [in practice](http://flowlistapp.com).
 
-* [Install](#install)
+* [Why the Hell Another Reactive Library?](#why)
 * [Get Started](#get-started)
     * [Observers](#observers)
     * [Observables](#observers)
+    * [Install](#install)
 * [Memory Management](#memory-management)
 * [Variables](#variables)
     * [Set Variable Values](#set-variable-values)
@@ -41,31 +42,14 @@ SwiftObserver is just about 1300 lines of production code, but it also approache
     * [Make State Observable](#make-state-observable)
 * [Weak Observables](#weak-observables)
 * [Specific Patterns](#specific-patterns)
-* [Why the Hell Another Reactive Library?](#why)
 
-# Install
+# <a id="why"></a>Why the Hell Another Reactive Library?
 
-Via [Carthage](https://github.com/Carthage/Carthage): Add this line to your [Cartfile](https://github.com/Carthage/Carthage/blob/master/Documentation/Artifacts.md#cartfile):
+SwiftObserver diverges from convention. It follows the reactive idea in generalizing the *Observer Pattern*. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something different, something we **love** to work with.
 
-~~~
-github "flowtoolz/SwiftObserver" ~> 4.2
-~~~
+Leaving out the right kind of fancyness leaves us with the right kind of simplicity, a simplicity which is powerful.
 
-Via [Cocoapods](https://cocoapods.org): Adjust your [Podfile](https://guides.cocoapods.org/syntax/podfile.html):
-
-~~~ruby
-use_frameworks!
-
-target "MyAppTarget" do
-  pod "SwiftObserver", "~> 4.2"
-end
-~~~
-
-Then, in your Swift files:
-
-~~~swift
-import SwiftObserver
-~~~
+More on the philosophy of SwiftObserver [is documented over here](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#the-philosophy-of-swiftobserver)
 
 # Get Started
 
@@ -127,6 +111,30 @@ You use all *observables* the same way. There are only three things to note abou
 - Observing an `Observable` does not have the side effect of keeping it alive. Someone must own it via a strong reference. (Note that this won't prevent us from [observing with a chain of transformations](#ad-hoc-mapping) all in a single line.)
 - The property `latestMessage` is of the type of messages the `Observable` sends. It typically returns the last message that was sent or a value that indicates that nothing changed. It's a way for clients to request (pull) the last or "current" message, as opposed to waiting for the `Observable` to send (push) the next. ([Combined observations](#combined-observations) also pull `latestMessage`.)
 - Typically, an `Observable` sends its messages by itself. But anyone can make it send  `latestMessage` via `send()` or any other message via `send(_:)`.
+
+## Install
+
+With [Carthage](https://github.com/Carthage/Carthage), add this line to your [Cartfile](https://github.com/Carthage/Carthage/blob/master/Documentation/Artifacts.md#cartfile):
+
+```
+github "flowtoolz/SwiftObserver" ~> 4.2
+```
+
+With [Cocoapods](https://cocoapods.org), adjust your [Podfile](https://guides.cocoapods.org/syntax/podfile.html):
+
+```ruby
+use_frameworks!
+
+target "MyAppTarget" do
+  pod "SwiftObserver", "~> 4.2"
+end
+```
+
+Then, in your Swift files:
+
+```swift
+import SwiftObserver
+```
 
 # Memory Management
 
@@ -595,14 +603,6 @@ Since the wrapped `observable` might die, `Weak` has to buffer, and therefore **
 # Specific Patterns
 
 Patterns that emerged from using SwiftObserver [are documented over here](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns).
-
-# <a id="why"></a>Why the Hell Another Reactive Library?
-
-SwiftObserver diverges from convention. It follows the reactive idea in generalizing the *Observer Pattern*. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something different, something we **love** to work with.
-
-Leaving out the right kind of fancyness leaves us with the right kind of simplicity, a simplicity which is powerful.
-
-More on the philosophy of SwiftObserver [is documented over here](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#the-philosophy-of-swiftobserver)
 
 [badge-pod]: https://img.shields.io/cocoapods/v/SwiftObserver.svg?label=version&style=flat-square
 [badge-pms]: https://img.shields.io/badge/supports-CocoaPods%20%7C%20Carthage-green.svg?style=flat-square
