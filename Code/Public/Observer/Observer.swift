@@ -77,7 +77,7 @@ public extension Observer
 
 public protocol Observer: AnyObject {}
 
-public func removeAbandonedObservations()
+public func stopAllAbandonedObservations()
 {
     ObservationService.removeDeadObservers()
 }

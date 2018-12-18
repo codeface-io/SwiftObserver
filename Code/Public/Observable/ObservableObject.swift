@@ -45,7 +45,7 @@ public class ObservableObject<Message>: Observable
         }
     }
     
-    public func removeObservers()
+    public func stopObservations()
     {
         let observerHashs = observerList.hashValues
         
@@ -56,7 +56,7 @@ public class ObservableObject<Message>: Observable
         ObservationService.didRemove(observerHashs, from: self)
     }
     
-    public func removeDeadObservers()
+    public func stopAbandonedObservations()
     {
         let observerHashs = observerList.hashValuesOfNilObservers
         

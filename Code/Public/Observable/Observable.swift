@@ -5,14 +5,20 @@ public extension Observable
 
 public protocol Observable: AnyObject
 {
-    func add(_ observer: AnyObject, receive: @escaping Receiver)
+    // for internal use by Observer
     
+    func add(_ observer: AnyObject, receive: @escaping Receiver)
     func remove(_ observer: AnyObject)
-    func removeObservers()
-    func removeDeadObservers()
+    
+    // for external use by clients
+    
+    func stopObservations()
+    func stopAbandonedObservations()
     
     func send(_ message: Message)
     var latestMessage: Message { get }
+    
+    // types
     
     typealias Filter = (Message) -> Bool
     typealias Receiver = (Message) -> Void

@@ -25,14 +25,14 @@ public extension CustomObservable
         messenger.remove(observer)
     }
 
-    func removeObservers()
+    func stopObservations()
     {
-        messenger.removeObservers()
+        messenger.stopObservations()
     }
 
-    func removeDeadObservers()
+    func stopAbandonedObservations()
     {
-        messenger.removeDeadObservers()
+        messenger.stopAbandonedObservations()
     }
 
     func send(_ message: Message)
