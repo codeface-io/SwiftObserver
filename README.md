@@ -4,7 +4,7 @@
 
 [![badge-pod]](http://cocoapods.org/pods/SwiftObserver) ![badge-pms] ![badge-languages] ![badge-platforms] ![badge-mit]
 
-*SwiftObserver* is a lightweight framework for reactive Swift. Its design goals make it easy to learn and a joy to use:
+SwiftObserver is a lightweight framework for reactive Swift. Its design goals make it easy to learn and a joy to use:
 
 1. [**Meaningful Code**](#meaningful-code): SwiftObserver promotes meaningful metaphors, names and syntax, producing highly readable code.
 2. [**Non-intrusive Design**](#non-intrusive-design): SwiftObserver doesn't limit or modulate your design. It just makes it easy to do the right thing.
@@ -12,9 +12,9 @@
 4. [**Flexibility**](#flexibility): SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
 5. [**Safety**](#safety): SwiftObserver makes memory management meaningful and easy. Oh yeah, real memory leaks are impossible.
 
-[*Reactive Programming*](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [*Dependency Inversion*](https://en.wikipedia.org/wiki/Dependency_inversion_principle). *SwiftObserver* breaks *Reactive Programming* down to its essence, which is the [*Observer Pattern*](https://en.wikipedia.org/wiki/Observer_pattern).
+[*Reactive Programming*](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [*Dependency Inversion*](https://en.wikipedia.org/wiki/Dependency_inversion_principle). SwiftObserver breaks *Reactive Programming* down to its essence, which is the [*Observer Pattern*](https://en.wikipedia.org/wiki/Observer_pattern).
 
-*SwiftObserver* is just about 1300 lines of production code, but it also approaches a 1000 hours of work, thinking it through, letting go of fancy features, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift), and battle-testing it [in practice](http://flowlistapp.com).
+SwiftObserver is just about 1300 lines of production code, but it also approaches a 1000 hours of work, thinking it through, letting go of fancy features, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift), and battle-testing it [in practice](http://flowlistapp.com).
 
 * [Install](#install)
 * [Get Started](#get-started)
@@ -69,7 +69,7 @@ import SwiftObserver
 
 # Get Started
 
-> No need to learn a bunch of arbitrary metaphors, terms or types.<br>*SwiftObserver* is simple: **Objects observe other objects**.
+> No need to learn a bunch of arbitrary metaphors, terms or types.<br>SwiftObserver is simple: **Objects observe other objects**.
 
 Or a tad more technically: Observed objects send *messages* to their *observers*. 
 
@@ -99,7 +99,7 @@ dog.observe(tv, bowl, doorbell) { image, food, sound in
 }
 ~~~
 
-To process messages from an *Observable*, the *Observer* must be alive. There's no awareness after death in memory:
+To process messages from an *observable*, the *observer* must be alive. There's no awareness after death in memory:
 
 ```swift
 class Dog: Observer {
@@ -122,7 +122,7 @@ You get *observables* in four ways:
 3. Create a [*Messenger*](#messengers). It's an `Observable` through which other objects communicate.
 4. Implement a [custom `Observable`](#custom-observables) by conforming to `CustomObservable`.
 
-You use all *Observables* the same way. There are only three things to note about `Observable`:
+You use all *observables* the same way. There are only three things to note about `Observable`:
 
 - Observing an `Observable` does not have the side effect of keeping it alive. Someone must own it via a strong reference. (Note that this won't prevent us from [observing with a chain of transformations](#ad-hoc-mapping) all in a single line.)
 - The property `latestMessage` is of the type of messages the `Observable` sends. It typically returns the last message that was sent or a value that indicates that nothing changed. It's a way for clients to request (pull) the last or "current" message, as opposed to waiting for the `Observable` to send (push) the next. ([Combined observations](#combined-observations) also pull `latestMessage`.)
@@ -130,13 +130,13 @@ You use all *Observables* the same way. There are only three things to note abou
 
 # Memory Management
 
-To avoid abandoned observations piling up in memory, *Observers* should, before they die, stop the observations they started. One way to do that is to stop each observation when it's no longer needed:
+To avoid abandoned observations piling up in memory, *observers* should, before they die, stop the observations they started. One way to do that is to stop each observation when it's no longer needed:
 
 ```swift
 dog.stopObserving(Sky.shared)
 ```
 
-An even simpler and safer way is to let an *Observer* stop all its observations right before it dies:
+An even simpler and safer way is to let an *observer* stop all its observations right before it dies:
 
 ```swift
 class Dog: Observer {
@@ -153,9 +153,9 @@ Forgetting some observations wouldn't waste significant memory. But you should u
 The two above mentioned functions are all you need for safe memory management. If you still want to erase observations that you may have forgotten, there are two other functions for that:
 
 1. `myObservable.removeDeadObservers()`
-2. `removeAbandonedObservations()` (Erases **every** observation whos *Observer* is dead)
+2. `removeAbandonedObservations()` (Erases **every** observation whos *observer* is dead)
 
-> Memory management with *SwiftObserver* is meaningful and safe. There are no contrived constructs like "Disposable" or "DisposeBag". And since you can always flush out orphaned observations, real memory leaks are impossible.
+> Memory management with SwiftObserver is meaningful and safe. There are no contrived constructs like "Disposable" or "DisposeBag". And since you can always flush out orphaned observations, real memory leaks are impossible.
 
 # Variables
 
@@ -208,7 +208,7 @@ observer.observe(variable) { change in
 
 A `Var` sends a change message whenever its `value` actually changes. Just starting to observe it does **not** trigger a message. This keeps it simple, predictable and consistent, in particular in combination with [*Mappings*](#mappings). You can always call `send()` on a `Var<Value>`, sending an `Change<Value>` in which `old` and `new` are both the current `value`.
 
-Internally, a `Var` appends new values to a queue, so all its *Observers* get to process a value change before the next change takes effect. This is for situations when the `Var` has multiple *Observers* and at least one *Observer* changes the `value` in response to a `value` change.
+Internally, a `Var` appends new values to a queue, so all its *observers* get to process a value change before the next change takes effect. This is for situations when the `Var` has multiple *Observers* and at least one *observer* changes the `value` in response to a `value` change.
 
 ## Variables are Codable
 
@@ -337,7 +337,7 @@ shortText.filter?(Change(nil, "this is too long")) ?? true // false
 
 ### Select
 
-Use the `select` filter to receive only one specific message. `select` is available on all *Observables* that send `Equatable` messages. When observing a *Mapping* produced by `select`, the closure takes no arguments:
+Use the `select` filter to receive only one specific message. `select` is available on all *observables* that send `Equatable` messages. When observing a *Mapping* produced by `select`, the closure takes no arguments:
 
 ```swift
 let notifier = Var("").new().select("my notification")
@@ -483,7 +483,7 @@ observer.observe(textMessenger).select("my notification") {
 
 ## Declare Custom Observables
 
-Implement your own `Observable` by conforming to `CustomObservable`. A custom *observable* just needs to specify its `Message` and store a `Messenger<Message>`. Here's a minimal custom *observable*:
+Implement your own `Observable` by conforming to `CustomObservable`. A custom *observable* just needs to specify its `Message` type and store a `Messenger<Message>`. Here's a minimal example:
 
 ~~~swift
 class Minimal: CustomObservable {
@@ -520,7 +520,7 @@ class Model: CustomObservable {
 
 ## The Latest Message
 
-A custom *observable* uses its `messenger` to implement `Observable`. For instance, `send(_:)`  on a custom *observable* internally calls `messenger.send(_:)`. 
+A `CustomObservable` uses its `messenger` to implement `Observable`. For instance, `send(_:)` internally calls `messenger.send(_:)`. 
 
 By default, a `Messenger` remembers the last message it sent, therefore `latestMessage` on a `CustomObservable` works as expected, in particular for combined observations. However, the `CustomObservable` is in control of that duplication and can always deactivate it:
 
@@ -539,7 +539,7 @@ If your `Message` is optional, you can also erase the buffered message at any po
 
 ## Make State Observable
 
-To inform *Observers* about value changes, similar to `Var<Value>`, you would use `Change<Value>`, and you might want to customize `latestMessage` so it returns the latest value rather than the last sent message:
+To inform *observers* about value changes, similar to `Var<Value>`, you would use `Change<Value>`, and you might want to customize `latestMessage` so it returns the latest value rather than the last sent message:
 
 ~~~swift
 class Model: CustomObservable {
@@ -588,7 +588,7 @@ Since the wrapped `observable` might die, `Weak` has to buffer, and therefore **
 
 # Specific Patterns
 
-Patterns that emerged from using *SwiftObserver* [are documented over here](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns).
+Patterns that emerged from using SwiftObserver [are documented over here](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns).
 
 # <a id="why"></a>Why the Hell Another Reactive Library?
 
@@ -618,7 +618,7 @@ Leaving out the right kind of fancyness leaves us with the right kind of simplic
 
 - No technical boilerplate code at the point of use
 
-    - No mediating property on *Observables* for starting observations or creating mappings
+    - No mediating property on *observables* for starting observations or creating mappings
         - (comparison to RxSwift would be illuminating here ...)
     - No "tokens" and the like to pass around or store
     - No memory management boilerplate code at the point of observation
@@ -660,7 +660,7 @@ Leaving out the right kind of fancyness leaves us with the right kind of simplic
     * You can make your message types optional. SwiftObserver will never spit them back at you wrapped in additional optionals, not even in combined observations.
     * Also, you can easily unwrap optional messages via the mapping `unwrap`.
 
-* Minimal duplication. *SwiftObserver* practically never duplicates the messages that are being sent around, in particular not in [combined observations](#combined-observations) and [*mappings*](#mappings). This is in stark contrast to other reactive libraries yet without compomising functional aspects. The only cases that duplicate messages are `latestMessage` on `Weak` and (if you don't change `remembersLatestMessage`) on `Messenger`.
+* Minimal duplication. SwiftObserver practically never duplicates the messages that are being sent around, in particular not in [combined observations](#combined-observations) and [*mappings*](#mappings). This is in stark contrast to other reactive libraries yet without compomising functional aspects. The only cases that duplicate messages are `latestMessage` on `Weak` and (if you don't change `remembersLatestMessage`) on `Messenger`.
 
    > Note: Not having to duplicate data where multiple things must be observed is one of the reasons to use combined observations in the first place. However, some reactive libraries choose to not make full use of object-oriented programming, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the messages sent from observables.
    >
@@ -682,7 +682,7 @@ Leaving out the right kind of fancyness leaves us with the right kind of simplic
 
 ## Flexibility
 
-- Mappings are first-class *Observables* that can be treated like any other *Observable*.
+- Mappings are first-class *observables* that can be treated like any other *observable*.
 
 - Wherever you map messages, you do it in the same terms and with the same chaining syntax: on a mapping, on another observable or on an observation.
 
