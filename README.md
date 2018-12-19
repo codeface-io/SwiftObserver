@@ -16,11 +16,11 @@ SwiftObserver is a lightweight framework for reactive Swift. Its design goals ma
 
 SwiftObserver is just about 1300 lines of production code, but it also approaches a 1000 hours of work, thinking it through, letting go of fancy features, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift), and battle-testing it [in practice](http://flowlistapp.com).
 
-* [Why the Hell Another Reactive Library?](#why)
+* [Get Involved](#get-involved)
+* [Install](#install)
 * [Get Started](#get-started)
     * [Observers](#observers)
     * [Observables](#observers)
-    * [Install](#install)
 * [Memory Management](#memory-management)
 * [Variables](#variables)
     * [Set Variable Values](#set-variable-values)
@@ -41,15 +41,50 @@ SwiftObserver is just about 1300 lines of production code, but it also approache
     * [The Latest Message](#the-latest-message)
     * [Make State Observable](#make-state-observable)
 * [Weak Observables](#weak-observables)
-* [Specific Patterns](#specific-patterns)
+* [Why the Hell Another Reactive Library?](#why)
+* [Appendix](#appendix)
 
-# <a id="why"></a>Why the Hell Another Reactive Library?
+# Get Involved
 
-SwiftObserver diverges from convention. It follows the reactive idea in generalizing the *Observer Pattern*. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something different, something we **love** to work with.
+Found a **bug**? Create a [github issue](https://github.com/flowtoolz/SwiftObserver/issues/new/choose).
 
-Leaving out the right kind of fancyness leaves us with the right kind of simplicity, a simplicity which is powerful. 
+Need a **feature**? Create a [github issue](https://github.com/flowtoolz/SwiftObserver/issues/new/choose).
 
-Read more about the [philosophy and features of SwiftObserver](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#the-philosophy-of-swiftobserver).
+Want to **improve** stuff? Create a [pull request](https://github.com/flowtoolz/SwiftObserver/pulls).
+
+Want to start a **discussion**? Visit [gitter.im/SwiftObserver](https://gitter.im/SwiftObserver/).
+
+Need **support** and troubleshooting? Write at <swiftobserver@flowtoolz.com>.
+
+Want to **contact** us? Write at <swiftobserver@flowtoolz.com>.
+
+# Install
+
+With [Carthage](https://github.com/Carthage/Carthage), add this line to your [Cartfile](https://github.com/Carthage/Carthage/blob/master/Documentation/Artifacts.md#cartfile):
+
+```
+github "flowtoolz/SwiftObserver" ~> 4.2
+```
+
+Then run `$ carthage update --platform ios`.
+
+With [Cocoapods](https://cocoapods.org), adjust your [Podfile](https://guides.cocoapods.org/syntax/podfile.html):
+
+```ruby
+use_frameworks!
+
+target "MyAppTarget" do
+  pod "SwiftObserver", "~> 4.2"
+end
+```
+
+Then run `$ pod install`.
+
+Finally, in your Swift files:
+
+```swift
+import SwiftObserver
+```
 
 # Get Started
 
@@ -101,40 +136,16 @@ For objects to be observable, they must conform to `Observable`.
 
 You get *observables* in four ways:
 
-1. Create a [*Variable*](#variables). It's an `Observable` that holds a value and sends value changes.
-2. Create a [*Mapping*](#mappings). It's an `Observable` that transforms messages from a *source observable*.
-3. Create a [*Messenger*](#messengers). It's an `Observable` through which other objects communicate.
-4. Implement a [custom `Observable`](#custom-observables) by conforming to `CustomObservable`.
+1. Create a [*variable*](#variables). It's an `Observable` that holds a value and sends value changes.
+2. Create a [*mapping*](#mappings). It's an `Observable` that transforms messages from a *source observable*.
+3. Create a [*messenger*](#messengers). It's an `Observable` through which other objects communicate.
+4. Implement a [custom](#custom-observables) `Observable` by conforming to `CustomObservable`.
 
 You use all *observables* the same way. There are only three things to note about `Observable`:
 
 - Observing an `Observable` does not have the side effect of keeping it alive. Someone must own it via a strong reference. (Note that this won't prevent us from [observing with a chain of transformations](#ad-hoc-mapping) all in a single line.)
 - The property `latestMessage` is of the type of messages the `Observable` sends. It typically returns the last message that was sent or a value that indicates that nothing changed. It's a way for clients to request (pull) the last or "current" message, as opposed to waiting for the `Observable` to send (push) the next. ([Combined observations](#combined-observations) also pull `latestMessage`.)
 - Typically, an `Observable` sends its messages by itself. But anyone can make it send  `latestMessage` via `send()` or any other message via `send(_:)`.
-
-## Install
-
-With [Carthage](https://github.com/Carthage/Carthage), add this line to your [Cartfile](https://github.com/Carthage/Carthage/blob/master/Documentation/Artifacts.md#cartfile):
-
-```
-github "flowtoolz/SwiftObserver" ~> 4.2
-```
-
-With [Cocoapods](https://cocoapods.org), adjust your [Podfile](https://guides.cocoapods.org/syntax/podfile.html):
-
-```ruby
-use_frameworks!
-
-target "MyAppTarget" do
-  pod "SwiftObserver", "~> 4.2"
-end
-```
-
-Then, in your Swift files:
-
-```swift
-import SwiftObserver
-```
 
 # Memory Management
 
@@ -600,9 +611,23 @@ let numberValue = weakNumber.observable?.value
 
 Since the wrapped `observable` might die, `Weak` has to buffer, and therefore **duplicate**, the value of `latestMessage`. This is a necessary price for holding an `Observable` weakly while using it all the same.
 
-# Specific Patterns
+# <a id="why"></a>Why the Hell Another Reactive Library?
+
+SwiftObserver diverges from convention. It follows the reactive idea in generalizing the *Observer Pattern*. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something different, something we **love** to work with.
+
+Leaving out the right kind of fancyness leaves us with the right kind of simplicity, a simplicity which is powerful. 
+
+Read more about the [philosophy and features of SwiftObserver](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#the-philosophy-of-swiftobserver).
+
+# Appendix
+
+## Specific Patterns
 
 Patterns that emerged from using SwiftObserver [are documented over here](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns).
+
+## License
+
+SwiftObserver is released under the MIT license. [See LICENSE](https://github.com/flowtoolz/SwiftObserver/blob/master/LICENSE) for details.
 
 [badge-gitter]: https://img.shields.io/badge/community-Gitter-red.svg?style=flat-square
 [badge-pod]: https://img.shields.io/cocoapods/v/SwiftObserver.svg?label=version&style=flat-square
