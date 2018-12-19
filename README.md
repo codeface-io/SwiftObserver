@@ -17,8 +17,9 @@ SwiftObserver is a lightweight framework for reactive Swift. Its design goals ma
 SwiftObserver is just about 1300 lines of production code, but it also approaches a 1000 hours of work, thinking it through, letting go of fancy features, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift), and battle-testing it [in practice](http://flowlistapp.com).
 
 * [Get Involved](#get-involved)
-* [Install](#install)
 * [Get Started](#get-started)
+    * [Install](#install)
+    * [Observations](#observations)
     * [Observers](#observers)
     * [Observables](#observers)
 * [Memory Management](#memory-management)
@@ -41,8 +42,10 @@ SwiftObserver is just about 1300 lines of production code, but it also approache
     * [The Latest Message](#the-latest-message)
     * [Make State Observable](#make-state-observable)
 * [Weak Observables](#weak-observables)
-* [Why the Hell Another Reactive Library?](#why)
 * [Appendix](#appendix)
+    * [Why the Hell Another Reactive Library?](#why)
+    * [Specific Patterns](#specific-patterns)
+    * [Licence](#licence)
 
 # Get Involved
 
@@ -58,7 +61,9 @@ Need **support** and troubleshooting? Write at <swiftobserver@flowtoolz.com>.
 
 Want to **contact** us? Write at <swiftobserver@flowtoolz.com>.
 
-# Install
+# Get Started
+
+## Install
 
 With [Carthage](https://github.com/Carthage/Carthage), add this line to your [Cartfile](https://github.com/Carthage/Carthage/blob/master/Documentation/Artifacts.md#cartfile):
 
@@ -86,7 +91,7 @@ Finally, in your Swift files:
 import SwiftObserver
 ```
 
-# Get Started
+## Observations
 
 > No need to learn a bunch of arbitrary metaphors, terms or types.<br>SwiftObserver is simple: **Objects observe other objects**.
 
@@ -105,6 +110,8 @@ class Dog: Observer {
     } 
 }
 ~~~
+
+Each observation is one *observer* observing one *observable*.
 
 ## Observers
 
@@ -611,15 +618,15 @@ let numberValue = weakNumber.observable?.value
 
 Since the wrapped `observable` might die, `Weak` has to buffer, and therefore **duplicate**, the value of `latestMessage`. This is a necessary price for holding an `Observable` weakly while using it all the same.
 
-# <a id="why"></a>Why the Hell Another Reactive Library?
+# Appendix
+
+## <a id="why"></a>Why the Hell Another Reactive Library?
 
 SwiftObserver diverges from convention. It follows the reactive idea in generalizing the *Observer Pattern*. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something different, something we **love** to work with.
 
 Leaving out the right kind of fancyness leaves us with the right kind of simplicity, a simplicity which is powerful. 
 
 Read more about the [philosophy and features of SwiftObserver](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#the-philosophy-of-swiftobserver).
-
-# Appendix
 
 ## Specific Patterns
 
@@ -629,8 +636,10 @@ Patterns that emerged from using SwiftObserver [are documented over here](https:
 
 SwiftObserver is released under the MIT license. [See LICENSE](https://github.com/flowtoolz/SwiftObserver/blob/master/LICENSE) for details.
 
-[badge-gitter]: https://img.shields.io/badge/community-Gitter-red.svg?style=flat-square
+[badge-gitter]: https://img.shields.io/badge/chat-Gitter-red.svg?style=flat-square
+
 [badge-pod]: https://img.shields.io/cocoapods/v/SwiftObserver.svg?label=version&style=flat-square
+
 [badge-pms]: https://img.shields.io/badge/supports-CocoaPods%20%7C%20Carthage-green.svg?style=flat-square
 [badge-languages]: https://img.shields.io/badge/language-Swift-orange.svg?style=flat-square
 [badge-platforms]: https://img.shields.io/badge/platforms-iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20watchOS%20%7C%20Linux-lightgrey.svg?style=flat-square
