@@ -63,7 +63,7 @@ Want to **contact** us? Write at <swiftobserver@flowtoolz.com>.
 With [Carthage](https://github.com/Carthage/Carthage), add this line to your [Cartfile](https://github.com/Carthage/Carthage/blob/master/Documentation/Artifacts.md#cartfile):
 
 ```
-github "flowtoolz/SwiftObserver" ~> 4.2
+github "flowtoolz/SwiftObserver" ~> 5.0
 ```
 
 Then run `$ carthage update --platform ios`.
@@ -74,7 +74,7 @@ With [Cocoapods](https://cocoapods.org), adjust your [Podfile](https://guides.co
 use_frameworks!
 
 target "MyAppTarget" do
-  pod "SwiftObserver", "~> 4.2"
+  pod "SwiftObserver", "~> 5.0"
 end
 ```
 
