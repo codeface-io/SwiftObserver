@@ -2,6 +2,8 @@
 
 # SwiftObserver
 
+[![Join the chat at https://gitter.im/flowtoolz/SwiftObserver](https://badges.gitter.im/flowtoolz/SwiftObserver.svg)](https://gitter.im/flowtoolz/SwiftObserver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![badge-pod]](http://cocoapods.org/pods/SwiftObserver) ![badge-pms] ![badge-languages] ![badge-platforms] ![badge-mit]
 
 SwiftObserver is a lightweight framework for reactive Swift. Its design goals make it easy to learn and a joy to use:
