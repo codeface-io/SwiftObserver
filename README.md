@@ -52,7 +52,7 @@ Need a **feature**? Create a [github issue](https://github.com/flowtoolz/SwiftOb
 
 Want to **improve** stuff? Create a [pull request](https://github.com/flowtoolz/SwiftObserver/pulls).
 
-Want to start a **discussion**? Visit [gitter.im/SwiftObserver](https://gitter.im/SwiftObserver/).
+Want to start a **discussion**? Visit [Gitter](https://gitter.im/flowtoolz/SwiftObserver/).
 
 Need **support** and troubleshooting? Write at <swiftobserver@flowtoolz.com>.
 
