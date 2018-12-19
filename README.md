@@ -2,9 +2,7 @@
 
 # SwiftObserver
 
-[![Join the chat at https://gitter.im/flowtoolz/SwiftObserver](https://badges.gitter.im/flowtoolz/SwiftObserver.svg)](https://gitter.im/flowtoolz/SwiftObserver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-[![badge-pod]](http://cocoapods.org/pods/SwiftObserver) ![badge-pms] ![badge-languages] ![badge-platforms] ![badge-mit]
+[![badge-pod]](http://cocoapods.org/pods/SwiftObserver) ![badge-pms] ![badge-languages] [![badge-gitter]](https://gitter.im/flowtoolz/SwiftObserver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) ![badge-platforms] ![badge-mit]
 
 SwiftObserver is a lightweight framework for reactive Swift. Its design goals make it easy to learn and a joy to use:
 
@@ -606,8 +604,9 @@ Since the wrapped `observable` might die, `Weak` has to buffer, and therefore **
 
 Patterns that emerged from using SwiftObserver [are documented over here](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns).
 
+[badge-gitter]: https://img.shields.io/badge/community-Gitter-red.svg?style=flat-square
 [badge-pod]: https://img.shields.io/cocoapods/v/SwiftObserver.svg?label=version&style=flat-square
 [badge-pms]: https://img.shields.io/badge/supports-CocoaPods%20%7C%20Carthage-green.svg?style=flat-square
-[badge-languages]: https://img.shields.io/badge/languages-Swift-orange.svg?style=flat-square
+[badge-languages]: https://img.shields.io/badge/language-Swift-orange.svg?style=flat-square
 [badge-platforms]: https://img.shields.io/badge/platforms-iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20watchOS%20%7C%20Linux-lightgrey.svg?style=flat-square
 [badge-mit]: https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat-square
