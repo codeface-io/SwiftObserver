@@ -71,7 +71,7 @@ With [Carthage](https://github.com/Carthage/Carthage), add this line to your [Ca
 github "flowtoolz/SwiftObserver" ~> 5.0
 ```
 
-Then run `$ carthage update --platform ios`.
+Then follow [these instructions](https://github.com/Carthage/Carthage#adding-frameworks-to-an-application) and run `$ carthage update --platform ios`.
 
 With [Cocoapods](https://cocoapods.org), adjust your [Podfile](https://guides.cocoapods.org/syntax/podfile.html):
 
