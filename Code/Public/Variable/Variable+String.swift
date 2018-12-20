@@ -1,12 +1,5 @@
 // MARK: - Concatenating
 
-infix operator +=: AssignmentPrecedence
-
-public func +=<S1: StringValue, S2: StringValue>(str1: inout S1, str2: S2)
-{
-    str1.string = str1.string + str2.string
-}
-
 infix operator +: AdditionPrecedence
 
 public func +<S1: StringValue, S2: StringValue>(str1: S1, str2: S2) -> String

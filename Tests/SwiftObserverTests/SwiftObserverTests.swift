@@ -4,6 +4,16 @@ import Foundation
 
 class SwiftObserverTests: XCTestCase
 {
+    func testStringProperty()
+    {
+        let text = Var("")
+        
+        text.string += "append"
+        
+        XCTAssertEqual("append", text.value)
+        
+    }
+    
     func testWeakMappingSource()
     {
         let toString = Weak(Var<Int?>()).new().unwrap(0).map { "\($0)" }

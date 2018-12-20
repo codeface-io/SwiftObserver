@@ -22,7 +22,7 @@ SwiftObserver is just about 1200 lines of production code, but it also approache
     * [Introduction](#introduction)
 * [Memory Management](#memory-management)
 * [Variables](#variables)
-    * [Set Variable Values](#set-variable-values)
+    * [Use Variable Values](#use-variable-values)
     * [Observe Variables](#observe-variables) 
     * [Variables are Codable](#variables-are-codable)
 * [Mappings](#mappings)
@@ -177,7 +177,7 @@ The three above mentioned functions are all you need for safe memory management.
 
 A `Var<Value>` has a property `value: Value`. If `Value` conforms to `Equatable` or `Comparable`, the whole `Var<Value>` will also conform to the respective protocol.
 
-## Set Variable Values
+## Use Variable Values
 
 You can set `value` directly, via initializer and via the `<-` operator:
 
@@ -199,15 +199,15 @@ If `Value` is either `Int`, `Float` or `Double`:
 3. ```swift
     let numVar = Var<Int?>()     // numVar.value == nil
     print(numVar.int)            // 0
-    numVar <- Var(3) + 2         // numVar.value == 5
-    numVar.int += 5              // numVar.value == 10
+    numVar.int += 5              // numVar.value == 5
+    numVar <- Var(1) + 2         // numVar.value == 3
     ```
 
 ### String Values
 
 1. Every `Var<String>`, `Var<String?>`, `Var<String>?` and `Var<String?>?` has a `var string: String` which is non-optional and interprets `nil` values as `""`.
 2. Representing its `string` property, every `Var<String>` and `Var<String?>` conforms to `BidirectionalCollection`, `Collection` and `Sequence`.
-3. You can apply concatenation operators `+` and `+=` to all pairs of `String`, `String?`, `Var<String>`, `Var<String?>`, `Var<String>?` and `Var<String?>?`.
+3. You can apply concatenation operator `+` to all pairs of `String`, `String?`, `Var<String>`, `Var<String?>`, `Var<String>?` and `Var<String?>?`.
 
 ## Observe Variables
 
