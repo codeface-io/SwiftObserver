@@ -14,7 +14,7 @@ SwiftObserver is a lightweight framework for reactive Swift. Its design goals ma
 
 [*Reactive Programming*](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [*Dependency Inversion*](https://en.wikipedia.org/wiki/Dependency_inversion_principle). SwiftObserver breaks *Reactive Programming* down to its essence, which is the [*Observer Pattern*](https://en.wikipedia.org/wiki/Observer_pattern).
 
-SwiftObserver is just about 1300 lines of production code, but it also approaches a 1000 hours of work, thinking it through, letting go of fancy features, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift), and battle-testing it [in practice](http://flowlistapp.com).
+SwiftObserver is just about 1200 lines of production code, but it also approaches a 1000 hours of work, thinking it through, letting go of fancy features, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift), and battle-testing it [in practice](http://flowlistapp.com).
 
 * [Get Involved](#get-involved)
 * [Get Started](#get-started)
@@ -192,16 +192,15 @@ number <- 42                 // number.value == 42
 
 If `Value` is either `Int`, `Float` or `Double`:
 
-1. Every `Var<Value>`, `Var<Value?>`, `Var<Value>?` and `Var<Value?>?` has either `var int: Int`, `var float: Float` or `var double: Double` which is non-optional and interprets `nil` values as zero.
+1. Every `Var<Value>`, `Var<Value?>`, `Var<Value>?` and `Var<Value?>?` has either `var int: Int`, `var float: Float` or `var double: Double`, which is non-optional and interprets `nil` values as zero.
 
-2. You can apply numeric operators `+`, `+=`, `-`, `-=`, `*`, `*=`, `/` and `/=` to all pairs of `Value`, `Value?`, `Var<Value>`, `Var<Value?>`, `Var<Value>?` and `Var<Value?>?`.
+2. You can apply numeric operators `+`, `-`, `*` and `/` to all pairs of `Value`, `Value?`, `Var<Value>`, `Var<Value?>`, `Var<Value>?` and `Var<Value?>?`.
 
-1. ```swift
-    let numVar = Var<Int?>()        // numVar.value == nil
-    print(numVar.int)               // 0
-    numVar += Var(7)                // numVar.value == 7
-    var number = Var(3) + Var(2)    // number == 5
-    number += Var(5)                // number == 10
+3. ```swift
+    let numVar = Var<Int?>()     // numVar.value == nil
+    print(numVar.int)            // 0
+    numVar <- Var(3) + 2         // numVar.value == 5
+    numVar.int += 5              // numVar.value == 10
     ```
 
 ### String Values

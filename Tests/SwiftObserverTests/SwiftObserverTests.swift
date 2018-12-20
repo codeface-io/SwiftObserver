@@ -301,16 +301,16 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual(2 * Var(7), 14)
         
         var product = 2
-        product *= Var(7)
+        product.int *= Var(7).int
         XCTAssertEqual(product, 14)
         
         let var1 = Var(2)
-        var1 *= 7
+        var1.int *= 7
         XCTAssertEqual(var1.int, 14)
         
         var1 <- 2
         XCTAssertEqual(var1.int, 2)
-        var1 *= Var(7)
+        var1.int *= Var(7).int
         XCTAssertEqual(var1.int, 14)
     }
     
@@ -321,16 +321,16 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual(2 + Var(7), 9)
         
         var sum = 2
-        sum += Var(7)
+        sum.int += Var(7).int
         XCTAssertEqual(sum, 9)
         
         let var1 = Var(2)
-        var1 += 7
+        var1.int += 7
         XCTAssertEqual(var1.int, 9)
         
         var1 <- 2
         XCTAssertEqual(var1.int, 2)
-        var1 += Var(7)
+        var1.int += Var(7).int
         XCTAssertEqual(var1.int, 9)
     }
     
@@ -341,16 +341,16 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual(2 + Var<Int?>(7), 9)
         
         var sum = 2
-        sum += Var<Int?>(7)
+        sum += Var<Int?>(7).int
         XCTAssertEqual(sum, 9)
         
         let var1 = Var<Int?>(2)
-        var1 += 7
+        var1.int += 7
         XCTAssertEqual(var1.int, 9)
         
         var1 <- 2
         XCTAssertEqual(var1.int, 2)
-        var1 += Var<Int?>(7)
+        var1.int += Var<Int?>(7).int
         XCTAssertEqual(var1.int, 9)
     }
     
@@ -361,16 +361,16 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual(7 - Var(2), 5)
         
         var num = 2
-        num -= Var(7)
+        num.int -= Var(7).int
         XCTAssertEqual(num, -5)
         
         let var1 = Var(2)
-        var1 -= 7
+        var1.int -= 7
         XCTAssertEqual(var1.int, -5)
         
         var1 <- 2
         XCTAssertEqual(var1.int, 2)
-        var1 -= Var(7)
+        var1.int -= Var(7).int
         XCTAssertEqual(var1.int, -5)
     }
     
