@@ -1,6 +1,6 @@
 # Philosophy and Features
 
-This is the opinionated side of SwiftObserver. I invite you put it on like a shoe. See if it fits, take it for what it's worth and evolve it via PR or email: <contact@flowtoolz.com>.
+This is the opinionated side of SwiftObserver. I invite you put it on like a shoe. See if it fits, take it for what it's worth and evolve it via PR or email: <swiftobserver@flowtoolz.com>.
 
 * [What You Might Like](#what-you-might-like)
   * [Meaningful Code](#meaningful-code)
@@ -49,7 +49,7 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 
 - Meaningful syntax
 
-  - The syntax reflects the intent and metaphor of the *Observer Pattern*: Observers are active subjects while observables are passive objects which are unconcerned about being observed:
+  - The syntax reflects the intent and metaphor of the *Observer Pattern*: *Observers* are active subjects while *observables* are passive objects which are unconcerned about being observed:
 
     ```swift
     dog.observe(sky)
@@ -69,7 +69,7 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 
 - No delegate protocols to implement
 
-- Custom observables without having to inherit from any base class
+- Custom *observables* without having to inherit from any base class
 
   - You're in control of the ancestral tree of your classes.
   - All classes can easily be observed, even views and view controllers.
@@ -83,18 +83,18 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 
 - No optional optionals
 
-  - You have full control over value and message types.
-  - You can make your message types optional. SwiftObserver will never spit them back at you wrapped in additional optionals, not even in combined observations.
-  - You can easily unwrap optional messages via the mapping `unwrap`.
+  - You have full control over value and *message* types.
+  - You can make your *message* types optional. SwiftObserver will never spit them back at you wrapped in additional optionals, not even in combined observations.
+  - You can easily unwrap optional *messages* via the *mapping* `unwrap`.
 
 - No under the hood side effects in terms of ownership and life cycles
 
-  * You stay in control of when objects die and of who owns whom.
+  * You stay in control of when objects die and of which objects own which others.
   * Your code stays explicit.
 
 - Minimal duplication
 
-  - SwiftObserver practically never duplicates the messages that are being sent around, in particular in [combined observations](#combined-observations) and [*mappings*](#mappings). This is in stark contrast to other reactive libraries yet without compomising functional aspects. The only cases that duplicate messages are `latestMessage` on `Weak` and (if you don't change `remembersLatestMessage`) on `Messenger`.
+  - SwiftObserver practically never duplicates the *messages* that are being sent around, in particular in [combined observations](#combined-observations) and [*mappings*](#mappings). This is in stark contrast to other reactive libraries yet without compomising functional aspects. The only cases that duplicate *messages* are `latestMessage` on `Weak` and (if you don't change `remembersLatestMessage`) on `Messenger`.
 
   > Note: Not having to duplicate data where multiple things must be observed is one of the reasons to use combined observations in the first place. However, some reactive libraries choose to not make full use of object-orientation, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the messages sent from observables.
   >
@@ -110,11 +110,11 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 
 - Pure Swift for clean modelling, not even any dependence on `Foundation`
 
-- Mappings are first-class *observables* that can be treated like any other *observable*
+- *Mappings* are first-class *observables* that can be treated like any other *observable*
 
-- One universal consistent syntax for transforming messages and chaining these transformations
+- One universal consistent syntax for transforming *messages* and chaining these transformations
 
-- Use a small but universal set of prebuilt transformations wherever you transform messages:
+- Use a small but universal set of prebuilt transformations wherever you transform *messages*:
 
   - `map`
   - `new`
@@ -173,14 +173,14 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 - When an *observable* dies, **all** its observations stop automatically.
 - Real memory leaks are impossible, since you can always flush out all orphaned observations.
 - Stop observations in the same expressive way you start them: `observer.stopObserving(observable)`
-- Stop **all** observations an *observer* started with **one** call: `observer.stopObserving()`
-- Stop **all** observations of an observable with **one** call: `observable.stopObservations()`
+- Stop **all** observations of an *observer* with **one** call: `observer.stopObserving()`
+- Stop **all** observations of an *observable* with **one** call: `observable.stopObservations()`
 - Stop **all** abandoned observations of an *observable* with **one** call: `observable.stopAbandonedObservations()`
 - Stop **all** abandoned observations of **all** *observables* with **one** call: `stopAllAbandonedObservations()`.
 
 # Combined Observation is Overrated
 
-At one point, I was convinced combined observations are an essential part of reactive programming. Practical application updated my mind.
+At one point, I was convinced combined observations are an essential part of reactive programming. Practice has changed my mind.
 
 While SwiftObserver offers just one universal function for observing up to three *observables*, other reactive libraries dump at least the combine functions `merge`, `zip` and `combineLatest` on your brain. In SwiftObserver, `latestMessage` generally provides the latest message, so its combined observation is equivalent to `combineLatest`, which is by far the most used combine function in practice. 
 
