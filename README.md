@@ -109,13 +109,9 @@ class Dog: Observer {
 }
 ~~~
 
-Each observation involves one *observer* observing one *observable*.
-
 ### Observers
 
-*Observers* adopt the `Observer` protocol, which gives them functions for starting and ending observations.
-
-<a id="combined-observations"></a> You may start up to three observations with one combined call:
+Each observation involves one *observer* observing one other object. By conforming to `Observer`, the *observer* adopts functions for starting and ending observations. <a id="combined-observations"></a> You may start up to three observations with one combined call:
 
 ~~~swift
 dog.observe(tv, bowl, doorbell) { image, food, sound in
@@ -123,7 +119,7 @@ dog.observe(tv, bowl, doorbell) { image, food, sound in
 }
 ~~~
 
-To process *messages* from an *observable*, the *observer* must be alive. There's no awareness after death in memory:
+To process *messages* from the observed oject, the *observer* must be alive. There's no awareness after death in memory:
 
 ```swift
 class Dog: Observer {
@@ -137,20 +133,18 @@ class Dog: Observer {
 
 ### Observables
 
-For objects to be observable, they must conform to `Observable`. 
-
-You get *observables* in four ways:
+For objects to be observable, they must conform to `Observable`. There are four ways to make these *observables*:
 
 1. Create a [*variable*](#variables). It's an `Observable` that holds a value and sends value changes.
 2. Create a [*mapping*](#mappings). It's an `Observable` that transforms *messages* from a *source observable*.
 3. Create a [*messenger*](#messengers). It's an `Observable` through which other objects communicate.
 4. Implement a [custom](#custom-observables) `Observable` by conforming to `CustomObservable`.
 
-You use all *observables* the same way. There are only three things to note about `Observable`:
+You use every `Observable` the same way. There are only three things to note:
 
-- Observing an `Observable` does not have the side effect of keeping it alive. Someone must own it via a strong reference. (Note that this won't prevent us from [observing with a chain of transformations](#ad-hoc-mapping) all in a single line.)
-- The property `latestMessage` is of the type of *messages* the `Observable` sends. It typically returns the last *message* that was sent or a value that indicates that nothing changed. It's a way for clients to request (pull) the last or "current" *message* , as opposed to waiting for the `Observable` to send (push) the next. ([Combined observations](#combined-observations) also pull `latestMessage`.)
-- Typically, an `Observable` sends its *messages*  by itself. But anyone can make it send  `latestMessage` via `send()` or any other *message*  via `send(_:)`.
+1. Observing an `Observable` does not have the side effect of keeping it alive. Someone must own it via a strong reference. (Note that you can still [observe with a chain of ad hoc transformations](#ad-hoc-mapping) all in a single line.)
+2. The property `latestMessage` typically returns the last sent *message* or one that indicates that nothing changed. It's a way for clients to request (pull) the last or "current" *message*, in addition to waiting for the `Observable` to send (push) the next. [Combined observations](#combined-observations) also rely on `latestMessage`.
+3. Typically, an `Observable` sends its *messages* by itself. But anyone can make it send  `latestMessage` via `send()` or any other *message* via `send(_:)`.
 
 # Memory Management
 
