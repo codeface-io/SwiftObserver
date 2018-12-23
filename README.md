@@ -109,7 +109,7 @@ class Dog: Observer {
 
 ### Observers
 
-Each observation involves one *observer* observing one other object. By conforming to `Observer`, the *observer* adopts functions for starting and ending observations. <a id="combined-observations"></a> You may start up to three observations with one combined call:
+By conforming to `Observer`, the *observer* adopts functions for starting and ending observations. Each observation involves one *observer* and one observed object. <a id="combined-observations"></a> An  `Observer` may start up to three observations with one combined call:
 
 ~~~swift
 dog.observe(tv, bowl, doorbell) { image, food, sound in
@@ -141,12 +141,12 @@ For objects to be observable, they must conform to `Observable`. There are four 
 You use every `Observable` the same way. There are only three things to note:
 
 1. Observing an `Observable` does not have the side effect of keeping it alive. Someone must own it via a strong reference. (Note that you can still [observe with a chain of ad hoc transformations](#ad-hoc-mapping) all in a single line.)
-2. The property `latestMessage` typically returns the last sent *message* or one that indicates that nothing changed. It's a way for clients to request (pull) the "current" message or value, in addition to waiting for the `Observable` to send (push) the next. [Combined observations](#combined-observations) also rely on `latestMessage`.
+2. The property `latestMessage` typically returns the last sent *message* or one that indicates that nothing changed. It's a way for clients to request (pull) the "current" message, in addition to waiting for the `Observable` to send (push) the next. [Combined observations](#combined-observations) also rely on `latestMessage`.
 3. Typically, an `Observable` sends its *messages* by itself. But anyone can make it send  `latestMessage` via `send()` or any other *message* via `send(_:)`.
 
 # Memory Management
 
-To avoid abandoned observations piling up in memory, *observers* should, before they die, stop the observations they started. One way to do that is to stop each observation when it's no longer needed:
+To avoid abandoned observations piling up in memory, *observers* should, before they die, stop their observations. One way to do that is to stop each observation when it's no longer needed:
 
 ```swift
 dog.stopObserving(Sky.shared)
@@ -162,7 +162,7 @@ class Dog: Observer {
 }
 ```
 
-The observations in which an *observable* is involved stop automatically when the *observable* dies, so it doesn't need to do anything in `deinit`. But it can always stop all its observations via `observable.stopObservations()`.
+You can stop an *observable's* observations via `observable.stopObservations()`. But when an *observable* dies, it automatically stops all its observations, so you don't need to do anything in its `deinit`.
 
 Forgetting some observations wouldn't waste significant memory. But you should understand, control and express the mechanics of your code to a degree that prevents systemic leaks.
 
@@ -175,7 +175,7 @@ The three above mentioned functions are all you need for safe memory management.
 
 # Variables
 
-A `Var<Value>` has a property `value: Value`. If `Value` conforms to `Equatable` or `Comparable`, the whole `Var<Value>` will also conform to the respective protocol.
+A `Var<Value>` has a property `value: Value`. If `Value` is `Equatable` or `Comparable`, the whole `Var<Value>` will also conform to the respective protocol.
 
 ## Use Variable Values
 
@@ -190,11 +190,11 @@ number <- 42                 // number.value == 42
 
 ### Number Values
 
-If `Value` is either `Int`, `Float` or `Double`:
+If you use some number type `Number` that is either an `Int`, `Float` or `Double`:
 
-1. Every `Var<Value>`, `Var<Value?>`, `Var<Value>?` and `Var<Value?>?` has either `var int: Int`, `var float: Float` or `var double: Double`, which is non-optional and interprets `nil` values as zero.
+1. Every `Var<Number>`, `Var<Number?>`, `Var<Number>?` and `Var<Number?>?` has either a `var int: Int`, `var float: Float` or `var double: Double`. That property is non-optional and interprets `nil` values as zero.
 
-2. You can apply numeric operators `+`, `-`, `*` and `/` to all pairs of `Value`, `Value?`, `Var<Value>`, `Var<Value?>`, `Var<Value>?` and `Var<Value?>?`.
+2. You can apply numeric operators `+`, `-`, `*` and `/` to all pairs of `Number`, `Number?`, `Var<Number>`, `Var<Number?>`, `Var<Number>?` and `Var<Number?>?`.
 
 3. ```swift
     let numVar = Var<Int?>()     // numVar.value == nil
@@ -205,13 +205,13 @@ If `Value` is either `Int`, `Float` or `Double`:
 
 ### String Values
 
-1. Every `Var<String>`, `Var<String?>`, `Var<String>?` and `Var<String?>?` has a `var string: String` which is non-optional and interprets `nil` values as `""`.
+1. Every `Var<String>`, `Var<String?>`, `Var<String>?` and `Var<String?>?` has a `var string: String`. That property is non-optional and interprets `nil` values as `""`.
 2. Representing its `string` property, every `Var<String>` and `Var<String?>` conforms to `BidirectionalCollection`, `Collection` and `Sequence`.
 3. You can apply concatenation operator `+` to all pairs of `String`, `String?`, `Var<String>`, `Var<String?>`, `Var<String>?` and `Var<String?>?`.
 
 ## Observe Variables
 
-A `Var<Value>` sends *messages* of type `Change<Value>`, providing the `old` and `new` value:
+A `Var<Value>` sends *messages* of type `Change<Value>`, providing the `old` and `new` value, with `latestMessage` holding the current `value` in both properties: `old` and `new`.
 
 ~~~swift
 observer.observe(variable) { change in
@@ -221,9 +221,7 @@ observer.observe(variable) { change in
 }
 ~~~
 
-A `Var` sends a `Change<Value>` whenever its `value` actually changes. Just starting to observe the `Var` does **not** trigger a *message*. This keeps it simple, predictable and consistent, in particular in combination with [*mappings*](#mappings).
-
-You can always manually send `latestMessage` via `send()`. The `Change<Value>` that `latestMessage` returns on a `Var` holds the current `value` in both properties: `old` and `new`.
+A `Var` sends a `Change<Value>` whenever its `value` actually changes. Just starting to observe the `Var` does **not** trigger a *message*. This keeps it simple, predictable and consistent, in particular in combination with [*mappings*](#mappings). Of course, you can always manually send `latestMessage` via `send()`.
 
 Internally, a `Var` appends new values to a queue, so all its *observers* get to process a `value` change before the next change takes effect. This is for situations when the `Var` has multiple *observers* and at least one of them changes the `value` in response to a `value` change.
 
@@ -282,7 +280,7 @@ As [mentioned earlier](#observables), you use a *mapping* like any other `Observ
 
 ## Swap Mapping Sources
 
-You can even reset the `source`, causing the *mapping* to send a *message* (with respect to its [*filter*](#filter)). Although the `source` is replaceable, it's of a specific type that you determine by creating the *mapping*.
+You can also reset the `source`, causing the *mapping* to send a *message* (with respect to its [*filter*](#filter)). Although the `source` is replaceable, it's of a specific type that you determine by creating the *mapping*.
 
 So, you may create a *mapping* without knowing what `source` objects it will have over its lifetime. Just use an ad-hoc dummy *source* to create the *mapping* and, later, reset `source` as often as you like:
 
@@ -567,7 +565,7 @@ If your `Message` is optional, you can also erase the buffered *message* at any 
 
 ## Make State Observable
 
-To inform *observers* about value changes, similar to `Var<Value>`, you would use `Change<Value>`, and you might want to customize `latestMessage` so it returns the latest value rather than the last sent *message*:
+To inform *observers* about value changes, similar to `Var<Value>`, you would use `Change<Value>`, and you might want to customize `latestMessage` so it returns a message based on the latest (current) value:
 
 ~~~swift
 class Model: CustomObservable {
