@@ -35,4 +35,4 @@ Added
 * **Meaningful custom observables:** Custom *observables* now adopt the `CustomObservable` protocol. And they provide a `Messenger<Message>` instead of the `latestUpdate`.
   * As long as Swift can't infer the type, you'll also have to specify the associated `Message` type.
 * **Consistent variable operators:** The operators on string- and number variables now work on all combinations of optional and non-optional generic and main types. For instance, string concatenation via `+` works on all pairs of `String`, `String?`, `Var<String>`, `Var<String?>`, `Var<String>?` and `Var<String?>?`.
-  * 	All variables with values of type `String`, `Int`, `Float` and `Double` also have a non-optional property that is named after the value type (`string`, `int` ...).
+  * All variables with values of type `String`, `Int`, `Float` and `Double` also have a non-optional property that is named after the value type (`string`, `int` ...).
