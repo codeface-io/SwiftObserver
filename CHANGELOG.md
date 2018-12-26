@@ -6,19 +6,16 @@
 
 ### v5.0.1
 
-Removed
+* Removed
+  * Variable string assignment operator
+  * Variable number assignment operators
 
-* Variable string assignment operator
-* Variable number assignment operators
+* Changed
+  * Reworked Documentation
 
-Changed
-
-* Reworked Documentation
-
-Added
-
-* SPM Support
-* Gitter chat
+* Added
+  * SPM Support
+  * Gitter chat
 
 ### v5.0.0
 
