@@ -81,6 +81,29 @@ end
 
 Then run `$ pod install`.
 
+With the [Swift Package Manager](https://github.com/apple/swift-package-manager/tree/master/Documentation#swift-package-manager), adjust your Package.swift file:
+
+~~~swift
+// swift-tools-version:4.2
+
+import PackageDescription
+
+let package = Package(
+    name: "SPMExample",
+    dependencies: [
+        .package(url: "https://github.com/flowtoolz/SwiftObserver.git",
+                 .upToNextMajor(from: "5.0.1"))
+    ],
+    targets: [
+        .target(name: "SPMExample",
+                dependencies: ["SwiftObserver"])
+    ],
+    swiftLanguageVersions: [.v4_2]
+)
+~~~
+
+The run `$ swift build` or `$ swift run`.
+
 Finally, in your Swift files:
 
 ```swift
