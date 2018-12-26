@@ -632,7 +632,7 @@ SwiftObserver is released under the MIT license. [See LICENSE](https://github.co
 
 [badge-pod]: https://img.shields.io/cocoapods/v/SwiftObserver.svg?label=version&style=flat-square
 
-[badge-pms]: https://img.shields.io/badge/supports-CocoaPods%20%7C%20Carthage-green.svg?style=flat-square
+[badge-pms]: https://img.shields.io/badge/supports-CocoaPods%20%7C%20Carthage%20%7C%20SPM-green.svg?style=flat-square
 [badge-languages]: https://img.shields.io/badge/language-Swift-orange.svg?style=flat-square
 [badge-platforms]: https://img.shields.io/badge/platforms-iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20watchOS%20%7C%20Linux-lightgrey.svg?style=flat-square
 [badge-mit]: https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat-square

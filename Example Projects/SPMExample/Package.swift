@@ -6,7 +6,7 @@ let package = Package(
     name: "SPMExample",
     dependencies: [
         .package(url: "https://github.com/flowtoolz/SwiftObserver.git",
-                 .upToNextMajor(from: "5.0.0"))
+                 .upToNextMajor(from: "5.0.1"))
 //        .package(path: "../../../SwiftObserver")
     ],
     targets: [
