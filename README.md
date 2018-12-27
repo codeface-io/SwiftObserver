@@ -442,7 +442,7 @@ When the chain is supposed to end on `map` or `filter`, let `receive` terminate 
 dog.observe(bowl).map {
     $0 == .wasFilled    // Bowl.Message -> Bool
 }.receive {
-    if $0 {				// if bowl was filled
+    if $0 {             // if bowl was filled
         // clear bowl in under a minute
     }
 } 
