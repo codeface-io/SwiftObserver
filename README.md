@@ -61,7 +61,7 @@ Want to **contact** us? Write at <swiftobserver@flowtoolz.com>.
 
 ## Install
 
-With [Carthage](https://github.com/Carthage/Carthage), add this line to your [Cartfile](https://github.com/Carthage/Carthage/blob/master/Documentation/Artifacts.md#cartfile):
+With [**Carthage**](https://github.com/Carthage/Carthage), add this line to your [Cartfile](https://github.com/Carthage/Carthage/blob/master/Documentation/Artifacts.md#cartfile):
 
 ```
 github "flowtoolz/SwiftObserver" ~> 5.0
@@ -69,7 +69,7 @@ github "flowtoolz/SwiftObserver" ~> 5.0
 
 Then follow [these instructions](https://github.com/Carthage/Carthage#adding-frameworks-to-an-application) and run `$ carthage update --platform ios`.
 
-With [Cocoapods](https://cocoapods.org), adjust your [Podfile](https://guides.cocoapods.org/syntax/podfile.html):
+With [**Cocoapods**](https://cocoapods.org), adjust your [Podfile](https://guides.cocoapods.org/syntax/podfile.html):
 
 ```ruby
 use_frameworks!
@@ -81,7 +81,7 @@ end
 
 Then run `$ pod install`.
 
-With the [Swift Package Manager](https://github.com/apple/swift-package-manager/tree/master/Documentation#swift-package-manager), adjust your Package.swift file:
+With the [**Swift Package Manager**](https://github.com/apple/swift-package-manager/tree/master/Documentation#swift-package-manager), adjust your [Package.swift](https://github.com/apple/swift-package-manager/blob/master/Documentation/Usage.md#create-a-package) file:
 
 ~~~swift
 // swift-tools-version:4.2
@@ -102,9 +102,9 @@ let package = Package(
 )
 ~~~
 
-The run `$ swift build` or `$ swift run`.
+Then run `$ swift build` or `$ swift run`.
 
-Finally, in your Swift files:
+Finally, in your **Swift** files:
 
 ```swift
 import SwiftObserver
@@ -441,8 +441,8 @@ When the chain is supposed to end on `map` or `filter`, let `receive` terminate 
 ~~~swift
 dog.observe(bowl).map {
     $0 == .wasFilled    // Bowl.Message -> Bool
-}.receive { bowlWasFilled in
-    if bowlWasFilled {
+}.receive {
+    if $0 {				// if bowl was filled
         // clear bowl in under a minute
     }
 } 
