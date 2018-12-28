@@ -468,7 +468,7 @@ This use of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, 
 - Every object can trigger *messages*, without adopting any protocol.
 - Multiple sending objects trigger the same type of *messages*.
 - An *observer* may indirectly observe multiple other objects through one observation.
-- *Observers* don't care who triggered a *message*.
+- *Observers* don't care as much who triggered a *message*.
 - *Observer* types don't need to depend on the types that trigger *messages*.
 
 ## Using Messengers
