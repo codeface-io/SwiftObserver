@@ -2,7 +2,7 @@ public extension CustomObservable
 {
     // MARK: - Convenience
     
-    public var remembersLatestMessage: Bool
+    var remembersLatestMessage: Bool
     {
         get { return messenger.remembersLatestMessage }
         set { messenger.remembersLatestMessage = newValue }
@@ -10,7 +10,7 @@ public extension CustomObservable
     
     // MARK: - Observable
     
-    public var latestMessage: Message
+    var latestMessage: Message
     {
         return messenger.latestMessage
     }

@@ -1,6 +1,6 @@
 public extension Observer
 {
-    public func observe<O>(_ observable: O) -> ObservationMapper<O, O.Message>
+    func observe<O>(_ observable: O) -> ObservationMapper<O, O.Message>
     {
         return ObservationMapper(observer: self,
                                  observable: observable,

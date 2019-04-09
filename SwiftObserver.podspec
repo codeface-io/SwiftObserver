@@ -13,7 +13,7 @@
     
     # compiler requirements
     s.requires_arc = true
-    s.swift_version = '4.2'
+    s.swift_version = '5.0'
     
     # minimum platform SDKs
     s.platforms = {:ios => "9.0", :osx => "10.10", :tvos => "9.0"}
@@ -27,5 +27,5 @@
     s.source_files = 'Code/**/*.swift'
 
     # dependencies
-    s.dependency 'SwiftyToolz', '~> 1.4'
+    s.dependency 'SwiftyToolz', '~> 1.5.0'
 end

@@ -2,12 +2,12 @@ public extension ObservationMapper where T: Equatable
 {
     // MARK: - Select
     
-    public func select(_ message: T, receive: @escaping () -> Void)
+    func select(_ message: T, receive: @escaping () -> Void)
     {
         self.receive { if $0 == message { receive() } }
     }
     
-    public func select(_ message: T) -> ObservationMapper
+    func select(_ message: T) -> ObservationMapper
     {
         return filter { $0 == message }
     }
@@ -17,7 +17,7 @@ public extension ObservationMapper
 {
     // MARK: - Filter
     
-    public func filter(_ filter: @escaping (T) -> Bool) -> ObservationMapper
+    func filter(_ filter: @escaping (T) -> Bool) -> ObservationMapper
     {
         let localMap = map
         let localFilter = self.filter
@@ -31,8 +31,8 @@ public extension ObservationMapper
                                  filter: composedFilter)
     }
     
-    public func filter(_ filter: @escaping (T) -> Bool,
-                       receive: @escaping (T) -> Void)
+    func filter(_ filter: @escaping (T) -> Bool,
+                receive: @escaping (T) -> Void)
     {
         let localMap = map
         let localFilter = self.filter
@@ -48,32 +48,32 @@ public extension ObservationMapper
     
     // MARK: - Map
     
-    public func unwrap<Unwrapped>(_ default: Unwrapped,
-                                  receive: @escaping (Unwrapped) -> Void)
+    func unwrap<Unwrapped>(_ default: Unwrapped,
+                           receive: @escaping (Unwrapped) -> Void)
         where T == Optional<Unwrapped>
     {
         unwrap(`default`).receive(receive)
     }
     
-    public func unwrap<Unwrapped>(_ default: Unwrapped) -> ObservationMapper<O, Unwrapped>
+    func unwrap<Unwrapped>(_ default: Unwrapped) -> ObservationMapper<O, Unwrapped>
         where T == Optional<Unwrapped>
     {
         return map {$0 ?? `default`}
     }
     
-    public func new<Value>(receive: @escaping (Value) -> Void)
+    func new<Value>(receive: @escaping (Value) -> Void)
         where T == Change<Value>
     {
         new().receive(receive)
     }
     
-    public func new<Value>() -> ObservationMapper<O, Value>
+    func new<Value>() -> ObservationMapper<O, Value>
         where T == Change<Value>
     {
         return map { $0.new }
     }
     
-    public func map<U>(_ map: @escaping (T) -> U) -> ObservationMapper<O, U>
+    func map<U>(_ map: @escaping (T) -> U) -> ObservationMapper<O, U>
     {
         let localMap = self.map
         
@@ -83,8 +83,7 @@ public extension ObservationMapper
                                         filter: filter)
     }
     
-    public func map<U>(_ map: @escaping (T) -> U,
-                       receive: @escaping (U) -> Void)
+    func map<U>(_ map: @escaping (T) -> U, receive: @escaping (U) -> Void)
     {
         let localMap = self.map
         let localFilter = self.filter
