@@ -2,6 +2,8 @@
  
  class ObserverList<Message>
  {
+    // MARK: - Manage Observers
+    
     func add(_ observer: AnyObject, receive: @escaping (Message) -> Void)
     {
         observers[hashValue(observer)] = ObserverInfo(observer: observer,
@@ -30,6 +32,10 @@
         observers.removeAll()
     }
     
+    var isEmpty: Bool { return observers.isEmpty }
+    
+    // MARK: - Get Hash Values (for ObservationService)
+    
     var hashValues: [HashValue]
     {
         return Array(observers.keys)
@@ -45,7 +51,7 @@
         return Array(keys)
     }
     
-    var isEmpty: Bool { return observers.isEmpty }
+    // MARK: - Dispatch Message to Observers
     
     func receive(_ message: Message)
     {
@@ -61,6 +67,8 @@
             observerInfo.receive(message)
         }
     }
+    
+    // MARK: - Store Observers
     
     private var observers = [HashValue: ObserverInfo]()
     
