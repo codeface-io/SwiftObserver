@@ -6,11 +6,11 @@
 
 SwiftObserver is a lightweight framework for reactive Swift. Its design goals make it easy to learn and a joy to use:
 
-1. [**Meaningful Code**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#meaningful-code): SwiftObserver promotes meaningful metaphors, names and syntax, producing highly readable code.
-2. [**Non-intrusive Design**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#non-intrusive-design): SwiftObserver doesn't limit or modulate your design. It just makes it easy to do the right thing.
-3. [**Simplicity**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility): SwiftObserver employs very few simple concepts and applies them consistently without exceptions.
-4. [**Flexibility**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility): SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
-5. [**Safety**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#safety): SwiftObserver makes memory management meaningful and easy. Oh yeah, real memory leaks are impossible.
+1. [**Meaningful Code**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#meaningful-code):<br>SwiftObserver promotes meaningful metaphors, names and syntax, producing highly readable code.
+2. [**Non-intrusive Design**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#non-intrusive-design):<br>SwiftObserver doesn't limit or modulate your design. It just makes it easy to do the right thing.
+3. [**Simplicity**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility):<br>SwiftObserver employs very few simple concepts and applies them consistently without exceptions.
+4. [**Flexibility**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility):<br>SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
+5. [**Safety**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#safety):<br>SwiftObserver makes memory management meaningful and easy. Oh yeah, real memory leaks are impossible.
 
 [*Reactive Programming*](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [*Dependency Inversion*](https://en.wikipedia.org/wiki/Dependency_inversion_principle). SwiftObserver breaks *Reactive Programming* down to its essence, which is the [*Observer Pattern*](https://en.wikipedia.org/wiki/Observer_pattern).
 
