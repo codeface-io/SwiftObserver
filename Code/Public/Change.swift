@@ -1,3 +1,8 @@
+public extension Change where Value : Equatable
+{
+    var valueChanged: Bool { return old != new }
+}
+
 public struct Change<Value>
 {
     public init<Wrapped>() where Value == Optional<Wrapped>
