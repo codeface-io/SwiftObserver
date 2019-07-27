@@ -20,7 +20,7 @@ public extension Observable
     }
     
     func unwrap<Wrapped>(_ default: Wrapped) -> Mapping<Self, Wrapped>
-        where Self.Message == Optional<Wrapped>
+        where Self.Message == Wrapped?
     {
         return map { $0 ?? `default` }
     }

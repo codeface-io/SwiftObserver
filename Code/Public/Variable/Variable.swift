@@ -6,7 +6,7 @@ public class Variable<Value: Equatable & Codable>: ObservableObject<Change<Value
 {
     // MARK: - Initialization
     
-    public convenience init<Wrapped>() where Value == Optional<Wrapped>
+    public convenience init<Wrapped>() where Value == Wrapped?
     {
         self.init(nil)
     }

@@ -5,7 +5,7 @@ public extension Change where Value : Equatable
 
 public struct Change<Value>
 {
-    public init<Wrapped>() where Value == Optional<Wrapped>
+    public init<Wrapped>() where Value == Wrapped?
     {
         self.init(nil, nil)
     }

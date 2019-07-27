@@ -2,7 +2,7 @@ import SwiftyToolz
 
 public class Messenger<Message>: ObservableObject<Message>
 {
-    public convenience init<Wrapped>() where Message == Optional<Wrapped>
+    public convenience init<Wrapped>() where Message == Wrapped?
     {
         self.init(nil)
     }

@@ -15,7 +15,7 @@ public extension Mapping
     }
     
     func unwrap<Wrapped>() -> Mapping<O, Wrapped>
-        where MappedMessage == Optional<Wrapped>
+        where MappedMessage == Wrapped?
     {
         return filterMap(filter: { $0 != nil }) { $0! }
     }
@@ -26,7 +26,7 @@ public extension Mapping
     }
     
     func unwrap<Wrapped>(_ default: Wrapped) -> Mapping<O, Wrapped>
-        where MappedMessage == Optional<Wrapped>
+        where MappedMessage == Wrapped?
     {
         return map { $0 ?? `default` }
     }

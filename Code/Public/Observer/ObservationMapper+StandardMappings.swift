@@ -18,7 +18,7 @@ public extension ObservationMapper
     // MARK: - Unwrap (Filter + Mapping)
     
     func unwrap<Wrapped>() -> ObservationMapper<O, Wrapped>
-        where T == Optional<Wrapped>
+        where T == Wrapped?
     {
         let localMap = map
         
@@ -32,7 +32,7 @@ public extension ObservationMapper
     }
     
     func unwrap<Wrapped>(receive: @escaping (Wrapped) -> Void)
-        where T == Optional<Wrapped>
+        where T == Wrapped?
     {
         let localMap = map
         
@@ -80,13 +80,13 @@ public extension ObservationMapper
     
     func unwrap<Wrapped>(_ default: Wrapped,
                            receive: @escaping (Wrapped) -> Void)
-        where T == Optional<Wrapped>
+        where T == Wrapped?
     {
         unwrap(`default`).receive(receive)
     }
     
     func unwrap<Wrapped>(_ default: Wrapped) -> ObservationMapper<O, Wrapped>
-        where T == Optional<Wrapped>
+        where T == Wrapped?
     {
         return map { $0 ?? `default` }
     }
