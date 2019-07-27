@@ -26,11 +26,14 @@ public class Mapping<O: Observable, MappedMessage>: ObservableObject<MappedMessa
         let addedFilter: ((O.Message) -> Bool)? =
         {
             guard let prefilter = filter else { return nil }
-            
             return compose(localMap, prefilter)
         }()
         
-        let composedFilter = combineFilters(localFilter, addedFilter)
+        let composedFilter: ((O.Message) -> Bool)? =
+        {
+            guard let addedFilter = addedFilter else { return nil }
+            return combineFilters(localFilter, addedFilter)
+        }()
         
         return Mapping<O, ComposedMessage>(source,
                                            filter: composedFilter,

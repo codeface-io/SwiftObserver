@@ -19,8 +19,8 @@ public extension Observable
         return Mapping(self, filter: keep) { $0 }
     }
     
-    func unwrap<Unwrapped>(_ default: Unwrapped) -> Mapping<Self, Unwrapped>
-        where Self.Message == Optional<Unwrapped>
+    func unwrap<Wrapped>(_ default: Wrapped) -> Mapping<Self, Wrapped>
+        where Self.Message == Optional<Wrapped>
     {
         return map { $0 ?? `default` }
     }

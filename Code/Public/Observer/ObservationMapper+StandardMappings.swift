@@ -15,7 +15,37 @@ public extension ObservationMapper where T: Equatable
 
 public extension ObservationMapper
 {
-    // MARK: - Filter
+    // MARK: - Unwrap (Filter + Mapping)
+    
+    func unwrap<Wrapped>() -> ObservationMapper<O, Wrapped>
+        where T == Optional<Wrapped>
+    {
+        let localMap = map
+        
+        let localFilter = filter
+        let composedFilter = combineFilters(localFilter, { localMap($0) != nil })
+        
+        return ObservationMapper<O, Wrapped>(observer: observer,
+                                             observable: observable,
+                                             map: { localMap($0)! },
+                                             filter: composedFilter)
+    }
+    
+    func unwrap<Wrapped>(receive: @escaping (Wrapped) -> Void)
+        where T == Optional<Wrapped>
+    {
+        let localMap = map
+        
+        let localFilter = filter
+        let composedFilter = combineFilters(localFilter, { localMap($0) != nil })
+        
+        observable.add(observer)
+        {
+            if composedFilter($0) { receive(localMap($0)!) }
+        }
+    }
+    
+    // MARK: - Pure Filter
     
     func filter(_ filter: @escaping (T) -> Bool) -> ObservationMapper
     {
@@ -42,23 +72,23 @@ public extension ObservationMapper
         
         observable.add(observer)
         {
-            if composedFilter?($0) ?? true { receive(localMap($0)) }
+            if composedFilter($0) { receive(localMap($0)) }
         }
     }
     
-    // MARK: - Map
+    // MARK: - Pure Mappings
     
-    func unwrap<Unwrapped>(_ default: Unwrapped,
-                           receive: @escaping (Unwrapped) -> Void)
-        where T == Optional<Unwrapped>
+    func unwrap<Wrapped>(_ default: Wrapped,
+                           receive: @escaping (Wrapped) -> Void)
+        where T == Optional<Wrapped>
     {
         unwrap(`default`).receive(receive)
     }
     
-    func unwrap<Unwrapped>(_ default: Unwrapped) -> ObservationMapper<O, Unwrapped>
-        where T == Optional<Unwrapped>
+    func unwrap<Wrapped>(_ default: Wrapped) -> ObservationMapper<O, Wrapped>
+        where T == Optional<Wrapped>
     {
-        return map {$0 ?? `default`}
+        return map { $0 ?? `default` }
     }
     
     func new<Value>(receive: @escaping (Value) -> Void)
@@ -78,9 +108,9 @@ public extension ObservationMapper
         let localMap = self.map
         
         return ObservationMapper<O, U>(observer: observer,
-                                        observable: observable,
-                                        map: { map(localMap($0)) },
-                                        filter: filter)
+                                       observable: observable,
+                                       map: { map(localMap($0)) },
+                                       filter: filter)
     }
     
     func map<U>(_ map: @escaping (T) -> U, receive: @escaping (U) -> Void)

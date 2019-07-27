@@ -14,13 +14,19 @@ public extension Mapping
         return map { $0.new }
     }
     
+    func unwrap<Wrapped>() -> Mapping<O, Wrapped>
+        where MappedMessage == Optional<Wrapped>
+    {
+        return filterMap(filter: { $0 != nil }) { $0! }
+    }
+    
     func filter(_ keep: @escaping Filter) -> Mapping<O, MappedMessage>
     {
         return filterMap(filter: keep) { $0 }
     }
     
-    func unwrap<Unwrapped>(_ default: Unwrapped) -> Mapping<O, Unwrapped>
-        where MappedMessage == Optional<Unwrapped>
+    func unwrap<Wrapped>(_ default: Wrapped) -> Mapping<O, Wrapped>
+        where MappedMessage == Optional<Wrapped>
     {
         return map { $0 ?? `default` }
     }
