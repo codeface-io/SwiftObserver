@@ -14,12 +14,6 @@ public extension Mapping
         return map { $0.new }
     }
     
-    func unwrap<Wrapped>() -> Mapping<O, Wrapped>
-        where MappedMessage == Wrapped?
-    {
-        return filterMap(filter: { $0 != nil }) { $0! }
-    }
-    
     func filter(_ keep: @escaping Filter) -> Mapping<O, MappedMessage>
     {
         return filterMap(filter: keep) { $0 }
