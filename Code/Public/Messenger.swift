@@ -23,7 +23,7 @@ public class Messenger<Message>: ObservableObject<Message>
     
     public override var latestMessage: Message
     {
-        get { return storedLatestMessage }
+        get { storedLatestMessage }
         set { storedLatestMessage = newValue }
     }
     

@@ -2,10 +2,10 @@ public extension Observer
 {
     func observe<O>(_ observable: O) -> ObservationMapper<O, O.Message>
     {
-        return ObservationMapper(observer: self,
-                                 observable: observable,
-                                 map: { $0 },
-                                 filter: nil)
+        ObservationMapper(observer: self,
+                          observable: observable,
+                          map: { $0 },
+                          filter: nil)
     }
 }
 

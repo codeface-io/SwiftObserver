@@ -32,13 +32,13 @@
         observers.removeAll()
     }
     
-    var isEmpty: Bool { return observers.isEmpty }
+    var isEmpty: Bool { observers.isEmpty }
     
     // MARK: - Get Hash Values (for ObservationService)
     
     var hashValues: [HashValue]
     {
-        return Array(observers.keys)
+        Array(observers.keys)
     }
     
     var hashValuesOfNilObservers: [HashValue]

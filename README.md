@@ -593,7 +593,7 @@ To inform *observers* about value changes, similar to `Var<Value>`, you would us
 ~~~swift
 class Model: CustomObservable {
     var latestMessage: Change<String?> {
-        return Change(state, state)
+        Change(state, state)
     }
        
     var state: String? {

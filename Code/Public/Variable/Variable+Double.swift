@@ -34,7 +34,7 @@ extension Var: DoubleValue where Value: DoubleValue
 {
     public var double: Double
     {
-        get { return value.double }
+        get { value.double }
         set { value.double = newValue }
     }
 }
@@ -43,7 +43,7 @@ extension Double: DoubleValue
 {
     public var double: Double
     {
-        get { return self }
+        get { self }
         set { self = newValue }
     }
 }
@@ -52,7 +52,7 @@ extension Optional: DoubleValue where Wrapped: DoubleValue
 {
     public var double: Double
     {
-        get { return self?.double ?? 0 }
+        get { self?.double ?? 0 }
         set { self?.double = newValue }
     }
 }

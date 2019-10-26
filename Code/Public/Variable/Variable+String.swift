@@ -14,7 +14,7 @@ extension Var: CustomStringConvertible
 {
     public var description: String
     {
-        return value.description
+        value.description
     }
 }
 
@@ -23,7 +23,7 @@ extension Var: CustomDebugStringConvertible
 {
     public var debugDescription: String
     {
-        return value.debugDescription
+        value.debugDescription
     }
 }
 
@@ -38,34 +38,34 @@ extension Var: StringValue,
     
     public func index(before i: String.Index) -> String.Index
     {
-        return string.index(before: i)
+        string.index(before: i)
     }
     
     // Collection
     
     public func index(after i: String.Index) -> String.Index
     {
-        return string.index(after: i)
+        string.index(after: i)
     }
     
     public subscript(position: String.Index) -> String.Element
     {
-        return string[position]
+        string[position]
     }
     
     public var startIndex: String.Index
     {
-        return string.startIndex
+        string.startIndex
     }
     
     public var endIndex: String.Index
     {
-        return string.endIndex
+        string.endIndex
     }
     
     public var indices: String.Indices
     {
-        return string.indices
+        string.indices
     }
     
     public typealias Index = String.Index
@@ -76,7 +76,7 @@ extension Var: StringValue,
     
     public func makeIterator() -> String.Iterator
     {
-        return string.makeIterator()
+        string.makeIterator()
     }
     
     public typealias Element = String.Element
@@ -93,7 +93,7 @@ extension Var: StringValue,
     
     public var string: String
     {
-        get { return value.string }
+        get { value.string }
         set { value.string = newValue }
     }
 }
@@ -102,7 +102,7 @@ extension String: StringValue
 {
     public var string: String
     {
-        get { return self }
+        get { self }
         set { self = newValue }
     }
 }
@@ -111,7 +111,7 @@ extension Optional: StringValue where Wrapped: StringValue
 {
     public var string: String
     {
-        get { return self?.string ?? "" }
+        get { self?.string ?? "" }
         set { self?.string = newValue }
     }
 }

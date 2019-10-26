@@ -44,7 +44,7 @@ public class Mapping<O: Observable, MappedMessage>: ObservableObject<MappedMessa
     
     public override var latestMessage: MappedMessage
     {
-        return map(source.latestMessage)
+        map(source.latestMessage)
     }
 
     public var source: O

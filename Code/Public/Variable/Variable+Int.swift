@@ -43,7 +43,7 @@ extension Int: IntValue
 {
     public var int: Int
     {
-        get { return self }
+        get { self }
         set { self = newValue }
     }
 }
@@ -52,7 +52,7 @@ extension Optional: IntValue where Wrapped: IntValue
 {
     public var int: Int
     {
-        get { return self?.int ?? 0 }
+        get { self?.int ?? 0 }
         set { self?.int = newValue }
     }
 }

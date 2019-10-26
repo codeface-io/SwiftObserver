@@ -22,12 +22,12 @@ public class Variable<Value: Equatable & Codable>: ObservableObject<Change<Value
 
     public override var latestMessage: Change<Value>
     {
-        return Change(value, value)
+        Change(value, value)
     }
     
     public var value: Value
     {
-        get { return storedValue }
+        get { storedValue }
         
         set
         {

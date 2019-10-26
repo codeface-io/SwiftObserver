@@ -34,7 +34,7 @@ extension Var: FloatValue where Value: FloatValue
 {
     public var float: Float
     {
-        get { return value.float }
+        get { value.float }
         set { value.float = newValue }
     }
 }
@@ -43,7 +43,7 @@ extension Float: FloatValue
 {
     public var float: Float
     {
-        get { return self }
+        get { self }
         set { self = newValue }
     }
 }
@@ -52,7 +52,7 @@ extension Optional: FloatValue where Wrapped: FloatValue
 {
     public var float: Float
     {
-        get { return self?.float ?? 0 }
+        get { self?.float ?? 0 }
         set { self?.float = newValue }
     }
 }

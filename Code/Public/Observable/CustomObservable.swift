@@ -4,7 +4,7 @@ public extension CustomObservable
     
     var remembersLatestMessage: Bool
     {
-        get { return messenger.remembersLatestMessage }
+        get { messenger.remembersLatestMessage }
         set { messenger.remembersLatestMessage = newValue }
     }
     
@@ -12,7 +12,7 @@ public extension CustomObservable
     
     var latestMessage: Message
     {
-        return messenger.latestMessage
+        messenger.latestMessage
     }
     
     func add(_ observer: AnyObject, receive: @escaping (Message) -> Void)

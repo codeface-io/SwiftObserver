@@ -9,7 +9,7 @@ public extension ObservationMapper where T: Equatable
     
     func select(_ message: T) -> ObservationMapper
     {
-        return filter { $0 == message }
+        filter { $0 == message }
     }
 }
 
@@ -88,7 +88,7 @@ public extension ObservationMapper
     func unwrap<Wrapped>(_ default: Wrapped) -> ObservationMapper<O, Wrapped>
         where T == Wrapped?
     {
-        return map { $0 ?? `default` }
+        map { $0 ?? `default` }
     }
     
     func new<Value>(receive: @escaping (Value) -> Void)
@@ -100,7 +100,7 @@ public extension ObservationMapper
     func new<Value>() -> ObservationMapper<O, Value>
         where T == Change<Value>
     {
-        return map { $0.new }
+        map { $0.new }
     }
     
     func map<U>(_ map: @escaping (T) -> U) -> ObservationMapper<O, U>
