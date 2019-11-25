@@ -55,18 +55,30 @@
     
     func receive(_ message: Message)
     {
-        for (observerHash, observerInfo) in observers
+        messageQueue.append(message)
+        
+        if messageQueue.count > 1 { return }
+        
+        while let message = messageQueue.first
         {
-            guard observerInfo.observer != nil else
+            for (observerHash, observerInfo) in observers
             {
-                log(warning: "Tried so send message to dead observer. Will remove observer.")
-                observers[observerHash] = nil
-                continue
+                guard observerInfo.observer != nil else
+                {
+                    log(warning: "Tried so send message to dead observer. Will remove observer.")
+                    observers[observerHash] = nil
+                    continue
+                }
+                
+                observerInfo.receive(message)
             }
             
-            observerInfo.receive(message)
+            // remove value AFTER all handlers were called. do NOT write `storedValue = valueQueue.removeFirst()`
+            messageQueue.removeFirst()
         }
     }
+    
+    private var messageQueue = [Message]()
     
     // MARK: - Store Observers
     
