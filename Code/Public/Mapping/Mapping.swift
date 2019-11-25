@@ -1,3 +1,11 @@
+extension Mapping: BufferedObservable where O: BufferedObservable
+{
+    public var latestMessage: MappedMessage
+    {
+        map(source.latestMessage)
+    }
+}
+
 public class Mapping<O: Observable, MappedMessage>: ObservableObject<MappedMessage>
 {
     // MARK: - Life Cycle
@@ -41,11 +49,6 @@ public class Mapping<O: Observable, MappedMessage>: ObservableObject<MappedMessa
     }
     
     // MARK: - Observable
-    
-    public override var latestMessage: MappedMessage
-    {
-        map(source.latestMessage)
-    }
 
     public var source: O
     {
@@ -55,13 +58,6 @@ public class Mapping<O: Observable, MappedMessage>: ObservableObject<MappedMessa
             
             oldValue.remove(self)
             observe(source: source)
-            
-            let sourceLatestMessage = source.latestMessage
-            
-            if filter?(sourceLatestMessage) ?? true
-            {
-                send(map(sourceLatestMessage))
-            }
         }
     }
     

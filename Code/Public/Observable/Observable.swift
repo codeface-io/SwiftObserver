@@ -1,6 +1,11 @@
-public extension Observable
+public extension BufferedObservable
 {
     func send() { send(latestMessage) }
+}
+
+public protocol BufferedObservable: Observable
+{
+    var latestMessage: Message { get }
 }
 
 public protocol Observable: AnyObject
@@ -16,7 +21,6 @@ public protocol Observable: AnyObject
     func stopAbandonedObservations()
     
     func send(_ message: Message)
-    var latestMessage: Message { get }
     
     // types
     

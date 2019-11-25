@@ -1,19 +1,6 @@
 public extension CustomObservable
 {
-    // MARK: - Convenience
-    
-    var remembersLatestMessage: Bool
-    {
-        get { messenger.remembersLatestMessage }
-        set { messenger.remembersLatestMessage = newValue }
-    }
-    
     // MARK: - Observable
-    
-    var latestMessage: Message
-    {
-        messenger.latestMessage
-    }
     
     func add(_ observer: AnyObject, receive: @escaping (Message) -> Void)
     {

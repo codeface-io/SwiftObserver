@@ -17,17 +17,12 @@ public class ObservableObject<Message>: Observable
 {
     // MARK: - Register in Observation Service
     
-    init() { ObservationService.register(observable: self) }
+    public init() { ObservationService.register(observable: self) }
     
     deinit { ObservationService.unregister(observable: self,
                                            with: observerList.hashValues) }
    
     // MARK: - Observable
-    
-    public var latestMessage: Message
-    {
-        fatalError("\(typeName(self)) is an abstract class. Just override `latestMessage`.")
-    }
     
     public func add(_ observer: AnyObject,
                     receive: @escaping (Message) -> Void)

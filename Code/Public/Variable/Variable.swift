@@ -2,7 +2,9 @@ import SwiftyToolz
 
 public typealias Var = Variable
 
-public class Variable<Value: Equatable & Codable>: ObservableObject<Change<Value>>, Codable
+public class Variable<Value: Equatable & Codable>: ObservableObject<Change<Value>>,
+    BufferedObservable,
+    Codable
 {
     // MARK: - Initialization
     
@@ -20,7 +22,7 @@ public class Variable<Value: Equatable & Codable>: ObservableObject<Change<Value
     
     // MARK: - Value Access
 
-    public override var latestMessage: Change<Value>
+    public var latestMessage: Change<Value>
     {
         Change(value, value)
     }
