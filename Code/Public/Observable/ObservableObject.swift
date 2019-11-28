@@ -14,7 +14,7 @@ public class ObservableObject<Message>: Observable
     
     public init() {}
     
-    deinit { ObservationRegistry.unregister(observable: self) }
+    deinit { ObservationRegistry.shared.unregister(observable: self) }
    
     // MARK: - Observable
     
@@ -22,13 +22,13 @@ public class ObservableObject<Message>: Observable
                     receive: @escaping (Message) -> Void)
     {
         observerList.add(observer, receive: receive)
-        ObservationRegistry.registerThat(observer, observes: self)
+        ObservationRegistry.shared.registerThat(observer, observes: self)
     }
     
     public func remove(_ observer: AnyObject)
     {
         observerList.remove(observer)
-        ObservationRegistry.unregisterThat(observer, observes: self)
+        ObservationRegistry.shared.unregisterThat(observer, observes: self)
     }
     
     public func send(_ message: Message)

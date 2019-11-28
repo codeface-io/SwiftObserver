@@ -2,14 +2,17 @@ import SwiftyToolz
 
 class ObservationRegistry
 {
-    static func askRegisteredObservablesToRemove(observer: AnyObserver)
+    static let shared = ObservationRegistry()
+    private init() {}
+    
+    func askRegisteredObservablesToRemove(observer: AnyObserver)
     {
         observationsByObserver1st[key(observer)]?.values.forEach {
             $0.observable?.observerWantsToBeRemoved(observer)
         }
     }
     
-    static func unregister(observer: Observer)
+    func unregister(observer: Observer)
     {
         let observerKey = key(observer)
         
@@ -20,7 +23,7 @@ class ObservationRegistry
         observationsByObserver1st[observerKey] = nil
     }
     
-    static func unregister(observable: AnyObservable)
+    func unregister(observable: AnyObservable)
     {
         let observableKey = key(observable)
         
@@ -31,30 +34,30 @@ class ObservationRegistry
         observationsByObservable1st[observableKey] = nil
     }
     
-    static func registerThat(_ observer: AnyObserver,
-                             observes observable: RegisteredObservable)
+    func registerThat(_ observer: AnyObserver,
+                      observes observable: RegisteredObservable)
     {
         guard !isRegisteredThat(observer, observes: observable) else { return }
         
-        let newObservation = RegisteredObservation(observer: observer, observable: observable)
+        let observation = RegisteredObservation(observer: observer, observable: observable)
         
         if observationsByObserver1st[key(observer)] == nil
         {
            observationsByObserver1st[key(observer)] = [ObservableKey: RegisteredObservation]()
         }
         
-        observationsByObserver1st[key(observer)]?[key(observable)] = newObservation
+        observationsByObserver1st[key(observer)]?[key(observable)] = observation
         
         if observationsByObservable1st[key(observable)] == nil
         {
            observationsByObservable1st[key(observable)] = [ObserverKey: RegisteredObservation]()
         }
 
-        observationsByObservable1st[key(observable)]?[key(observer)] = newObservation
+        observationsByObservable1st[key(observable)]?[key(observer)] = observation
     }
     
-    static func unregisterThat(_ observer: AnyObserver,
-                               observes observable: RegisteredObservable)
+    func unregisterThat(_ observer: AnyObserver,
+                        observes observable: RegisteredObservable)
     {
         guard isRegisteredThat(observer, observes: observable) else { return }
         
@@ -62,8 +65,8 @@ class ObservationRegistry
         observationsByObservable1st[key(observable)]?[key(observer)] = nil
     }
     
-    private static func isRegisteredThat(_ observer: AnyObserver,
-                                         observes observable: RegisteredObservable) -> Bool
+    private func isRegisteredThat(_ observer: AnyObserver,
+                                  observes observable: RegisteredObservable) -> Bool
     {
         guard let observation = observationsByObserver1st[key(observer)]?[key(observable)] else
         {
@@ -73,8 +76,8 @@ class ObservationRegistry
         return observation.observer != nil && observation.observable != nil
     }
     
-    private static var observationsByObserver1st = [ObserverKey : [ObservableKey: RegisteredObservation]]()
-    private static var observationsByObservable1st = [ObservableKey : [ObserverKey : RegisteredObservation]]()
+    private var observationsByObserver1st = [ObserverKey : [ObservableKey: RegisteredObservation]]()
+    private var observationsByObservable1st = [ObservableKey : [ObserverKey : RegisteredObservation]]()
     
     private class RegisteredObservation
     {
