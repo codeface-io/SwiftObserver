@@ -4,7 +4,7 @@ extension Messenger: RegisteredObservable
 {
     func observerWantsToBeRemoved(_ observer: AnyObserver)
     {
-        observerList.remove(observer)
+        receivers.remove(observer)
     }
 }
 
@@ -20,21 +20,21 @@ public class Messenger<Message>
     
     func send(_ message: Message)
     {
-        observerList.receive(message)
+        receivers.receive(message)
     }
     
-    func add(_ observer: AnyObject,
+    func add(_ receiver: AnyObject,
              receive: @escaping (Message) -> Void)
     {
-        observerList.add(observer, receive: receive)
-        ObservationRegistry.shared.registerThat(observer, observes: self)
+        receivers.add(receiver, receive: receive)
+        ObservationRegistry.shared.registerThat(receiver, observes: self)
     }
     
-    func remove(_ observer: AnyObject)
+    func remove(_ receiver: AnyObject)
     {
-        observerList.remove(observer)
-        ObservationRegistry.shared.unregisterThat(observer, observes: self)
+        receivers.remove(receiver)
+        ObservationRegistry.shared.unregisterThat(receiver, observes: self)
     }
     
-    private let observerList = ObserverList<Message>()
+    private let receivers = ReceiverPool<Message>()
 }
