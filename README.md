@@ -535,7 +535,7 @@ observer.observe(textMessenger).select("my notification") {
 Implement your own `Observable` by conforming to `CustomObservable`. A custom *observable* just needs to specify its `Message` type and store a `Messenger<Message>`. Here's a minimal example:
 
 ~~~swift
-class Minimal: CustomObservable {
+class Minimal: Observable {
     let messenger = Messenger<String?>()
 }
 ~~~
@@ -543,7 +543,7 @@ class Minimal: CustomObservable {
 A typical `Message` would be some `enum`:
 
 ~~~swift
-class Model: CustomObservable {
+class Model: Observable {
     let messenger = Messenger<Event>()
     
     enum Event { case didInit, didUpdate, willDeinit }
@@ -555,7 +555,7 @@ class Model: CustomObservable {
 Messages are custom and yet fully typed. An `Observable` sends whatever it likes whenever it wants via `send(_ message: Message)`. This `Observable` sends optional strings:
 
 ~~~swift
-class Model: CustomObservable {
+class Model: Observable {
     init { send("did init") }
     func foo() { send(nil) }
     deinit { send("will deinit") }
@@ -571,7 +571,7 @@ A `CustomObservable` uses its `messenger` to implement `Observable`. For instanc
 By default, a `Messenger` remembers the last *message* it sent, therefore `latestMessage` on a `CustomObservable` works as expected, in particular for combined observations. However, the `CustomObservable` is in control of that duplication and can always deactivate it:
 
 ~~~swift
-class NoDuplication: CustomObservable {
+class NoDuplication: Observable {
     init {
         remembersLatestMessage = false  // latestMessage stays nil
     }
