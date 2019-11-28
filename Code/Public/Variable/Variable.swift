@@ -2,9 +2,7 @@ import SwiftyToolz
 
 public typealias Var = Variable
 
-public class Variable<Value: Equatable & Codable>: ObservableObject<Change<Value>>,
-    BufferedObservable,
-    Codable
+public class Variable<Value: Equatable & Codable>: BufferedObservable, Codable
 {
     // MARK: - Initialization
     
@@ -16,7 +14,6 @@ public class Variable<Value: Equatable & Codable>: ObservableObject<Change<Value
     public init(_ value: Value)
     {
         self.value = value
-        super.init()
     }
     
     // MARK: - Value Access
@@ -40,4 +37,8 @@ public class Variable<Value: Equatable & Codable>: ObservableObject<Change<Value
             }
         }
     }
+    
+    // MARK: - Observable
+    
+    public let messenger = Messenger<Change<Value>>()
 }

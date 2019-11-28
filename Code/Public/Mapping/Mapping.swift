@@ -6,7 +6,7 @@ extension Mapping: BufferedObservable where O: BufferedObservable
     }
 }
 
-public class Mapping<O: Observable, MappedMessage>: ObservableObject<MappedMessage>
+public class Mapping<O: Observable, MappedMessage>: Observable
 {
     // MARK: - Life Cycle
     
@@ -15,8 +15,6 @@ public class Mapping<O: Observable, MappedMessage>: ObservableObject<MappedMessa
         self.source = source
         self.filter = filter
         self.map = map
-        
-        super.init()
         
         observe(source: source)
     }
@@ -82,4 +80,8 @@ public class Mapping<O: Observable, MappedMessage>: ObservableObject<MappedMessa
     let map: Mapper
     
     typealias Mapper = (O.Message) -> MappedMessage
+    
+    // MARK: - Observable
+    
+    public let messenger = Messenger<MappedMessage>()
 }
