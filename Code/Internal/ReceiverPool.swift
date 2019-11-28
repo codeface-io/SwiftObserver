@@ -12,16 +12,16 @@
         
         while let message = messageQueue.first
         {
-            for (observerKey, observerInfo) in receivers
+            for (receiverKey, receiverReference) in receivers
             {
-                guard observerInfo.receiver != nil else
+                guard receiverReference.receiver != nil else
                 {
-                    log(warning: "Tried so send message to dead observer. Will remove observer.")
-                    receivers[observerKey] = nil
+                    log(warning: "Tried so send message to dead receiver. Will remove receiver.")
+                    receivers[receiverKey] = nil
                     continue
                 }
                 
-                observerInfo.receive(message)
+                receiverReference.receive(message)
             }
             
             messageQueue.removeFirst()

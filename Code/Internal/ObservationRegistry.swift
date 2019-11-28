@@ -8,7 +8,7 @@ class ObservationRegistry
     func askRegisteredObservablesToRemove(observer: AnyObserver)
     {
         observationsByObserver1st[key(observer)]?.values.forEach {
-            $0.observable?.observerWantsToBeRemoved(observer)
+            $0.messenger?.receiverWantsToBeRemoved(observer)
         }
     }
     
@@ -23,23 +23,23 @@ class ObservationRegistry
         observationsByObserver1st[observerKey] = nil
     }
     
-    func unregister(observable: AnyObservable)
+    func unregister(messenger: AnyObject)
     {
-        let observableKey = key(observable)
+        let messengerKey = key(messenger)
         
-        observationsByObservable1st[observableKey]?.keys.forEach { observerKey in
-            observationsByObserver1st[observerKey]?[observableKey] = nil
+        observationsByObservable1st[messengerKey]?.keys.forEach { observerKey in
+            observationsByObserver1st[observerKey]?[messengerKey] = nil
         }
         
-        observationsByObservable1st[observableKey] = nil
+        observationsByObservable1st[messengerKey] = nil
     }
     
     func registerThat(_ observer: AnyObserver,
-                      observes observable: RegisteredObservable)
+                      observes observable: RegisteredMessenger)
     {
         guard !isRegisteredThat(observer, observes: observable) else { return }
         
-        let observation = RegisteredObservation(observer: observer, observable: observable)
+        let observation = RegisteredObservation(observer: observer, messenger: observable)
         
         if observationsByObserver1st[key(observer)] == nil
         {
@@ -57,7 +57,7 @@ class ObservationRegistry
     }
     
     func unregisterThat(_ observer: AnyObserver,
-                        observes observable: RegisteredObservable)
+                        observes observable: RegisteredMessenger)
     {
         guard isRegisteredThat(observer, observes: observable) else { return }
         
@@ -66,14 +66,14 @@ class ObservationRegistry
     }
     
     private func isRegisteredThat(_ observer: AnyObserver,
-                                  observes observable: RegisteredObservable) -> Bool
+                                  observes observable: RegisteredMessenger) -> Bool
     {
         guard let observation = observationsByObserver1st[key(observer)]?[key(observable)] else
         {
             return false
         }
         
-        return observation.observer != nil && observation.observable != nil
+        return observation.observer != nil && observation.messenger != nil
     }
     
     private var observationsByObserver1st = [ObserverKey : [ObservableKey: RegisteredObservation]]()
@@ -81,28 +81,28 @@ class ObservationRegistry
     
     private class RegisteredObservation
     {
-        init(observer: AnyObserver, observable: RegisteredObservable)
+        init(observer: AnyObserver, messenger: RegisteredMessenger)
         {
             self.observer = observer
-            self.observable = observable
+            self.messenger = messenger
         }
         
         weak var observer: AnyObserver?
-        weak var observable: RegisteredObservable?
+        weak var messenger: RegisteredMessenger?
     }
 }
 
 // MARK: - Basic Types
 
-protocol RegisteredObservable: AnyObservable
+protocol RegisteredMessenger: AnyObject
 {
-    func observerWantsToBeRemoved(_ observer: AnyObserver)
+    func receiverWantsToBeRemoved(_ receiver: AnyObject)
 }
-
-func key(_ object: AnyObject) -> ObjectIdentifier { ObjectIdentifier(object) }
 
 typealias ObserverKey = ObjectIdentifier
 typealias AnyObserver = AnyObject
 
 typealias ObservableKey = ObjectIdentifier
 typealias AnyObservable = AnyObject
+
+func key(_ object: AnyObject) -> ObjectIdentifier { ObjectIdentifier(object) }

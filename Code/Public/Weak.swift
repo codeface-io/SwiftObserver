@@ -1,7 +1,5 @@
 public class Weak<O: Observable>: Observable, Observer
 {
-    // MARK: - Life Cycle
-    
     public init(_ observable: O)
     {
         self.observable = observable
@@ -10,11 +8,7 @@ public class Weak<O: Observable>: Observable, Observer
     
     deinit { stopObserving(observable) }
     
-    // MARK: - Wrapped Observable
-    
     public private(set) weak var observable: O?
-    
-    // MARK: - Observable
     
     public let messenger = Messenger<O.Message>()
 }

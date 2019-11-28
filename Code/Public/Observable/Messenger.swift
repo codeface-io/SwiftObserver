@@ -1,10 +1,10 @@
 import SwiftyToolz
 
-extension Messenger: RegisteredObservable
+extension Messenger: RegisteredMessenger
 {
-    func observerWantsToBeRemoved(_ observer: AnyObserver)
+    func receiverWantsToBeRemoved(_ receiver: AnyObject)
     {
-        receivers.remove(observer)
+        receivers.remove(receiver)
     }
 }
 
@@ -14,23 +14,23 @@ public class Messenger<Message>
     
     public init() {}
     
-    deinit { ObservationRegistry.shared.unregister(observable: self) }
+    deinit { ObservationRegistry.shared.unregister(messenger: self) }
     
     // MARK: - Manage Receivers
     
-    func send(_ message: Message)
+    internal func send(_ message: Message)
     {
         receivers.receive(message)
     }
     
-    func add(_ receiver: AnyObject,
-             receive: @escaping (Message) -> Void)
+    internal func add(_ receiver: AnyObject,
+                      receive: @escaping (Message) -> Void)
     {
         receivers.add(receiver, receive: receive)
         ObservationRegistry.shared.registerThat(receiver, observes: self)
     }
     
-    func remove(_ receiver: AnyObject)
+    internal func remove(_ receiver: AnyObject)
     {
         receivers.remove(receiver)
         ObservationRegistry.shared.unregisterThat(receiver, observes: self)

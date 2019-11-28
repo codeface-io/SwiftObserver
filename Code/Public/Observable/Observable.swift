@@ -10,19 +10,19 @@ public protocol BufferedObservable: Observable
 
 public extension Observable
 {
-    func add(_ observer: AnyObject, receive: @escaping Receiver)
+    func send(_ message: Message)
+    {
+        messenger.send(message)
+    }
+    
+    internal func add(_ observer: AnyObject, receive: @escaping Receiver)
     {
         messenger.add(observer, receive: receive)
     }
     
-    func remove(_ observer: AnyObject)
+    internal func remove(_ observer: AnyObject)
     {
         messenger.remove(observer)
-    }
-    
-    func send(_ message: Message)
-    {
-        messenger.send(message)
     }
 }
 
