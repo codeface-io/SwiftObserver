@@ -1,4 +1,4 @@
-// swift-tools-version:4.2
+// swift-tools-version:5.1
 
 import PackageDescription
 
@@ -11,7 +11,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/flowtoolz/SwiftyToolz.git",
-            .upToNextMajor(from: "1.5.0")
+            .upToNextMajor(from: "1.5.2")
         ),
     ],
     targets: [

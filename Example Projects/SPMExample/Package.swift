@@ -1,4 +1,4 @@
-// swift-tools-version:4.2
+// swift-tools-version:5.1
 
 import PackageDescription
 
@@ -6,12 +6,12 @@ let package = Package(
     name: "SPMExample",
     dependencies: [
         .package(url: "https://github.com/flowtoolz/SwiftObserver.git",
-                 .upToNextMajor(from: "5.0.1"))
+                 .upToNextMajor(from: "5.1.1"))
 //        .package(path: "../../../SwiftObserver")
     ],
     targets: [
         .target(name: "SPMExample",
                 dependencies: ["SwiftObserver"])
     ],
-    swiftLanguageVersions: [.v4_2]
+    swiftLanguageVersions: [.version("5.1")]
 )

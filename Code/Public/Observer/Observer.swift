@@ -1,5 +1,3 @@
-extension NSObject: Observer {}
-
 public extension Observer
 {
     func observe<O: Observable>(_ observable: O,

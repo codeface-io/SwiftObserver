@@ -4,12 +4,12 @@ target 'SwiftObserver' do
 
   # Pods for SwiftObserver
 
-  pod 'SwiftyToolz', '~> 1.4'
+  pod 'SwiftyToolz', '~> 1.5'
 
   target 'SwiftObserverTests' do
     inherit! :search_paths
 
-    pod 'SwiftyToolz', '~> 1.4'
+    pod 'SwiftyToolz', '~> 1.5'
 
   end
 
