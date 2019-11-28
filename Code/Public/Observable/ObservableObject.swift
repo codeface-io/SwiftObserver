@@ -2,25 +2,19 @@ import SwiftyToolz
 
 extension ObservableObject: RegisteredObservable
 {
-    func observationServiceWillRemove(_ observer: AnyObject)
+    func observerWantsToBeRemoved(_ observer: AnyObserver)
     {
         observerList.remove(observer)
-    }
-    
-    func observationServiceWillRemoveDeadObservers()
-    {
-        observerList.removeDeadObservers()
     }
 }
 
 public class ObservableObject<Message>: Observable
 {
-    // MARK: - Register in Observation Service
+    // MARK: - Life Cycle
     
-    public init() { ObservationService.register(observable: self) }
+    public init() {}
     
-    deinit { ObservationService.unregister(observable: self,
-                                           with: observerList.hashValues) }
+    deinit { ObservationRegistry.unregister(observable: self) }
    
     // MARK: - Observable
     
@@ -28,38 +22,13 @@ public class ObservableObject<Message>: Observable
                     receive: @escaping (Message) -> Void)
     {
         observerList.add(observer, receive: receive)
-        
-        ObservationService.didAdd(observer, to: self)
+        ObservationRegistry.registerThat(observer, observes: self)
     }
     
     public func remove(_ observer: AnyObject)
     {
-        if observerList.remove(observer)
-        {
-            ObservationService.didRemove([hashValue(observer)], from: self)
-        }
-    }
-    
-    public func stopObservations()
-    {
-        let observerHashs = observerList.hashValues
-        
-        guard !observerHashs.isEmpty else { return }
-        
-        observerList.removeAll()
-        
-        ObservationService.didRemove(observerHashs, from: self)
-    }
-    
-    public func stopAbandonedObservations()
-    {
-        let observerHashs = observerList.hashValuesOfNilObservers
-        
-        guard !observerHashs.isEmpty else { return }
-        
-        observerList.removeDeadObservers()
-        
-        ObservationService.didRemove(observerHashs, from: self)
+        observerList.remove(observer)
+        ObservationRegistry.unregisterThat(observer, observes: self)
     }
     
     public func send(_ message: Message)

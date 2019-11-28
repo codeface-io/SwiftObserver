@@ -4,51 +4,14 @@
  {
     // MARK: - Manage Observers
     
-    func add(_ observer: AnyObject, receive: @escaping (Message) -> Void)
+    func add(_ observer: AnyObserver, receive: @escaping (Message) -> Void)
     {
-        observers[hashValue(observer)] = ObserverInfo(observer: observer,
-                                                      receive: receive)
+        observers[key(observer)] = ObserverInfo(observer: observer, receive: receive)
     }
     
-    @discardableResult
-    func remove(_ observer: AnyObject) -> Bool
+    func remove(_ observer: AnyObserver)
     {
-        if observers[hashValue(observer)] != nil
-        {
-            observers[hashValue(observer)] = nil
-            return true
-        }
-        
-        return false
-    }
-    
-    func removeDeadObservers()
-    {
-        observers.remove { $0.observer == nil }
-    }
-    
-    func removeAll()
-    {
-        observers.removeAll()
-    }
-    
-    var isEmpty: Bool { observers.isEmpty }
-    
-    // MARK: - Get Hash Values (for ObservationService)
-    
-    var hashValues: [HashValue]
-    {
-        Array(observers.keys)
-    }
-    
-    var hashValuesOfNilObservers: [HashValue]
-    {
-        let keys = observers.compactMap
-        {
-            return $1.observer == nil ? $0 : nil
-        }
-        
-        return Array(keys)
+        observers[key(observer)] = nil
     }
     
     // MARK: - Dispatch Message to Observers
@@ -61,19 +24,18 @@
         
         while let message = messageQueue.first
         {
-            for (observerHash, observerInfo) in observers
+            for (observerKey, observerInfo) in observers
             {
                 guard observerInfo.observer != nil else
                 {
                     log(warning: "Tried so send message to dead observer. Will remove observer.")
-                    observers[observerHash] = nil
+                    observers[observerKey] = nil
                     continue
                 }
                 
                 observerInfo.receive(message)
             }
             
-            // remove value AFTER all handlers were called. do NOT write `storedValue = valueQueue.removeFirst()`
             messageQueue.removeFirst()
         }
     }
@@ -82,17 +44,17 @@
     
     // MARK: - Store Observers
     
-    private var observers = [HashValue: ObserverInfo]()
+    private var observers = [ObserverKey: ObserverInfo]()
     
     private class ObserverInfo
     {
-        init(observer: AnyObject, receive: @escaping (Message) -> Void)
+        init(observer: AnyObserver, receive: @escaping (Message) -> Void)
         {
             self.observer = observer
             self.receive = receive
         }
         
-        weak var observer: AnyObject?
+        weak var observer: AnyObserver?
         let receive: (Message) -> Void
     }
 }

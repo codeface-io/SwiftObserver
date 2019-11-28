@@ -73,13 +73,9 @@ public extension Observer
     
     func stopObserving()
     {
-        ObservationService.remove(observer: self)
+        ObservationRegistry.askRegisteredObservablesToRemove(observer: self)
+        ObservationRegistry.unregister(observer: self)
     }
 }
 
 public protocol Observer: AnyObject {}
-
-public func stopAllAbandonedObservations()
-{
-    ObservationService.removeDeadObservers()
-}

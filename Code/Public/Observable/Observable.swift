@@ -15,11 +15,6 @@ public protocol Observable: AnyObject
     func add(_ observer: AnyObject, receive: @escaping Receiver)
     func remove(_ observer: AnyObject)
     
-    // for external use by clients
-    
-    func stopObservations()
-    func stopAbandonedObservations()
-    
     func send(_ message: Message)
     
     // types

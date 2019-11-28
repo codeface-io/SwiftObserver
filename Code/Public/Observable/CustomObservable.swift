@@ -12,16 +12,6 @@ public extension CustomObservable
         messenger.remove(observer)
     }
 
-    func stopObservations()
-    {
-        messenger.stopObservations()
-    }
-
-    func stopAbandonedObservations()
-    {
-        messenger.stopAbandonedObservations()
-    }
-
     func send(_ message: Message)
     {
         messenger.send(message)
