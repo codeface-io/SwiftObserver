@@ -537,7 +537,6 @@ Implement your own `Observable` by conforming to `CustomObservable`. A custom *o
 ~~~swift
 class Minimal: CustomObservable {
     let messenger = Messenger<String?>()
-    typealias Message = String?
 }
 ~~~
 
@@ -545,8 +544,7 @@ A typical `Message` would be some `enum`:
 
 ~~~swift
 class Model: CustomObservable {
-    let messenger = Messenger(Event.didInit)
-    typealias Message = Event
+    let messenger = Messenger<Event>()
     
     enum Event { case didInit, didUpdate, willDeinit }
 }
@@ -563,7 +561,6 @@ class Model: CustomObservable {
     deinit { send("will deinit") }
     
     let messenger = Messenger<String?>()
-    typealias Message = String?
 }
 ~~~
 
@@ -580,7 +577,6 @@ class NoDuplication: CustomObservable {
     }
 
     let messenger = Messenger<String?>()
-    typealias Message = String?
 }
 ~~~
 
