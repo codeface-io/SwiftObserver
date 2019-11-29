@@ -2,7 +2,7 @@ import SwiftyToolz
 
 extension Messenger: RegisteredMessenger
 {
-    func receiverWantsToBeRemoved(_ receiver: AnyObject)
+    func receiverWantsToBeRemoved(_ receiver: AnyReceiver)
     {
         receivers.remove(receiver)
     }
@@ -14,7 +14,7 @@ public class Messenger<Message>
     
     public init() {}
     
-    deinit { ObservationRegistry.shared.unregister(messenger: self) }
+    deinit { ConnectionRegistry.shared.unregister(self) }
     
     // MARK: - Manage Receivers
     
@@ -23,17 +23,17 @@ public class Messenger<Message>
         receivers.receive(message)
     }
     
-    internal func add(_ receiver: AnyObject,
+    internal func add(_ receiver: AnyReceiver,
                       receive: @escaping (Message) -> Void)
     {
         receivers.add(receiver, receive: receive)
-        ObservationRegistry.shared.registerThat(receiver, observes: self)
+        ConnectionRegistry.shared.registerThat(receiver, isConnectedTo: self)
     }
     
-    internal func remove(_ receiver: AnyObject)
+    internal func remove(_ receiver: AnyReceiver)
     {
         receivers.remove(receiver)
-        ObservationRegistry.shared.unregisterThat(receiver, observes: self)
+        ConnectionRegistry.shared.unregisterThat(receiver, isConnectedTo: self)
     }
     
     private let receivers = ReceiverPool<Message>()

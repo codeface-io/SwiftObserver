@@ -73,8 +73,8 @@ public extension Observer
     
     func stopObserving()
     {
-        ObservationRegistry.shared.askRegisteredObservablesToRemove(observer: self)
-        ObservationRegistry.shared.unregister(observer: self)
+        ConnectionRegistry.shared.askRegisteredMessengersToRemove(self)
+        ConnectionRegistry.shared.unregister(self)
     }
 }
 
