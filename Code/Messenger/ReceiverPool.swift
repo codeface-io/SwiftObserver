@@ -44,6 +44,9 @@
     
     // MARK: - Receivers
     
+    var isEmpty: Bool { receivers.isEmpty }
+    var keys: Set<ReceiverKey> { Set(receivers.keys) }
+    
     private var receivers = [ReceiverKey : ReceiverReference]()
     
     private class ReceiverReference

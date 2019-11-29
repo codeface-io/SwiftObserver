@@ -6,6 +6,8 @@ extension Messenger: RegisteredMessenger
     {
         receivers.remove(receiver)
     }
+    
+    var receiverKeys: Set<ReceiverKey> { receivers.keys }
 }
 
 public class Messenger<Message>
@@ -13,8 +15,7 @@ public class Messenger<Message>
     // MARK: - Life Cycle
     
     public init() {}
-    
-    deinit { ConnectionRegistry.shared.unregister(self) }
+    deinit { registry.unregister(self) }
     
     // MARK: - Manage Receivers
     
@@ -27,14 +28,15 @@ public class Messenger<Message>
                       receive: @escaping (Message) -> Void)
     {
         receivers.add(receiver, receive: receive)
-        ConnectionRegistry.shared.registerThat(receiver, isConnectedTo: self)
+        registry.registerThat(receiver, isConnectedTo: self)
     }
     
     internal func remove(_ receiver: AnyReceiver)
     {
         receivers.remove(receiver)
-        ConnectionRegistry.shared.unregisterThat(receiver, isConnectedTo: self)
+        registry.unregisterThat(receiver, isConnectedTo: self)
     }
     
     private let receivers = ReceiverPool<Message>()
+    private var registry: ConnectionRegistry { .shared }
 }

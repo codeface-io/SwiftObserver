@@ -73,7 +73,6 @@ public extension Observer
     
     func stopObserving()
     {
-        ConnectionRegistry.shared.askRegisteredMessengersToRemove(self)
         ConnectionRegistry.shared.unregister(self)
     }
 }
