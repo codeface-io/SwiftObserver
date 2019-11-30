@@ -160,7 +160,7 @@ For objects to be observable, they must conform to `Observable`. There are four 
 1. Create a [*variable*](#variables). It's an `Observable` that holds a value and sends value changes.
 2. Create a [*mapping*](#mappings). It's an `Observable` that transforms *messages* from a *source observable*.
 3. Create a [*messenger*](#messengers). It's an `Observable` through which other objects communicate.
-4. Implement a [custom](#custom-observables) `Observable` by conforming to `CustomObservable`.
+4. Implement a [custom](#custom-observables) `Observable` by conforming to `Observable`.
 
 You use every `Observable` the same way. There are only three things to note:
 
@@ -232,13 +232,11 @@ If you use some number type `Number` that is either an `Int`, `Float` or `Double
 
 ## Observe Variables
 
-A `Var<Value>` sends *messages* of type `Change<Value>`, providing the `old` and `new` value. `Var` is a `BufferedObservable` with `latestMessage` holding the current `value` in both properties: `old` and `new`.
+A `Var<Value>` sends *messages* of type `Change<Value>`, providing the `old` and `new` value.
 
 ~~~swift
 observer.observe(variable) { change in
-    if change.old == change.new {
-        // message was manually sent, no value change
-    }
+    let whatsTheBigDifference = change.new - change.old
 }
 ~~~
 
@@ -295,7 +293,7 @@ let sourceIsDead = toString.source.observable == nil // true
 // ^^ no one holds Var<Int?>(), so it dies
 ```
 
-As [mentioned earlier](#observables), you use a *mapping* like any other `Observable`: You hold a strong reference to it somewhere, you stop observing it (not its *source*) at some point, and you can call `latestMessage`, `send(_:)` and `send()` on it.
+As [mentioned earlier](#observables), you use a *mapping* like any other `Observable`: You hold a strong reference to it somewhere, you stop observing it (not its *source*) at some point, and you can call `send(_:)` on it.
 
 ## Swap Mapping Sources
 
@@ -363,7 +361,7 @@ let shortText = Var("").new().filter { $0.count < 5 }
 // ^^ sends messages of type String, suppressing long strings
 ```
 
-A *mapping* that has a *filter* maps and sends only those *source messages* that pass the *filter*. Of course, the *filter* cannot apply when you actively request the *mapping's* `latestMessage`.
+A *mapping* that has a *filter* maps and sends only those *source messages* that pass the *filter*.
 
 You could use a *mapping's* `filter` property to see which *source* *messages* get through:
 
@@ -528,8 +526,8 @@ Combined observation only works with `BufferedObservable`s, because when one of 
 
 A `BufferedObservable` is an `Observable` that also has a property `latestMessage: Message` which typically returns the last sent *message* or one that indicates that nothing has changed. There are three kinds of buffered observables:
 
-1. Every *variable* is a `BufferedObservable`since it can produce a "current" message from its value.
-2. Every *mapping* whose *source* is a `BufferedObservable` is itself a `BufferedObservable`.
+1. Every *variable* is a `BufferedObservable`. Its `latestMessage` holds the current variable `value` in both `Change` properties: `old` and `new`.
+2. Every *mapping* whose *source* is a `BufferedObservable` is itself a `BufferedObservable`. A buffered mapping just maps the `latestMessage` of its source. Of course, when you actively request the source's message, the *mapping's* *filter* cannot apply.
 3. Custom implementations of `BufferedObservable`
 
 All `BufferedObservable`s can call `send()` without argument and, thereby, send the `latestMessage`.
