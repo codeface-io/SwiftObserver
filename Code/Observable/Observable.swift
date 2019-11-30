@@ -15,7 +15,7 @@ public extension Observable
         messenger.send(message)
     }
     
-    internal func add(_ observer: AnyObject, receive: @escaping Receiver)
+    internal func add(_ observer: AnyObject, receive: @escaping (Message) -> Void)
     {
         messenger.add(observer, receive: receive)
     }
@@ -30,6 +30,5 @@ public protocol Observable: AnyObject
 {
     var messenger: Messenger<Message> { get }
     typealias Filter = (Message) -> Bool
-    typealias Receiver = (Message) -> Void
     associatedtype Message: Any
 }
