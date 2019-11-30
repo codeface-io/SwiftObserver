@@ -85,3 +85,8 @@ public class Mapping<O: Observable, MappedMessage>: Observable
     
     public let messenger = Messenger<MappedMessage>()
 }
+
+public extension Observable
+{
+    typealias Filter = (Message) -> Bool
+}

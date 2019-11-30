@@ -29,6 +29,5 @@ public extension Observable
 public protocol Observable: AnyObject
 {
     var messenger: Messenger<Message> { get }
-    typealias Filter = (Message) -> Bool
     associatedtype Message: Any
 }
