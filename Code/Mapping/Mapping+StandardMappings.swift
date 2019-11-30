@@ -19,6 +19,12 @@ public extension Mapping
         filterMap(filter: keep) { $0 }
     }
     
+    func unwrap<Wrapped>() -> Mapping<O, Wrapped>
+        where MappedMessage == Wrapped?
+    {
+        filterMap(filter: { $0 != nil }) { $0! }
+    }
+    
     func unwrap<Wrapped>(_ default: Wrapped) -> Mapping<O, Wrapped>
         where MappedMessage == Wrapped?
     {
