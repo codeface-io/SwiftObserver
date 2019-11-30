@@ -16,11 +16,11 @@
     s.swift_version = '5.0'
     
     # minimum platform SDKs
-    s.platforms = {:ios => "9.0", :osx => "10.10", :tvos => "9.0"}
+    s.platforms = {:ios => "9.0", :osx => "10.12", :tvos => "9.0"}
 
     # minimum deployment targets
     s.ios.deployment_target  = '9.0'
-    s.osx.deployment_target = '10.10'
+    s.osx.deployment_target = '10.12'
     s.tvos.deployment_target = '9.0'
 
     # sorces
