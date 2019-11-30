@@ -26,6 +26,12 @@ public extension Observable
     }
 }
 
+// TODO: unit test that this lil trick works
+extension Messenger: Observable
+{
+    public var messenger: Messenger<Message> { self }
+}
+
 public protocol Observable: AnyObject
 {
     var messenger: Messenger<Message> { get }
