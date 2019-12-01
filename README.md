@@ -240,7 +240,7 @@ observer.observe(variable) { change in
 }
 ~~~
 
-A `Var` sends a `Change<Value>` whenever its `value` actually changes. Just starting to observe the `Var` does **not** trigger a *message*. This keeps it simple, predictable and consistent, in particular in combination with [*mappings*](#mappings). Of course, you can always manually send  via `send()`.
+A `Var` sends a `Change<Value>` whenever its `value` actually changes. Just starting to observe the `Var` does **not** trigger a *message*. This keeps it simple, predictable and consistent, in particular in combination with [*mappings*](#mappings). However, you can always manually send  the `latestMessage` via `send()` (see [`BufferedObservable`](#message-buffering)).
 
 ## Variables are Codable
 
@@ -342,7 +342,7 @@ let text = Var<String?>().new()
 
 ### Unwrap
 
-Sometimes, we make *message* types optional, for example when there is no meaningful initial value for a `Var`. But we often don't want to deal with optionals down the line. You can apply the *mappings* `unwrap(_:)` and `unwrap()` to **any** `Observable` that sends optional *messages*. Either you replace `nil` messages with a default, or you supress them altogether:
+Sometimes, we make *message* types optional, for example when there is no meaningful initial value for a `Var`. But we often don't want to deal with optionals down the line. You can apply the *mappings* `unwrap(_:)` and `unwrap()` to **any** `Observable` that sends optional *messages*. `unwrap(_:)` replaces `nil` messages with a default.  `unwrap()`  supresses them entirely:
 
 ~~~swift
 let title = Var<String?>().new().unwrap("untitled")
@@ -463,7 +463,7 @@ This use of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, 
 
 ## The Messenger Class
 
-The `Messenger` clas embodies the messenger pattern. It is the simplest `Observable` and the core of any other `Observable`:
+The `Messenger` class embodies the messenger pattern. It is the simplest `Observable` and the core of any other `Observable`:
 
 ```swift
 let textMessenger = Messenger<String>()
@@ -475,7 +475,7 @@ observer.observe(textMessenger) { textMessage in
 textMessenger.send("my text message")
 ```
 
-`Messenger` makes the indended pattern explicit and can be used with any type of message. You may use `select` to observe or 'subscribe to-" one specific *message*:
+`Messenger` makes the indended pattern explicit and can be used with any type of message. You may use `select` to observe or "subscribe to-" one specific *message*:
 
 ```swift
 observer.observe(textMessenger).select("my notification") {
