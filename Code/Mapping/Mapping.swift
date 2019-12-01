@@ -1,11 +1,3 @@
-extension Mapping: BufferedObservable where O: BufferedObservable
-{
-    public var latestMessage: MappedMessage
-    {
-        map(source.latestMessage)
-    }
-}
-
 public class Mapping<O: Observable, MappedMessage>: Observable
 {
     // MARK: - Life Cycle
