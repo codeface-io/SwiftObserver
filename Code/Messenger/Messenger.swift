@@ -24,6 +24,11 @@ public class Messenger<Message>
         receivers.receive(message)
     }
     
+    internal func has(receiver: AnyReceiver) -> Bool
+    {
+        receivers.contains(receiver)
+    }
+    
     internal func add(_ receiver: AnyReceiver,
                       receive: @escaping (Message) -> Void)
     {

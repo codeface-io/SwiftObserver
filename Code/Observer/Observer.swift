@@ -1,5 +1,10 @@
 public extension Observer
 {
+    func isObserving<O: Observable>(_ observable: O) -> Bool
+    {
+        observable.messenger.has(receiver: observable)
+    }
+    
     func observe<O: Observable>(_ observable: O,
                                 receive: @escaping (O.Message) -> Void)
     {

@@ -32,6 +32,11 @@
     
     // MARK: - Manage Receivers
     
+    func contains(_ receiver: AnyReceiver) -> Bool
+    {
+        receivers[key(receiver)]?.receiver === receiver
+    }
+    
     func add(_ receiver: AnyReceiver, receive: @escaping (Message) -> Void)
     {
         receivers[key(receiver)] = ReceiverReference(receiver: receiver, receive: receive)
