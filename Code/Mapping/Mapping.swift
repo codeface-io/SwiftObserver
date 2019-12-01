@@ -55,13 +55,13 @@ public class Mapping<O: Observable, MappedMessage>: Observable
     {
         source.add(self)
         {
-            [weak self] message, sender in
+            [weak self] message, author in
             
             guard let self = self else { return }
             
             if self.filter?(message) ?? true
             {
-                self.send(self.map(message), sender: sender)
+                self.send(self.map(message), author: author)
             }
         }
     }

@@ -12,7 +12,7 @@ public extension ObservationMapper where T: Equatable
         self.receive { if $0 == message { receive() } }
     }
     
-    func select(_ message: T, receive: @escaping (AnySender) -> Void)
+    func select(_ message: T, receive: @escaping (AnyAuthor) -> Void)
     {
         self.receive { if $0 == message { receive($1) } }
     }
@@ -50,7 +50,7 @@ public extension ObservationMapper
         }
     }
     
-    func unwrap<Wrapped>(receive: @escaping (Wrapped, AnySender) -> Void)
+    func unwrap<Wrapped>(receive: @escaping (Wrapped, AnyAuthor) -> Void)
         where T == Wrapped?
     {
         let localMap = map
@@ -60,9 +60,7 @@ public extension ObservationMapper
         
         observable.add(observer)
         {
-            message, sender in
-            
-            if composedFilter(message) { receive(localMap(message)!, sender) }
+            if composedFilter($0) { receive(localMap($0)!, $1) }
         }
     }
     
@@ -73,8 +71,7 @@ public extension ObservationMapper
         let localMap = map
         let localFilter = self.filter
         
-        let composedFilter = combineFilters(localFilter,
-                                            { filter(localMap($0)) })
+        let composedFilter = combineFilters(localFilter, { filter(localMap($0)) })
         
         return ObservationMapper(observer: observer,
                                  observable: observable,
@@ -88,8 +85,7 @@ public extension ObservationMapper
         let localMap = map
         let localFilter = self.filter
         
-        let composedFilter = combineFilters(localFilter,
-                                            { filter(localMap($0)) })
+        let composedFilter = combineFilters(localFilter, { filter(localMap($0)) })
         
         observable.add(observer)
         {
@@ -98,13 +94,12 @@ public extension ObservationMapper
     }
     
     func filter(_ filter: @escaping (T) -> Bool,
-                receive: @escaping (T, AnySender) -> Void)
+                receive: @escaping (T, AnyAuthor) -> Void)
     {
         let localMap = map
         let localFilter = self.filter
         
-        let composedFilter = combineFilters(localFilter,
-                                            { filter(localMap($0)) })
+        let composedFilter = combineFilters(localFilter, { filter(localMap($0)) })
         
         observable.add(observer)
         {
@@ -121,14 +116,14 @@ public extension ObservationMapper
     }
     
     func unwrap<Wrapped>(_ default: Wrapped,
-                           receive: @escaping (Wrapped) -> Void)
+                         receive: @escaping (Wrapped) -> Void)
         where T == Wrapped?
     {
         unwrap(`default`).receive(receive)
     }
     
     func unwrap<Wrapped>(_ default: Wrapped,
-                           receive: @escaping (Wrapped, AnySender) -> Void)
+                         receive: @escaping (Wrapped, AnyAuthor) -> Void)
         where T == Wrapped?
     {
         unwrap(`default`).receive(receive)
@@ -148,7 +143,7 @@ public extension ObservationMapper
         new().receive(receive)
     }
     
-    func new<Value>(receive: @escaping (Value, AnySender) -> Void)
+    func new<Value>(receive: @escaping (Value, AnyAuthor) -> Void)
         where T == Change<Value>
     {
         new().receive(receive)
@@ -177,7 +172,7 @@ public extension ObservationMapper
         }
     }
     
-    func map<U>(_ map: @escaping (T) -> U, receive: @escaping (U, AnySender) -> Void)
+    func map<U>(_ map: @escaping (T) -> U, receive: @escaping (U, AnyAuthor) -> Void)
     {
         let localMap = self.map
         let localFilter = self.filter

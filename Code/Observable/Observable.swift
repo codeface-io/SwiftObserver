@@ -10,12 +10,12 @@ public protocol BufferedObservable: Observable
 
 public extension Observable
 {
-    func send(_ message: Message, sender: AnySender? = nil)
+    func send(_ message: Message, author: AnyAuthor? = nil)
     {
-        messenger.send(message, sender: sender ?? self)
+        messenger.send(message, author: author ?? self)
     }
     
-    internal func add(_ observer: AnyReceiver, receive: @escaping (Message, AnySender) -> Void)
+    internal func add(_ observer: AnyReceiver, receive: @escaping (Message, AnyAuthor) -> Void)
     {
         messenger.add(observer, receive: receive)
     }
@@ -37,7 +37,7 @@ extension Messenger: Observable
     public var messenger: Messenger<Message> { self }
 }
 
-public protocol Observable: AnySender
+public protocol Observable: AnyAuthor
 {
     var messenger: Messenger<Message> { get }
     associatedtype Message: Any

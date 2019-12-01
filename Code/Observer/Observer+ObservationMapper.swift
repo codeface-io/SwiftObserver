@@ -11,16 +11,14 @@ public extension Observer
 
 public struct ObservationMapper<O: Observable, T>
 {
-    public func receive(_ receive: @escaping (T, AnySender) -> Void)
+    public func receive(_ receive: @escaping (T, AnyAuthor) -> Void)
     {
         let localMap = self.map
         let localFilter = self.filter
         
         observable.add(observer)
         {
-            message, sender in
-            
-            if localFilter?(message) ?? true { receive(localMap(message), sender) }
+            if localFilter?($0) ?? true { receive(localMap($0), $1) }
         }
     }
     

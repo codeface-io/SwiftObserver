@@ -4,13 +4,13 @@
  {
     // MARK: - Forward Messages to Receivers
     
-    func receive(_ message: Message, from sender: AnySender)
+    func receive(_ message: Message, from author: AnyAuthor)
     {
-        messagesFromSenders.append((message, sender))
+        messagesFromAuthors.append((message, author))
         
-        if messagesFromSenders.count > 1 { return }
+        if messagesFromAuthors.count > 1 { return }
         
-        while let (message, sender) = messagesFromSenders.first
+        while let (message, author) = messagesFromAuthors.first
         {
             for (receiverKey, receiverReference) in receivers
             {
@@ -21,14 +21,14 @@
                     continue
                 }
                 
-                receiverReference.receive(message, sender)
+                receiverReference.receive(message, author)
             }
             
-            messagesFromSenders.removeFirst()
+            messagesFromAuthors.removeFirst()
         }
     }
     
-    private var messagesFromSenders = [(Message, AnySender)]()
+    private var messagesFromAuthors = [(Message, AnyAuthor)]()
     
     // MARK: - Manage Receivers
     
@@ -37,7 +37,7 @@
         receivers[key(receiver)]?.receiver === receiver
     }
     
-    func add(_ receiver: AnyReceiver, receive: @escaping (Message, AnySender) -> Void)
+    func add(_ receiver: AnyReceiver, receive: @escaping (Message, AnyAuthor) -> Void)
     {
         receivers[key(receiver)] = ReceiverReference(receiver: receiver, receive: receive)
     }
@@ -56,14 +56,14 @@
     
     private class ReceiverReference
     {
-        init(receiver: AnyReceiver, receive: @escaping (Message, AnySender) -> Void)
+        init(receiver: AnyReceiver, receive: @escaping (Message, AnyAuthor) -> Void)
         {
             self.receiver = receiver
             self.receive = receive
         }
         
         weak var receiver: AnyReceiver?
-        let receive: (Message, _ from: AnySender) -> Void
+        let receive: (Message, _ from: AnyAuthor) -> Void
     }
 }
 
@@ -71,4 +71,4 @@ func key(_ receiver: AnyReceiver) -> ReceiverKey { ReceiverKey(receiver) }
 typealias ReceiverKey = ObjectIdentifier
 public typealias AnyReceiver = AnyObject
  
-public typealias AnySender = AnyObject
+public typealias AnyAuthor = AnyObject

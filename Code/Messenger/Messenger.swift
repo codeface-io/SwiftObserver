@@ -19,9 +19,9 @@ public class Messenger<Message>
     
     // MARK: - Manage Receivers
     
-    internal func send(_ message: Message, sender: AnySender)
+    internal func send(_ message: Message, author: AnyAuthor)
     {
-        receivers.receive(message, from: sender)
+        receivers.receive(message, from: author)
     }
     
     internal func has(receiver: AnyReceiver) -> Bool
@@ -30,7 +30,7 @@ public class Messenger<Message>
     }
     
     internal func add(_ receiver: AnyReceiver,
-                      receive: @escaping (Message, AnySender) -> Void)
+                      receive: @escaping (Message, AnyAuthor) -> Void)
     {
         receivers.add(receiver, receive: receive)
         registry.registerThat(receiver, isConnectedTo: self)

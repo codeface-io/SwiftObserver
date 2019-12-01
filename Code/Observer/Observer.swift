@@ -12,7 +12,7 @@ public extension Observer
     }
     
     func observe<O: Observable>(_ observable: O,
-                                receive: @escaping (O.Message, AnySender) -> Void)
+                                receive: @escaping (O.Message, AnyAuthor) -> Void)
     {
         observable.add(self, receive: receive)
     }
@@ -44,7 +44,7 @@ public extension Observer
     func observe<O1: BufferedObservable, O2: BufferedObservable>(
         _ observable1: O1,
         _ observable2: O2,
-        _ receive: @escaping (O1.Message, O2.Message, AnySender) -> Void)
+        _ receive: @escaping (O1.Message, O2.Message, AnyAuthor) -> Void)
     {
         observable1.add(self)
         {
@@ -103,7 +103,7 @@ public extension Observer
         _ observable1: O1,
         _ observable2: O2,
         _ observable3: O3,
-        _ receive: @escaping (O1.Message, O2.Message, O3.Message, AnySender) -> Void)
+        _ receive: @escaping (O1.Message, O2.Message, O3.Message, AnyAuthor) -> Void)
     {
         observable1.add(self)
         {
