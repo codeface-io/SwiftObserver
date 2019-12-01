@@ -1,8 +1,16 @@
-import XCTest
-import SwiftObserver
-import Foundation
+//
+//  SwiftObserverDevTests.swift
+//  SwiftObserverDevTests
+//
+//  Created by seb on 01.12.19.
+//  Copyright © 2019 flowtoolz. All rights reserved.
+//
 
-class SwiftObserverTests: XCTestCase
+import XCTest
+@testable import SwiftObserverDev
+import SwiftObserver
+
+class SwiftObserverDevTests: XCTestCase
 {
     func testStringProperty()
     {
@@ -14,13 +22,14 @@ class SwiftObserverTests: XCTestCase
         
     }
     
-    func testWeakMappingSource()
+    func testWeakObservableWrapper()
     {
-        let toString = Weak(Var<Int?>()).new().unwrap(0).map { "\($0)" }
+        let weakNumber1 = Weak(Var(1))
+        XCTAssertNil(weakNumber1.observable)
         
-        let sourceIsDead = toString.source.observable == nil
-        
-        XCTAssert(sourceIsDead)
+        let strongNumber = Var(2)
+        let weakNumber2 = Weak(strongNumber)
+        XCTAssertEqual(weakNumber2.observable?.value, 2)
     }
     
     func testMessenger()
@@ -150,9 +159,9 @@ class SwiftObserverTests: XCTestCase
         var observedString: String?
         
         controller.observe(testText).new
-        {
-            observedString = $0
-            didFire = true
+            {
+                observedString = $0
+                didFire = true
         }
         
         testText <- "test"
@@ -183,18 +192,18 @@ class SwiftObserverTests: XCTestCase
     
     func testObservationMappingUnwrap()
     {
-        let textMapping = Var<String?>("non optional string").new()
+        let text = Var<String?>("non optional string")
         
         var didFire = false
         var observedString: String?
         
-        controller.observe(textMapping).unwrap("untitled")
+        controller.observe(text).new().unwrap("untitled")
         {
             observedString = $0
             didFire = true
         }
         
-        textMapping.source <- nil
+        text <- nil
         
         XCTAssert(didFire)
         XCTAssertEqual("untitled", observedString)
@@ -202,18 +211,18 @@ class SwiftObserverTests: XCTestCase
     
     func testObservationMappingChainAfterUnwrap()
     {
-        let textMapping = Var<String?>("non optional string").new()
+        let text = Var<String?>("non optional string")
         
         var didFire = false
         var observedCount: Int?
         
-        controller.observe(textMapping).unwrap("untitled").map({ $0.count })
+        controller.observe(text).new().unwrap("untitled").map({ $0.count })
         {
             observedCount = $0
             didFire = true
         }
         
-        textMapping.source <- nil
+        text <- nil
         
         XCTAssert(didFire)
         XCTAssertEqual("untitled".count, observedCount)
@@ -243,7 +252,8 @@ class SwiftObserverTests: XCTestCase
     
     func testObservationMappingSelect()
     {
-        let textMapping = Var().new().unwrap("")
+        let text = Var<String?>()
+        let textMapping = text.new().unwrap("")
         
         var didFire = false
         
@@ -252,17 +262,18 @@ class SwiftObserverTests: XCTestCase
             didFire = true
         }
         
-        textMapping.source <- "test"
+        text <- "test"
         XCTAssert(didFire)
         
         didFire = false
-        textMapping.source <- "test2"
+        text <- "test2"
         XCTAssert(!didFire)
     }
     
     func testMappingSelect()
     {
-        let textMapping = Var().new().unwrap("").select("test")
+        let text = Var<String?>()
+        let textMapping = text.new().unwrap("").select("test")
         
         var didFire = false
         
@@ -271,11 +282,11 @@ class SwiftObserverTests: XCTestCase
             didFire = true
         }
         
-        textMapping.source <- "test"
+        text <- "test"
         XCTAssert(didFire)
         
         didFire = false
-        textMapping.source <- "test2"
+        text <- "test2"
         XCTAssert(!didFire)
     }
     
@@ -393,34 +404,6 @@ class SwiftObserverTests: XCTestCase
         XCTAssertNil(weakObservable.observable)
     }
     
-    func testSettingSourceOfMapping()
-    {
-        let mapping = Var("").new()
-        
-        var observedStrings = [String]()
-        
-        controller.observe(mapping)
-        {
-            newString in
-            
-            observedStrings.append(newString)
-        }
-        
-        XCTAssertEqual(observedStrings, [])
-        
-        let initialText = "initial text"
-        
-        let text = Var(initialText)
-        mapping.source = text
-        
-        XCTAssertEqual(observedStrings, [])
-        
-        let newText = "new text"
-        text <- newText
-        
-        XCTAssertEqual(observedStrings, [newText])
-    }
-    
     func testSingleObservationFilter()
     {
         let number = Var<Int?>(99)
@@ -467,15 +450,22 @@ class SwiftObserverTests: XCTestCase
     
     func testFilterSupressesMessage()
     {
-        let number = Messenger<Int?>()
-        let combinedMapping = number.filter({ $0 != nil }).unwrap(-4)
+        let messenger = Messenger<Int?>()
+        let transform = Filter(messenger) { $0 != nil }
         
-        controller.observe(combinedMapping)
+        var observedNumber: Int? = nil
+        
+        controller.observe(transform)
         {
-            _ in XCTAssert(false)
+            observedNumber = $0
+            XCTAssertNotNil($0)
         }
         
-        number.send(nil)
+        messenger.send(3)
+        XCTAssertEqual(observedNumber, 3)
+
+        messenger.send(nil)
+        XCTAssertEqual(observedNumber, 3)
     }
     
     func testSimpleMessenger()
@@ -490,7 +480,7 @@ class SwiftObserverTests: XCTestCase
         }
         
         textMessenger.send(expectedMessage)
-
+        
         XCTAssertEqual(receivedMessage, expectedMessage)
     }
     
@@ -510,28 +500,6 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual(receivedMessage, expectedMessage)
     }
     
-    func testMessengerBackedByVariable()
-    {
-        let textMessage = Var<String>("initial message")
-        let textMessenger = textMessage.new()
-        
-        XCTAssertEqual(textMessenger.source.value, "initial message")
-        
-        var receivedMessage: String?
-        
-        controller.observe(textMessenger)
-        {
-            receivedMessage = $0
-        }
-        
-        XCTAssertNil(receivedMessage)
-        
-        textMessage <- "user error"
-        
-        XCTAssertEqual(textMessenger.source.value, "user error")
-        XCTAssertEqual(receivedMessage, "user error")
-    }
-    
     func testObservingWrongMessage()
     {
         let textMessenger = Var<String?>().new()
@@ -549,7 +517,7 @@ class SwiftObserverTests: XCTestCase
         textMessenger.send("wrong message")
         XCTAssert(!didFire)
     }
-
+    
     func testHowToUseOptionalVariables()
     {
         let text = Var<String?>("initial value")
@@ -832,7 +800,7 @@ class SwiftObserverTests: XCTestCase
         var latestMessage: Event { .didNothing }
         
         let messenger = Messenger<Event>()
-
+        
         enum Event: String { case didNothing, didUpdate, didReset }
     }
     
@@ -860,7 +828,7 @@ class SwiftObserverTests: XCTestCase
     }
     
     let controller = Controller()
- 
+    
     class Controller: Observer
     {
         deinit
@@ -869,4 +837,3 @@ class SwiftObserverTests: XCTestCase
         }
     }
 }
-

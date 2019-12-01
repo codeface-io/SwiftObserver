@@ -1,6 +1,24 @@
 use_frameworks!
-platform :ios, '12.0'
+platform :osx, '12.0'
 
-target 'SwiftObserverTests' do
-    pod 'SwiftObserver', :path => '../'
+target 'SwiftObserverDev' do
+
+    pod 'SwiftObserver', :path=> '../'
+    
+    target 'SwiftObserverDevTests' do
+      
+        #inherit! :complete
+
+        pod 'SwiftObserver', :path=> '../'
+        
+    end
+    
+end
+
+post_install do |installer|
+    installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |config|
+            config.build_settings['MACOSX_DEPLOYMENT_TARGET'] = '10.12'
+        end
+    end
 end
