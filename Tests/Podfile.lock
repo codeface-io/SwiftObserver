@@ -1,16 +1,23 @@
 PODS:
-  - SwiftyToolz (1.4.2)
+  - SwiftObserver (5.1.0):
+    - SwiftyToolz (~> 1.5)
+  - SwiftyToolz (1.5.1)
 
 DEPENDENCIES:
-  - SwiftyToolz (~> 1.4)
+  - SwiftObserver (from `../`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  trunk:
     - SwiftyToolz
 
+EXTERNAL SOURCES:
+  SwiftObserver:
+    :path: "../"
+
 SPEC CHECKSUMS:
-  SwiftyToolz: c9e9eac8e2e59ca5e2c293593b336a0253603bbd
+  SwiftObserver: 8df6b21e7f32f46ec0d37f7022b70ad62e297064
+  SwiftyToolz: bd69a6eebc4e4a50846e71875cab0b7e47640814
 
-PODFILE CHECKSUM: 924040763b9b86b14909ef10107580d77dd3b3b1
+PODFILE CHECKSUM: e839ca97e52128dd222601a45206bfd95f0f01af
 
-COCOAPODS: 1.6.0.beta.2
+COCOAPODS: 1.8.4

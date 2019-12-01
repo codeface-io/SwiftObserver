@@ -1,16 +1,6 @@
-target 'SwiftObserver' do
+use_frameworks!
+platform :ios, '12.0'
 
-  use_frameworks!
-
-  # Pods for SwiftObserver
-
-  pod 'SwiftyToolz', '~> 1.4'
-
-  target 'SwiftObserverTests' do
-    inherit! :search_paths
-
-    pod 'SwiftyToolz', '~> 1.4'
-
-  end
-
+target 'SwiftObserverTests' do
+    pod 'SwiftObserver', :path => '../'
 end

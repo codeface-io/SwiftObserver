@@ -29,15 +29,11 @@ class SwiftObserverTests: XCTestCase
         
         let message = "latest message"
         
-        textMessenger.send(message)
-        
-        XCTAssertEqual(textMessenger.latestMessage, message)
-        
         var observedMessage: String?
         
         controller.observe(textMessenger) { observedMessage = $0 }
         
-        textMessenger.send()
+        textMessenger.send(message)
         
         XCTAssertEqual(observedMessage, message)
     }
@@ -395,10 +391,9 @@ class SwiftObserverTests: XCTestCase
         strongObservable = nil
         
         XCTAssertNil(weakObservable.observable)
-        XCTAssertEqual(weakObservable.latestMessage.new, 10)
     }
     
-    func testSettingObservableOfMapping()
+    func testSettingSourceOfMapping()
     {
         let mapping = Var("").new()
         
@@ -418,14 +413,12 @@ class SwiftObserverTests: XCTestCase
         let text = Var(initialText)
         mapping.source = text
         
-        XCTAssertEqual(mapping.latestMessage, initialText)
-        XCTAssertEqual(observedStrings, [initialText])
+        XCTAssertEqual(observedStrings, [])
         
         let newText = "new text"
         text <- newText
         
-        XCTAssertEqual(mapping.latestMessage, newText)
-        XCTAssertEqual(observedStrings, [initialText, newText])
+        XCTAssertEqual(observedStrings, [newText])
     }
     
     func testSingleObservationFilter()
@@ -472,44 +465,17 @@ class SwiftObserverTests: XCTestCase
         XCTAssertEqual(observedNumbers, [10, 11, 12])
     }
     
-    func testCombineMappingsByChainingThem()
+    func testFilterSupressesMessage()
     {
-        let number = Var<Int?>()
+        let number = Messenger<Int?>()
+        let combinedMapping = number.filter({ $0 != nil }).unwrap(-4)
         
-        var strongNewNumber: Mapping<Var<Int?>, Int?>? = number.new()
-        weak var weakNewNumber = strongNewNumber
-        
-        guard let strongUnwrappedNewNumber = weakNewNumber?.filter({ $0 != nil }).unwrap(-1) else
+        controller.observe(combinedMapping)
         {
-            XCTAssert(false)
-            return
+            _ in XCTAssert(false)
         }
         
-        var observedNumbers = [Int]()
-        
-        controller.observe(strongUnwrappedNewNumber)
-        {
-            observedNumbers.append($0)
-        }
-        
-        XCTAssertNotNil(strongNewNumber)
-        XCTAssertNotNil(weakNewNumber)
-        
-        strongNewNumber = nil
-        XCTAssertNil(weakNewNumber)
-
-        XCTAssertEqual(strongUnwrappedNewNumber.latestMessage, -1)
-        
-        number <- 9
-        XCTAssertEqual(strongUnwrappedNewNumber.latestMessage, 9)
-        
-        number <- nil
-        XCTAssertEqual(strongUnwrappedNewNumber.latestMessage, -1)
-        
-        number <- 10
-        XCTAssertEqual(strongUnwrappedNewNumber.latestMessage, 10)
-        
-        XCTAssertEqual(observedNumbers, [9, 10])
+        number.send(nil)
     }
     
     func testSimpleMessenger()
@@ -549,7 +515,7 @@ class SwiftObserverTests: XCTestCase
         let textMessage = Var<String>("initial message")
         let textMessenger = textMessage.new()
         
-        XCTAssertEqual(textMessenger.latestMessage, "initial message")
+        XCTAssertEqual(textMessenger.source.value, "initial message")
         
         var receivedMessage: String?
         
@@ -562,7 +528,7 @@ class SwiftObserverTests: XCTestCase
         
         textMessage <- "user error"
         
-        XCTAssertEqual(textMessenger.latestMessage, "user error")
+        XCTAssertEqual(textMessenger.source.value, "user error")
         XCTAssertEqual(receivedMessage, "user error")
     }
     
@@ -856,28 +822,27 @@ class SwiftObserverTests: XCTestCase
         private(set) var number = Var<Int?>()
     }
     
-    class MinimalModel: CustomObservable
+    class MinimalModel: Observable
     {
         let messenger = Messenger<Int?>()
-        typealias Message = Int?
     }
     
-    class ObservableModel: CustomObservable
+    class ObservableModel: BufferedObservable
     {
-        typealias Message = Event
+        var latestMessage: Event { .didNothing }
         
-        let messenger = Messenger(Event.didNothing)
-        
-        enum Event: String { case didUpdate, didReset, didNothing }
+        let messenger = Messenger<Event>()
+
+        enum Event: String { case didNothing, didUpdate, didReset }
     }
     
     let customObservable = ModelWithState()
     
-    class ModelWithState: CustomObservable
+    class ModelWithState: BufferedObservable
     {
         var latestMessage: Change<String>
         {
-            return Change(state, state)
+            Change(state, state)
         }
         
         var state = "initial state"
@@ -891,7 +856,7 @@ class SwiftObserverTests: XCTestCase
             }
         }
         
-        let messenger = Messenger(Change("", ""))
+        let messenger = Messenger<Change<String>>()
     }
     
     let controller = Controller()
