@@ -25,6 +25,12 @@ public extension Observable
         map { $0 ?? `default` }
     }
     
+    func unwrap<Wrapped>() -> Mapping<Self, Wrapped>
+        where Self.Message == Wrapped?
+    {
+        Mapping(self, filter: {  $0 != nil }) { $0! }
+    }
+    
     func map<MappedMessage>(map: @escaping (Message) -> MappedMessage) -> Mapping<Self, MappedMessage>
     {
         Mapping(self, map: map)
