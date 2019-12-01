@@ -14,7 +14,7 @@ SwiftObserver is a lightweight framework for reactive Swift. Its design goals ma
 
 [*Reactive Programming*](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [*Dependency Inversion*](https://en.wikipedia.org/wiki/Dependency_inversion_principle). SwiftObserver breaks *Reactive Programming* down to its essence, which is the [*Observer Pattern*](https://en.wikipedia.org/wiki/Observer_pattern).
 
-SwiftObserver is just about 1200 lines of production code, but it also approaches a 1000 hours of work, thinking it through, letting go of fancy features, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift), and battle-testing it [in practice](http://flowlistapp.com).
+SwiftObserver is just about 1200 lines of production code, but it's also beyond a 1000 hours of work, thinking it through, letting go of fancy features, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift), and battle-testing it [in practice](http://flowlistapp.com).
 
 * [Get Involved](#get-involved)
 * [Get Started](#get-started)
@@ -65,7 +65,7 @@ Want to **contact** us? Write at <swiftobserver@flowtoolz.com>.
 With [**Carthage**](https://github.com/Carthage/Carthage), add this line to your [Cartfile](https://github.com/Carthage/Carthage/blob/master/Documentation/Artifacts.md#cartfile):
 
 ```
-github "flowtoolz/SwiftObserver" ~> 5.1
+github "flowtoolz/SwiftObserver" ~> 6.0
 ```
 
 Then follow [these instructions](https://github.com/Carthage/Carthage#adding-frameworks-to-an-application) and run `$ carthage update --platform ios`.
@@ -76,7 +76,7 @@ With [**Cocoapods**](https://cocoapods.org), adjust your [Podfile](https://guide
 use_frameworks!
 
 target "MyAppTarget" do
-  pod "SwiftObserver", "~> 5.1"
+  pod "SwiftObserver", "~> 6.0"
 end
 ```
 
@@ -93,7 +93,7 @@ let package = Package(
     name: "SPMExample",
     dependencies: [
         .package(url: "https://github.com/flowtoolz/SwiftObserver.git",
-                 .upToNextMajor(from: "5.1.1"))
+                 .upToNextMajor(from: "6.0.0"))
     ],
     targets: [
         .target(name: "SPMExample",
