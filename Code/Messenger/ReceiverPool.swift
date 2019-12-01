@@ -4,13 +4,13 @@
  {
     // MARK: - Forward Messages to Receivers
     
-    func receive(_ message: Message)
+    func receive(_ message: Message, from sender: AnySender)
     {
-        messageQueue.append(message)
+        messagesFromSenders.append((message, sender))
         
-        if messageQueue.count > 1 { return }
+        if messagesFromSenders.count > 1 { return }
         
-        while let message = messageQueue.first
+        while let (message, sender) = messagesFromSenders.first
         {
             for (receiverKey, receiverReference) in receivers
             {
@@ -21,14 +21,14 @@
                     continue
                 }
                 
-                receiverReference.receive(message)
+                receiverReference.receive(message, sender)
             }
             
-            messageQueue.removeFirst()
+            messagesFromSenders.removeFirst()
         }
     }
     
-    private var messageQueue = [Message]()
+    private var messagesFromSenders = [(Message, AnySender)]()
     
     // MARK: - Manage Receivers
     
@@ -37,7 +37,7 @@
         receivers[key(receiver)]?.receiver === receiver
     }
     
-    func add(_ receiver: AnyReceiver, receive: @escaping (Message) -> Void)
+    func add(_ receiver: AnyReceiver, receive: @escaping (Message, AnySender) -> Void)
     {
         receivers[key(receiver)] = ReceiverReference(receiver: receiver, receive: receive)
     }
@@ -56,13 +56,19 @@
     
     private class ReceiverReference
     {
-        init(receiver: AnyReceiver, receive: @escaping (Message) -> Void)
+        init(receiver: AnyReceiver, receive: @escaping (Message, AnySender) -> Void)
         {
             self.receiver = receiver
             self.receive = receive
         }
         
         weak var receiver: AnyReceiver?
-        let receive: (Message) -> Void
+        let receive: (Message, _ from: AnySender) -> Void
     }
 }
+
+func key(_ receiver: AnyReceiver) -> ReceiverKey { ReceiverKey(receiver) }
+typealias ReceiverKey = ObjectIdentifier
+public typealias AnyReceiver = AnyObject
+ 
+public typealias AnySender = AnyObject

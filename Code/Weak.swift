@@ -3,7 +3,7 @@ public class Weak<O: Observable>: Observable, Observer
     public init(_ observable: O)
     {
         self.observable = observable
-        observe(observable) { [weak self] in self?.send($0) }
+        observe(observable) { [weak self] in self?.send($0, sender: $1) }
     }
     
     deinit { stopObserving(observable) }
