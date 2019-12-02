@@ -1,4 +1,4 @@
-public extension Change where Value : Equatable
+extension Change: Equatable where Value : Equatable
 {
     var valueChanged: Bool { old != new }
 }
