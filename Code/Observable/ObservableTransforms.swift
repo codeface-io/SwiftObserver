@@ -42,12 +42,21 @@ public class Unwrapper<O: Observable, Unwrapped>: Observable, Observer
     public let messenger = Messenger<Unwrapped>()
 }
 
+extension Mapper: BufferedObservable where O: BufferedObservable
+{
+    public var latestMessage: Mapped
+    {
+        map(observable.latestMessage)
+    }
+}
+
 public class Mapper<O: Observable, Mapped>: Observable, Observer
 {
     public init(_ observable: O,
-                _ map: @escaping (O.Message) -> Mapped )
+                _ map: @escaping (O.Message) -> Mapped)
     {
         self.observable = observable
+        self.map = map
         
         observe(observable)
         {
@@ -57,6 +66,8 @@ public class Mapper<O: Observable, Mapped>: Observable, Observer
         }
     }
     
+    private let map: (O.Message) -> Mapped
     private let observable: O
+    
     public let messenger = Messenger<Mapped>()
 }

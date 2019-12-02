@@ -19,10 +19,10 @@ public extension Observable
         Filter(self, keep)
     }
     
-    func unwrap<Wrapped>(_ default: Wrapped) -> Mapper<Self, Wrapped>
+    func unwrap<Wrapped>(_ defaultMessage: Wrapped) -> Mapper<Self, Wrapped>
         where Message == Wrapped?
     {
-        Mapper(self) { $0 ?? `default` }
+        Mapper(self) { $0 ?? defaultMessage }
     }
     
     func unwrap<Wrapped>() -> Unwrapper<Self, Wrapped>

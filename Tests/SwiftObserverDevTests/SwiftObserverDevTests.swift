@@ -70,6 +70,13 @@ class SwiftObserverDevTests: XCTestCase
         XCTAssertEqual(text[text.startIndex], "1")
     }
     
+    func testThatMappesOfBufferedObservablesAreBuffered()
+    {
+        XCTAssertEqual(Var(1).new().latestMessage, 1)
+        XCTAssertEqual(Var<Int?>().new().unwrap(23).latestMessage, 23)
+        XCTAssertEqual(Var(5).map({ $0.new == 5 }).latestMessage, true)
+    }
+    
     func testChainingObservationMappers()
     {
         var didFire = false
