@@ -1,5 +1,37 @@
 ![SwiftObserver](https://raw.githubusercontent.com/flowtoolz/SwiftObserver/master/Documentation/swift.jpg)
 
+
+
+# [v6.0.0-beta]
+
+This is the branch for the next major update.
+
+Here are some checklists for coming release notes and documentation of v6.0.0:
+
+Overall SwiftObserver becomes at the same time more powerful, simple, consistent, flexible and safe. The number of lines has actually decreased, in code and in documentation.
+
+Improved:
+
+* Observable transforms (formerly "Mappings") and observation transforms now also have a default-less `unwrap()`
+* No more message duplication in Messengers since the `latestMessage` requirement is limited to buffered observables. And so switching buffering on or off there is also no more concern.
+* message buffering now happens exactly whenever it is theoretically possible, that is whenever the observable is backed by an actual value like variables and ther is no filter involved in the observable. Filters annihilate random access pulling. The weirdness of a mapping having to ignore its filter for its implementation of `latestMessage` is gone
+* Message order is maintained for all observables not just for variables. All observables use a queue now.
+* an observer can now check whether it already observes an observable via `observer.isObserving(observable)`.
+* The Observable protocol has become even simpler. It just requires one Messenger. All observables are now implemented that way and so are on equal footing. You could now easily reimplement `Var` and benefit from the order meaintaining message queue of `Messenger`.
+* custom observables are even simpler to implement
+  * The protocol is the same old familiar `Observable`.
+  * The `typealias Message = MyMessageType` can now be omitted.
+  * The need for using optional message types to be able to implement `latestMessage` is gone.
+* Observers can optionally receive the author of a message via an alternative receive closure (so it breaks no code and the additional argument is only present when spelled out). Also observables can optionally identify an author other than themselves, if they want to (also not a breaking change). This is hugely beneficial when working with observed shared mutable states like the repository / store pattern, really any storage abstraction, classic messenger and more. basically an observer can ignore a messages the he himself triggered, even when the trigger was indirect.
+* The internals are much better implemented and much more readable, without forced unwraps for the unwrap transforms, without weird function and filter compositions. transform concerns are now separated into the three simple transforms map, filter and unwrap, etc. Also it's much less code overall.
+* Change is Equatable when its Value is Equatable, so variable messages can be selected via `select(Change(specificOldValue, specificNewValue))`
+
+Removed / Simplified:
+
+* A few memory management function were removed since they are overkill and not actually needed.
+* The `ObservableObject` class was removed. The Messenger roughly plays that role now.
+* The source of transforms cannot be reset as it was the case for mappings. As a side effect, the question whether a transform fires when the source is reset is no concern anymore.
+
 # SwiftObserver
 
 [![badge-pod]](http://cocoapods.org/pods/SwiftObserver) ![badge-pms] ![badge-languages] [![badge-gitter]](https://gitter.im/flowtoolz/SwiftObserver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) ![badge-platforms] ![badge-mit]
