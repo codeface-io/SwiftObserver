@@ -31,7 +31,7 @@ public extension Observable
     }
 }
 
-// TODO: unit test that this lil trick works
+// TODO: unit test that this lil trick works as expected, without any weird infinite self-referential recursion
 extension Messenger: Observable
 {
     public var messenger: Messenger<Message> { self }
