@@ -4,33 +4,34 @@
 
 # [v6.0.0-beta]
 
-This is the branch for the next major update.
+This is the branch for the next major update. Overall SwiftObserver becomes at the same time more powerful, simple, consistent, flexible and safe. The number of lines has actually decreased, in code and in documentation.
 
-Here are some checklists for coming release notes and documentation of v6.0.0:
-
-Overall SwiftObserver becomes at the same time more powerful, simple, consistent, flexible and safe. The number of lines has actually decreased, in code and in documentation.
+The documentation here does **not** yet cover all commited changes and their implications. But here are two checklists for the release notes and documentation of v6.0.0.
 
 Improved:
 
-* Observable transforms (formerly "Mappings") and observation transforms now also have a default-less `unwrap()`
-* No more message duplication in Messengers since the `latestMessage` requirement is limited to buffered observables. And so switching buffering on or off there is also no more concern.
-* message buffering now happens exactly whenever it is theoretically possible, that is whenever the observable is backed by an actual value like variables and ther is no filter involved in the observable. Filters annihilate random access pulling. The weirdness of a mapping having to ignore its filter for its implementation of `latestMessage` is gone
-* Message order is maintained for all observables not just for variables. All observables use a queue now.
-* an observer can now check whether it already observes an observable via `observer.isObserving(observable)`.
-* The Observable protocol has become even simpler. It just requires one Messenger. All observables are now implemented that way and so are on equal footing. You could now easily reimplement `Var` and benefit from the order meaintaining message queue of `Messenger`.
-* custom observables are even simpler to implement
+* Observable transforms (formerly "mappings") and observation transforms now also have a default-less `unwrap()`.
+* No more message duplication in messengers since the `latestMessage` requirement is limited to `BufferedObservable`s. And so, switching buffering on or off there is also no more concern.
+* Change is Equatable when its Value is Equatable, so messages of variables can be selected via `select(Change(specificOldValue, specificNewValue))`.
+* Message buffering now happens exactly whenever it is fully possible, that is whenever the observable is backed by an actual value (like variables are) and there is no filter involved in the observable. Filters annihilate random access pulling. The weirdness of a mapping having to ignore its filter in its implementation of `latestMessage` is gone.
+* Message order is maintained for all observables not just for variables. All observables use a message queue now.
+* An observer can now check whether it already observes an observable via `observer.isObserving(observable)`.
+* The `Observable` protocol has become even simpler. It just requires one `Messenger`. All observables are now implemented that way and are thereby on equal footing. You could now easily reimplement `Var` and benefit from the order maintaining message queue of `Messenger`.
+* Custom observables are even simpler to implement:
   * The protocol is the same old familiar `Observable`.
   * The `typealias Message = MyMessageType` can now be omitted.
   * The need for using optional message types to be able to implement `latestMessage` is gone.
-* Observers can optionally receive the author of a message via an alternative receive closure (so it breaks no code and the additional argument is only present when spelled out). Also observables can optionally identify an author other than themselves, if they want to (also not a breaking change). This is hugely beneficial when working with observed shared mutable states like the repository / store pattern, really any storage abstraction, classic messenger and more. basically an observer can ignore a messages the he himself triggered, even when the trigger was indirect.
-* The internals are much better implemented and much more readable, without forced unwraps for the unwrap transforms, without weird function and filter compositions. transform concerns are now separated into the three simple transforms map, filter and unwrap, etc. Also it's much less code overall.
-* Change is Equatable when its Value is Equatable, so variable messages can be selected via `select(Change(specificOldValue, specificNewValue))`
+* Observers can optionally receive the author of a message via an alternative receive closure (so it breaks no code and the additional argument is only present when spelled out). Also, observables can optionally identify an author other than themselves, if they want to (also not a breaking change).
+  * This is hugely beneficial when working with observed shared mutable states like the repository / store pattern, really any storage abstraction, classic messengers (notifiers) and more.
+  * Basically, an observer can ignore messages that he himself triggered, even when the trigger was indirect.
+* The internals are much better implemented and much more readable. No forced unwraps for the unwrap transforms, No weird function and filter compositions. transform concerns are now separated into the three simple transforms map, filter and unwrap, etc. Also SwiftObserver even has less code overall.
+* The issue that certain Apple classes (like NSTextView) cannot directly be `Observable` because they can't be referenced weakly is gone. SwiftObserver now only references an `Observable`'s `messenger: Messenger` weakly.
 
 Removed / Simplified:
 
-* A few memory management function were removed since they are overkill and not actually needed.
+* A few memory management functions were removed since they were overkill and not actually needed.
 * The `ObservableObject` class was removed. The Messenger roughly plays that role now.
-* The source of transforms cannot be reset as it was the case for mappings. As a side effect, the question whether a transform fires when the source is reset is no concern anymore.
+* The source of transforms cannot be reset as it was the case for mappings. As a nice side effect, the question whether a transform fires when the source is reset is no concern anymore.
 
 # SwiftObserver
 
