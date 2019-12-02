@@ -1,7 +1,7 @@
 public class Filter<O: Observable>: Observable, Observer
 {
     public init(_ observable: O,
-                keep: @escaping (O.Message) -> Bool)
+                _ keep: @escaping (O.Message) -> Bool)
     {
         self.observable = observable
         
@@ -45,7 +45,7 @@ public class Unwrapper<O: Observable, Unwrapped>: Observable, Observer
 public class Mapper<O: Observable, Mapped>: Observable, Observer
 {
     public init(_ observable: O,
-                map: @escaping (O.Message) -> Mapped )
+                _ map: @escaping (O.Message) -> Mapped )
     {
         self.observable = observable
         

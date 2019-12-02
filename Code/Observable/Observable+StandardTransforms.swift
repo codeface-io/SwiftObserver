@@ -2,7 +2,7 @@ public extension Observable where Message: Equatable
 {
     func select(_ message: Message) -> Mapper<Filter<Self>, Void>
     {
-        Mapper(Filter(self, keep: { $0 == message })) { _ in }
+        Mapper(Filter(self, { $0 == message })) { _ in }
     }
 }
 
@@ -16,7 +16,7 @@ public extension Observable
     
     func filter(_ keep: @escaping (Message) -> Bool) -> Filter<Self>
     {
-        Filter(self, keep: keep)
+        Filter(self, keep)
     }
     
     func unwrap<Wrapped>(_ default: Wrapped) -> Mapper<Self, Wrapped>
@@ -31,8 +31,8 @@ public extension Observable
         Unwrapper(self)
     }
     
-    func map<Mapped>(map: @escaping (Message) -> Mapped) -> Mapper<Self, Mapped>
+    func map<Mapped>(_ map: @escaping (Message) -> Mapped) -> Mapper<Self, Mapped>
     {
-        Mapper(self, map: map)
+        Mapper(self, map)
     }
 }
