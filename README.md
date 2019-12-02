@@ -4,7 +4,7 @@
 
 # [v6.0.0-beta]
 
-This is the branch for the next major update. Overall SwiftObserver becomes at the same time more powerful, simple, consistent, flexible and safe. The number of lines has actually decreased, in code and in documentation.
+This is the branch for the next major update. Overall, SwiftObserver becomes more powerful and yet simpler, safer, more consistent and more flexible. The number of lines has actually decreased, in code and in documentation.
 
 The documentation here does **not** yet cover all commited changes and their implications. But here are two checklists for the release notes and documentation of v6.0.0.
 
@@ -24,14 +24,14 @@ Improved:
 * Observers can optionally receive the author of a message via an alternative receive closure (so it breaks no code and the additional argument is only present when spelled out). Also, observables can optionally identify an author other than themselves, if they want to (also not a breaking change).
   * This is hugely beneficial when working with observed shared mutable states like the repository / store pattern, really any storage abstraction, classic messengers (notifiers) and more.
   * Basically, an observer can ignore messages that he himself triggered, even when the trigger was indirect.
-* The internals are much better implemented and much more readable. No forced unwraps for the unwrap transforms, No weird function and filter compositions. transform concerns are now separated into the three simple transforms map, filter and unwrap, etc. Also SwiftObserver even has less code overall.
+* The internals are much better implemented and much more readable. No forced unwraps for the unwrap transforms, No weird function and filter compositions. "Mappings" are now separated into the three simple transforms: map, filter and unwrap. Also, SwiftObserver even has less code overall.
 * The issue that certain Apple classes (like NSTextView) cannot directly be `Observable` because they can't be referenced weakly is gone. SwiftObserver now only references an `Observable`'s `messenger: Messenger` weakly.
 
 Removed / Simplified:
 
 * A few memory management functions were removed since they were overkill and not actually needed.
 * The `ObservableObject` class was removed. The Messenger roughly plays that role now.
-* The source of transforms cannot be reset as it was the case for mappings. As a nice side effect, the question whether a transform fires when the source is reset is no concern anymore.
+* The source of transforms cannot be reset as it was the case for mappings. As a nice side effect, the question whether a mapping fires when its source is reset is no concern anymore.
 
 # SwiftObserver
 
@@ -58,12 +58,11 @@ SwiftObserver is just about 1200 lines of production code, but it's also beyond 
     * [Use Variable Values](#use-variable-values)
     * [Observe Variables](#observe-variables) 
     * [Variables are Codable](#variables-are-codable)
-* [Mappings](#mappings)
-    * [Create Mappings](#create-a-mapping)
-    * [Swap Mapping Sources](#swap-mapping-sources)
-    * [Chain Mappings](#chain-mappings)
-    * [Use Prebuilt Mappings](#use-prebuilt-mappings)
-* [Ad Hoc Mapping](#ad-hoc-mapping)
+* [Transforms](#transforms)
+    * [Create Transforms](#create-transforms)
+    * [Chain Transforms](#chain-transforms)
+    * [Use Prebuilt Transforms](#use-prebuilt-transforms)
+* [Ad Hoc Transformation](#ad-hoc-transformation)
 * [Messengers](#messengers)
     * [The Messenger Pattern](#the-messenger-pattern)
     * [The Messenger Class](#the-messenger-class)
@@ -191,8 +190,8 @@ class Dog: Observer {
 For objects to be observable, they must conform to `Observable`. There are four ways to make these *observables*:
 
 1. Create a [*variable*](#variables). It's an `Observable` that holds a value and sends value changes.
-2. Create a [*mapping*](#mappings). It's an `Observable` that transforms *messages* from a *source observable*.
-3. Create a [*messenger*](#messengers). It's an `Observable` through which other objects communicate.
+2. Create a [*transform*](#transforms). It's an `Observable` that transforms *messages* from a *source observable*.
+3. Create a [*messenger*](#messengers). It's a minimal `Observable` through which other objects communicate.
 4. Implement a [custom](#custom-observables) `Observable` by conforming to `Observable`.
 
 You use every `Observable` the same way. There are only three things to note:
@@ -299,58 +298,39 @@ if let modelJSON = try? JSONEncoder().encode(model) {
 
 Note that `text` is a `var` instead of a `let`. It cannot be constant because the implicit decoder must mutate it. However, clients of `Model` would be supposed to set only `text.value` and not `text` itself, so the setter is private.
 
-# Mappings
+# Transforms
 
-## Create Mappings
+## Create Transforms
 
-Create a new `Observable` that maps (transforms) the *messages* of a given *source observable*:
+Create a new `Observable` that transforms the *messages* of a given *source observable*:
 
 ~~~swift
 let text = Var<String?>()
-let textLength = text.map { $0.new?.count ?? 0 }  // textLength.source === text
-// ^^ an Observable that sends Int messages
+let textLength = text.map { $0.new?.count ?? 0 }
+// ^^ an Observable mapper that sends Int messages
 ~~~
 
-You can access the *source* of a *mapping* via the `source` property. A *mapping* holds the `source` strongly, just like arrays and other data structures would hold an `Observable`. You could rewrite the above example like so:
+A *transform* holds its transformed observable strongly, just like arrays and other data structures would hold an `Observable`. You could rewrite the above example like so:
 
 ```swift
 let textLength = Var<String?>().map { $0.new?.count ?? 0 }
-// ^^ textLength.source is of type Var<String?>
 ```
 
-When you want to hold an `Observable` weakly, wrap it in [`Weak`](#weak-observables). For instance, you can let a *mapping* hold its *source*  weakly:
+When you want to hold a *transform* weakly, wrap it in [`Weak`](#weak-observables). For instance, you can let a transform hold its *source*  weakly:
 
 ```swift
 let toString = Weak(Var<Int?>()).new().unwrap(0).map { "\($0)" }
-let sourceIsDead = toString.source.observable == nil // true
 // ^^ no one holds Var<Int?>(), so it dies
 ```
 
-As [mentioned earlier](#observables), you use a *mapping* like any other `Observable`: You hold a strong reference to it somewhere, you stop observing it (not its *source*) at some point, and you can call `send(_:)` on it.
+As [mentioned earlier](#observables), you use a transform like any other `Observable`: You hold a strong reference to it somewhere, you stop observing it (not the transformed observable) at some point, and you can call `send(_:)` on it.
 
-## Swap Mapping Sources
+## Chain Transforms
 
-You can also reset the `source`. Although the `source` is replaceable, it's of a specific type that you determine by creating the *mapping*.
-
-So, you may create a *mapping* without knowing what `source` objects it will have over its lifetime. Just use an ad-hoc dummy *source* to create the *mapping* and, later, reset `source` as often as you like:
+You may chain transforms together:
 
 ```swift
-let title = Var<String?>().map {  // title.source must be a Var<String?>
-    $0.new ?? "untitled"
-}
-
-let titleSource = Var<String?>("Some Title String")
-title.source = titleSource
-```
-
-Being able to declare *mappings* as mere transformations, independent of their concrete *sources*, can help, for instance, in developing view models.
-
-## Chain Mappings
-
-You may chain *mappings* together:
-
-```swift
-let mapping = Var<Int?>().map {   // mapping.source is a Var<Int?>
+let mapping = Var<Int?>().map {
     $0.new ?? 0                   // Change<Int?> -> Int
 }.filter {
     $0 > 9                        // only forward integers > 9
@@ -360,9 +340,7 @@ let mapping = Var<Int?>().map {   // mapping.source is a Var<Int?>
 // ^^ mapping sends messages of type String
 ```
 
-**When you chain *mappings* together, you actually compose them into one single *mapping***. So the `source` of a *mapping* is never another *mapping*. It always refers to the original *source* `Observable`. In the above example, the `source` of the created *mapping* is a `Var<Int?>`.
-
-## Use Prebuilt Mappings
+## Use Prebuilt Transforms
 
 ### New
 
@@ -387,24 +365,16 @@ let errorCode = Var<Int?>().new().unwrap()
 
 ### Filter
 
-When you just want to filter- and not actually transform *messages*, use `filter`:
+When you just want to filter- and not actually convert *messages* into different types, use `filter`:
 
 ```swift
 let shortText = Var("").new().filter { $0.count < 5 }
 // ^^ sends messages of type String, suppressing long strings
 ```
 
-A *mapping* that has a *filter* maps and sends only those *source messages* that pass the *filter*.
-
-You could use a *mapping's* `filter` property to see which *source* *messages* get through:
-
-```swift
-shortText.filter?(Change(nil, "this is too long")) ?? true // false
-```
-
 ### Select
 
-Use the `select` filter to receive only one specific *message*. `select` is available on all *observables* that send `Equatable` *messages*. When observing a *mapping* produced by `select`, the closure takes no arguments:
+Use the `select` filter to receive only one specific *message*. `select` is available on all *observables* that send `Equatable` *messages*. When observing a transform produced by `select`, the closure takes no arguments:
 
 ```swift
 let notifier = Var("").new().select("my notification")
@@ -414,18 +384,18 @@ observer.observe(notifier) {  // nothing going in
 }
 ```
 
-# Ad Hoc Mapping
+# Ad Hoc Transformation
 
-The moment we start a particular observation, we often want to apply common transformations to it. Of course, **we cannot observe an ad hoc created [*mapping*](#mappings)**:
+The moment we start a particular observation, we often want to apply common transformations to it. Of course, **we cannot observe an ad hoc created [*transform*](#transforms)**:
 
 ```swift
 dog.observe(bowl.map({ $0 == .wasFilled })) { bowlWasFilled in
-    // FAIL: This closure will never run since no one holds the observed mapping!
-    // .map({ $0 == .wasFilled }) creates a mapping which immediately dies                       
+    // FAIL: This closure will never run since no one holds the observed mapper!
+    // .map({ $0 == .wasFilled }) creates a mapper which immediately dies                       
 }   
 ```
 
-Instead of holding a dedicated [*mapping*](#mappings) somewhere, you can map the observation itself:
+Instead of holding a dedicated [*transform*](#transforms) somewhere, you can map the observation itself:
 
 ```swift
 dog.observe(bowl).map({ $0 == .wasFilled }) { bowlWasFilled in
@@ -435,7 +405,7 @@ dog.observe(bowl).map({ $0 == .wasFilled }) { bowlWasFilled in
 }   
 ```
 
-You do this *ad hoc mapping* in the same terms in which you create stand-alone [*mappings*](#mappings): With `map`, `new`, `unwrap`, `filter` and `select`. And you also chain these transformations together:
+You do this *ad hoc transforming* in the same terms in which you create stand-alone [*transforms*](#transforms): With `map`, `new`, `unwrap`, `filter` and `select`. And you also chain these transformations together:
 
 ```swift
 let number = Var(42)
@@ -459,7 +429,7 @@ Consequently, each transform function comes in 2 variants:
 2. The terminating variant takes your actual *message* receiver in an additional closure argument.
 
 
-When the chain is supposed to end on `map` or `filter`, let `receive` terminate it to stick with [trailing closures](https://docs.swift.org/swift-book/LanguageGuide/Closures.html#ID102):
+When the chain is supposed to end on a transform that take two closures, let `receive` terminate it to stick with [trailing closures](https://docs.swift.org/swift-book/LanguageGuide/Closures.html#ID102):
 
 ~~~swift
 dog.observe(bowl).map {
@@ -520,7 +490,7 @@ observer.observe(textMessenger).select("my notification") {
 
 ## Declare Custom Observables
 
-Implement your own `Observable` by just conforming to `Observable`. An *observable* just needs to provide some `messenger: Messenger<Message>`. Here's a minimal example:
+Implement your own `Observable` by conforming to `Observable`. An *observable* just needs to provide some `messenger: Messenger<Message>`. Here's a minimal example:
 
 ~~~swift
 class Minimal: Observable {
@@ -555,13 +525,13 @@ class Model: Observable {
 
 ## Message Buffering
 
-Combined observation only works with `BufferedObservable`s, because when one of the combined observables sends a message, the combined observation must **pull** messages from the other observables.
+Combined observation like `observer.observe(o1, o2, o3) { m1, m2, m3 in /* ... */ }` only works with `BufferedObservable`s, because when one of the combined observables sends a message, the combined observation must **pull** messages from the other observables.
 
 A `BufferedObservable` is an `Observable` that also has a property `latestMessage: Message` which typically returns the last sent *message* or one that indicates that nothing has changed. There are three kinds of buffered observables:
 
 1. Every *variable* is a `BufferedObservable`. Its `latestMessage` holds the current variable `value` in both `Change` properties: `old` and `new`.
-2. Every *mapping* whose *source* is a `BufferedObservable` is itself a `BufferedObservable`. A buffered mapping just maps the `latestMessage` of its source. Of course, when you actively request the source's message, the *mapping's* *filter* cannot apply.
-3. Custom implementations of `BufferedObservable`
+2. Every mapper whose mapped source observable is a `BufferedObservable` is itself a `BufferedObservable`. A buffered mapper just maps the `latestMessage` of its source. The ability of a chain of transformations to provide its `latestMessage` is only taken away by filters and the default-less unwrapper.
+3. Custom implementations of `BufferedObservable`.
 
 All `BufferedObservable`s can call `send()` without argument and, thereby, send the `latestMessage`.
 
@@ -589,7 +559,7 @@ class Model: BufferedObservable {
 
 ## Weak Reference
 
-When you want to put an `Observable` into some data structure or as the *source* into a *mapping* and hold it there as a `weak` reference, you may want to wrap it in `Weak<O: Observable>`:
+When you want to put an `Observable` into some data structure or as the *source* into a *transform* and hold it there as a `weak` reference, you may want to wrap it in `Weak<O: Observable>`:
 
 ~~~swift
 let number = Var(12)
