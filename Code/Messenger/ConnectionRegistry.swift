@@ -5,103 +5,82 @@ class ConnectionRegistry
     static let shared = ConnectionRegistry()
     private init() {}
     
-    func registerThat(_ receiver: AnyReceiver,
-                      isConnectedTo messenger: RegisteredMessenger)
+    // MARK: - The Purpose of this Registry: Disconnecting a Receiver from ALL Messengers
+    
+    func disconnectFromMessengers(_ receiver: AnyReceiver)
     {
-        let connection = Connection(receiver, messenger)
+        let receiverKey = key(receiver)
         
-        if connections[key(receiver)] == nil
+        keysOfConnectedMessengers[receiverKey]?.forEach
         {
-            connections[key(receiver)] = [RegisteredMessenger.Key : Connection]()
-        }
-        
-        connections[key(receiver)]?[messenger.key] = connection
-        
-        if messengers[messenger.key]?.messenger !== messenger
-        {
-            messengers[messenger.key] = WeakMessenger(messenger)
+            messengerKey in
+            
+            weakMessengers[messengerKey]?.messenger?.disconnect(receiver)
         }
     }
     
-    func unregisterThat(_ receiver: AnyReceiver,
-                        isConnectedTo messenger: RegisteredMessenger)
-    {
-        connections[key(receiver)]?[messenger.key] = nil
-        
-        if connections[key(receiver)]?.isEmpty ?? false
-        {
-            connections[key(receiver)] = nil
-        }
-        
-        if messenger.receiverKeys.isEmpty
-        {
-            messengers[messenger.key] = nil
-        }
-    }
-   
-    func unregister(_ receiver: AnyReceiver)
-    {
-        connections[key(receiver)]?.values.forEach
-        {
-            connection in
-            
-            guard let messenger = connection.messenger else { return }
-            
-            messenger.receiverWantsToBeRemoved(receiver)
-            
-            if messenger.receiverKeys.isEmpty
-            {
-                messengers[messenger.key] = nil
-            }
-        }
-        
-        connections[key(receiver)] = nil
-    }
+    // MARK: - Register / Unregister Connections
     
     func unregister(_ messenger: RegisteredMessenger)
     {
         let messengerKey = messenger.key
         
-        messengers[messengerKey]?.messenger?.receiverKeys.forEach
+        messenger.receiverKeys.forEach
         {
-            receiverKey in
-            
-            connections[receiverKey]?[messengerKey] = nil
-            
-            if connections[receiverKey]?.isEmpty ?? false
-            {
-                connections[receiverKey] = nil
-            }
+            receiverKey in remove(messengerKey, for: receiverKey)
         }
         
-        messengers[messengerKey] = nil
+        removeWeakMessenger(for: messengerKey)
     }
     
-    private var connections = [ReceiverKey : [RegisteredMessenger.Key : Connection]]()
-    private var messengers = [RegisteredMessenger.Key : WeakMessenger]()
-    
-    private class Connection
+    func registerConnection(_ messenger: RegisteredMessenger,
+                            _ receiver: AnyReceiver)
     {
-        init(_ receiver: AnyReceiver, _ messenger: RegisteredMessenger)
-        {
-            self.receiver = receiver
-            self.messenger = messenger
-        }
+        let messengerKey = messenger.key
+        weakMessengers[messengerKey] = WeakMessenger(messenger)
         
-        // TODO: do we even need the receiver here? if not we can remove Connection and just use WeakMessenger ...
-        private weak var receiver: AnyReceiver?
+        let receiverKey = key(receiver)
+        var messengersOfReceiver = keysOfConnectedMessengers[receiverKey] ?? []
+        messengersOfReceiver.insert(messengerKey)
+        keysOfConnectedMessengers[receiverKey] = messengersOfReceiver
+    }
+    
+    func unregisterConnection(_ messenger: RegisteredMessenger,
+                              _ receiver: AnyReceiver)
+    {
+        remove(messenger.key, for: key(receiver))
+        
+        if messenger.receiverKeys.isEmpty
+        {
+            removeWeakMessenger(for: messenger.key)
+        }
+    }
+    
+    // MARK: - Hash Maps
+    
+    private func remove(_ messengerKey: RegisteredMessenger.Key,
+                        for receiverKey: ReceiverKey)
+    {
+        guard var messengersOfReceiver = keysOfConnectedMessengers[receiverKey] else { return }
+        messengersOfReceiver.remove(messengerKey)
+        keysOfConnectedMessengers[receiverKey] = messengersOfReceiver.isEmpty ? nil : messengersOfReceiver
+    }
+    
+    private var keysOfConnectedMessengers = [ReceiverKey : Set<RegisteredMessenger.Key>]()
+    
+    private func removeWeakMessenger(for messengerKey: RegisteredMessenger.Key)
+    {
+        weakMessengers[messengerKey] = nil
+    }
+    
+    private var weakMessengers = [RegisteredMessenger.Key : WeakMessenger]()
+    
+    struct WeakMessenger
+    {
+        init(_ messenger: RegisteredMessenger) { self.messenger = messenger }
+        
         weak var messenger: RegisteredMessenger?
     }
-}
-
-struct WeakMessenger
-{
-    init(_ messenger: RegisteredMessenger)
-    {
-        self.messenger = messenger
-    }
-    
-    weak var messenger: RegisteredMessenger?
 }
 
 extension RegisteredMessenger
@@ -112,6 +91,6 @@ extension RegisteredMessenger
 protocol RegisteredMessenger: class
 {
     typealias Key = ObjectIdentifier
-    func receiverWantsToBeRemoved(_ receiver: AnyReceiver)
+    func disconnect(_ receiver: AnyReceiver)
     var receiverKeys: Set<ReceiverKey> { get }
 }

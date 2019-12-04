@@ -2,11 +2,6 @@ import SwiftyToolz
 
 extension Messenger: RegisteredMessenger
 {
-    func receiverWantsToBeRemoved(_ receiver: AnyReceiver)
-    {
-        receivers.remove(receiver)
-    }
-    
     var receiverKeys: Set<ReceiverKey> { receivers.keys }
 }
 
@@ -15,7 +10,7 @@ public class Messenger<Message>
     // MARK: - Life Cycle
     
     public init() {}
-    deinit { registry.unregister(self) }
+    deinit { connectionRegistry.unregister(self) }
     
     // MARK: - Manage Receivers
     
@@ -24,24 +19,24 @@ public class Messenger<Message>
         receivers.receive(message, from: author)
     }
     
-    internal func has(receiver: AnyReceiver) -> Bool
+    internal func isConnected(to receiver: AnyReceiver) -> Bool
     {
         receivers.contains(receiver)
     }
     
-    internal func add(_ receiver: AnyReceiver,
-                      receive: @escaping (Message, AnyAuthor) -> Void)
+    internal func connect(_ receiver: AnyReceiver,
+                          receive: @escaping (Message, AnyAuthor) -> Void)
     {
         receivers.add(receiver, receive: receive)
-        registry.registerThat(receiver, isConnectedTo: self)
+        connectionRegistry.registerConnection(self, receiver)
     }
     
-    internal func remove(_ receiver: AnyReceiver)
+    internal func disconnect(_ receiver: AnyReceiver)
     {
         receivers.remove(receiver)
-        registry.unregisterThat(receiver, isConnectedTo: self)
+        connectionRegistry.unregisterConnection(self, receiver)
     }
     
     private let receivers = ReceiverPool<Message>()
-    private var registry: ConnectionRegistry { .shared }
+    private var connectionRegistry: ConnectionRegistry { .shared }
 }
