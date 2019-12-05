@@ -1,7 +1,7 @@
 PODS:
   - SwiftObserver (5.1.0):
     - SwiftyToolz (~> 1.5)
-  - SwiftyToolz (1.5.1)
+  - SwiftyToolz (1.5.3)
 
 DEPENDENCIES:
   - SwiftObserver (from `../`)
@@ -17,7 +17,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   SwiftObserver: 1fa53ed6afd8faf9b22e938fae60d09a010a0181
-  SwiftyToolz: bd69a6eebc4e4a50846e71875cab0b7e47640814
+  SwiftyToolz: 29370e0f8e970a7382cb58cc18c099b8d78b3a9d
 
 PODFILE CHECKSUM: 173de582e9c41e7e9ffc27ba67e471da260dbf54
 
