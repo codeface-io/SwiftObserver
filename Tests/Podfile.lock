@@ -5,6 +5,7 @@ PODS:
 
 DEPENDENCIES:
   - SwiftObserver (from `../`)
+  - SwiftyToolz
 
 SPEC REPOS:
   trunk:
@@ -15,9 +16,9 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  SwiftObserver: 8df6b21e7f32f46ec0d37f7022b70ad62e297064
+  SwiftObserver: 1fa53ed6afd8faf9b22e938fae60d09a010a0181
   SwiftyToolz: bd69a6eebc4e4a50846e71875cab0b7e47640814
 
-PODFILE CHECKSUM: 201f993f49f640880e029421032f70f4f75a2779
+PODFILE CHECKSUM: 173de582e9c41e7e9ffc27ba67e471da260dbf54
 
 COCOAPODS: 1.8.4
