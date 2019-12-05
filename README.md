@@ -4,34 +4,47 @@
 
 # [v6.0.0-beta]
 
-This is the branch for the next major update. Overall, SwiftObserver becomes more powerful and yet simpler, safer, more consistent and more flexible. The number of lines has actually decreased, in code and in documentation.
+This is the branch for the next major update. Overall, SwiftObserver becomes more powerful, consistent, simple, performant and safe.
 
-The documentation here does **not** yet cover all commited changes and their implications. But here are two checklists for the release notes and documentation of v6.0.0.
+The documentation here does **not** yet cover all commited changes and their implications. 
 
-Improved:
+Here's a preliminary list of changes:
 
-* Observable transforms (formerly "mappings") and observation transforms now also have a default-less `unwrap()`.
-* No more message duplication in messengers since the `latestMessage` requirement is limited to `BufferedObservable`s. And so, switching buffering on or off there is also no more concern.
-* Change is Equatable when its Value is Equatable, so messages of variables can be selected via `select(Change(specificOldValue, specificNewValue))`.
-* Message buffering now happens exactly whenever it is fully possible, that is whenever the observable is backed by an actual value (like variables are) and there is no filter involved in the observable. Filters annihilate random access pulling. The weirdness of a mapping having to ignore its filter in its implementation of `latestMessage` is gone.
-* Message order is maintained for all observables not just for variables. All observables use a message queue now.
-* An observer can now check whether it already observes an observable via `observer.isObserving(observable)`.
-* The `Observable` protocol has become even simpler. It just requires one `Messenger`. All observables are now implemented that way and are thereby on equal footing. You could now easily reimplement `Var` and benefit from the order maintaining message queue of `Messenger`.
-* Custom observables are even simpler to implement:
-  * The protocol is the same old familiar `Observable`.
+* Memory management is completely new:
+  * Before 6.0, memory leaks were *technically* impossible, because SwiftObserver still had a handle on dead observers, and you could flush them out when you wanted "to be sure". Now, dead observations are actually impossible and you don't need to worry about them.
+  * Observers now automatically clean up when they die, so a call of `stopObserving()` in deinit can now be omitted. Observers can still call `stopObserving(observable)` and `stopObserving()` if they want to manually end observations.
+  * `Observer` now has one protocol requirement, which is typically implemented as `let connections = Connections()`. The `connections` object keeps the `Observer`s observations alive.
+  * A few memory management functions were removed since they were overkill and are definitely unnecessary now.
+  * The new design scales better and should be more performant with ginormous amounts of observers and observables.
+* The `Observable` protocol has become simpler.
+  * The requirement `var latestMessage: Message {get}` is gone.
+  * No more message duplication in messengers since the `latestMessage` requirement is limited to `BufferedObservable`s. And so, switching buffering on or off on messengers is also no more concern.
+  * Message buffering now happens exactly whenever it is really possible, that is whenever the observable is backed by an actual value (like variables are) and there is no filter involved in the observable. Filters annihilate random access pulling. The weirdness of a mapping having to ignore its filter in its implementation of `latestMessage` is gone.
+  * `Observable` just requires one `Messenger`.
+  * All observables are now implemented the same way and are thereby on equal footing. You could now easily reimplement `Var` and benefit from the order maintaining message queue of `Messenger`.
+* Custom observables are simpler to implement:
+  * The protocol is the familiar `Observable`. No more separate `CustomObservable`.
   * The `typealias Message = MyMessageType` can now be omitted.
-  * The need for using optional message types to be able to implement `latestMessage` is gone.
-* Observers can optionally receive the author of a message via an alternative receive closure (so it breaks no code and the additional argument is only present when spelled out). Also, observables can optionally identify an author other than themselves, if they want to (also not a breaking change).
-  * This is hugely beneficial when working with observed shared mutable states like the repository / store pattern, really any storage abstraction, classic messengers (notifiers) and more.
-  * Basically, an observer can ignore messages that he himself triggered, even when the trigger was indirect.
-* The internals are much better implemented and much more readable. No forced unwraps for the unwrap transforms, No weird function and filter compositions. "Mappings" are now separated into the three simple transforms: map, filter and unwrap. Also, SwiftObserver even has less code overall.
-* The issue that certain Apple classes (like NSTextView) cannot directly be `Observable` because they can't be referenced weakly is gone. SwiftObserver now only references an `Observable`'s `messenger: Messenger` weakly.
-
-Removed / Simplified:
-
-* A few memory management functions were removed since they were overkill and not actually needed.
-* The `ObservableObject` class was removed. The Messenger roughly plays that role now.
-* The source of transforms cannot be reset as it was the case for mappings. As a nice side effect, the question whether a mapping fires when its source is reset is no concern anymore.
+  * The need to use optional message types to be able to implement `latestMessage` is gone.
+* Observers can optionally receive the author of a message via an alternative closure wherever they normally pass in a message handler, even in combined observations. And observables can optionally attach an author other than themselves to a message, if they want to.
+  * This major addition breaks no existing code and the author argument is only present when declared in the observer's message handler or the observable's `send` function.
+  * This is hugely beneficial when observing shared mutable states like the repository / store pattern, really any storage abstraction, classic messengers (notifiers) and more.
+  * Most importantly, an observer can now ignore messages that he himself triggered, even when the trigger was indirect. This avoids redundant and unintended reactions.
+* The internals are better implemented and more readable.
+  * No forced unwraps for the unwrap transforms
+  * No weird function and filter compositions
+  * No more unnecessary indirection and redundance in adhoc observation transforms
+  * Former "Mappings" are now separated into the three simple composable transforms: map, filter and unwrap.
+  * The number of lines has actually decreased from about 1250 to about 1050.
+  * The `ObservableObject` base class is gone.
+* Other consistency improvements and features:
+  * An observer can now check whether it is observing an observable via `observer.isObserving(observable)`.
+  * Stand-alone and ad hoc transforms now also include an `unwrap()` transform that requires no default message.
+  * Message order is maintained for all observables, not just for variables. All observables use a message queue now.
+  * The source of transforms cannot be reset as it was the case for mappings. As a nice side effect, the question whether a mapping fires when its source is reset is no concern anymore.
+  * `Change<Value>` is more appropriately named `Update<Value>` since its properties `old` and `new` can be equal.
+  * `Update` is `Equatable` when its `Value` is `Equatable`, so messages of variables can be selected via `select(Update(specificOldValue, specificNewValue))` or any specific value update you define.
+  * The issue that certain Apple classes (like NSTextView) cannot directly be `Observable` because they can't be referenced weakly is gone. SwiftObserver now only references an `Observable`'s `messenger` weakly.
 
 # SwiftObserver
 
@@ -264,7 +277,7 @@ If you use some number type `Number` that is either an `Int`, `Float` or `Double
 
 ## Observe Variables
 
-A `Var<Value>` sends *messages* of type `Change<Value>`, providing the `old` and `new` value.
+A `Var<Value>` sends *messages* of type `Update<Value>`, providing the `old` and `new` value.
 
 ~~~swift
 observer.observe(variable) { change in
@@ -272,7 +285,7 @@ observer.observe(variable) { change in
 }
 ~~~
 
-A `Var` sends a `Change<Value>` whenever its `value` actually changes. Just starting to observe the `Var` does **not** trigger a *message*. This keeps it simple, predictable and consistent, in particular in combination with [*mappings*](#mappings). However, you can always manually send  the `latestMessage` via `send()` (see [`BufferedObservable`](#message-buffering)).
+A `Var` sends a `Update<Value>` whenever its `value` actually changes. Just starting to observe the `Var` does **not** trigger a *message*. This keeps it simple, predictable and consistent, in particular in combination with [*mappings*](#mappings). However, you can always manually send  the `latestMessage` via `send()` (see [`BufferedObservable`](#message-buffering)).
 
 ## Variables are Codable
 
@@ -331,7 +344,7 @@ You may chain transforms together:
 
 ```swift
 let mapping = Var<Int?>().map {
-    $0.new ?? 0                   // Change<Int?> -> Int
+    $0.new ?? 0                   // Update<Int?> -> Int
 }.filter {
     $0 > 9                        // only forward integers > 9
 }.map {
@@ -344,7 +357,7 @@ let mapping = Var<Int?>().map {
 
 ### New
 
-When an `Observable` sends *messages* of type `Change<Value>`, you often only care about  the `new` value of that change. If so, use `new()`:
+When an `Observable` sends *messages* of type `Update<Value>`, you often only care about  the `new` value of that change. If so, use `new()`:
 
 ~~~swift
 let text = Var<String?>().new()
@@ -529,7 +542,7 @@ Combined observation like `observer.observe(o1, o2, o3) { m1, m2, m3 in /* ... *
 
 A `BufferedObservable` is an `Observable` that also has a property `latestMessage: Message` which typically returns the last sent *message* or one that indicates that nothing has changed. There are three kinds of buffered observables:
 
-1. Every *variable* is a `BufferedObservable`. Its `latestMessage` holds the current variable `value` in both `Change` properties: `old` and `new`.
+1. Every *variable* is a `BufferedObservable`. Its `latestMessage` holds the current variable `value` in both properties of `Update`: `old` and `new`.
 2. Every mapper whose mapped source observable is a `BufferedObservable` is itself a `BufferedObservable`. A buffered mapper just maps the `latestMessage` of its source. The ability of a chain of transformations to provide its `latestMessage` is only taken away by filters and the default-less unwrapper.
 3. Custom implementations of `BufferedObservable`.
 
@@ -537,23 +550,23 @@ All `BufferedObservable`s can call `send()` without argument and, thereby, send 
 
 ## State Changes
 
-To implement an `Observable` like `Var<Value>` that sends value changes, you would use the message type  `Change<Value>`. If you also want the observable to be suitable for combined observations, you make it a `BufferedObservable` and let `latestMessage` return a message based on the latest (current) value:
+To implement an `Observable` like `Var<Value>` that sends value changes, you would use the message type  `Update<Value>`. If you also want the observable to be suitable for combined observations, you make it a `BufferedObservable` and let `latestMessage` return a message based on the latest (current) value:
 
 ~~~swift
 class Model: BufferedObservable {
-    var latestMessage: Change<String> {
-        Change(state, state)
+    var latestMessage: Update<String> {
+        Update(state, state)
     }
        
     var state: String = "" {
         didSet {
             if state != oldValue {
-                send(Change(oldValue, state))
+                send(Update(oldValue, state))
             }
         }
     }
         
-    let messenger = Messenger(Change<String>())
+    let messenger = Messenger<Update<String>>()
 }
 ~~~
 
@@ -566,7 +579,7 @@ let number = Var(12)
 let weakNumber = Weak(number)
 
 controller.observe(weakNumber) { message in
-    // process message of type Change<Int>
+    // process message of type Update<Int>
 }
 
 var weakNumbers = [Weak<Var<Int>>]()
