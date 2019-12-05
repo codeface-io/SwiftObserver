@@ -815,9 +815,9 @@ class SwiftObserverDevTests: XCTestCase
     
     class ModelWithState: BufferedObservable
     {
-        var latestMessage: Change<String>
+        var latestMessage: Update<String>
         {
-            Change(state, state)
+            Update(state, state)
         }
         
         var state = "initial state"
@@ -826,12 +826,12 @@ class SwiftObserverDevTests: XCTestCase
             {
                 if oldValue != state
                 {
-                    send(Change(oldValue, state))
+                    send(Update(oldValue, state))
                 }
             }
         }
         
-        let messenger = Messenger<Change<String>>()
+        let messenger = Messenger<Update<String>>()
     }
     
     let controller = Controller()

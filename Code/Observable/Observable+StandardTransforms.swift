@@ -9,7 +9,7 @@ public extension Observable where Message: Equatable
 public extension Observable
 {
     func new<Value>() -> Mapper<Self, Value>
-        where Message == Change<Value>
+        where Message == Update<Value>
     {
         Mapper(self) { $0.new }
     }

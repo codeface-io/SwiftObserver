@@ -18,9 +18,9 @@ public class Variable<Value: Equatable & Codable>: BufferedObservable, Codable
     
     // MARK: - Value Access
 
-    public var latestMessage: Change<Value>
+    public var latestMessage: Update<Value>
     {
-        Change(value, value)
+        Update(value, value)
     }
     
     // MARK: - Value
@@ -33,12 +33,12 @@ public class Variable<Value: Equatable & Codable>: BufferedObservable, Codable
         {
             if oldValue != value
             {
-                send(Change(oldValue, value))
+                send(Update(oldValue, value))
             }
         }
     }
     
     // MARK: - Observable
     
-    public let messenger = Messenger<Change<Value>>()
+    public let messenger = Messenger<Update<Value>>()
 }

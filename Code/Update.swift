@@ -1,9 +1,9 @@
-extension Change: Equatable where Value : Equatable
+extension Update: Equatable where Value : Equatable
 {
-    var valueChanged: Bool { old != new }
+    var isChange: Bool { old != new }
 }
 
-public struct Change<Value>
+public struct Update<Value>
 {
     public init<Wrapped>() where Value == Wrapped?
     {
