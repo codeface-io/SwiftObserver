@@ -838,9 +838,6 @@ class SwiftObserverDevTests: XCTestCase
     
     class Controller: Observer
     {
-        deinit
-        {
-            stopObserving()
-        }
+        let connections = Connections()
     }
 }
