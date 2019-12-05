@@ -18,6 +18,7 @@ public class Filter<O: Observable>: Observable, Observer
     
     private let observable: O
     public let messenger = Messenger<O.Message>()
+    public let connections = Connections()
 }
 
 public class Unwrapper<O: Observable, Unwrapped>: Observable, Observer
@@ -40,6 +41,7 @@ public class Unwrapper<O: Observable, Unwrapped>: Observable, Observer
     
     private let observable: O
     public let messenger = Messenger<Unwrapped>()
+    public let connections = Connections()
 }
 
 extension Mapper: BufferedObservable where O: BufferedObservable
@@ -70,4 +72,5 @@ public class Mapper<O: Observable, Mapped>: Observable, Observer
     private let observable: O
     
     public let messenger = Messenger<Mapped>()
+    public let connections = Connections()
 }
