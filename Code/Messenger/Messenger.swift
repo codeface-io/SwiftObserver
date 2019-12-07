@@ -1,6 +1,6 @@
 import SwiftyToolz
 
-public class Messenger<Message>: MessengerInterface
+public final class Messenger<Message>: MessengerInterface
 {
     // MARK: - Life Cycle
     

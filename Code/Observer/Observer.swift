@@ -138,7 +138,7 @@ public protocol Observer
     var receiver: Receiver { get }
 }
 
-public class Receiver: ReceiverInterface
+public final class Receiver: ReceiverInterface
 {
     public init() {}
     

@@ -2,7 +2,7 @@ import SwiftyToolz
 
 public typealias Var = Variable
 
-public class Variable<Value: Equatable & Codable>: BufferedObservable, Codable
+public final class Variable<Value: Equatable & Codable>: BufferedObservable, Codable
 {
     // MARK: - Initialization
     

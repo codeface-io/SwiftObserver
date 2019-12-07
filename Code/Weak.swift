@@ -1,4 +1,4 @@
-public class Weak<O: Observable>: Observable, Observer
+public final class Weak<O: Observable>: Observable, Observer
 {
     public init(_ observable: O)
     {
