@@ -17,6 +17,7 @@ public class Unwrapper<O: Observable, Unwrapped>: Observable, Observer
     }
     
     private let observable: O
+    
     public let messenger = Messenger<Unwrapped>()
     public let receiver = Receiver()
 }

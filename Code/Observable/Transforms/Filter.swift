@@ -17,6 +17,7 @@ public final class Filter<O: Observable>: Observable, Observer
     }
     
     private let observable: O
+    
     public let messenger = Messenger<O.Message>()
     public let receiver = Receiver()
 }
