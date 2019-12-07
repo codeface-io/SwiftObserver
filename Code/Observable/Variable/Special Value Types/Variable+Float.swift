@@ -28,7 +28,7 @@ public func /<N1: FloatValue, N2: FloatValue>(num1: N1, num2: N2) -> Float
     return num1.float / num2.float
 }
 
-// Mark: - Extensions
+// Mark: - FloatValue
 
 extension Var: FloatValue where Value: FloatValue
 {

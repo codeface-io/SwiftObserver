@@ -28,7 +28,7 @@ public func /<N1: DoubleValue, N2: DoubleValue>(num1: N1, num2: N2) -> Double
     return num1.double / num2.double
 }
 
-// Mark: - Extensions
+// Mark: - FloatValue
 
 extension Var: DoubleValue where Value: DoubleValue
 {

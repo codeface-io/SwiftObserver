@@ -28,7 +28,7 @@ public func /<N1: IntValue, N2: IntValue>(num1: N1, num2: N2) -> Int
     return num1.int / num2.int
 }
 
-// Mark: - Extensions
+// Mark: - IntValue
 
 extension Var: IntValue where Value: IntValue
 {
