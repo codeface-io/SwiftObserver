@@ -1,4 +1,3 @@
-
 public extension Observer
 {
     func observe<O: Observable>(_ observable: O) -> ObservationTransform<O.Message>
@@ -9,5 +8,3 @@ public extension Observer
         }
     }
 }
-
-

@@ -1,3 +1,12 @@
+public extension Observable
+{
+    func unwrap<Wrapped>() -> Unwrapper<Self, Wrapped>
+        where Message == Wrapped?
+    {
+        Unwrapper(self)
+    }
+}
+
 public class Unwrapper<O: Observable, Unwrapped>: Observable, Observer
     where O.Message == Unwrapped?
 {

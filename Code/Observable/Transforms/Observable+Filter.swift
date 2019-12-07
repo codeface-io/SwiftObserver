@@ -1,3 +1,11 @@
+public extension Observable
+{
+    func filter(_ keep: @escaping (Message) -> Bool) -> Filter<Self>
+    {
+        Filter(self, keep)
+    }
+}
+
 public final class Filter<O: Observable>: Observable, Observer
 {
     public init(_ observable: O,
