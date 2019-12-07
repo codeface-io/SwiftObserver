@@ -1,19 +1,19 @@
-public extension ObservationStarter
+public extension ObservationTransformer
 {
     func new<Value>(receiveNew: @escaping (Value, AnyAuthor) -> Void)
-        where Message == Update<Value>
+        where Transformed == Update<Value>
     {
         map({ $0.new }, receiveMapped: receiveNew)
     }
     
     func new<Value>(receiveNew: @escaping (Value) -> Void)
-        where Message == Update<Value>
+        where Transformed == Update<Value>
     {
         map({ $0.new }, receiveMapped: receiveNew)
     }
     
-    func new<Value>() -> ObservationStarter<Value>
-        where Message == Update<Value>
+    func new<Value>() -> ObservationTransformer<Value>
+        where Transformed == Update<Value>
     {
         map { $0.new }
     }

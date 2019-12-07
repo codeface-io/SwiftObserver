@@ -1,7 +1,7 @@
-public extension ObservationStarter
+public extension ObservationTransformer
 {
-    func filter(_ keep: @escaping (Message) -> Bool,
-                receiveFiltered: @escaping (Message, AnyAuthor) -> Void)
+    func filter(_ keep: @escaping (Transformed) -> Bool,
+                receiveFiltered: @escaping (Transformed, AnyAuthor) -> Void)
     {
         startObservation
         {
@@ -11,8 +11,8 @@ public extension ObservationStarter
         }
     }
     
-    func filter(_ keep: @escaping (Message) -> Bool,
-                receiveFiltered: @escaping (Message) -> Void)
+    func filter(_ keep: @escaping (Transformed) -> Bool,
+                receiveFiltered: @escaping (Transformed) -> Void)
     {
         startObservation
         {
@@ -22,9 +22,9 @@ public extension ObservationStarter
         }
     }
     
-    func filter(_ keep: @escaping (Message) -> Bool) -> ObservationStarter<Message>
+    func filter(_ keep: @escaping (Transformed) -> Bool) -> ObservationTransformer<Transformed>
     {
-        ObservationStarter
+        ObservationTransformer
         {
             receiveFiltered in
 

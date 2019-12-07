@@ -1,7 +1,7 @@
-public extension ObservationStarter
+public extension ObservationTransformer
 {
     func unwrap<Unwrapped>(receiveUnwrapped: @escaping (Unwrapped, AnyAuthor) -> Void)
-        where Message == Unwrapped?
+        where Transformed == Unwrapped?
     {
         startObservation
         {
@@ -12,7 +12,7 @@ public extension ObservationStarter
     }
     
     func unwrap<Unwrapped>(receiveUnwrapped: @escaping (Unwrapped) -> Void)
-        where Message == Unwrapped?
+        where Transformed == Unwrapped?
     {
         startObservation
         {
@@ -22,9 +22,10 @@ public extension ObservationStarter
         }
     }
     
-    func unwrap<Unwrapped>() -> ObservationStarter<Unwrapped> where Message == Unwrapped?
+    func unwrap<Unwrapped>() -> ObservationTransformer<Unwrapped>
+        where Transformed == Unwrapped?
     {
-        ObservationStarter<Unwrapped>
+        ObservationTransformer<Unwrapped>
         {
             receiveUnwrapped in
             
