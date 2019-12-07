@@ -1,2 +1,1 @@
-![]("Architecture.jpg")
-
+![SwiftObserver Architecture Diagram](https://raw.githubusercontent.com/flowtoolz/SwiftObserver/6.0.0/Documentation/architecture.jpg)
