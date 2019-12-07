@@ -52,7 +52,7 @@ SwiftObserver is a lightweight framework for reactive Swift. Its design goals ma
 
 1. [**Meaningful Code**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#meaningful-code) 💡<br>SwiftObserver promotes meaningful metaphors, names and syntax, producing highly readable code.
 2. [**Non-intrusive Design**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#non-intrusive-design) ✊🏻<br>SwiftObserver doesn't limit or modulate your design. It just makes it easy to do the right thing.
-3. [**Simplicity**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) ☯<br>SwiftObserver employs few radically simple concepts and applies them consistently without exceptions.
+3. [**Simplicity**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🕹<br>SwiftObserver employs few radically simple concepts and applies them consistently without exceptions.
 4. [**Flexibility**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🤸🏻‍♀️<br>SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
 5. [**Safety**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#safety) ⛑<br>SwiftObserver makes memory management meaningful and easy. Oh yeah, real memory leaks are impossible.
 
@@ -600,7 +600,7 @@ let numberValue = weakNumber.observable?.value
 
 * **Patterns:** Read more about some [patterns that emerged from using SwiftObserver](Documentation/specific-patterns.md#specific-patterns).
 * **Philosophy:** Read more about the [philosophy and features of SwiftObserver](Documentation/philosophy.md#the-philosophy-of-swiftobserver).
-* **Architecture:** Have a look at a [dependency diagram of the types of SwiftObserver](Documentation/Architecture.jpg).
+* **Architecture:** Have a look at a [dependency diagram of the types of SwiftObserver](Documentation/architecture.md).
 * **License:** SwiftObserver is released under the MIT license. [See LICENSE](LICENSE) for details.
 
 [badge-gitter]: https://img.shields.io/badge/chat-Gitter-red.svg?style=flat-square
