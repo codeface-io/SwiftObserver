@@ -1,7 +1,7 @@
 public extension Observable
 {
-    func notFrom(_ excludedAuthor: AnyAuthor) -> AuthorFilter<Self>
+    func notFrom(_ excludedAuthor: AnyAuthor?) -> AuthorFilter<Self>
     {
-        filterAuthor { $0 !== excludedAuthor }
+        filterAuthor { [weak excludedAuthor] in $0 !== excludedAuthor }
     }
 }
