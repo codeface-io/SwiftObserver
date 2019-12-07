@@ -1,4 +1,4 @@
-public extension ObservationTransform
+public extension ObservationStarter
 {
     func map<Mapped>(_ map: @escaping (Message) -> Mapped,
                      receiveMapped: @escaping (Mapped, AnyAuthor) -> Void)
@@ -22,9 +22,9 @@ public extension ObservationTransform
         }
     }
     
-    func map<Mapped>(_ map: @escaping (Message) -> Mapped) -> ObservationTransform<Mapped>
+    func map<Mapped>(_ map: @escaping (Message) -> Mapped) -> ObservationStarter<Mapped>
     {
-        ObservationTransform<Mapped>
+        ObservationStarter<Mapped>
         {
             receiveMapped in
 

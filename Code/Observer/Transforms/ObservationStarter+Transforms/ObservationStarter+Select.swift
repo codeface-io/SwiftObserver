@@ -1,4 +1,4 @@
-public extension ObservationTransform where Message: Equatable
+public extension ObservationStarter where Message: Equatable
 {
     func select(_ message: Message,
                 receiveSelected: @escaping (AnyAuthor) -> Void)
@@ -12,7 +12,7 @@ public extension ObservationTransform where Message: Equatable
         filter({ $0 == message }).map({ _ in }, receiveMapped: receiveSelected)
     }
     
-    func select(_ message: Message) -> ObservationTransform<Void>
+    func select(_ message: Message) -> ObservationStarter<Void>
     {
         filter({ $0 == message }).map { _ in }
     }

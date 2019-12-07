@@ -1,4 +1,4 @@
-public extension ObservationTransform
+public extension ObservationStarter
 {
     func filter(_ keep: @escaping (Message) -> Bool,
                 receiveFiltered: @escaping (Message, AnyAuthor) -> Void)
@@ -22,9 +22,9 @@ public extension ObservationTransform
         }
     }
     
-    func filter(_ keep: @escaping (Message) -> Bool) -> ObservationTransform<Message>
+    func filter(_ keep: @escaping (Message) -> Bool) -> ObservationStarter<Message>
     {
-        ObservationTransform
+        ObservationStarter
         {
             receiveFiltered in
 

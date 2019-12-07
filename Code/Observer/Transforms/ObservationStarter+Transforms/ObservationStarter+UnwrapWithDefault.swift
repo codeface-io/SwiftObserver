@@ -1,4 +1,4 @@
-public extension ObservationTransform
+public extension ObservationStarter
 {
     func unwrap<Unwrapped>(_ defaultMessage: Unwrapped,
                            receiveUnwrapped: @escaping (Unwrapped, AnyAuthor) -> Void)
@@ -14,7 +14,7 @@ public extension ObservationTransform
         map({ $0 ?? defaultMessage }, receiveMapped: receiveUnwrapped)
     }
     
-    func unwrap<Unwrapped>(_ defaultMessage: Unwrapped) -> ObservationTransform<Unwrapped>
+    func unwrap<Unwrapped>(_ defaultMessage: Unwrapped) -> ObservationStarter<Unwrapped>
         where Message == Unwrapped?
     {
         map { $0 ?? defaultMessage }
