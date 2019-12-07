@@ -54,13 +54,17 @@ SwiftObserver is a lightweight framework for reactive Swift. Its design goals ma
 
 1. [**Meaningful Code**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#meaningful-code):<br>SwiftObserver promotes meaningful metaphors, names and syntax, producing highly readable code.
 2. [**Non-intrusive Design**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#non-intrusive-design):<br>SwiftObserver doesn't limit or modulate your design. It just makes it easy to do the right thing.
-3. [**Simplicity**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility):<br>SwiftObserver employs very few simple concepts and applies them consistently without exceptions.
+3. [**Simplicity**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility):<br>SwiftObserver employs few radically simple concepts and applies them consistently without exceptions.
 4. [**Flexibility**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility):<br>SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
 5. [**Safety**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#safety):<br>SwiftObserver makes memory management meaningful and easy. Oh yeah, real memory leaks are impossible.
 
-[*Reactive Programming*](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [*Dependency Inversion*](https://en.wikipedia.org/wiki/Dependency_inversion_principle). SwiftObserver breaks *Reactive Programming* down to its essence, which is the [*Observer Pattern*](https://en.wikipedia.org/wiki/Observer_pattern).
+SwiftObserver is very few lines of production code, but it's also beyond a 1000 hours of work, thinking it through, letting go of fancy features, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift), and battle-testing it [in practice](http://flowlistapp.com).
 
-SwiftObserver is just about 1200 lines of production code, but it's also beyond a 1000 hours of work, thinking it through, letting go of fancy features, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift), and battle-testing it [in practice](http://flowlistapp.com).
+## Why the Hell Another Reactive Swift Framework?
+
+[*Reactive Programming*](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [*Dependency Inversion*](https://en.wikipedia.org/wiki/Dependency_inversion_principle). SwiftObserver breaks *Reactive Programming* down to its essence, which is the [*Observer Pattern*](https://en.wikipedia.org/wiki/Observer_pattern). It diverges from convention as it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. It's less fancy than SwiftRx and Combine and offers a powerful simplicity you will actually **love** to work with.
+
+## Contents
 
 * [Get Involved](#get-involved)
 * [Get Started](#get-started)
@@ -86,8 +90,7 @@ SwiftObserver is just about 1200 lines of production code, but it's also beyond 
     * [Message Buffering](#message-buffering)
     * [State Changes](#state-changes)
     * [Weak Reference](#weak-reference)
-* [Specific Patterns](#specific-patterns)
-* [Why the Hell Another Reactive Library?](#why)
+* [More](#more)
 
 # Get Involved
 
@@ -595,21 +598,14 @@ let numberValue = weakNumber.observable?.value
 
 `Weak` isn't buffered and doesn't duplicate any messages. It would be easy to implement a class `BufferedWeak` that wraps a `BufferedObservable` weakly. If you like to see that, maybe even just for consistency/completeness, let me know.
 
-# Specific Patterns
+# More
 
-Patterns that emerged from using SwiftObserver [are documented over here](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns).
+* **Patterns:** Read more about some [patterns that emerged from using SwiftObserver](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns).
+* **Philosophy:** Read more about the [philosophy and features of SwiftObserver](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#the-philosophy-of-swiftobserver).
+* **Architecture:** Have a look at a [dependency diagram of the types of SwiftObserver](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/Architecture.jpg).
+* **License:** SwiftObserver is released under the MIT license. [See LICENSE](https://github.com/flowtoolz/SwiftObserver/blob/master/LICENSE) for details.
 
-# <a id="why"></a>Why the Hell Another Reactive Library?
 
-SwiftObserver diverges from convention. It follows the reactive idea in generalizing the *Observer Pattern*. But it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. This freed us to create something different, something we **love** to work with.
-
-Leaving out the right kind of fancyness leaves us with the right kind of simplicity, a simplicity which is powerful. 
-
-Read more about the [philosophy and features of SwiftObserver](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#the-philosophy-of-swiftobserver).
-
-# License
-
-SwiftObserver is released under the MIT license. [See LICENSE](https://github.com/flowtoolz/SwiftObserver/blob/master/LICENSE) for details.
 
 [badge-gitter]: https://img.shields.io/badge/chat-Gitter-red.svg?style=flat-square
 
