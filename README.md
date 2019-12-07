@@ -68,7 +68,6 @@ SwiftObserver is very few lines of production code, but it's also beyond a 1000 
 * [Get Started](#get-started)
     * [Install](#install)
     * [Introduction](#introduction)
-* [Memory Management](#memory-management)
 * [Variables](#variables)
     * [Use Variable Values](#use-variable-values)
     * [Observe Variables](#observe-variables) 
@@ -92,17 +91,12 @@ SwiftObserver is very few lines of production code, but it's also beyond a 1000 
 
 # Get Involved
 
-Found a **bug**? Create a [github issue](https://github.com/flowtoolz/SwiftObserver/issues/new/choose).
-
-Need a **feature**? Create a [github issue](https://github.com/flowtoolz/SwiftObserver/issues/new/choose).
-
-Want to **improve** stuff? Create a [pull request](https://github.com/flowtoolz/SwiftObserver/pulls).
-
-Want to start a **discussion**? Visit [Gitter](https://gitter.im/flowtoolz/SwiftObserver/).
-
-Need **support** and troubleshooting? Write at <swiftobserver@flowtoolz.com>.
-
-Want to **contact** us? Write at <swiftobserver@flowtoolz.com>.
+* Found a **bug**? Create a [github issue](https://github.com/flowtoolz/SwiftObserver/issues/new/choose).
+* Need a **feature**? Create a [github issue](https://github.com/flowtoolz/SwiftObserver/issues/new/choose).
+* Want to **improve** stuff? Create a [pull request](https://github.com/flowtoolz/SwiftObserver/pulls).
+* Want to start a **discussion**? Visit [Gitter](https://gitter.im/flowtoolz/SwiftObserver/).
+* Need **support** and troubleshooting? Write at <swiftobserver@flowtoolz.com>.
+* Want to **contact** us? Write at <swiftobserver@flowtoolz.com>.
 
 # Get Started
 
@@ -173,66 +167,58 @@ dog.observe(Sky.shared) { color in
 
 ### Observers
 
-By conforming to `Observer`, the *observer* adopts functions for starting and ending observations. Each observation involves one *observer* and one observed object. <a id="combined-observations"></a> An  `Observer` may start up to three observations with one combined call:
-
-~~~swift
-dog.observe(tv, bowl, doorbell) { image, food, sound in
-    // either the tv's going, I got some food, or the bell rang
-}
-~~~
-
-To process *messages* from an observed object, the *observer* must be alive. There's no awareness after death in memory:
+Any class can become an `Observer` by providing a `Receiver`:
 
 ```swift
 class Dog: Observer {
-    init {
+    let receiver = Receiver()
+}
+```
+
+The receiver keeps the observer's observations alive. The observer just holds the receiver strongly and doesn't do anything else with it.
+
+<a id="combined-observations"></a> An  `Observer` may start up to three observations with one combined call:
+
+```swift
+dog.observe(tv, bowl, doorbell) { image, food, sound in
+    // either the tv's going, I got some food, or the bell rang
+}
+```
+
+To process messages from an observed object, the observer must be alive. There's no awareness after death in memory:
+
+```swift
+class Dog: Observer {
+    init() {
         observe(Sky.shared) { color in
             // for this closure to be called, this Dog must live
         }
     }
+    let receiver = Receiver()
 }
 ```
 
 ### Observables
 
-For objects to be observable, they must conform to `Observable`. There are four ways to make these *observables*:
+Observable objects conform to `Observable`. There are four ways to make these *observables*:
 
-1. Create a [*variable*](#variables). It's an `Observable` that holds a value and sends value changes.
-2. Create a [*transform*](#transforms). It's an `Observable` that transforms *messages* from a *source observable*.
-3. Create a [*messenger*](#messengers). It's a minimal `Observable` through which other objects communicate.
+1. Create a [*messenger*](#messengers). It's a minimal `Observable` through which other objects communicate.
+2. Create a [*variable*](#variables). It's an `Observable` that holds a value and sends value changes.
+3. Create a [*transform*](#transforms). It's an `Observable` that transforms *messages* from a *source observable*.
 4. Implement a [custom](#custom-observables) `Observable` by conforming to `Observable`.
 
-You use every `Observable` the same way. There are only three things to note:
+You can make any `Observable` send a message via `observable.send(message)`.
 
-1. Observing an `Observable` does not have the side effect of keeping it alive. Someone must own it via a strong reference. Note that you can still [observe with a chain of ad hoc transformations](#ad-hoc-mapping) all in a single line.
-2. An `Observable` appends the messages it sends to a queue, so all its *observers* get to process messages exactly in the order in which they were sent. This is for situations when the `Observable` has multiple *observers* and at least one of them, in response to receiving a message, causes the *observable* to send another message.
-3. Typically, an `Observable` sends its *messages* by itself. But anyone can make it send any *message* via `send(_:)`.
+### Memory Management
 
-# Memory Management
+When observers or observables die, SwiftObserver cleans up the involved observations automatically, and memory leaks are impossible. So there isn't any real memory management to worry about.
 
-To avoid abandoned observations piling up in memory, *observers* should at some point stop the observations they started. One way to do that is to stop each observation when it's no longer needed:
+But observers can stop particular or all their observations:
 
 ```swift
-dog.stopObserving(Sky.shared)
+dog.stopObserving(Sky.shared) // no more messages from the sky
+dog.stopObserving() // no more messages at all
 ```
-
-An even simpler and safer way is to let *observers*, right before they die, stop all their observations:
-
-```swift
-class Dog: Observer {
-    deinit {
-        stopObserving()  // stops ALL observations this Dog is doing
-    }
-}
-```
-
-`Observables` are even easier to handle. When an *observable* dies, it automatically stops all observations in which it is being observed.
-
-Forgetting some observations wouldn't waste significant memory. But you should understand, control and express the mechanics of your code to a degree that prevents systemic leaks.
-
-The two above mentioned functions are all you need for safe memory management. If you still forget to write some cleanup code, SwiftObserver handles that gracefully. When you send messages to dead observers, SwiftObserver will detect that and flush out the respective observations.
-
-> Memory management with SwiftObserver is meaningful and safe. There are no contrived constructs like "Disposable" or "DisposeBag". And since SwiftObserver notices abandoned observations, real memory leaks are impossible.
 
 # Variables
 
@@ -394,7 +380,7 @@ observer.observe(notifier) {  // nothing going in
 
 # Ad Hoc Transformation
 
-The moment we start a particular observation, we often want to apply common transformations to it. Of course, **we cannot observe an ad hoc created [*transform*](#transforms)**:
+The moment we start a particular observation, we often want to apply common transformations to it. Of course, **we cannot observe an ad hoc created [*transform*](#transforms)** without retaining the object:
 
 ```swift
 dog.observe(bowl.map({ $0 == .wasFilled })) { bowlWasFilled in
@@ -493,6 +479,8 @@ observer.observe(textMessenger).select("my notification") {
     // respond to "my notification"
 }
 ```
+
+Like with any  `Observable`, messages are delivered exactly in the order in which they were sent, even when observers trigger further messages from their message handling closures.
 
 # Custom Observables
 
