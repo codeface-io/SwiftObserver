@@ -24,21 +24,6 @@ class SwiftObserverDevTests: XCTestCase
         XCTAssertEqual(weakNumber2.observable?.value, 2)
     }
     
-    func testMessenger()
-    {
-        let textMessenger = Messenger<String?>()
-        
-        let message = "latest message"
-        
-        var observedMessage: String?
-        
-        controller.observe(textMessenger) { observedMessage = $0 }
-        
-        textMessenger.send(message)
-        
-        XCTAssertEqual(observedMessage, message)
-    }
-    
     func testSendOnVariable()
     {
         let initialText = "initial text"
