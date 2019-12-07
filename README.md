@@ -169,12 +169,6 @@ That's it. Just readable code:
 dog.observe(Sky.shared) { color in
     // marvel at the sky changing its color
 }
-
-class Dog: Observer {
-    deinit {
-        stopObserving() // stops ALL observations this Dog is doing
-    } 
-}
 ~~~
 
 ### Observers
@@ -263,12 +257,12 @@ If you use some number type `Number` that is either an `Int`, `Float` or `Double
 
 2. You can apply numeric operators `+`, `-`, `*` and `/` to all pairs of `Number`, `Number?`, `Var<Number>`, `Var<Number?>`, `Var<Number>?` and `Var<Number?>?`.
 
-3. ```swift
-    let numVar = Var<Int?>()     // numVar.value == nil
-    print(numVar.int)            // 0
-    numVar.int += 5              // numVar.value == 5
-    numVar <- Var(1) + 2         // numVar.value == 3
-    ```
+```swift
+let numVar = Var<Int?>()     // numVar.value == nil
+print(numVar.int)            // 0
+numVar.int += 5              // numVar.value == 5
+numVar <- Var(1) + 2         // numVar.value == 3
+```
 
 ### String Values
 
