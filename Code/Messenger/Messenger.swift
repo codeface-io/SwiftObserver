@@ -8,7 +8,7 @@ public class Messenger<Message>: MessengerInterface
     
     deinit
     {
-        connections.values.forEach { $0.connection?.close() }
+        connectionReferences.values.forEach { $0.connection?.close() }
     }
     
     // MARK: - Send Messages to Connected Receivers
@@ -21,7 +21,7 @@ public class Messenger<Message>: MessengerInterface
         
         while let (message, author) = messagesFromAuthors.first
         {
-            for connectionReference in connections.values
+            for connectionReference in connectionReferences.values
             {
                 connectionReference.receive(message, author)
             }
@@ -34,41 +34,41 @@ public class Messenger<Message>: MessengerInterface
     
     // MARK: - Connect Receivers
     
-    internal func isConnected(_ receiver: AnyReceiver) -> Bool
+    internal func isConnected(_ receiver: ReceiverInterface) -> Bool
     {
-        connections[ReceiverKey(receiver)]?.connection?.receiver === receiver
+        connectionReferences[ReceiverKey(receiver)]?.connection?.receiver === receiver
     }
     
-    internal func connect(_ receiver: AnyReceiver,
+    internal func connect(_ receiver: ReceiverInterface,
                           receive: @escaping (Message) -> Void) -> Connection
     {
         connect(receiver) { message, _ in receive(message) }
     }
     
-    internal func connect(_ receiver: AnyReceiver,
+    internal func connect(_ receiver: ReceiverInterface,
                           receive: @escaping (Message, AnyAuthor) -> Void) -> Connection
     {
         let connection = Connection(messenger: self, receiver: receiver)
-        connections[ReceiverKey(receiver)] = ConnectionReference(connection: connection,
+        connectionReferences[ReceiverKey(receiver)] = ConnectionReference(connection: connection,
                                                                  receive: receive)
         return connection
     }
 
     // MARK: - Connections
     
-    internal func remove(_ connection: ConnectionInterface, for receiver: ReceiverKey)
+    internal func remove(_ connection: ConnectionInterface, for receiverKey: ReceiverKey)
     {
-        guard let existingConnection = connections[receiver]?.connection else { return }
+        guard let existingConnection = connectionReferences[receiverKey]?.connection else { return }
         
         guard existingConnection === connection else
         {
-            return log(error: "Tried to remove a connection with an outdated reused receiver key. This can only happen if \(Connections.self) is retained outside its owning Observer after the Observer has died. You're not supposed to do anything with the \(Connections.self) object, let alone retain it.")
+            return log(error: "Tried to remove a connection with an outdated reused receiver key. This can only happen if \(Receiver.self) is retained outside its owning Observer after the Observer has died. You're not supposed to do anything with the \(Receiver.self) object, let alone retain it.")
         }
         
-        connections[receiver] = nil
+        connectionReferences[receiverKey] = nil
     }
     
-    private var connections = [ReceiverKey : ConnectionReference]()
+    private var connectionReferences = [ReceiverKey : ConnectionReference]()
     
     private class ConnectionReference
     {
@@ -83,5 +83,4 @@ public class Messenger<Message>: MessengerInterface
     }
 }
 
-public typealias AnyReceiver = AnyObject
 public typealias AnyAuthor = AnyObject

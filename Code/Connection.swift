@@ -2,10 +2,10 @@ import SwiftyToolz
 
 class Connection: ConnectionInterface
 {
-    init(messenger: MessengerInterface, receiver: AnyReceiver)
+    init(messenger: MessengerInterface, receiver: ReceiverInterface)
     {
         self.receiver = receiver
-        self.receiverKey = ReceiverKey(receiver)
+        self.receiverKey = receiver.key
         self.messenger = messenger
         self.messengerKey = messenger.key
     }
@@ -21,11 +21,13 @@ class Connection: ConnectionInterface
     var didClose: ((Connection) -> Void)?
     
     let receiverKey: ReceiverKey
-    weak var receiver: AnyReceiver?
+    weak var receiver: ReceiverInterface?
     
     let messengerKey: MessengerKey
     private weak var messenger: MessengerInterface?
 }
+
+// MARK: - Messenger Interface
 
 extension MessengerInterface
 {
@@ -36,8 +38,18 @@ typealias MessengerKey = ObjectIdentifier
 
 protocol MessengerInterface: class
 {
-    func remove(_ connection: ConnectionInterface, for receiverKey: ReceiverKey)
+    func remove(_ connection: ConnectionInterface, for connectionsKey: ReceiverKey)
 }
 
 protocol ConnectionInterface: class {}
+
+// MARK: - Receiver Interface
+
+extension ReceiverInterface
+{
+    var key: ReceiverKey { ReceiverKey(self) }
+}
+
 typealias ReceiverKey = ObjectIdentifier
+
+public protocol ReceiverInterface: class {}

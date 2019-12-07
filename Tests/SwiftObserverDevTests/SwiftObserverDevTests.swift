@@ -838,6 +838,6 @@ class SwiftObserverDevTests: XCTestCase
     
     class Controller: Observer
     {
-        let connections = Connections()
+        let receiver = Receiver()
     }
 }

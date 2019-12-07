@@ -11,5 +11,5 @@ public class Weak<O: Observable>: Observable, Observer
     public private(set) weak var observable: O?
     
     public let messenger = Messenger<O.Message>()
-    public let connections = Connections()
+    public let receiver = Receiver()
 }
