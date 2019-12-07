@@ -6,17 +6,20 @@ public final class Receiver
 {
     public init() {}
     
-    deinit { connections.values.forEach { $0.removeFromMessenger() } }
+    deinit
+    {
+        connections.values.forEach { $0.unregisterFromMessenger() }
+    }
     
     internal func closeConnection(for messengerKey: MessengerKey)
     {
-        connections[messengerKey]?.removeFromMessenger()
+        connections[messengerKey]?.unregisterFromMessenger()
         connections[messengerKey] = nil
     }
     
     internal func closeAllConnections()
     {
-        connections.values.forEach { $0.removeFromMessenger() }
+        connections.values.forEach { $0.unregisterFromMessenger() }
         connections.removeAll()
     }
     
@@ -30,7 +33,7 @@ public final class Receiver
         connections[connection.messengerKey] = connection
     }
     
-    internal func remove(_ connection: ConnectionInterface)
+    internal func release(_ connection: ConnectionInterface)
     {
         connections[connection.messengerKey] = nil
     }

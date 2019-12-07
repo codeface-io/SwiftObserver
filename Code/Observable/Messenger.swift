@@ -10,7 +10,7 @@ public final class Messenger<Message>
     
     deinit
     {
-        connectionReferences.values.forEach { $0.connection?.removeFromReceiver() }
+        registrations.values.forEach { $0.connection?.releaseFromReceiver() }
     }
     
     // MARK: - Send Messages to Connected Receivers
@@ -23,11 +23,7 @@ public final class Messenger<Message>
         
         while let (message, author) = messagesFromAuthors.first
         {
-            for connectionReference in connectionReferences.values
-            {
-                connectionReference.receive(message, author)
-            }
-            
+            registrations.values.forEach { $0.receive(message, author) }
             messagesFromAuthors.removeFirst()
         }
     }
@@ -38,46 +34,49 @@ public final class Messenger<Message>
     
     internal func isConnected(_ receiver: ReceiverInterface) -> Bool
     {
-        connectionReferences[ReceiverKey(receiver)]?.connection?.receiver === receiver
+        registrations[receiver.key]?.connection?.receiver === receiver
     }
     
-    internal func connect(_ receiver: ReceiverInterface,
-                          receive: @escaping (Message) -> Void) -> Connection
+    internal func register(_ connection: Connection,
+                           receive: @escaping (Message) -> Void)
     {
-        connect(receiver) { message, _ in receive(message) }
+        register(connection) { message, _ in receive(message) }
     }
     
-    internal func connect(_ receiver: ReceiverInterface,
-                          receive: @escaping (Message, AnyAuthor) -> Void) -> Connection
+    internal func register(_ connection: Connection,
+                           receive: @escaping (Message, AnyAuthor) -> Void)
     {
-        let connection = Connection(messenger: self, receiver: receiver)
-        connectionReferences[ReceiverKey(receiver)] = ConnectionReference(connection: connection,
-                                                                 receive: receive)
-        return connection
+        if connection.messenger !== self
+        {
+            log(error: "\(Self.self) will register a connection that points to a different \(Self.self).")
+        }
+        
+        let registration = ConnectionRegistration(connection: connection, receive: receive)
+        registrations[connection.receiverKey] = registration
     }
 
     // MARK: - Connections
     
-    internal func remove(_ connection: ConnectionInterface)
+    internal func unregister(_ connection: ConnectionInterface)
     {
         let receiverKey = connection.receiverKey
         
-        guard let existingConnection = connectionReferences[receiverKey]?.connection else
+        guard let registeredConnection = registrations[receiverKey]?.connection else
         {
             return
         }
         
-        guard existingConnection === connection else
+        guard registeredConnection === connection else
         {
-            return log(error: "Tried to remove a connection with an outdated reused receiver key. This can only happen if \(Receiver.self) is retained outside its owning Observer after the Observer has died. You're not supposed to do anything with the \(Receiver.self) object, let alone retain it.")
+            return log(error: "Tried to unregister a connection with an outdated reused receiver key. This can only happen if \(Receiver.self) is retained outside its owning Observer after the Observer has died. You're not supposed to do anything with the \(Receiver.self) object, let alone retain it.")
         }
         
-        connectionReferences[receiverKey] = nil
+        registrations[receiverKey] = nil
     }
     
-    private var connectionReferences = [ReceiverKey : ConnectionReference]()
+    private var registrations = [ReceiverKey : ConnectionRegistration]()
     
-    private class ConnectionReference
+    private class ConnectionRegistration
     {
         init(connection: Connection, receive: @escaping (Message, AnyAuthor) -> Void)
         {

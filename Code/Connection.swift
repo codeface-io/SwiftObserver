@@ -12,21 +12,21 @@ class Connection: ConnectionInterface
         self.messengerKey = messenger.key
     }
     
-    func removeFromReceiver()
+    func releaseFromReceiver()
     {
-        receiver?.remove(self)
+        receiver?.release(self)
     }
     
     let receiverKey: ReceiverKey
     weak var receiver: ReceiverInterface?
     
-    func removeFromMessenger()
+    func unregisterFromMessenger()
     {
-        messenger?.remove(self)
+        messenger?.unregister(self)
     }
     
     let messengerKey: MessengerKey
-    private weak var messenger: MessengerInterface?
+    weak var messenger: MessengerInterface?
 }
 
 // MARK: - Receiver Interface
@@ -38,7 +38,7 @@ extension ReceiverInterface
 
 protocol ReceiverInterface: class
 {
-    func remove(_ connection: ConnectionInterface)
+    func release(_ connection: ConnectionInterface)
 }
 
 // MARK: - Messenger Interface
@@ -50,7 +50,7 @@ extension MessengerInterface
 
 protocol MessengerInterface: class
 {
-    func remove(_ connection: ConnectionInterface)
+    func unregister(_ connection: ConnectionInterface)
 }
 
 // MARK: - Connection Interface
