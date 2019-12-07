@@ -1,5 +1,45 @@
 public extension Observer
 {
+    func observe<O1: BufferedObservable, O2: BufferedObservable>(
+        _ observable1: O1,
+        _ observable2: O2,
+        _ receive: @escaping (O1.Message, O2.Message) -> Void)
+    {
+        observe(observable1)
+        {
+            [weak observable2] in
+            guard let o2 = observable2 else { return }
+            receive($0, o2.latestMessage)
+        }
+        
+        observe(observable2)
+        {
+            [weak observable1] in
+            guard let o1 = observable1 else { return }
+            receive(o1.latestMessage, $0)
+        }
+    }
+    
+    func observe<O1: BufferedObservable, O2: BufferedObservable>(
+        _ observable1: O1,
+        _ observable2: O2,
+        _ receive: @escaping (O1.Message, O2.Message, AnyAuthor) -> Void)
+    {
+        observe(observable1)
+        {
+            [weak observable2] in
+            guard let o2 = observable2 else { return }
+            receive($0, o2.latestMessage, $1)
+        }
+        
+        observe(observable2)
+        {
+            [weak observable1] in
+            guard let o1 = observable1 else { return }
+            receive(o1.latestMessage, $0, $1)
+        }
+    }
+    
     func observe<O1: BufferedObservable, O2: BufferedObservable, O3: BufferedObservable>(
         _ observable1: O1,
         _ observable2: O2,
@@ -53,46 +93,6 @@ public extension Observer
             [weak observable1, weak observable2] in
             guard let o1 = observable1, let o2 = observable2 else { return }
             receive(o1.latestMessage, o2.latestMessage, $0, $1)
-        }
-    }
-    
-    func observe<O1: BufferedObservable, O2: BufferedObservable>(
-        _ observable1: O1,
-        _ observable2: O2,
-        _ receive: @escaping (O1.Message, O2.Message) -> Void)
-    {
-        observe(observable1)
-        {
-            [weak observable2] in
-            guard let o2 = observable2 else { return }
-            receive($0, o2.latestMessage)
-        }
-        
-        observe(observable2)
-        {
-            [weak observable1] in
-            guard let o1 = observable1 else { return }
-            receive(o1.latestMessage, $0)
-        }
-    }
-    
-    func observe<O1: BufferedObservable, O2: BufferedObservable>(
-        _ observable1: O1,
-        _ observable2: O2,
-        _ receive: @escaping (O1.Message, O2.Message, AnyAuthor) -> Void)
-    {
-        observe(observable1)
-        {
-            [weak observable2] in
-            guard let o2 = observable2 else { return }
-            receive($0, o2.latestMessage, $1)
-        }
-        
-        observe(observable2)
-        {
-            [weak observable1] in
-            guard let o1 = observable1 else { return }
-            receive(o1.latestMessage, $0, $1)
         }
     }
 }

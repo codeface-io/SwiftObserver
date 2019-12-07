@@ -1,12 +1,8 @@
 public extension Observer
 {
-    func observe<O: Observable>(_ observable: O,
-                                receive: @escaping (O.Message) -> Void)
+    func isObserving<O: Observable>(_ observable: O) -> Bool
     {
-        let messenger = observable.messenger
-        let connection = Connection(messenger: messenger, receiver: receiver)
-        messenger.register(connection, receive: receive)
-        receiver.retain(connection)
+        observable.messenger.isConnected(receiver)
     }
     
     func observe<O: Observable>(_ observable: O,
@@ -18,9 +14,13 @@ public extension Observer
         receiver.retain(connection)
     }
     
-    func isObserving<O: Observable>(_ observable: O) -> Bool
+    func observe<O: Observable>(_ observable: O,
+                                receive: @escaping (O.Message) -> Void)
     {
-        observable.messenger.isConnected(receiver)
+        let messenger = observable.messenger
+        let connection = Connection(messenger: messenger, receiver: receiver)
+        messenger.register(connection, receive: receive)
+        receiver.retain(connection)
     }
     
     func stopObserving<O: Observable>(_ observable: O?)
