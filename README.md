@@ -1,7 +1,5 @@
 ![SwiftObserver](https://raw.githubusercontent.com/flowtoolz/SwiftObserver/master/Documentation/swift.jpg)
 
-
-
 # [v6.0.0-beta]
 
 This is the branch for the next major update. Overall, SwiftObserver becomes more powerful, consistent, simple, performant and safe.
@@ -600,12 +598,10 @@ let numberValue = weakNumber.observable?.value
 
 # More
 
-* **Patterns:** Read more about some [patterns that emerged from using SwiftObserver](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/specific-patterns.md#specific-patterns).
-* **Philosophy:** Read more about the [philosophy and features of SwiftObserver](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#the-philosophy-of-swiftobserver).
-* **Architecture:** Have a look at a [dependency diagram of the types of SwiftObserver](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/Architecture.jpg).
-* **License:** SwiftObserver is released under the MIT license. [See LICENSE](https://github.com/flowtoolz/SwiftObserver/blob/master/LICENSE) for details.
-
-
+* **Patterns:** Read more about some [patterns that emerged from using SwiftObserver](Documentation/specific-patterns.md#specific-patterns).
+* **Philosophy:** Read more about the [philosophy and features of SwiftObserver](Documentation/philosophy.md#the-philosophy-of-swiftobserver).
+* **Architecture:** Have a look at a [dependency diagram of the types of SwiftObserver](Documentation/Architecture.jpg).
+* **License:** SwiftObserver is released under the MIT license. [See LICENSE](LICENSE) for details.
 
 [badge-gitter]: https://img.shields.io/badge/chat-Gitter-red.svg?style=flat-square
 
