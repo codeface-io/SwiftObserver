@@ -14,17 +14,27 @@ class Connection: ConnectionInterface
     
     func close()
     {
-        messenger?.remove(self, for: receiverKey)
-        didClose?(self)
+        receiver?.remove(self)
+        messenger?.remove(self)
     }
-    
-    var didClose: ((Connection) -> Void)?
     
     let receiverKey: ReceiverKey
     weak var receiver: ReceiverInterface?
     
     let messengerKey: MessengerKey
     private weak var messenger: MessengerInterface?
+}
+
+// MARK: - Receiver Interface
+
+extension ReceiverInterface
+{
+    var key: ReceiverKey { ReceiverKey(self) }
+}
+
+protocol ReceiverInterface: class
+{
+    func remove(_ connection: ConnectionInterface)
 }
 
 // MARK: - Messenger Interface
@@ -34,22 +44,18 @@ extension MessengerInterface
     var key: MessengerKey { MessengerKey(self) }
 }
 
-typealias MessengerKey = ObjectIdentifier
-
 protocol MessengerInterface: class
 {
-    func remove(_ connection: ConnectionInterface, for connectionsKey: ReceiverKey)
+    func remove(_ connection: ConnectionInterface)
 }
 
-protocol ConnectionInterface: class {}
+// MARK: - Connection Interface
 
-// MARK: - Receiver Interface
-
-extension ReceiverInterface
+protocol ConnectionInterface: class
 {
-    var key: ReceiverKey { ReceiverKey(self) }
+    var receiverKey: ReceiverKey { get }
+    var messengerKey: MessengerKey { get }
 }
 
 typealias ReceiverKey = ObjectIdentifier
-
-public protocol ReceiverInterface: class {}
+typealias MessengerKey = ObjectIdentifier

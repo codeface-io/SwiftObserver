@@ -1,6 +1,8 @@
 import SwiftyToolz
 
-public final class Messenger<Message>: MessengerInterface
+extension Messenger: MessengerInterface {}
+
+public final class Messenger<Message>
 {
     // MARK: - Life Cycle
     
@@ -56,9 +58,14 @@ public final class Messenger<Message>: MessengerInterface
 
     // MARK: - Connections
     
-    internal func remove(_ connection: ConnectionInterface, for receiverKey: ReceiverKey)
+    internal func remove(_ connection: ConnectionInterface)
     {
-        guard let existingConnection = connectionReferences[receiverKey]?.connection else { return }
+        let receiverKey = connection.receiverKey
+        
+        guard let existingConnection = connectionReferences[receiverKey]?.connection else
+        {
+            return
+        }
         
         guard existingConnection === connection else
         {

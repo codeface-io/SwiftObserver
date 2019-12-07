@@ -101,17 +101,13 @@ public extension Observer
     func observe<O: Observable>(_ observable: O,
                                 receive: @escaping (O.Message) -> Void)
     {
-        let messenger = observable.messenger
-        let connection = messenger.connect(receiver, receive: receive)
-        receiver.retain(connection, for: messenger.key)
+        receiver.retain(observable.messenger.connect(receiver, receive: receive))
     }
     
     func observe<O: Observable>(_ observable: O,
                                 receive: @escaping (O.Message, AnyAuthor) -> Void)
     {
-        let messenger = observable.messenger
-        let connection = messenger.connect(receiver, receive: receive)
-        receiver.retain(connection, for: messenger.key)
+        receiver.retain(observable.messenger.connect(receiver, receive: receive))
     }
     
     func isObserving<O: Observable>(_ observable: O) -> Bool
@@ -136,31 +132,4 @@ public extension Observer
 public protocol Observer
 {
     var receiver: Receiver { get }
-}
-
-public final class Receiver: ReceiverInterface
-{
-    public init() {}
-    
-    internal func retain(_ connection: Connection, for messengerKey: MessengerKey)
-    {
-        connection.didClose =
-        {
-            [weak self] in self?.connections[$0.messengerKey] = nil
-        }
-        
-        connections[messengerKey] = connection
-    }
-    
-    internal func closeConnection(for messengerKey: MessengerKey)
-    {
-        connections[messengerKey]?.close()
-    }
-    
-    internal func closeAllConnections()
-    {
-        connections.values.forEach { $0.close() }
-    }
-    
-    private var connections = [MessengerKey : Connection]()
 }
