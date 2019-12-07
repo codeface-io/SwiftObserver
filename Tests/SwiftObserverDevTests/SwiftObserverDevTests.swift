@@ -1,11 +1,3 @@
-//
-//  SwiftObserverDevTests.swift
-//  SwiftObserverDevTests
-//
-//  Created by seb on 01.12.19.
-//  Copyright © 2019 flowtoolz. All rights reserved.
-//
-
 import XCTest
 @testable import SwiftObserverDev
 import SwiftObserver
