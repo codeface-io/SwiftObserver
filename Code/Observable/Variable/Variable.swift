@@ -2,7 +2,7 @@ import SwiftyToolz
 
 public typealias Var = Variable
 
-public final class Variable<Value: Equatable & Codable>: BufferedObservable, Codable
+public final class Variable<Value: Equatable & Codable>: Observable, Codable
 {
     // MARK: - Initialization
     
@@ -14,13 +14,6 @@ public final class Variable<Value: Equatable & Codable>: BufferedObservable, Cod
     public init(_ value: Value)
     {
         self.value = value
-    }
-    
-    // MARK: - Value Access
-
-    public var latestMessage: Update<Value>
-    {
-        Update(value, value)
     }
     
     // MARK: - Value
