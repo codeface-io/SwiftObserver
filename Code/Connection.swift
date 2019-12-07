@@ -1,5 +1,7 @@
 import SwiftyToolz
 
+// MARK: - Connection
+
 class Connection: ConnectionInterface
 {
     init(messenger: MessengerInterface, receiver: ReceiverInterface)
@@ -10,16 +12,18 @@ class Connection: ConnectionInterface
         self.messengerKey = messenger.key
     }
     
-    deinit { close() }
-    
-    func close()
+    func removeFromReceiver()
     {
         receiver?.remove(self)
-        messenger?.remove(self)
     }
     
     let receiverKey: ReceiverKey
     weak var receiver: ReceiverInterface?
+    
+    func removeFromMessenger()
+    {
+        messenger?.remove(self)
+    }
     
     let messengerKey: MessengerKey
     private weak var messenger: MessengerInterface?

@@ -10,7 +10,7 @@ public final class Messenger<Message>
     
     deinit
     {
-        connectionReferences.values.forEach { $0.connection?.close() }
+        connectionReferences.values.forEach { $0.connection?.removeFromReceiver() }
     }
     
     // MARK: - Send Messages to Connected Receivers
