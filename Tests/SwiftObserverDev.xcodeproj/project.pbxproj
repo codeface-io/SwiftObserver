@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		960534A323946D5700382142 /* SwiftObserverDev.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9605349923946D5700382142 /* SwiftObserverDev.framework */; };
-		960534A823946D5700382142 /* SwiftObserverDevTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 960534A723946D5700382142 /* SwiftObserverDevTests.swift */; };
+		960534A823946D5700382142 /* OldTestsToRework.swift in Sources */ = {isa = PBXBuildFile; fileRef = 960534A723946D5700382142 /* OldTestsToRework.swift */; };
 		960534AA23946D5700382142 /* SwiftObserverDev.h in Headers */ = {isa = PBXBuildFile; fileRef = 9605349C23946D5700382142 /* SwiftObserverDev.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		966A7864239C428600972147 /* MessengerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 966A7863239C428600972147 /* MessengerTests.swift */; };
 		C42D709C2183E3EC84AC2092 /* Pods_SwiftObserverDev.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA1A02EE71A4C1AC62CF5A1B /* Pods_SwiftObserverDev.framework */; };
@@ -33,7 +33,7 @@
 		9605349C23946D5700382142 /* SwiftObserverDev.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftObserverDev.h; sourceTree = "<group>"; };
 		9605349D23946D5700382142 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		960534A223946D5700382142 /* SwiftObserverDevTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftObserverDevTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		960534A723946D5700382142 /* SwiftObserverDevTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftObserverDevTests.swift; sourceTree = "<group>"; };
+		960534A723946D5700382142 /* OldTestsToRework.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldTestsToRework.swift; sourceTree = "<group>"; };
 		960534A923946D5700382142 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		966A7863239C428600972147 /* MessengerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessengerTests.swift; sourceTree = "<group>"; };
 		A3A22E25FFFE97E3D484A58E /* Pods-SwiftObserverDev.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftObserverDev.debug.xcconfig"; path = "Target Support Files/Pods-SwiftObserverDev/Pods-SwiftObserverDev.debug.xcconfig"; sourceTree = "<group>"; };
@@ -95,7 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				966A7863239C428600972147 /* MessengerTests.swift */,
-				960534A723946D5700382142 /* SwiftObserverDevTests.swift */,
+				960534A723946D5700382142 /* OldTestsToRework.swift */,
 				960534A923946D5700382142 /* Info.plist */,
 			);
 			path = SwiftObserverDevTests;
@@ -305,7 +305,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				966A7864239C428600972147 /* MessengerTests.swift in Sources */,
-				960534A823946D5700382142 /* SwiftObserverDevTests.swift in Sources */,
+				960534A823946D5700382142 /* OldTestsToRework.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

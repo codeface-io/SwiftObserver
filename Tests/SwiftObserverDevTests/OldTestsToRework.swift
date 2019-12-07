@@ -2,7 +2,7 @@ import XCTest
 @testable import SwiftObserverDev
 import SwiftObserver
 
-class SwiftObserverDevTests: XCTestCase
+class OldTestsToRework: XCTestCase
 {
     func testStringProperty()
     {
