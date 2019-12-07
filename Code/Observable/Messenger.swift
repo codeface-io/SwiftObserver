@@ -17,8 +17,14 @@ public final class Messenger<Message>
     
     internal func send(_ message: Message, author: AnyAuthor)
     {
-        messagesFromAuthors.append((message, author))
+        guard maintainsMessageOrder else
+        {
+            registrations.values.forEach { $0.receive(message, author) }
+            return
+        }
         
+        messagesFromAuthors.append((message, author))
+
         if messagesFromAuthors.count > 1 { return }
         
         while let (message, author) = messagesFromAuthors.first
@@ -29,6 +35,7 @@ public final class Messenger<Message>
     }
     
     private var messagesFromAuthors = [(Message, AnyAuthor)]()
+    public var maintainsMessageOrder = true
     
     // MARK: - Connect Receivers
     
