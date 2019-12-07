@@ -22,10 +22,9 @@ public final class Receiver
     
     internal func retain(_ connection: Connection)
     {
-        guard connection.receiver === self else
+        if connection.receiver !== self
         {
-            log(error: "Tried to make \(Self.self) retain a connection that points to a different \(Self.self).")
-            return
+            log(error: "\(Self.self) will retain a connection that points to a different \(Self.self).")
         }
         
         connections[connection.messengerKey] = connection
