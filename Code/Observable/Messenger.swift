@@ -32,7 +32,7 @@ public final class Messenger<Message>
     
     // MARK: - Connect Receivers
     
-    internal func isConnected(_ receiver: ReceiverInterface) -> Bool
+    internal func isConnected(to receiver: ReceiverInterface) -> Bool
     {
         registrations[receiver.key]?.connection?.receiver === receiver
     }

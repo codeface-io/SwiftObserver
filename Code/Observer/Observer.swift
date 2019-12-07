@@ -2,7 +2,7 @@ public extension Observer
 {
     func isObserving<O: Observable>(_ observable: O) -> Bool
     {
-        observable.messenger.isConnected(receiver)
+        observable.messenger.isConnected(to: receiver)
     }
     
     func observe<O: Observable>(_ observable: O,
