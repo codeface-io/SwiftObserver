@@ -69,13 +69,11 @@ SwiftObserver is very few lines of production code, but it's also beyond a 1000 
     * [Install](#install)
     * [Introduction](#introduction)
 * [Messengers](#messengers)
-    * [The Messenger Pattern](#the-messenger-pattern)
-    * [The Messenger Class](#the-messenger-class)
+* [Custom Observables](#custom-observables)
 * [Variables](#variables)
     * [Observe Variables](#observe-variables)
     * [Use Variable Values](#use-variable-values) 
     * [Encode and Decode Variables](#encode-and-decode-variables)
-* [Custom Observables](#custom-observables)
 * [Transforms](#transforms)
     * [Create Transforms](#create-transforms)
     * [Chain Transforms](#chain-transforms)
@@ -209,8 +207,6 @@ dog.stopObserving() // no more messages at all
 
 # Messengers
 
-## The Messenger Class
-
 `Messenger` is the simplest `Observable` and the basis of any other `Observable`. It doesn't send messages by itself but anyone can send messages through it, and use it for any type of message:
 
 ```swift
@@ -242,20 +238,29 @@ extension Messenger: Observable {
 
 A messenger delivers messages in exactly the order in which they were sent, even when observers make it send further messages from their message handling closures. Since `Observable` is defined in terms of `Messenger`, all observables keep that message order as well.
 
-## The Messenger Pattern
+The `Messenger` class embodies the common [messenger / notifier pattern](Documentation/specific-patterns.md#the-messenger-pattern) and can be used for that out of the box. 
 
-The `Messenger` class embodies the common messenger pattern and can be used for that out of the box. 
+# Custom Observables
 
-When *observer* and *observable* need to be more decoupled, it is common to use a mediating *observable* through which any object can anonymously send *messages*. An example of this mediator is [`NotificationCenter`](https://developer.apple.com/documentation/foundation/notificationcenter).
+Every class can become `Observable` simply by owning a `messenger: Messenger<Message>`:
 
-This use of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, *Dispatcher*, *Event Emitter* or *Decoupler*. Its main differences to direct observation are:
+~~~swift
+class MinimalObservable: Observable {
+    let messenger = Messenger<String>()
+}
+~~~
 
-- The actual *observable*, which is the messenger, sends no *messages* by itself.
-- Every object can trigger *messages*, without adopting any protocol.
-- Multiple sending objects trigger the same type of *messages*.
-- An *observer* may indirectly observe multiple other objects through one observation.
-- *Observers* don't care as much who triggered a *message*.
-- *Observer* types don't need to depend on the types that trigger *messages*.
+The `Message` type is custom and yet well defined. An `Observable` sends whatever it likes whenever it wants via `send(_ message: Message)`. Enumerations often make good `Message` types for custom observables:
+
+~~~swift
+class Model: Observable {
+    foo() { send(.willUpdate) }
+    bar() { send(.didUpdate) }
+    deinit { send(.willDie) }
+    let messenger = Messenger<Event>()
+    enum Event { case willUpdate, didUpdate, willDie }
+}
+~~~
 
 # Variables
 
@@ -316,28 +321,6 @@ class Model: Codable {
 ~~~
 
 Note that `text` is a `var` instead of a `let`. It cannot be constant because Swift's implicit decoder must mutate it. However, clients of `Model` would be supposed to set only `text.value` and not `text` itself, so the setter is private.
-
-# Custom Observables
-
-Every class can become `Observable` simply by owning a `messenger: Messenger<Message>`:
-
-~~~swift
-class MinimalObservable: Observable {
-    let messenger = Messenger<String>()
-}
-~~~
-
-The `Message` type is custom and yet well defined. An `Observable` sends whatever it likes whenever it wants via `send(_ message: Message)`. Enumerations often make good `Message` types for custom observables:
-
-~~~swift
-class Model: Observable {
-    foo() { send(.willUpdate) }
-    bar() { send(.didUpdate) }
-    deinit { send(.willDie) }
-    let messenger = Messenger<Event>()
-    enum Event { case willUpdate, didUpdate, willDie }
-}
-~~~
 
 # Transforms
 

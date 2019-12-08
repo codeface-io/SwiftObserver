@@ -4,6 +4,19 @@ This document describes a few patterns that emerged from usage.
 
 In general, SwiftObserver meets almost all needs for callbacks and continuous propagation of data up the control hierarchy (against the direction of control). Typical applications are the propagation of data from domain model to use cases, from use cases to view models, from view models to views, and from views to view controllers.
 
+## The Messenger Pattern
+
+When *observer* and *observable* need to be more decoupled, it is common to use a mediating *observable* through which any object can anonymously send *messages*. An example of this mediator is [`NotificationCenter`](https://developer.apple.com/documentation/foundation/notificationcenter).
+
+This use of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, *Dispatcher*, *Event Emitter* or *Decoupler*. Its main differences to direct observation are:
+
+- The actual *observable*, which is the messenger, sends no *messages* by itself.
+- Every object can trigger *messages*, without adopting any protocol.
+- Multiple sending objects trigger the same type of *messages*.
+- An *observer* may indirectly observe multiple other objects through one observation.
+- *Observers* don't care as much who triggered a *message*.
+- *Observer* types don't need to depend on the types that trigger *messages*.
+
 ## Stored Messenger
 
 A *Stored Messenger* is the bare bone pattern used by `CustomObservable`. Sometimes we have to implement it manually, without conforming to `CustomObservable`.
