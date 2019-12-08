@@ -75,7 +75,7 @@ SwiftObserver is very few lines of production code, but it's also beyond a 1000 
     * [Use Variable Values](#use-variable-values) 
     * [Encode and Decode Variables](#encode-and-decode-variables)
 * [Transforms](#transforms)
-    * [Create Observable Transforms](#create-observable-transforms)
+    * [Make Transforms Observable](#make-transforms-observable)
     * [Use Prebuilt Transforms](#use-prebuilt-transforms)
     * [Chain Transforms](#chain-transforms)
 * [Advanced Observables](#advanced-observables)
@@ -334,7 +334,7 @@ observer.observe(title).new().unwrap("Untitled").map({ $0.count }) { titleLength
 }
 ```
 
-## Create Observable Transforms
+## Make Transforms Observable
 
 You may transform a particular observation directly on the fly, like in the above example. Such ad hoc transforms give the observer lots of flexibility.
 
@@ -348,7 +348,7 @@ observer.observe(titleLength) { titleLength in
 }
 ```
 
-These stand-alone transforms allow multiple observers to benefit from the same preprocessing. But since they are distinct `Observable` objects, the scope in which their observation should last must hold them strongly. Holding transforms as dedicated observable objects suits entities like view models that represent transformations of other data.
+These stand-alone transforms allow multiple observers to receive the same preprocessing. But since they are distinct `Observable` objects, the scope in which their observation should last must hold them strongly. Holding transforms as dedicated observable objects suits entities like view models that represent transformations of other data.
 
 ## Use Prebuilt Transforms
 
@@ -445,64 +445,28 @@ This last one is particularly useful when multiple objects observe and change sh
 You may chain transforms together:
 
 ```swift
-let mapping = Var<Int?>().map {
-    $0.new ?? 0                   // Update<Int?> -> Int
-}.filter {
-    $0 > 9                        // only forward integers > 9
-}.map {
-    "\($0)"                       // Int -> String
-}
-// ^^ mapping sends messages of type String
-```
+let numbers = Messenger<Int>()
 
-```swift
-let number = Var(42)
-        
-observer.observe(number).new().map {
-    "\($0)"         // Int -> String
+observer.observe(numbers).map {
+    "\($0)"                      // Int -> String
 }.filter {
-    $0.count > 1    // filter out single digit integers
+    $0.count > 1                 // filter out single digit integers
 }.map {
-    Int.init($0)    // String -> Int?
-}.filter {
-    $0 != nil       // filter out nil values
-}.unwrap {          // Int? -> Int, and pass final message receiver
-    print($0)       // process Int
+    Int.init($0)                 // String -> Int?
+}.unwrap {                       // Int? -> Int
+    print($0)                    // receive resulting Int
 }
 ```
 
-Consequently, each transform function comes in 2 variants:
-
-1. The chaining variant returns a result on which you call the next transform function.
-2. The terminating variant takes your actual *message* receiver in an additional closure argument.
-
-When the chain is supposed to end on a transform that take two closures, let `receive` terminate it to stick with [trailing closures](https://docs.swift.org/swift-book/LanguageGuide/Closures.html#ID102):
+Of course, ad hoc transforms like the above end on the actual message handling closure. Now, when the last transform in the chain also takes a closure argument for its processing, like `map` and `filter` do, we use `receive` to stick with the nice syntax of [trailing closures](https://docs.swift.org/swift-book/LanguageGuide/Closures.html#ID102):
 
 ~~~swift
-dog.observe(bowl).map {
-    $0 == .wasFilled    // Bowl.Message -> Bool
+dog.observe(Sky.shared).map {
+    $0 == .blue     
 }.receive {
-    if $0 {             // if bowl was filled
-        // clear bowl in under a minute
-    }
+    print("Will we go outside? \($0 ? "Yes" : "No")!")
 } 
 ~~~
-
-Remember that a `select` closure takes no arguments because it runs only for the selected *message*:
-
-```swift
-dog.observe(Sky.shared).select(.blue) {  // no argument in
-    // the sky became blue, let's go for a walk!
-}
-```
-
-With messenger / notifier type of observables, `select` in analogous to "subscribing to" one specific *message* / notification:
-
-```swift
-observer.observe(textMessenger).select("my notification") {
-    // respond to "my notification"
-}
-```
 
 # Advanced Observables
 
