@@ -203,7 +203,7 @@ class Dog: Observer {
 Observable objects conform to `Observable`. There are four ways to make these *observables*:
 
 1. Create a [*messenger*](#messengers). It's a minimal `Observable` through which other objects communicate.
-2. Create a [*variable*](#variables). It's an `Observable` that holds a value and sends value changes.
+2. Create a [*variable*](#variables). It's an `Observable` that holds a value and sends value updates.
 3. Create a [*transform*](#transforms). It's an `Observable` that transforms *messages* from a *source observable*.
 4. Implement a [custom](#custom-observables) `Observable` by conforming to `Observable`.
 
@@ -411,7 +411,7 @@ let mapping = Var<Int?>().map {
 
 ### New
 
-When an `Observable` sends *messages* of type `Update<Value>`, you often only care about  the `new` value of that change. If so, use `new()`:
+When an `Observable` sends *messages* of type `Update<Value>`, you often only care about  the `new` value of that update. If so, use `new()`:
 
 ~~~swift
 let text = Var<String?>().new()
@@ -540,7 +540,7 @@ All `BufferedObservable`s can call `send()` without argument and, thereby, send 
 
 ## State Changes
 
-To implement an `Observable` like `Var<Value>` that sends value changes, you would use the message type  `Update<Value>`. If you also want the observable to be suitable for combined observations, you make it a `BufferedObservable` and let `latestMessage` return a message based on the latest (current) value:
+To implement an `Observable` like `Var<Value>` that sends value updates, you would use the message type  `Update<Value>`. If you also want the observable to be suitable for combined observations, you make it a `BufferedObservable` and let `latestMessage` return a message based on the latest (current) value:
 
 ~~~swift
 class Model: BufferedObservable {
