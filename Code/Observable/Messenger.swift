@@ -10,7 +10,7 @@ public final class Messenger<Message>
     
     // MARK: - Send Messages to Receivers
     
-    internal func send(_ message: Message, author: AnyAuthor)
+    internal func send(_ message: Message, from author: AnyAuthor)
     {
         guard maintainsMessageOrder else
         {

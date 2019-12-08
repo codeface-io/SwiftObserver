@@ -8,11 +8,11 @@ public final class Filter<O: Observable>: Observable, Observer
         
         observe(observable)
         {
-            [weak self] in
+            [weak self] message, author in
             
-            if keep($0)
+            if keep(message)
             {
-                self?.send($0, author: $1)
+                self?.send(message, from: author)
             }
         }
     }

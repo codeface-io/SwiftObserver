@@ -8,9 +8,9 @@ public class Mapper<O: Observable, Mapped>: Observable, Observer
         
         observe(observable)
         {
-            [weak self] in
+            [weak self] message, author in
             
-            self?.send(map($0), author: $1)
+            self?.send(map(message), from: author)
         }
     }
     

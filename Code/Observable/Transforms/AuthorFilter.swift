@@ -7,11 +7,11 @@ public final class AuthorFilter<O: Observable>: Observable, Observer
         
         observe(observable)
         {
-            [weak self] in
+            [weak self] message, author in
             
-            if keep($1)
+            if keep(author)
             {
-                self?.send($0, author: $1)
+                self?.send(message, from: author)
             }
         }
     }

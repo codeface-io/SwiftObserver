@@ -7,11 +7,11 @@ public class Unwrapper<O: Observable, Unwrapped>: Observable, Observer
         
         observe(observable)
         {
-            [weak self] in
+            [weak self] optionalMessage, author in
             
-            if let unwrapped = $0
+            if let unwrappedMessage = optionalMessage
             {
-                self?.send(unwrapped, author: $1)
+                self?.send(unwrappedMessage, from: author)
             }
         }
     }
