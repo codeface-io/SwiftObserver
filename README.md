@@ -167,7 +167,7 @@ dog.observe(Sky.shared) { color in
 
 ### Observers
 
-Any class can become an `Observer` by providing a `Receiver`:
+Any class can become an `Observer` by owning a `Receiver`:
 
 ```swift
 class Dog: Observer {
@@ -185,18 +185,7 @@ dog.observe(tv, bowl, doorbell) { image, food, sound in
 }
 ```
 
-To process messages from an observed object, the observer must be alive. There's no awareness after death in memory:
-
-```swift
-class Dog: Observer {
-    init() {
-        observe(Sky.shared) { color in
-            // for this closure to be called, this Dog must live
-        }
-    }
-    let receiver = Receiver()
-}
-```
+For any message handling closure to be called, the observer must still be alive. There's no awareness after death in memory.
 
 ### Observables
 
