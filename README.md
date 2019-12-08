@@ -196,7 +196,7 @@ Just starting to observe an `Observable` does **not** trigger a *message*. This 
 
 ### Memory Management
 
-When observers or observables die, SwiftObserver cleans up the involved observations automatically, and memory leaks are impossible. So there isn't any real memory management to worry about.
+When observers or observables die, SwiftObserver cleans up the involved observations automatically, and memory leaks are impossible. So there isn't really any memory management to worry about.
 
 But observers can stop particular or all their observations:
 
@@ -264,9 +264,11 @@ class Model: Observable {
 
 # Variables
 
+ `Var<Value>` is an `Observable` that has a property `value: Value`. 
+
 ## Observe Variables
 
- `Var<Value>` is an `Observable` that has a property `value: Value`. Whenever `value` changes, `Var<Value>` sends a *message* of type `Update<Value>`, providing the `old` and `new` value:
+Whenever its `value` changes, `Var<Value>` sends a *message* of type `Update<Value>`, informing about the `old` and `new` value:
 
 ~~~swift
 observer.observe(variable) { update in
@@ -324,47 +326,36 @@ Note that `text` is a `var` instead of a `let`. It cannot be constant because Sw
 
 # Transforms
 
-## Create Transforms
+Transforms make common steps of message processing more succinct and readable. They allow to filter, map, unwrap and select messages based on the messages themselves and based on their author. You may freely chain these transforms together and also define new ones with them.
 
-Create a new `Observable` that transforms the *messages* of a given *source observable*:
-
-~~~swift
-let text = Var<String?>()
-let textLength = text.map { $0.new?.count ?? 0 }
-// ^^ an Observable mapper that sends Int messages
-~~~
-
-A *transform* holds its transformed observable strongly, just like arrays and other data structures would hold an `Observable`. You could rewrite the above example like so:
+This example transforms messages of type `Update<String?>` into ones of type `Int`:
 
 ```swift
-let textLength = Var<String?>().map { $0.new?.count ?? 0 }
-```
-
-When you want to hold a *transform* weakly, wrap it in [`Weak`](#weak-observables). For instance, you can let a transform hold its *source*  weakly:
-
-```swift
-let toString = Weak(Var<Int?>()).new().unwrap(0).map { "\($0)" }
-// ^^ no one holds Var<Int?>(), so it dies
-```
-
-As [mentioned earlier](#observables), you use a transform like any other `Observable`: You hold a strong reference to it somewhere, you stop observing it (not the transformed observable) at some point, and you can call `send(_:)` on it.
-
-## Chain Transforms
-
-You may chain transforms together:
-
-```swift
-let mapping = Var<Int?>().map {
-    $0.new ?? 0                   // Update<Int?> -> Int
-}.filter {
-    $0 > 9                        // only forward integers > 9
-}.map {
-    "\($0)"                       // Int -> String
+let title = Var<String?>()
+observer.observe(title).new().unwrap("Untitled").map({ $0.count }) { titleLength in
+    // do something with the new title length
 }
-// ^^ mapping sends messages of type String
 ```
 
-## Use Prebuilt Transforms
+## Ad Hoc Transform vs. Observable Transform
+
+You may transform a particular observation directly on the fly, like in the above example. Such ad hoc transforms give the observer lots of flexibility.
+
+Or you may instantiate a new `Observable` that has the transform chain baked into it. The above example could then look like this:
+
+```swift
+let title = Var<String?>()
+let titleLength = title.new().unwrap("Untitled").map { $0.count }
+observer.observe(titleLength) { titleLength in
+    // do something with the new title length
+}
+```
+
+These stand-alone transforms allow multiple observers to benefit from the same preprocessing. But since they are distinct `Observable` objects, the scope in which their observation should last must hold them strongly. Holding transforms as dedicated observable objects suits entities like view models that represent transformations of other data.
+
+## Prebuilt Transforms
+
+### Map
 
 ### New
 
@@ -373,18 +364,6 @@ When an `Observable` sends *messages* of type `Update<Value>`, you often only ca
 ~~~swift
 let text = Var<String?>().new()
 // ^^ sends messages of type String?
-~~~
-
-### Unwrap
-
-Sometimes, we make *message* types optional, for example when there is no meaningful initial value for a `Var`. But we often don't want to deal with optionals down the line. You can apply the *mappings* `unwrap(_:)` and `unwrap()` to **any** `Observable` that sends optional *messages*. `unwrap(_:)` replaces `nil` messages with a default.  `unwrap()`  supresses them entirely:
-
-~~~swift
-let title = Var<String?>().new().unwrap("untitled")
-// ^^ sends messages of type String, replacing nil with "untitled"
-
-let errorCode = Var<Int?>().new().unwrap()
-// ^^ sends messages of type Int, not sending at all for nil source values
 ~~~
 
 ### Filter
@@ -408,28 +387,38 @@ observer.observe(notifier) {  // nothing going in
 }
 ```
 
-# Ad Hoc Transformation
+### Unwrap
 
-The moment we start a particular observation, we often want to apply common transformations to it. Of course, **we cannot observe an ad hoc created [*transform*](#transforms)** without retaining the object:
+Sometimes, we make *message* types optional, for example when there is no meaningful initial value for a `Var`. But we often don't want to deal with optionals down the line. You can apply the *mappings* `unwrap(_:)` and `unwrap()` to **any** `Observable` that sends optional *messages*. `unwrap(_:)` replaces `nil` messages with a default.  `unwrap()`  supresses them entirely:
+
+~~~swift
+let title = Var<String?>().new().unwrap("untitled")
+// ^^ sends messages of type String, replacing nil with "untitled"
+
+let errorCode = Var<Int?>().new().unwrap()
+// ^^ sends messages of type Int, not sending at all for nil source values
+~~~
+
+### Filter Author
+
+### From
+
+### Not From
+
+## Chain Transforms
+
+You may chain transforms together:
 
 ```swift
-dog.observe(bowl.map({ $0 == .wasFilled })) { bowlWasFilled in
-    // FAIL: This closure will never run since no one holds the observed mapper!
-    // .map({ $0 == .wasFilled }) creates a mapper which immediately dies                       
-}   
+let mapping = Var<Int?>().map {
+    $0.new ?? 0                   // Update<Int?> -> Int
+}.filter {
+    $0 > 9                        // only forward integers > 9
+}.map {
+    "\($0)"                       // Int -> String
+}
+// ^^ mapping sends messages of type String
 ```
-
-Instead of holding a dedicated [*transform*](#transforms) somewhere, you can map the observation itself:
-
-```swift
-dog.observe(bowl).map({ $0 == .wasFilled }) { bowlWasFilled in
-    if bowlWasFilled {
-        // clear bowl in under a minute
-    }
-}   
-```
-
-You do this *ad hoc transforming* in the same terms in which you create stand-alone [*transforms*](#transforms): With `map`, `new`, `unwrap`, `filter` and `select`. And you also chain these transformations together:
 
 ```swift
 let number = Var(42)
@@ -451,7 +440,6 @@ Consequently, each transform function comes in 2 variants:
 
 1. The chaining variant returns a result on which you call the next transform function.
 2. The terminating variant takes your actual *message* receiver in an additional closure argument.
-
 
 When the chain is supposed to end on a transform that take two closures, let `receive` terminate it to stick with [trailing closures](https://docs.swift.org/swift-book/LanguageGuide/Closures.html#ID102):
 
