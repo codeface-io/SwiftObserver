@@ -188,9 +188,9 @@ For any message handling closure to be called, the observer must still be alive.
 Observable objects conform to `Observable`. There are four ways to make these *observables*:
 
 1. Create a [*messenger*](#messengers). It's a minimal `Observable` through which other objects communicate.
-2. Create a [*variable*](#variables). It's an `Observable` that holds a value and sends value updates.
-3. Create a [*transform*](#transforms). It's an `Observable` that transforms *messages* from a *source observable*.
-4. Implement a [custom](#custom-observables) `Observable` by conforming to `Observable`.
+2. Implement a [custom](#custom-observables) `Observable` by conforming to `Observable`.
+3. Create a [*variable*](#variables). It's an `Observable` that holds a value and sends value updates.
+4. Create a [*transform*](#transforms). It's an `Observable` that wraps and transforms a *source observable*.
 
 Just starting to observe an `Observable` does **not** trigger a *message*. This keeps it simple, predictable and consistent, in particular in combination with [*transforms*](#transforms). However, you can make any `Observable` send any message at any time via `observable.send(message)`.
 
