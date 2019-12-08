@@ -222,22 +222,9 @@ dog.stopObserving() // no more messages at all
 
 # Messengers
 
-## The Messenger Pattern
-
-When *observer* and *observable* need to be more decoupled, it is common to use a mediating *observable* through which any object can anonymously send *messages*. An example of this mediator is [`NotificationCenter`](https://developer.apple.com/documentation/foundation/notificationcenter).
-
-This use of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, *Dispatcher*, *Event Emitter* or *Decoupler*. Its main differences to direct observation are:
-
-- The actual *observable*, which is the messenger, sends no *messages* by itself.
-- Every object can trigger *messages*, without adopting any protocol.
-- Multiple sending objects trigger the same type of *messages*.
-- An *observer* may indirectly observe multiple other objects through one observation.
-- *Observers* don't care as much who triggered a *message*.
-- *Observer* types don't need to depend on the types that trigger *messages*.
-
 ## The Messenger Class
 
-The `Messenger` class embodies the messenger pattern. It is the simplest `Observable` and the core of any other `Observable`:
+`Messenger` is the simplest `Observable` and the basis of any other `Observable`. It doesn't send messages by itself but anyone can send messages through it, and use it for any type of message:
 
 ```swift
 let textMessenger = Messenger<String>()
@@ -249,15 +236,39 @@ observer.observe(textMessenger) { textMessage in
 textMessenger.send("my text message")
 ```
 
-`Messenger` makes the indended pattern explicit and can be used with any type of message. You may use `select` to observe or "subscribe to-" one specific *message*:
+`Observable` is actually defined by having a `Messenger`:
 
 ```swift
-observer.observe(textMessenger).select("my notification") {
-    // respond to "my notification"
+public protocol Observable: class {
+    var messenger: Messenger<Message> { get }
+    associatedtype Message: Any
 }
 ```
 
-Like with any  `Observable`, messages are delivered exactly in the order in which they were sent, even when observers trigger further messages from their message handling closures.
+ `Messenger` is itself `Observable` because it points to itself as the required `Messenger`:
+
+```swift
+extension Messenger: Observable {
+    public var messenger: Messenger<Message> { self }
+}
+```
+
+Messengers deliver messages in exactly the order in which they were sent, even when observers trigger further messages from their message handling closures. Since `Observable` is defined in terms of `Messenger`, all observables keep that message order as well.
+
+## The Messenger Pattern
+
+The `Messenger` class embodies the common messenger pattern and can be used for that out of the box. 
+
+When *observer* and *observable* need to be more decoupled, it is common to use a mediating *observable* through which any object can anonymously send *messages*. An example of this mediator is [`NotificationCenter`](https://developer.apple.com/documentation/foundation/notificationcenter).
+
+This use of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, *Dispatcher*, *Event Emitter* or *Decoupler*. Its main differences to direct observation are:
+
+- The actual *observable*, which is the messenger, sends no *messages* by itself.
+- Every object can trigger *messages*, without adopting any protocol.
+- Multiple sending objects trigger the same type of *messages*.
+- An *observer* may indirectly observe multiple other objects through one observation.
+- *Observers* don't care as much who triggered a *message*.
+- *Observer* types don't need to depend on the types that trigger *messages*.
 
 # Variables
 
@@ -442,7 +453,7 @@ let shortText = Var("").new().filter { $0.count < 5 }
 
 ### Select
 
-Use the `select` filter to receive only one specific *message*. `select` is available on all *observables* that send `Equatable` *messages*. When observing a transform produced by `select`, the closure takes no arguments:
+Use `select` to receive only one specific *message*. `select` is available on all *observables* that send `Equatable` *messages*. When observing a transform produced by `select`, the closure takes no arguments:
 
 ```swift
 let notifier = Var("").new().select("my notification")
@@ -514,6 +525,14 @@ Remember that a `select` closure takes no arguments because it runs only for the
 ```swift
 dog.observe(Sky.shared).select(.blue) {  // no argument in
     // the sky became blue, let's go for a walk!
+}
+```
+
+With messenger / notifier type of observables, `select` in analogous to "subscribing to" one specific *message* / notification:
+
+```swift
+observer.observe(textMessenger).select("my notification") {
+    // respond to "my notification"
 }
 ```
 
