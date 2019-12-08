@@ -76,8 +76,6 @@ SwiftObserver is very few lines of production code, but it's also beyond a 1000 
     * [Use Variable Values](#use-variable-values) 
     * [Encode and Decode Variables](#encode-and-decode-variables)
 * [Custom Observables](#custom-observables)
-    * [Declare Custom Observables](#declare-custom-observables)
-    * [Send Custom Messages](#send-custom-messages)
 * [Transforms](#transforms)
     * [Create Transforms](#create-transforms)
     * [Chain Transforms](#chain-transforms)
@@ -263,7 +261,7 @@ This use of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, 
 
 ## Observe Variables
 
-A `Var<Value>` has a property `value: Value`. Whenever the `value` changes, `Var<Value>` sends a *message* of type `Update<Value>`, providing the `old` and `new` value:
+ `Var<Value>` is an `Observable` that has a property `value: Value`. Whenever `value` changes, `Var<Value>` sends a *message* of type `Update<Value>`, providing the `old` and `new` value:
 
 ~~~swift
 observer.observe(variable) { update in
@@ -275,7 +273,7 @@ In addition, you can always manually call `variable.send()` (without argument) t
 
 ## Use Variable Values
 
-`Value` must be `Equatable`, and based on its `value` the whole `Var<Value>` is `Equatable`.  If `Value` is `Comparable`, the whole `Var<Value>` will also be `Comparable`.
+`Value` must be `Equatable`, and based on its `value` the whole `Var<Value>` is `Equatable`.  If `Value` is `Comparable`, `Var<Value>` will also be `Comparable`.
 
 You can set `value` via initializer, directly and via the `<-` operator:
 
@@ -321,36 +319,23 @@ Note that `text` is a `var` instead of a `let`. It cannot be constant because Sw
 
 # Custom Observables
 
-## Declare Custom Observables
-
-Implement your own `Observable` by conforming to `Observable`. An *observable* just needs to provide some `messenger: Messenger<Message>`. Here's a minimal example:
+Every class can become `Observable` simply by owning a `messenger: Messenger<Message>`:
 
 ~~~swift
-class Minimal: Observable {
+class MinimalObservable: Observable {
     let messenger = Messenger<String>()
 }
 ~~~
 
-A typical `Message` would be some `enum`:
+The `Message` type is custom and yet well defined. An `Observable` sends whatever it likes whenever it wants via `send(_ message: Message)`. Enumerations often make good `Message` types for custom observables:
 
 ~~~swift
 class Model: Observable {
+    foo() { send(.willUpdate) }
+    bar() { send(.didUpdate) }
+    deinit { send(.willDie) }
     let messenger = Messenger<Event>()
-    enum Event { case willUpdate, didUpdate, willDeinit }
-}
-~~~
-
-## Send Custom Messages
-
-Messages are custom and yet fully typed. An `Observable` sends whatever it likes whenever it wants via `send(_ message: Message)`. This `Observable` sends optional strings:
-
-~~~swift
-class Model: Observable {
-    init { send("did init") }
-    func foo() { send(nil) }
-    deinit { send("will deinit") }
-    
-    let messenger = Messenger<String?>()
+    enum Event { case willUpdate, didUpdate, willDie }
 }
 ~~~
 
