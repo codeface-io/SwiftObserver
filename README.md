@@ -209,13 +209,11 @@ dog.stopObserving() // no more messages at all
 `Messenger` is the simplest `Observable` and the basis of any other `Observable`. It doesn't send messages by itself but anyone can send messages through it, and use it for any type of message:
 
 ```swift
-let textMessenger = Messenger<String>()
-
-observer.observe(textMessenger) { textMessage in
-    // respond to text message
+let messenger = Messenger<String>()
+observer.observe(messenger) { message in
+    // respond to message
 }
-        
-textMessenger.send("my text message")
+messenger.send("my message")
 ```
 
 `Observable` is actually defined by having a `Messenger`:
@@ -354,55 +352,93 @@ These stand-alone transforms allow multiple observers to benefit from the same p
 
 ## Use Prebuilt Transforms
 
+No matter whether you apply transforms ad hoc or as stand-alone objects, they work the same way. The following list of available transforms shows them as observable objects, so we can skip most message handlers.
+
 ### Map
+
+Map is your regular familiar `map` function. It transforms messages and often also their type:
+
+```swift
+let messenger = Messenger<String>()          // sends String
+let stringToInt = messenger.map { Int($0) }  // sends Int?
+```
 
 ### New
 
-When an `Observable` sends *messages* of type `Update<Value>`, you often only care about  the `new` value of that update. If so, use `new()`:
+When an `Observable` like a `Var<Value>` sends *messages* of type `Update<Value>`, we often only care about  the `new` value of that update, so we map with `new()`:
 
 ~~~swift
-let text = Var<String?>().new()
-// ^^ sends messages of type String?
+let errorCode = Var<Int>()          // sends Update<Int>
+let newErrorCode = errorCode.new()  // sends Int
 ~~~
 
 ### Filter
 
-When you just want to filter- and not actually convert *messages* into different types, use `filter`:
+When you want to receive only certain messages, use `filter`:
 
 ```swift
-let shortText = Var("").new().filter { $0.count < 5 }
-// ^^ sends messages of type String, suppressing long strings
+let messenger = Messenger<String>()                     // sends String
+let shortMessages = messenger.filter { $0.count < 10 }  // sends String if length < 10
 ```
 
 ### Select
 
-Use `select` to receive only one specific *message*. `select` is available on all *observables* that send `Equatable` *messages*. When observing a transform produced by `select`, the closure takes no arguments:
+Use `select` to receive only one specific *message*. `select` works wherever messages are `Equatable`. Because `select` maps messages onto `Void`, the receiving closure takes no argument:
 
 ```swift
-let notifier = Var("").new().select("my notification")
-
-observer.observe(notifier) {  // nothing going in
+let messenger = Messenger<String>()                   // sends String
+let myNotifier = messenger.select("my notification")  // sends Void
+observer.observe(myNotifier) {                        // no argument
     // someone sent "my notification"
 }
 ```
 
 ### Unwrap
 
-Sometimes, we make *message* types optional, for example when there is no meaningful initial value for a `Var`. But we often don't want to deal with optionals down the line. You can apply the *mappings* `unwrap(_:)` and `unwrap()` to **any** `Observable` that sends optional *messages*. `unwrap(_:)` replaces `nil` messages with a default.  `unwrap()`  supresses them entirely:
+Sometimes, we make *message* types optional, for example when there is no meaningful initial value for a `Var`. But we often don't want to deal with optionals down the line. So we use `unwrap()`, supressing `nil` messages entirely:
 
 ~~~swift
-let title = Var<String?>().new().unwrap("untitled")
-// ^^ sends messages of type String, replacing nil with "untitled"
+let errorCodes = Messenger<Int?>()     // sends Int?       
+let errorAlert = errorCodes.unwrap()   // sends Int if message is not nil
+~~~
 
-let errorCode = Var<Int?>().new().unwrap()
-// ^^ sends messages of type Int, not sending at all for nil source values
+### Unwrap with Default
+
+You may also unwrap optional messages by replacing all `nil` values with a default:
+
+~~~swift
+let points = Messenger<Int?>()         // sends Int?       
+let pointsToShow = points.unwrap(0)    // sends Int with 0 for nil
 ~~~
 
 ### Filter Author
 
+Filter authors the same way you filter messages:
+
+```swift
+let messenger = Messenger<String>()            // sends String
+let friendMessages = messenger.filterAuthor {  // sends String if message is from friend
+    friends.contains($0)
+} 
+```
+
 ### From
 
+If only one author is of interest, filter authors with `from`:
+
+```swift
+let messenger = Messenger<String>()     // sends String
+let joesMessages = messenger.from(joe)  // sends String if message is from joe
+```
+
 ### Not From
+
+```swift
+let posts = Messenger<String>()        // sends String
+let unreadPosts = posts.notFrom(self)  // sends String if message is from others
+```
+
+This last one is particularly useful when multiple objects observe and change shared data. The observers would only want to be informed about data changes that other observers made, so they would identify themselves as change authors when they change the data, and they would exclude themselves as authors when they observe the data.
 
 ## Chain Transforms
 
