@@ -75,10 +75,9 @@ SwiftObserver is very few lines of production code, but it's also beyond a 1000 
     * [Use Variable Values](#use-variable-values) 
     * [Encode and Decode Variables](#encode-and-decode-variables)
 * [Transforms](#transforms)
-    * [Create Transforms](#create-transforms)
-    * [Chain Transforms](#chain-transforms)
+    * [Create Observable Transforms](#create-observable-transforms)
     * [Use Prebuilt Transforms](#use-prebuilt-transforms)
-* [Ad Hoc Transformation](#ad-hoc-transformation)
+    * [Chain Transforms](#chain-transforms)
 * [Advanced Observables](#advanced-observables)
     * [Message Buffering](#message-buffering)
     * [State Changes](#state-changes)
@@ -337,7 +336,7 @@ observer.observe(title).new().unwrap("Untitled").map({ $0.count }) { titleLength
 }
 ```
 
-## Ad Hoc Transform vs. Observable Transform
+## Create Observable Transforms
 
 You may transform a particular observation directly on the fly, like in the above example. Such ad hoc transforms give the observer lots of flexibility.
 
@@ -353,7 +352,7 @@ observer.observe(titleLength) { titleLength in
 
 These stand-alone transforms allow multiple observers to benefit from the same preprocessing. But since they are distinct `Observable` objects, the scope in which their observation should last must hold them strongly. Holding transforms as dedicated observable objects suits entities like view models that represent transformations of other data.
 
-## Prebuilt Transforms
+## Use Prebuilt Transforms
 
 ### Map
 
