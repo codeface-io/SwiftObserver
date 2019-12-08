@@ -7,7 +7,7 @@ class ReceiverPool<Message>
         receiverReferences.values.forEach { $0.connection?.releaseFromReceiver() }
     }
     
-    internal func receive(_ message: Message, from author: AnyAuthor)
+    func receive(_ message: Message, from author: AnyAuthor)
     {
         receiverReferences.forEach
         {
@@ -29,19 +29,19 @@ class ReceiverPool<Message>
         }
     }
     
-    internal func contains(_ receiver: ReceiverInterface) -> Bool
+    func contains(_ receiver: ReceiverInterface) -> Bool
     {
         receiverReferences[receiver.key]?.connection?.receiver === receiver
     }
     
-    internal func add(_ connection: Connection,
-                      receive: @escaping (Message, AnyAuthor) -> Void)
+    func add(_ connection: Connection,
+             receive: @escaping (Message, AnyAuthor) -> Void)
     {
         let reference = ReceiverReference(connection: connection, receive: receive)
         receiverReferences[connection.receiverKey] = reference
     }
     
-    internal func remove(_ connection: ConnectionInterface)
+    func remove(_ connection: ConnectionInterface)
     {
         let receiverKey = connection.receiverKey
         
