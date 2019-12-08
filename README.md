@@ -207,7 +207,7 @@ Observable objects conform to `Observable`. There are four ways to make these *o
 3. Create a [*transform*](#transforms). It's an `Observable` that transforms *messages* from a *source observable*.
 4. Implement a [custom](#custom-observables) `Observable` by conforming to `Observable`.
 
-You can make any `Observable` send a message via `observable.send(message)`.
+Just starting to observe an `Observable` does **not** trigger a *message*. This keeps it simple, predictable and consistent, in particular in combination with [*transforms*](#transforms). However, you can make any `Observable` send any message at any time via `observable.send(message)`.
 
 ### Memory Management
 
@@ -253,7 +253,7 @@ extension Messenger: Observable {
 }
 ```
 
-Messengers deliver messages in exactly the order in which they were sent, even when observers trigger further messages from their message handling closures. Since `Observable` is defined in terms of `Messenger`, all observables keep that message order as well.
+A messenger delivers messages in exactly the order in which they were sent, even when observers make it send further messages from their message handling closures. Since `Observable` is defined in terms of `Messenger`, all observables keep that message order as well.
 
 ## The Messenger Pattern
 
@@ -272,11 +272,23 @@ This use of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, 
 
 # Variables
 
-A `Var<Value>` has a property `value: Value`. If `Value` is `Equatable` or `Comparable`, the whole `Var<Value>` will also conform to the respective protocol.
+## Observe Variables
+
+A `Var<Value>` has a property `value: Value`. Whenever the `value` changes, `Var<Value>` sends a *message* of type `Update<Value>`, providing the `old` and `new` value:
+
+~~~swift
+observer.observe(variable) { update in
+    let whatsTheBigDifference = update.new - update.old
+}
+~~~
+
+In addition, you can always manually call `variable.send()` (without argument) to send an update in which `old` and `new` both hold the current `value` (see [`BufferedObservable`](#message-buffering)).
 
 ## Use Variable Values
 
-You can set `value` directly, via initializer and via the `<-` operator:
+`Value` must be `Equatable`, and based on its `value` the whole `Var<Value>` is `Equatable`.  If `Value` is `Comparable`, the whole `Var<Value>` will also be `Comparable`.
+
+You can set `value` via initializer, directly and via the `<-` operator:
 
 ~~~swift
 let text = Var<String?>()    // text.value == nil
@@ -289,7 +301,7 @@ number <- 42                 // number.value == 42
 
 If you use some number type `Number` that is either an `Int`, `Float` or `Double`:
 
-1. Every `Var<Number>`, `Var<Number?>`, `Var<Number>?` and `Var<Number?>?` has either a `var int: Int`, `var float: Float` or `var double: Double`. That property is non-optional and interprets `nil` values as zero.
+1. Every `Var<Number>`, `Var<Number?>`, `Var<Number>?` and `Var<Number?>?` has a respective property `var int: Int`, `var float: Float` or `var double: Double`. That property is non-optional and interprets `nil` values as zero.
 
 2. You can apply numeric operators `+`, `-`, `*` and `/` to all pairs of `Number`, `Number?`, `Var<Number>`, `Var<Number?>`, `Var<Number>?` and `Var<Number?>?`.
 
@@ -302,45 +314,21 @@ numVar <- Var(1) + 2         // numVar.value == 3
 
 ### String Values
 
-1. Every `Var<String>`, `Var<String?>`, `Var<String>?` and `Var<String?>?` has a `var string: String`. That property is non-optional and interprets `nil` values as `""`.
-2. Representing its `string` property, every `Var<String>` and `Var<String?>` conforms to `BidirectionalCollection`, `Collection` and `Sequence`.
+1. Every `Var<String>`, `Var<String?>`, `Var<String>?` and `Var<String?>?` has a property `var string: String`. That property is non-optional and interprets `nil` values as `""`.
 3. You can apply concatenation operator `+` to all pairs of `String`, `String?`, `Var<String>`, `Var<String?>`, `Var<String>?` and `Var<String?>?`.
+3. Representing its `string` property, every `Var<String>` and `Var<String?>` conforms to `TextOutputStream`, `BidirectionalCollection`, `Collection`, `Sequence`, `CustomDebugStringConvertible` and `CustomStringConvertible`.
 
-## Observe Variables
+## Encode and Decode Variables
 
-A `Var<Value>` sends *messages* of type `Update<Value>`, providing the `old` and `new` value.
-
-~~~swift
-observer.observe(variable) { change in
-    let whatsTheBigDifference = change.new - change.old
-}
-~~~
-
-A `Var` sends a `Update<Value>` whenever its `value` actually changes. Just starting to observe the `Var` does **not** trigger a *message*. This keeps it simple, predictable and consistent, in particular in combination with [*mappings*](#mappings). However, you can always manually send  the `latestMessage` via `send()` (see [`BufferedObservable`](#message-buffering)).
-
-## Variables are Codable
-
-`Var` is `Codable`, so when you declare a type with `Var` properties, you can make it `Codable` by simply adopting the `Codable` protocol. To this end, `Var.Value` must be `Codable`:
+Every `Var<Value>` is `Codable` and requires its `Value` to be `Codable`. So when one of your types has `Var` properties, you can still easily make that type `Codable` by simply adopting the `Codable` protocol:
 
 ~~~swift
 class Model: Codable {
     private(set) var text = Var("String Variable")
 }
-
-let model = Model()
-
-if let modelJSON = try? JSONEncoder().encode(model) {
-    print(String(data: modelJSON, encoding: .utf8) ?? "error")
-    // ^^ {"text":{"storedValue":"String Variable"}}
-            
-    if let decodedModel = try? JSONDecoder().decode(Model.self, from: modelJSON) {
-        print(decodedModel.text.value)
-        // ^^ String Variable
-    }
-}
 ~~~
 
-Note that `text` is a `var` instead of a `let`. It cannot be constant because the implicit decoder must mutate it. However, clients of `Model` would be supposed to set only `text.value` and not `text` itself, so the setter is private.
+Note that `text` is a `var` instead of a `let`. It cannot be constant because Swift's implicit decoder must mutate it. However, clients of `Model` would be supposed to set only `text.value` and not `text` itself, so the setter is private.
 
 # Custom Observables
 
