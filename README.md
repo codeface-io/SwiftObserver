@@ -68,21 +68,21 @@ SwiftObserver is very few lines of production code, but it's also beyond a 1000 
 * [Get Started](#get-started)
     * [Install](#install)
     * [Introduction](#introduction)
+* [Messengers](#messengers)
+    * [The Messenger Pattern](#the-messenger-pattern)
+    * [The Messenger Class](#the-messenger-class)
 * [Variables](#variables)
     * [Use Variable Values](#use-variable-values)
     * [Observe Variables](#observe-variables) 
     * [Variables are Codable](#variables-are-codable)
+* [Custom Observables](#custom-observables)
+    * [Declare Custom Observables](#declare-custom-observables)
+    * [Send Custom Messages](#send-custom-messages)
 * [Transforms](#transforms)
     * [Create Transforms](#create-transforms)
     * [Chain Transforms](#chain-transforms)
     * [Use Prebuilt Transforms](#use-prebuilt-transforms)
 * [Ad Hoc Transformation](#ad-hoc-transformation)
-* [Messengers](#messengers)
-    * [The Messenger Pattern](#the-messenger-pattern)
-    * [The Messenger Class](#the-messenger-class)
-* [Custom Observables](#custom-observables)
-    * [Declare Custom Observables](#declare-custom-observables)
-    * [Send Custom Messages](#send-custom-messages)
 * [Advanced Observables](#advanced-observables)
     * [Message Buffering](#message-buffering)
     * [State Changes](#state-changes)
@@ -220,6 +220,45 @@ dog.stopObserving(Sky.shared) // no more messages from the sky
 dog.stopObserving() // no more messages at all
 ```
 
+# Messengers
+
+## The Messenger Pattern
+
+When *observer* and *observable* need to be more decoupled, it is common to use a mediating *observable* through which any object can anonymously send *messages*. An example of this mediator is [`NotificationCenter`](https://developer.apple.com/documentation/foundation/notificationcenter).
+
+This use of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, *Dispatcher*, *Event Emitter* or *Decoupler*. Its main differences to direct observation are:
+
+- The actual *observable*, which is the messenger, sends no *messages* by itself.
+- Every object can trigger *messages*, without adopting any protocol.
+- Multiple sending objects trigger the same type of *messages*.
+- An *observer* may indirectly observe multiple other objects through one observation.
+- *Observers* don't care as much who triggered a *message*.
+- *Observer* types don't need to depend on the types that trigger *messages*.
+
+## The Messenger Class
+
+The `Messenger` class embodies the messenger pattern. It is the simplest `Observable` and the core of any other `Observable`:
+
+```swift
+let textMessenger = Messenger<String>()
+
+observer.observe(textMessenger) { textMessage in
+    // respond to text message
+}
+        
+textMessenger.send("my text message")
+```
+
+`Messenger` makes the indended pattern explicit and can be used with any type of message. You may use `select` to observe or "subscribe to-" one specific *message*:
+
+```swift
+observer.observe(textMessenger).select("my notification") {
+    // respond to "my notification"
+}
+```
+
+Like with any  `Observable`, messages are delivered exactly in the order in which they were sent, even when observers trigger further messages from their message handling closures.
+
 # Variables
 
 A `Var<Value>` has a property `value: Value`. If `Value` is `Equatable` or `Comparable`, the whole `Var<Value>` will also conform to the respective protocol.
@@ -291,6 +330,41 @@ if let modelJSON = try? JSONEncoder().encode(model) {
 ~~~
 
 Note that `text` is a `var` instead of a `let`. It cannot be constant because the implicit decoder must mutate it. However, clients of `Model` would be supposed to set only `text.value` and not `text` itself, so the setter is private.
+
+# Custom Observables
+
+## Declare Custom Observables
+
+Implement your own `Observable` by conforming to `Observable`. An *observable* just needs to provide some `messenger: Messenger<Message>`. Here's a minimal example:
+
+~~~swift
+class Minimal: Observable {
+    let messenger = Messenger<String>()
+}
+~~~
+
+A typical `Message` would be some `enum`:
+
+~~~swift
+class Model: Observable {
+    let messenger = Messenger<Event>()
+    enum Event { case willUpdate, didUpdate, willDeinit }
+}
+~~~
+
+## Send Custom Messages
+
+Messages are custom and yet fully typed. An `Observable` sends whatever it likes whenever it wants via `send(_ message: Message)`. This `Observable` sends optional strings:
+
+~~~swift
+class Model: Observable {
+    init { send("did init") }
+    func foo() { send(nil) }
+    deinit { send("will deinit") }
+    
+    let messenger = Messenger<String?>()
+}
+~~~
 
 # Transforms
 
@@ -442,80 +516,6 @@ dog.observe(Sky.shared).select(.blue) {  // no argument in
     // the sky became blue, let's go for a walk!
 }
 ```
-
-# Messengers
-
-## The Messenger Pattern
-
-When *observer* and *observable* need to be more decoupled, it is common to use a mediating *observable* through which any object can anonymously send *messages*. An example of this mediator is [`NotificationCenter`](https://developer.apple.com/documentation/foundation/notificationcenter).
-
-This use of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, *Dispatcher*, *Event Emitter* or *Decoupler*. Its main differences to direct observation are:
-
-- The actual *observable*, which is the messenger, sends no *messages* by itself.
-- Every object can trigger *messages*, without adopting any protocol.
-- Multiple sending objects trigger the same type of *messages*.
-- An *observer* may indirectly observe multiple other objects through one observation.
-- *Observers* don't care as much who triggered a *message*.
-- *Observer* types don't need to depend on the types that trigger *messages*.
-
-## The Messenger Class
-
-The `Messenger` class embodies the messenger pattern. It is the simplest `Observable` and the core of any other `Observable`:
-
-```swift
-let textMessenger = Messenger<String>()
-
-observer.observe(textMessenger) { textMessage in
-    // respond to text message
-}
-        
-textMessenger.send("my text message")
-```
-
-`Messenger` makes the indended pattern explicit and can be used with any type of message. You may use `select` to observe or "subscribe to-" one specific *message*:
-
-```swift
-observer.observe(textMessenger).select("my notification") {
-    // respond to "my notification"
-}
-```
-
-Like with any  `Observable`, messages are delivered exactly in the order in which they were sent, even when observers trigger further messages from their message handling closures.
-
-# Custom Observables
-
-## Declare Custom Observables
-
-Implement your own `Observable` by conforming to `Observable`. An *observable* just needs to provide some `messenger: Messenger<Message>`. Here's a minimal example:
-
-~~~swift
-class Minimal: Observable {
-    let messenger = Messenger<String>()
-}
-~~~
-
-A typical `Message` would be some `enum`:
-
-~~~swift
-class Model: Observable {
-    let messenger = Messenger<Event>()
-    enum Event { case willUpdate, didUpdate, willDeinit }
-}
-~~~
-
-## Send Custom Messages
-
-Messages are custom and yet fully typed. An `Observable` sends whatever it likes whenever it wants via `send(_ message: Message)`. This `Observable` sends optional strings:
-
-~~~swift
-class Model: Observable {
-    init { send("did init") }
-    func foo() { send(nil) }
-    deinit { send("will deinit") }
-    
-    let messenger = Messenger<String?>()
-}
-~~~
 
 # Advanced Observables
 
