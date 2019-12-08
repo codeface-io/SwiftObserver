@@ -2,7 +2,7 @@ import SwiftyToolz
 
 public typealias Var = Variable
 
-public final class Variable<Value: Equatable & Codable>: Observable, Codable
+public final class Variable<Value: Equatable & Codable>: Observable, Equatable, Codable
 {
     // MARK: - Initialization
     
@@ -14,6 +14,13 @@ public final class Variable<Value: Equatable & Codable>: Observable, Codable
     public init(_ value: Value)
     {
         self.value = value
+    }
+    
+    // MARK: - Equatable
+    
+    public static func == (lhs: Variable<Value>, rhs: Variable<Value>) -> Bool
+    {
+        lhs.value == rhs.value
     }
     
     // MARK: - Value
