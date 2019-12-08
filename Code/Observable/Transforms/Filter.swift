@@ -4,6 +4,7 @@ public final class Filter<O: Observable>: Observable, Observer
                 _ keep: @escaping (O.Message) -> Bool)
     {
         self.observable = observable
+        self.keep = keep
         
         observe(observable)
         {
@@ -16,7 +17,8 @@ public final class Filter<O: Observable>: Observable, Observer
         }
     }
     
-    private let observable: O
+    internal let keep: (O.Message) -> Bool
+    internal let observable: O
     
     public let messenger = Messenger<O.Message>()
     public let receiver = Receiver()
