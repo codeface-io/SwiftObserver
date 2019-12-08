@@ -19,7 +19,7 @@ public final class Messenger<Message>
     {
         guard maintainsMessageOrder else
         {
-            registrations.values.forEach { $0.receive(message, author) }
+            sendDequeued(message, author: author)
             return
         }
         
@@ -29,8 +29,30 @@ public final class Messenger<Message>
         
         while let (message, author) = messagesFromAuthors.first
         {
-            registrations.values.forEach { $0.receive(message, author) }
+            sendDequeued(message, author: author)
             messagesFromAuthors.removeFirst()
+        }
+    }
+    
+    private func sendDequeued(_ message: Message, author: AnyAuthor)
+    {
+        registrations.forEach
+        {
+            (receiverKey, registration) in
+            
+            guard let connection = registration.connection else
+            {
+                registrations[receiverKey] = nil
+                return log(error: "Tried to send message via dead connection.")
+            }
+            
+            guard connection.receiver != nil else
+            {
+                registrations[receiverKey] = nil
+                return log(error: "Tried to send message to dead receiver.")
+            }
+            
+            registration.receive(message, author)
         }
     }
     
