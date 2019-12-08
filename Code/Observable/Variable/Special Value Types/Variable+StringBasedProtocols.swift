@@ -1,26 +1,10 @@
-extension Var: CustomStringConvertible
-    where Value: CustomStringConvertible
-{
-    public var description: String
-    {
-        value.description
-    }
-}
-
-extension Var: CustomDebugStringConvertible
-    where Value: CustomDebugStringConvertible
-{
-    public var debugDescription: String
-    {
-        value.debugDescription
-    }
-}
-
 extension Var:
     TextOutputStream,
     Sequence,
     Collection,
-    BidirectionalCollection
+    BidirectionalCollection,
+    CustomDebugStringConvertible,
+    CustomStringConvertible
     where Value: StringValue
 {
     // BidirectionalCollection
@@ -76,5 +60,19 @@ extension Var:
     public func write(_ str: String)
     {
         string.write(str)
+    }
+    
+    // CustomDebugStringConvertible
+    
+    public var debugDescription: String
+    {
+        string.debugDescription
+    }
+    
+    // CustomStringConvertible
+    
+    public var description: String
+    {
+        string.description
     }
 }
