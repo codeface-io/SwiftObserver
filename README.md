@@ -472,17 +472,26 @@ dog.observe(Sky.shared).map {
 
 ## Message Buffering
 
-A `BufferedObservable` is an `Observable` that also has a property `latestMessage: Message` which typically returns the last sent *message* or one that indicates that nothing has changed. That `latestMessage` is mostly required for combined observations like `observer.observe(o1, o2, o3) { m1, m2, m3 in /* ... */ }`. When one of the combined observables sends a message, the combined observation must **pull** messages from the other observables.
+A `BufferedObservable` is an `Observable` that also has a property `latestMessage: Message` which typically returns the last sent message or one that indicates that nothing has changed. A `BufferedObservable` has a `func send()` that takes no argument and sends `latestMessage`.
 
- There are three kinds of buffered observables:
+Only `BufferedObservable`s may be part of combined observations like this:
 
-1. Every *variable* is a `BufferedObservable`. Its `latestMessage` holds the current variable `value` in both properties of `Update`: `old` and `new`.
-2. Every mapper whose mapped source observable is a `BufferedObservable` is itself a `BufferedObservable`. A buffered mapper just maps the `latestMessage` of its source. The ability of a chain of transformations to provide its `latestMessage` is only taken away by filters and the default-less unwrapper.
-3. Custom implementations of `BufferedObservable`.
+```swift
+observer.observe(observable1, observable2) { message1, message2 in 
+    // one of the observables sent a message, but we receive both messages
+}
+```
 
-All `BufferedObservable`s can call `send()` without argument and, thereby, send the `latestMessage`.
+When one of the combined observables sends a message, the combined observation **pulls** messages from the other observables to provide all latest messages to the observer (read more on this design [here](Documentation/philosophy.md#the-philosophy-of-swiftobserver)).
 
-## State Changes
+
+ There are four kinds of buffered observables:
+
+1. Every `Var` is buffered. Its `latestMessage` holds the current variable `value` in both properties of `Update`: `old` and `new`.
+2. Every observable transform that has a buffered source observable is itself buffered **if** it never supresses (filters) messages. The `latestMessage` of a buffered transform gives the transformed `latestMessage` of its source. Obviously, a filter, by definition, can't guarantee to output anything for every message from its source. Transforms that do filter are: `filter`, `unwrap()` (without default) and `select`. 
+3. Every of your custom observables is buffered if you make it conform to `BufferedObservable`. This is easy. If the message type isn't based on some state, you can still return a meaningful default value as `latestMessage` or make the message type optional and just return `nil`.
+
+## State Updates
 
 To implement an `Observable` like `Var<Value>` that sends value updates, you would use the message type  `Update<Value>`. If you also want the observable to be suitable for combined observations, you make it a `BufferedObservable` and let `latestMessage` return a message based on the latest (current) value:
 
