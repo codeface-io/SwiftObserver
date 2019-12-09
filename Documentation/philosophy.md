@@ -178,7 +178,22 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 - Stop **all** abandoned observations of an *observable* with **one** call: `observable.stopAbandonedObservations()`
 - Stop **all** abandoned observations of **all** *observables* with **one** call: `stopAllAbandonedObservations()`.
 
-# Combined Observation is Overrated
+
+
+# Why Does SwiftObserver Limit Combined Observation?
+
+Combined observation is limited to observables that can be pulled, i.e. they are themselves buffered and conform to `BufferedObservable`. This decision is the result of a long process, involving many practical applications, discovering what's really essential, and letting go of big fancy features, one by one.
+
+The alternative to pulling the latest messages from the observables would be to remember all messages in the combined observation itself. SwiftObserver avoids that for a few reasons:
+
+1. It would duplicate data.
+2. It would make the messages optional, possibly introducing optional optionals into the observation chain.
+3. It misrepresents filtered observables by using some outdated messages for further processing, which invites misuse. Basically, when the need to involve filtered observables in a combined observation comes up at all, it is probably misguided anyway.
+4. It has emerged as part of the philosophy (or insight if you will) on which SwiftObserver is built, that combined observation is a non-essential feature to the purpose of the observer pattern, dependency inversion, reactive code design and clean architecture. I would even argue that combined observation is an anti pattern. So SwiftObserver will not blow up its complexity or compromise its elegance, consistency or principles, just to support combined observation in general. Read more on this below.
+
+Pulling `latestMessage` works just fine and covers virtually all observables that would reasonably be part of a combined observation.
+
+# Why Combined Observation is Overrated
 
 At one point, I was convinced combined observations are an essential part of reactive programming. Practice has changed my mind.
 
