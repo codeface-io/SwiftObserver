@@ -472,9 +472,9 @@ dog.observe(Sky.shared).map {
 
 ## Message Buffering
 
-Combined observation like `observer.observe(o1, o2, o3) { m1, m2, m3 in /* ... */ }` only works with `BufferedObservable`s, because when one of the combined observables sends a message, the combined observation must **pull** messages from the other observables.
+A `BufferedObservable` is an `Observable` that also has a property `latestMessage: Message` which typically returns the last sent *message* or one that indicates that nothing has changed. That `latestMessage` is mostly required for combined observations like `observer.observe(o1, o2, o3) { m1, m2, m3 in /* ... */ }`. When one of the combined observables sends a message, the combined observation must **pull** messages from the other observables.
 
-A `BufferedObservable` is an `Observable` that also has a property `latestMessage: Message` which typically returns the last sent *message* or one that indicates that nothing has changed. There are three kinds of buffered observables:
+ There are three kinds of buffered observables:
 
 1. Every *variable* is a `BufferedObservable`. Its `latestMessage` holds the current variable `value` in both properties of `Update`: `old` and `new`.
 2. Every mapper whose mapped source observable is a `BufferedObservable` is itself a `BufferedObservable`. A buffered mapper just maps the `latestMessage` of its source. The ability of a chain of transformations to provide its `latestMessage` is only taken away by filters and the default-less unwrapper.
