@@ -13,30 +13,37 @@ public final class Variable<Value: Equatable & Codable>: Observable, Equatable, 
     
     public init(_ value: Value)
     {
-        self.value = value
+        storedValue = value
     }
     
     // MARK: - Equatable
     
     public static func == (lhs: Variable<Value>, rhs: Variable<Value>) -> Bool
     {
-        lhs.value == rhs.value
+        lhs.storedValue == rhs.storedValue
     }
     
     // MARK: - Value
     
-    private enum CodingKeys: String, CodingKey { case value = "storedValue" }
-    
     public var value: Value
     {
-        didSet
+        get { storedValue }
+        set { set(newValue, as: self) }
+    }
+    
+    public func set(_ value: Value, as author: AnyAuthor)
+    {
+        if value != storedValue
         {
-            if oldValue != value
-            {
-                send(Update(oldValue, value))
-            }
+            let oldValue = storedValue
+            storedValue = value
+            send(Update(oldValue, value), from: author)
         }
     }
+    
+    private enum CodingKeys: String, CodingKey { case storedValue }
+    
+    private var storedValue: Value
     
     // MARK: - Observable
     
