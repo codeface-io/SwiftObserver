@@ -74,6 +74,7 @@ SwiftObserver is very few lines of production code, but it's also beyond a 1000 
     * [Observe Variables](#observe-variables)
     * [Use Variable Values](#use-variable-values) 
     * [Encode and Decode Variables](#encode-and-decode-variables)
+* [Authors](#authors)
 * [Transforms](#transforms)
     * [Make Transforms Observable](#make-transforms-observable)
     * [Use Prebuilt Transforms](#use-prebuilt-transforms)
@@ -162,7 +163,7 @@ dog.observe(Sky.shared) { color in
 
 ### Observers
 
-Any class can become an `Observer` by owning a `Receiver`:
+Any class can become an `Observer` by owning a `Receiver` for receiving messages:
 
 ```swift
 class Dog: Observer {
@@ -320,6 +321,42 @@ class Model: Codable {
 ~~~
 
 Note that `text` is a `var` instead of a `let`. It cannot be constant because Swift's implicit decoder must mutate it. However, clients of `Model` would be supposed to set only `text.value` and not `text` itself, so the setter is private.
+
+# Authors
+
+Every message has an author associated with it. This feature is only explicit in your code if you use it.
+
+An observable can send an author together with a message via `observable.send(message, from: author)`. If no author is specified as in `observable.send()`, the observable itself becomes the author.
+
+The observer can receive the author, just by adding it as an argument to the message handling closure:
+
+```swift
+observer.observe(observable) { message, author in
+    // process message from author
+}
+```
+
+Explicating authors enables observers to determine a message's origin, in particular to identify a change author or message sender:
+
+```swift
+class SomeEntity: Observer {
+    func init() {
+        observe(messenger) { message, author in
+            if author === self {
+                // i'm the author of this message. no reaction necessary.
+            }
+        }
+    }
+    func foo() {
+        messenger.send("some message", from: self) // set custom message author
+    }
+    let receiver = Receiver()
+}
+
+let messenger = Messenger<String>()
+```
+
+> TODO: add value setter to `Var` that takes and propagates an update author
 
 # Transforms
 
