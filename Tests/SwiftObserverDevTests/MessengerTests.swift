@@ -85,7 +85,7 @@ class MessengerTests: XCTestCase
             receivedAuthors.append(author)
         }
         
-        messenger.send(42, author: observer)
+        messenger.send(42, from: observer)
         XCTAssertEqual(receivedNumbers, [42])
         XCTAssert(receivedAuthors.last === observer)
         XCTAssertEqual(receivedNumbers.count, 1)
