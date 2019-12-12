@@ -375,7 +375,7 @@ number.set(42, as: observer) // observer will be author of the update message
 
 # Transforms
 
-Transforms make common steps of message processing more succinct and readable. They allow to map, filter, unwrap and select messages. You may freely chain these transforms together and also define new ones with them.
+Transforms make common steps of message processing more succinct and readable. They allow to map, filter and unwrap messages in many ways. You may freely chain these transforms together and also define new ones with them.
 
 This example transforms messages of type `Update<String?>` into ones of type `Int`:
 
@@ -557,7 +557,11 @@ When one of the combined observables sends a message, the combined observation *
  There are three kinds of buffered observables:
 
 1. Any `Var` is buffered. Its `latestMessage` is an `Update` in which `old` and `new` are both the current `value`.
-2. Any observable transform that has a buffered source observable is itself buffered **if** it never supresses (filters) messages. The `latestMessage` of a buffered transform returns the transformed `latestMessage` of its source. Obviously, a filter, by definition, can't guarantee to output anything for every message from its source. Transforms that do filter messages are: `filter`, `unwrap()` (without default) and `select`. 
+
+2. Any observable transform that has a buffered source observable is itself buffered **if** it never supresses (filters) messages. The `latestMessage` of a buffered transform returns the transformed `latestMessage` of its source. 
+
+   Obviously, a filter, by definition, can't guarantee to output anything for every message from its source. Transforms that do filter messages are: `filter`, `unwrap()` (without default) and `select`. 
+
 3. Any of your custom observables is buffered **if** you make it conform to `BufferedObservable`. This is easy. Even if the message type isn't based on some state, you can still return a meaningful default value as `latestMessage` or make the message type optional and just return `nil`.
 
 ## State Updates
