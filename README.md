@@ -450,7 +450,7 @@ observer.observe(myNotifier) {                        // no argument
 
 ### Unwrap
 
-Sometimes, we make message types optional, for example when there is no meaningful initial value for a `Var`. But we often don't want to deal with optionals down the line. So we can use `unwrap()`, supressing `nil` messages entirely:
+Sometimes, we make message types optional, for example when there is no meaningful initial value for a `Var`. But we often don't want to deal with optionals down the line. So we can use `unwrap()`, suppressing `nil` messages entirely:
 
 ~~~swift
 let errorCodes = Messenger<Int?>()     // sends Int?       
@@ -489,7 +489,7 @@ let joesMessages = messenger.from(joe)  // sends String if message is from joe
 
 ### Not From
 
-If **all but one** specific author are of interest, supress message from that author via `notFrom`:
+If **all but one** specific author are of interest, suppress messages from that author via `notFrom`:
 
 ```swift
 class Collaborator {
@@ -519,7 +519,7 @@ let numbers = Messenger<Int>()
 observer.observe(numbers).map {
     "\($0)"                      // Int -> String
 }.filter {
-    $0.count > 1                 // supress single digit integers
+    $0.count > 1                 // suppress single digit integers
 }.map {
     Int.init($0)                 // String -> Int?
 }.unwrap {                       // Int? -> Int
@@ -558,7 +558,7 @@ When one of the combined observables sends a message, the combined observation *
 
 1. Any `Var` is buffered. Its `latestMessage` is an `Update` in which `old` and `new` are both the current `value`.
 
-2. Any observable transform that has a buffered source observable is itself buffered **if** it never supresses (filters) messages. The `latestMessage` of a buffered transform returns the transformed `latestMessage` of its source. 
+2. Any observable transform that has a buffered source observable is itself buffered **if** it never suppresses (filters) messages. The `latestMessage` of a buffered transform returns the transformed `latestMessage` of its source. 
 
    Obviously, a filter, by definition, can't guarantee to output anything for every message from its source. Transforms that do filter messages are: `filter`, `unwrap()` (without default) and `select`. 
 
