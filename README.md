@@ -54,13 +54,15 @@ SwiftObserver is a lightweight framework for reactive Swift. Its design goals ma
 2. [**Non-intrusive Design**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#non-intrusive-design) ✊🏻<br>SwiftObserver doesn't limit or modulate your design. It just makes it easy to do the right thing.
 3. [**Simplicity**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🕹<br>SwiftObserver employs few radically simple concepts and applies them consistently without exceptions.
 4. [**Flexibility**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🤸🏻‍♀️<br>SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
-5. [**Safety**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#safety) ⛑<br>SwiftObserver makes memory management meaningful and easy. Oh yeah, real memory leaks are impossible.
+5. [**Safety**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#safety) ⛑<br>SwiftObserver does the memory management for you. Oh yeah, memory leaks are impossible.
 
 SwiftObserver is very few lines of production code, but it's also beyond a 1000 hours of work, thinking it through, letting go of fancy features, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/blob/master/Tests/SwiftObserverTests/SwiftObserverTests.swift), and battle-testing it [in practice](http://flowlistapp.com).
 
 ## Why the Hell Another Reactive Swift Framework?
 
-[*Reactive Programming*](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing a clean architecture: [*Dependency Inversion*](https://en.wikipedia.org/wiki/Dependency_inversion_principle). SwiftObserver breaks *Reactive Programming* down to its essence, which is the [*Observer Pattern*](https://en.wikipedia.org/wiki/Observer_pattern). It diverges from convention as it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. It's less fancy than SwiftRx and Combine and offers a powerful simplicity you will actually **love** to work with.
+[*Reactive Programming*](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing effective architectures, which is controlling dependency direction, in particular making [specific concerns depend on abstract ones]((https://en.wikipedia.org/wiki/Dependency_inversion_principle)). SwiftObserver breaks *Reactive Programming* down to its essence, which is the [*Observer Pattern*](https://en.wikipedia.org/wiki/Observer_pattern).
+
+SwiftObserver diverges from convention as it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. It's not as fancy as Rx/Combine and not as restrictive as Redux. But it offers a powerful simplicity you might actually **love** to work with.
 
 ## Contents
 
@@ -328,7 +330,7 @@ Every message has an author associated with it. This feature is only explicit in
 
 An observable can send an author together with a message via `observable.send(message, from: author)`. If no author is specified as in `observable.send()`, the observable itself becomes the author.
 
-The observer can receive the author, just by adding it as an argument to the message handling closure:
+The observer can receive the author, by adding it as an argument to the message handling closure:
 
 ```swift
 observer.observe(observable) { message, author in
@@ -356,7 +358,12 @@ class SomeEntity: Observer {
 let messenger = Messenger<String>()
 ```
 
-> TODO: add value setter to `Var` that takes and propagates an update author
+Variables have a special value setter that allows to identify change authors:
+
+```swift
+let number = Var(0)
+number.set(42, as: observer) // triggers an update message with observer as author
+```
 
 # Transforms
 
