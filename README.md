@@ -60,9 +60,9 @@ SwiftObserver is very few lines of production code, but it's also beyond a 1000 
 
 ## Why the Hell Another Reactive Swift Framework?
 
-[*Reactive Programming*](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing effective architectures, which is controlling dependency direction, in particular making [specific concerns depend on abstract ones]((https://en.wikipedia.org/wiki/Dependency_inversion_principle)). SwiftObserver breaks *Reactive Programming* down to its essence, which is the [*Observer Pattern*](https://en.wikipedia.org/wiki/Observer_pattern).
+[*Reactive Programming*](https://en.wikipedia.org/wiki/Reactive_programming) adresses the central challenge of implementing effective architectures: controlling dependency direction, in particular making [specific concerns depend on abstract ones]((https://en.wikipedia.org/wiki/Dependency_inversion_principle)). SwiftObserver breaks reactive programming down to its essence, which is the [*Observer Pattern*](https://en.wikipedia.org/wiki/Observer_pattern).
 
-SwiftObserver diverges from convention as it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. It's not as fancy as Rx/Combine and not as restrictive as Redux. But it offers a powerful simplicity you might actually **love** to work with.
+SwiftObserver diverges from convention as it doesn't inherit the metaphors, terms, types, or function- and operator arsenals of common reactive libraries. It's not as fancy as Rx and Combine and not as restrictive as Redux. But it offers a powerful simplicity you might actually **love** to work with.
 
 ## Contents
 
@@ -151,7 +151,7 @@ import SwiftObserver
 
 ## Introduction
 
-> No need to learn a bunch of arbitrary metaphors, terms or types.<br>SwiftObserver is simple: **Objects observe other objects**.
+No need to learn a bunch of arbitrary metaphors, terms or types. SwiftObserver is simple: **Objects observe other objects**.
 
 Or a tad more technically: Observed objects send *messages* to their *observers*. 
 
@@ -165,7 +165,7 @@ dog.observe(Sky.shared) { color in
 
 ### Observers
 
-Any class can become an `Observer` by owning a `Receiver` for receiving messages:
+Any class can be an `Observer` if it has a `Receiver` for receiving messages:
 
 ```swift
 class Dog: Observer {
@@ -173,9 +173,9 @@ class Dog: Observer {
 }
 ```
 
-The receiver keeps the observer's observations alive. The observer just holds the receiver strongly and doesn't do anything else with it.
+The receiver retains the observer's observations. The observer just holds it strongly.
 
-<a id="combined-observations"></a> An  `Observer` may start up to three observations with one combined call:
+An  `Observer` may start up to three observations with one combined call:
 
 ```swift
 dog.observe(tv, bowl, doorbell) { image, food, sound in
@@ -183,7 +183,7 @@ dog.observe(tv, bowl, doorbell) { image, food, sound in
 }
 ```
 
-For any message handling closure to be called, the observer must still be alive. There's no awareness after death in memory.
+For a message handling closure to be called, the observer must still be alive. There's no awareness after death in memory.
 
 ### Observables
 
@@ -194,32 +194,34 @@ Observable objects conform to `Observable`. There are four ways to make these *o
 3. Create a [*variable*](#variables). It's an `Observable` that holds a value and sends value updates.
 4. Create a [*transform*](#transforms). It's an `Observable` that wraps and transforms a *source observable*.
 
-Just starting to observe an `Observable` does **not** trigger a *message*. This keeps it simple, predictable and consistent, in particular in combination with [*transforms*](#transforms). However, you can make any `Observable` send any message at any time via `observable.send(message)`.
+Just starting to observe an `Observable` does **not** trigger a *message*. This keeps it simple, predictable and consistent, in particular in combination with [*transforms*](#transforms). However, you can always make an `Observable` send a message via `observable.send(message)`.
 
 ### Memory Management
 
-When observers or observables die, SwiftObserver cleans up the involved observations automatically, and memory leaks are impossible. So there isn't really any memory management to worry about.
+When observers or observables die, SwiftObserver cleans up related observations automatically, and memory leaks are impossible. So there isn't really any memory management to worry about.
 
-But observers can stop particular or all their observations:
+However, you can manually stop an observer's observations:
 
 ```swift
-dog.stopObserving(Sky.shared) // no more messages from the sky
-dog.stopObserving() // no more messages at all
+dog.stopObserving(Sky.shared)  // no more messages from the sky
+dog.stopObserving()            // no more messages at all
 ```
 
 # Messengers
 
-`Messenger` is the simplest `Observable` and the basis of any other `Observable`. It doesn't send messages by itself but anyone can send messages through it, and use it for any type of message:
+`Messenger` is the simplest `Observable` and the basis of every other `Observable`. It doesn't send messages by itself but anyone can send messages through it, and use it for any type of message:
 
 ```swift
 let messenger = Messenger<String>()
+
 observer.observe(messenger) { message in
     // respond to message
 }
+
 messenger.send("my message")
 ```
 
-`Observable` is actually defined by having a `Messenger`:
+Having a `Messenger` is actually what defines `Observable`:
 
 ```swift
 public protocol Observable: class {
@@ -242,7 +244,7 @@ The `Messenger` class embodies the common [messenger / notifier pattern](Documen
 
 # Custom Observables
 
-Every class can become `Observable` simply by owning a `messenger: Messenger<Message>`:
+Any class can be `Observable` if it has a `messenger: Messenger<Message>` for sending messages:
 
 ~~~swift
 class MinimalObservable: Observable {
@@ -293,7 +295,7 @@ number <- 42                 // number.value == 42
 
 ### Number Values
 
-If you use some number type `Number` that is either an `Int`, `Float` or `Double`:
+If `Value` is some number type `Number` that is either an `Int`, `Float` or `Double`:
 
 1. Every `Var<Number>`, `Var<Number?>`, `Var<Number>?` and `Var<Number?>?` has a respective property `var int: Int`, `var float: Float` or `var double: Double`. That property is non-optional and interprets `nil` values as zero.
 
@@ -314,7 +316,7 @@ numVar <- Var(1) + 2         // numVar.value == 3
 
 ## Encode and Decode Variables
 
-Every `Var<Value>` is `Codable` and requires its `Value` to be `Codable`. So when one of your types has `Var` properties, you can still easily make that type `Codable` by simply adopting the `Codable` protocol:
+Every `Var<Value>` is `Codable` and requires its `Value` to be `Codable`. So when one of your types has `Var` properties, you can still make that type `Codable` by simply adopting the `Codable` protocol:
 
 ~~~swift
 class Model: Codable {
@@ -328,7 +330,7 @@ Note that `text` is a `var` instead of a `let`. It cannot be constant because Sw
 
 Every message has an author associated with it. This feature is only explicit in your code if you use it.
 
-An observable can send an author together with a message via `observable.send(message, from: author)`. If no author is specified as in `observable.send()`, the observable itself becomes the author.
+An observable can send an author together with a message via `observable.send(message, from: author)`. If noone specifies an author as in `observable.send()`, the observable itself becomes the author.
 
 The observer can receive the author, by adding it as an argument to the message handling closure:
 
@@ -349,9 +351,11 @@ class SomeEntity: Observer {
             }
         }
     }
+  
     func foo() {
         messenger.send("some message", from: self) // set custom message author
     }
+  
     let receiver = Receiver()
 }
 
@@ -362,17 +366,18 @@ Variables have a special value setter that allows to identify change authors:
 
 ```swift
 let number = Var(0)
-number.set(42, as: observer) // triggers an update message with observer as author
+number.set(42, as: observer) // observer will be author of the update message
 ```
 
 # Transforms
 
-Transforms make common steps of message processing more succinct and readable. They allow to filter, map, unwrap and select messages based on the messages themselves and based on their author. You may freely chain these transforms together and also define new ones with them.
+Transforms make common steps of message processing more succinct and readable. They allow to map, filter, unwrap and select messages. You may freely chain these transforms together and also define new ones with them.
 
 This example transforms messages of type `Update<String?>` into ones of type `Int`:
 
 ```swift
 let title = Var<String?>()
+
 observer.observe(title).new().unwrap("Untitled").map({ $0.count }) { titleLength in
     // do something with the new title length
 }
@@ -387,20 +392,21 @@ Or you may instantiate a new `Observable` that has the transform chain baked int
 ```swift
 let title = Var<String?>()
 let titleLength = title.new().unwrap("Untitled").map { $0.count }
+
 observer.observe(titleLength) { titleLength in
     // do something with the new title length
 }
 ```
 
-These stand-alone transforms allow multiple observers to receive the same preprocessing. But since they are distinct `Observable` objects, the scope in which their observation should last must hold them strongly. Holding transforms as dedicated observable objects suits entities like view models that represent transformations of other data.
+Such stand-alone transforms can offer the same preprocessing to multiple observers. But since these transforms are distinct `Observable` objects, you must hold them strongly somewhere. Holding transforms as dedicated observable objects suits entities like view models that represent transformations of other data.
 
 ## Use Prebuilt Transforms
 
-No matter whether you apply transforms ad hoc or as stand-alone objects, they work the same way. The following list of available transforms shows them as observable objects, so we can skip most message handlers.
+No matter whether you apply transforms ad hoc or as stand-alone objects, they work the same way. The following list of available transforms illustrates them mostly as observable objects.
 
 ### Map
 
-Map is your regular familiar `map` function. It transforms messages and often also their type:
+First, there is your regular familiar `map` function. It transforms messages and often also their type:
 
 ```swift
 let messenger = Messenger<String>()          // sends String
@@ -409,7 +415,7 @@ let stringToInt = messenger.map { Int($0) }  // sends Int?
 
 ### New
 
-When an `Observable` like a `Var<Value>` sends *messages* of type `Update<Value>`, we often only care about  the `new` value of that update, so we map with `new()`:
+When an `Observable` like a `Var<Value>` sends *messages* of type `Update<Value>`, we often only care about  the `new` value, so we map the update with `new()`:
 
 ~~~swift
 let errorCode = Var<Int>()          // sends Update<Int>
@@ -427,11 +433,12 @@ let shortMessages = messenger.filter { $0.count < 10 }  // sends String if lengt
 
 ### Select
 
-Use `select` to receive only one specific *message*. `select` works wherever messages are `Equatable`. Because `select` maps messages onto `Void`, the receiving closure takes no argument:
+Use `select` to receive only one specific message. `select` works with all `Equatable` message types. `select` maps the message type onto `Void`, so a receiving closure after a selection takes no message argument:
 
 ```swift
 let messenger = Messenger<String>()                   // sends String
-let myNotifier = messenger.select("my notification")  // sends Void
+let myNotifier = messenger.select("my notification")  // sends Void (no messages)
+
 observer.observe(myNotifier) {                        // no argument
     // someone sent "my notification"
 }
@@ -439,16 +446,16 @@ observer.observe(myNotifier) {                        // no argument
 
 ### Unwrap
 
-Sometimes, we make *message* types optional, for example when there is no meaningful initial value for a `Var`. But we often don't want to deal with optionals down the line. So we use `unwrap()`, supressing `nil` messages entirely:
+Sometimes, we make message types optional, for example when there is no meaningful initial value for a `Var`. But we often don't want to deal with optionals down the line. So we can use `unwrap()`, supressing `nil` messages entirely:
 
 ~~~swift
 let errorCodes = Messenger<Int?>()     // sends Int?       
-let errorAlert = errorCodes.unwrap()   // sends Int if message is not nil
+let errorAlert = errorCodes.unwrap()   // sends Int if the message is not nil
 ~~~
 
 ### Unwrap with Default
 
-You may also unwrap optional messages by replacing all `nil` values with a default:
+You may also unwrap optional messages by replacing `nil` values with a default:
 
 ~~~swift
 let points = Messenger<Int?>()         // sends Int?       
@@ -461,6 +468,7 @@ Filter authors the same way you filter messages:
 
 ```swift
 let messenger = Messenger<String>()            // sends String
+
 let friendMessages = messenger.filterAuthor {  // sends String if message is from friend
     friends.contains($0)
 } 
@@ -468,7 +476,7 @@ let friendMessages = messenger.filterAuthor {  // sends String if message is fro
 
 ### From
 
-If only one author is of interest, filter authors with `from`:
+If only one specific author is of interest, filter authors with `from`:
 
 ```swift
 let messenger = Messenger<String>()     // sends String
@@ -477,12 +485,25 @@ let joesMessages = messenger.from(joe)  // sends String if message is from joe
 
 ### Not From
 
+If **all but one** specific author are of interest, supress message from that one via `notFrom`:
+
 ```swift
-let posts = Messenger<String>()        // sends String
-let unreadPosts = posts.notFrom(self)  // sends String if message is from others
+class Collaborator {
+    init() {
+        observe(sharedText).notFrom(self) { update in
+            // some one else edited the text
+        }
+    }
+  
+    func foo() {
+        sharedText.set("my new text", as: self)
+    }
+}
+
+let sharedText = Var<String>()  // sends messages of type Update<String>
 ```
 
-This last one is particularly useful when multiple objects observe and change shared data. The observers would only want to be informed about data changes that other observers made, so they would identify themselves as change authors when they change the data, and they would exclude themselves as authors when they observe the data.
+Excluding authors is particularly useful when multiple entities observe and change shared data. Those entities would only care about the changes that others made, so they would all identify themselves as change authors when they modify the data, and they would exclude themselves as authors when they observe the data.
 
 ## Chain Transforms
 
@@ -494,11 +515,11 @@ let numbers = Messenger<Int>()
 observer.observe(numbers).map {
     "\($0)"                      // Int -> String
 }.filter {
-    $0.count > 1                 // filter out single digit integers
+    $0.count > 1                 // supress single digit integers
 }.map {
     Int.init($0)                 // String -> Int?
 }.unwrap {                       // Int? -> Int
-    print($0)                    // receive resulting Int
+    print($0)                    // receive and process resulting Int
 }
 ```
 
@@ -516,9 +537,9 @@ dog.observe(Sky.shared).map {
 
 ## Message Buffering
 
-A `BufferedObservable` is an `Observable` that also has a property `latestMessage: Message` which typically returns the last sent message or one that indicates that nothing has changed. A `BufferedObservable` has a `func send()` that takes no argument and sends `latestMessage`.
+A `BufferedObservable` is an `Observable` that also has a property `latestMessage: Message` which typically returns the last sent message or one that indicates that nothing has changed. `BufferedObservable` has a `func send()` that takes no argument and sends `latestMessage`.
 
-Only `BufferedObservable`s may be part of combined observations like this:
+Only `BufferedObservable`s can be part of combined observations like this:
 
 ```swift
 observer.observe(observable1, observable2) { message1, message2 in 
@@ -529,22 +550,22 @@ observer.observe(observable1, observable2) { message1, message2 in
 When one of the combined observables sends a message, the combined observation **pulls** messages from the other observables to provide all latest messages to the observer (read more on this design [here](Documentation/philosophy.md#the-philosophy-of-swiftobserver)).
 
 
- There are four kinds of buffered observables:
+ There are three kinds of buffered observables:
 
-1. Every `Var` is buffered. Its `latestMessage` holds the current variable `value` in both properties of `Update`: `old` and `new`.
-2. Every observable transform that has a buffered source observable is itself buffered **if** it never supresses (filters) messages. The `latestMessage` of a buffered transform gives the transformed `latestMessage` of its source. Obviously, a filter, by definition, can't guarantee to output anything for every message from its source. Transforms that do filter are: `filter`, `unwrap()` (without default) and `select`. 
-3. Every of your custom observables is buffered if you make it conform to `BufferedObservable`. This is easy. If the message type isn't based on some state, you can still return a meaningful default value as `latestMessage` or make the message type optional and just return `nil`.
+1. Any `Var` is buffered. Its `latestMessage` holds the current variable `value` in both properties of `Update`, which are `old` and `new`.
+2. Any observable transform that has a buffered source observable is itself buffered **if** it never supresses (filters) messages. The `latestMessage` of a buffered transform returns the transformed `latestMessage` of its source. Obviously, a filter, by definition, can't guarantee to output anything for every message from its source. Transforms that do filter messages are: `filter`, `unwrap()` (without default) and `select`. 
+3. Any of your custom observables is buffered **if** you make it conform to `BufferedObservable`. This is easy. Even if the message type isn't based on some state, you can still return a meaningful default value as `latestMessage` or make the message type optional and just return `nil`.
 
 ## State Updates
 
-To implement an `Observable` like `Var<Value>` that sends value updates, you would use the message type  `Update<Value>`. If you also want the observable to be suitable for combined observations, you make it a `BufferedObservable` and let `latestMessage` return a message based on the latest (current) value:
+To implement an `Observable` like `Var<Value>` that sends value updates, you would use the message type  `Update<Value>`. If you also want to involve the observable in combined observations, you make it a `BufferedObservable` and let `latestMessage` return a message based on the latest (current) value:
 
 ~~~swift
 class Model: BufferedObservable {
     var latestMessage: Update<String> {
         Update(state, state)
     }
-       
+  
     var state: String = "" {
         didSet {
             if state != oldValue {
@@ -552,21 +573,21 @@ class Model: BufferedObservable {
             }
         }
     }
-        
+  
     let messenger = Messenger<Update<String>>()
 }
 ~~~
 
 ## Weak Reference
 
-When you want to put an `Observable` into some data structure or as the *source* into a *transform* and hold it there as a `weak` reference, you may want to wrap it in `Weak<O: Observable>`:
+When you want to put an `Observable` into some data structure or as the *source* into a *transform* but hold it there as a `weak` reference, you may want to wrap it in `Weak<O: Observable>`:
 
 ~~~swift
 let number = Var(12)
 let weakNumber = Weak(number)
 
-controller.observe(weakNumber) { message in
-    // process message of type Update<Int>
+observer.observe(weakNumber) { update in
+    // process update of type Update<Int>
 }
 
 var weakNumbers = [Weak<Var<Int>>]()
@@ -588,6 +609,8 @@ let numberValue = weakNumber.observable?.value
 * **Philosophy:** Read more about the [philosophy and features of SwiftObserver](Documentation/philosophy.md#the-philosophy-of-swiftobserver).
 * **Architecture:** Have a look at a [dependency diagram of the types of SwiftObserver](Documentation/architecture.md).
 * **License:** SwiftObserver is released under the MIT license. [See LICENSE](LICENSE) for details.
+
+
 
 [badge-gitter]: https://img.shields.io/badge/chat-Gitter-red.svg?style=flat-square
 
