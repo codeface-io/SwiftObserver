@@ -507,7 +507,7 @@ class Collaborator {
 let sharedText = Var<String>()  // sends messages of type Update<String>
 ```
 
-Excluding authors is particularly useful when multiple entities observe and change shared data. Those entities would only care about the changes that others made, so they would all identify themselves as change authors when they modify the data, and they would exclude themselves as authors when they observe the data.
+Excluding one author is particularly useful when multiple entities observe and change shared data. Those entities would only care about the changes that others made, so they would all identify themselves as change authors when they modify the data, and they would exclude themselves as authors when they observe the data.
 
 ## Chain Transforms
 
