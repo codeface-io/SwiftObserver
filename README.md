@@ -151,7 +151,9 @@ import SwiftObserver
 
 ## Introduction
 
-No need to learn a bunch of arbitrary metaphors, terms or types. SwiftObserver is simple: **Objects observe other objects**.
+No need to learn a bunch of arbitrary metaphors, terms or types.
+
+SwiftObserver is simple: **Objects observe other objects**.
 
 Or a tad more technically: Observed objects send *messages* to their *observers*. 
 
@@ -273,7 +275,9 @@ class Model: Observable {
 Whenever its `value` changes, `Var<Value>` sends a *message* of type `Update<Value>`, informing about the `old` and `new` value:
 
 ~~~swift
-observer.observe(variable) { update in
+let number = Var(42)
+
+observer.observe(number) { update in
     let whatsTheBigDifference = update.new - update.old
 }
 ~~~
@@ -282,7 +286,7 @@ In addition, you can always manually call `variable.send()` (without argument) t
 
 ## Use Variable Values
 
-`Value` must be `Equatable`, and based on its `value` the whole `Var<Value>` is `Equatable`.  If `Value` is `Comparable`, `Var<Value>` will also be `Comparable`.
+`Value` must be `Equatable`, and based on its `value` the whole `Var<Value>` is `Equatable`.  Where `Value` is `Comparable`, `Var<Value>` will also be `Comparable`.
 
 You can set `value` via initializer, directly and via the `<-` operator:
 
@@ -328,7 +332,7 @@ Note that `text` is a `var` instead of a `let`. It cannot be constant because Sw
 
 # Authors
 
-Every message has an author associated with it. This feature is only explicit in your code if you use it.
+Every message has an author associated with it. This feature is only explicit in code if you use it.
 
 An observable can send an author together with a message via `observable.send(message, from: author)`. If noone specifies an author as in `observable.send()`, the observable itself becomes the author.
 
@@ -402,7 +406,7 @@ Such stand-alone transforms can offer the same preprocessing to multiple observe
 
 ## Use Prebuilt Transforms
 
-No matter whether you apply transforms ad hoc or as stand-alone objects, they work the same way. The following list of available transforms illustrates them mostly as observable objects.
+Whether you apply transforms ad hoc or as stand-alone objects, they work the same way. The following list of available transforms illustrates them mostly as observable objects.
 
 ### Map
 
@@ -485,7 +489,7 @@ let joesMessages = messenger.from(joe)  // sends String if message is from joe
 
 ### Not From
 
-If **all but one** specific author are of interest, supress message from that one via `notFrom`:
+If **all but one** specific author are of interest, supress message from that author via `notFrom`:
 
 ```swift
 class Collaborator {
@@ -552,7 +556,7 @@ When one of the combined observables sends a message, the combined observation *
 
  There are three kinds of buffered observables:
 
-1. Any `Var` is buffered. Its `latestMessage` holds the current variable `value` in both properties of `Update`, which are `old` and `new`.
+1. Any `Var` is buffered. Its `latestMessage` is an `Update` in which `old` and `new` are both the current `value`.
 2. Any observable transform that has a buffered source observable is itself buffered **if** it never supresses (filters) messages. The `latestMessage` of a buffered transform returns the transformed `latestMessage` of its source. Obviously, a filter, by definition, can't guarantee to output anything for every message from its source. Transforms that do filter messages are: `filter`, `unwrap()` (without default) and `select`. 
 3. Any of your custom observables is buffered **if** you make it conform to `BufferedObservable`. This is easy. Even if the message type isn't based on some state, you can still return a meaningful default value as `latestMessage` or make the message type optional and just return `nil`.
 
