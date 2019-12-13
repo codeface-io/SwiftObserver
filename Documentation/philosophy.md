@@ -7,7 +7,8 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
   * [Non-intrusive Design](#non-intrusive-design)
   * [Simplicity and Flexibility](#simplicity-and-flexibility)
   * [Safety](#safety)
-* [Combined Observation is Overrated](#combined-observation-is-overrated)
+* [Why SwiftObserver Limits Combined Observation](#why-swiftobserver-limits-combined-observation)
+* [Why Combined Observation is Overrated](#why-combined-observation-is-overrated)
 * [What You Might Not Like](#what-you-might-not-like)
 
 # What You Might Like
@@ -21,7 +22,6 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 * Meaningful expressive metaphors
 
   * No arbitrary, contrived or technical metaphors like "disposable", "dispose bag", "signal", "emitter", "stream" or "sequence"
-
 
   > A note on "signals": In the tradition of Elm and the origins of reactive programming,  many reactive libraries use "signal" as a metaphor, but how they apply the term is more confusing than helpful, in particular when they suggest that the "signal" is what's being observed.
   >
@@ -91,7 +91,7 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
   * You stay in control of when objects die and of which objects own which others.
   * Your code stays explicit.
 
-- Minimal duplication
+- No duplication
 
   - SwiftObserver never duplicates the *messages* that are being sent around, in particular in [combined observations](#combined-observations) and transforms. This is in stark contrast to other reactive libraries yet without compomising functional aspects.
 
@@ -135,19 +135,17 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 
 - Observe an *observable* with an ad-hoc chain of transformations in one line.
 
-- Create a stand-alone *mapping* as a chain of *mappings* in one line.
-
 - Use the `<-` operator to directly set variable values.
 
 - Use common operators directly on number- and string variables.
 
 - Variables are `Codable`, so model types are easy to encode and persist.
 
-- Pull the current *message* from any *observable* via `latestMessage`. 
+- Pull the current *message* from any buffered *observable* via `latestMessage`. 
 
 - Receive the old **and** new value from variables
 
-- Seamless integration of the *Messenger Pattern* (or *Notifier Pattern*)
+- Seamless coverage of the *Messenger Pattern* (or *Notifier Pattern*) via the `Messenger` class
 
 - Reference any *observable* weakly by wrapping it in `Weak`
 
@@ -159,7 +157,7 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
     arrayOfWeakNumbers.append(Weak(strongNumber))
     ```
 
-  - Create mappings that hold their sources weakly:
+  - Create transforms that hold their sources weakly:
 
     ```swift
     let strongNumber = Var(12)
@@ -168,17 +166,12 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 
 ## Safety
 
-- When an *observable* dies, **all** its observations stop automatically.
-- Real memory leaks are impossible, since you can always flush out all orphaned observations.
+- When an observers or observables die, their observations stop automatically.
+- Memory leaks are impossible.
 - Stop observations in the same expressive way you start them: `observer.stopObserving(observable)`
 - Stop **all** observations of an *observer* with **one** call: `observer.stopObserving()`
-- Stop **all** observations of an *observable* with **one** call: `observable.stopObservations()`
-- Stop **all** abandoned observations of an *observable* with **one** call: `observable.stopAbandonedObservations()`
-- Stop **all** abandoned observations of **all** *observables* with **one** call: `stopAllAbandonedObservations()`.
 
-
-
-# Why Does SwiftObserver Limit Combined Observation?
+# Why SwiftObserver Limits Combined Observation
 
 Combined observation is limited to observables that can be pulled, i.e. they are themselves buffered and conform to `BufferedObservable`. This decision is the result of a long process, involving many practical applications, discovering what's really essential, and letting go of big fancy features, one by one.
 
