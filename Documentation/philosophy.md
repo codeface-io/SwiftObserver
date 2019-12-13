@@ -16,7 +16,7 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 
 * Readable code down to the internals
 
-  > We comb internal code with as much regularity and care as if it was public API, so you can peek under the hood to understand SwiftObserver perfectly.
+  > I comb internal code with as much regularity and care as if it was public API, so you can peek under the hood to understand SwiftObserver perfectly.
 
 * Meaningful expressive metaphors
 
@@ -41,7 +41,6 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 
 - Meaningful code at the point of use (no technical boilerplate)
 
-  - For example ...
   - No mediating property on *observables* for starting observations or creating mappings
   - No "tokens" and the like to pass around or store
   - No memory management boilerplate code at the point of observation
@@ -94,15 +93,15 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 
 - Minimal duplication
 
-  - SwiftObserver practically never duplicates the *messages* that are being sent around, in particular in [combined observations](#combined-observations) and [*mappings*](#mappings). This is in stark contrast to other reactive libraries yet without compomising functional aspects. The only cases that duplicate *messages* are `latestMessage` on `Weak` and (if you don't change `remembersLatestMessage`) on `Messenger`.
+  - SwiftObserver never duplicates the *messages* that are being sent around, in particular in [combined observations](#combined-observations) and transforms. This is in stark contrast to other reactive libraries yet without compomising functional aspects.
 
   > Note: Not having to duplicate data where multiple things must be observed is one of the reasons to use combined observations in the first place. However, some reactive libraries choose to not make full use of object-orientation, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the messages sent from observables.
   >
-  > SwiftObserver not only leverages object-orientation, it also combines the typical reactive "push model" in which observables push their messages to observers with a regular "pull model" in which observers can pull messages from observables.
+  > SwiftObserver not only leverages object-orientation, for combined observations, it also offers a regular "pull model" in which observers can pull messages from observables, in addition to the typical reactive "push model" in which observables push their messages to observers.
   >
   > "Pulling" just reflects the natural way objects operate. Observers can act on observables without problem, since that is the actual technical direction of control and dependence. The problem that reactive techiques solve is propagating data **against** the direction of control. 
   >
-  > A "pull model" is also more in line with functional programming: Instead of buffering state, the combined observation calls and combines functions on observables.
+  > A "pull model" is also in line with functional programming: Instead of buffering state, the combined observation calls and combines functions on observables.
 
 ## Simplicity and Flexibility
 
@@ -110,7 +109,7 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 
 - Pure Swift for clean modelling, not even any dependence on `Foundation`
 
-- *Mappings* are first-class *observables* that can be treated like any other *observable*
+- Transforms can be instantiated as first-class *observables* that can be treated like any other *observable*.
 
 - One universal consistent syntax for transforming *messages* and chaining these transformations
 
@@ -118,9 +117,12 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 
   - `map`
   - `new`
-  - `unwrap`
+  - `unwrap` (with and without default)
   - `filter`
   - `select`
+  - `filterAuthor`
+  - `from`
+  - `notFrom`
 
 - One universal (combined) observation
 
@@ -129,13 +131,9 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
   - Combined observation has no special syntax and imposes no additional cognitive load.
   - [Here's more on the nature of combined observation](#combined-observation-is-overrated)
 
-- Create an *observable* plus a chain of *mappings* in one line.
+- Create an *observable* plus a chain of *transforms* in one line.
 
 - Observe an *observable* with an ad-hoc chain of transformations in one line.
-
-- Create a stand-alone *mapping* independent of its *source*.
-
-  - *Mapping sources* can be freely swapped.
 
 - Create a stand-alone *mapping* as a chain of *mappings* in one line.
 
