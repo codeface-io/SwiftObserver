@@ -4,11 +4,26 @@ This document describes a few patterns that emerged from usage.
 
 In general, SwiftObserver meets almost all needs for callbacks and continuous propagation of data up the control hierarchy (against the direction of control). Typical applications are the propagation of data from domain model to use cases, from use cases to view models, from view models to views, and from views to view controllers.
 
+## The Messenger Pattern
+
+When *observer* and *observable* need to be more decoupled, it is common to use a mediating *observable* through which any object can anonymously send *messages*. An example of this mediator is [`NotificationCenter`](https://developer.apple.com/documentation/foundation/notificationcenter).
+
+This use of the *Observer Pattern* is sometimes called *Messenger*, *Notifier*, *Dispatcher*, *Event Emitter* or *Decoupler*. Its main differences to direct observation are:
+
+- The actual *observable*, which is the messenger, sends no *messages* by itself.
+- Every object can trigger *messages*, without adopting any protocol.
+- Multiple sending objects trigger the same type of *messages*.
+- An *observer* may indirectly observe multiple other objects through one observation.
+- *Observers* don't care as much who triggered a *message*.
+- *Observer* types don't need to depend on the types that trigger *messages*.
+
+SwiftObserver's class `Messenger` covers the messenger pattern directly.
+
 ## Stored Messenger
 
-A *Stored Messenger* is the bare bone pattern used by `CustomObservable`. Sometimes we have to implement it manually, without conforming to `CustomObservable`.
+A *Stored Messenger* is the bare bone pattern tht defines `Observable`. However, sometimes we have to implement observability more implicitly, without conforming to `Observable`.
 
-Instead of making a class `C` directly observable through `CustomObservable`, you just give it a messenger as a property. `C` sends its updates via its messenger, and observers of `C` actually observe the messenger of `C`:
+Instead of making a class `C` directly observable through `Observable`, you just give it a messenger as a property. `C` sends its updates via its messenger, and observers of `C` actually observe the messenger of `C`:
 
 ~~~swift
 class C {
@@ -16,11 +31,11 @@ class C {
 }
 ~~~
 
-And why would you want that? An plain old *Stored Messenger* is necessary in three scenarios ...
+And why would you want that? Avoiding explicit conformane to `Observable` helps in two scenarios ...
 
 ### 1. Require Specific Observability in an Interface
 
-We want to declare a variable or constant as conforming to an interface (let's say `Database`) specifying (among other functionality) observability with a specific update type (say `DatabaseUpdate`).
+We want to declare a variable or constant as conforming to an interface (let's say `Database`) specifying (among other functionality) observability with a specific message type (say `DatabaseUpdate`).
 
 #### Challenge
 
@@ -29,7 +44,7 @@ We don't want to define an abstract base class because objects conforming to the
 Now, we would want to define a protocol like this:
 
 ~~~swift
-protocol Database: CustomObservable where UpdateType == DatabaseUpdate {
+protocol Database: Observable where Message == DatabaseUpdate {
    // declare other database functionality
 }
 ~~~
@@ -48,55 +63,21 @@ var database: Database
 
 #### Solution
 
-We use a `Database` protocol but without any conformance to `CustomObservable`. Instead, we only require the `Database` to have a messenger:
+We use a `Database` protocol but without any conformance to `Observable`. Instead, we only require the `Database` to have a messenger:
 
 ~~~swift
 protocol Database {
-   var messenger: Messenger<DatabaseUpdate?> { get }
+   var messenger: Messenger<DatabaseUpdate> { get }
    // declare other database functionality
 }
 ~~~
 
-Now, in contrast to a `CustomObservable`, we must manually route all observation of the database through its messenger, but at least it works.
+Now, in contrast to an `Observable`, we must manually route all observation of the database through its messenger, but at least it works.
 
-### 2. Observe Apple Classes that Can't be Referenced Weakly
+### 2. Inherit and Extend Observability
 
-There are a number of classes from Apple's frameworks that [cannot be referenced weakly](https://developer.apple.com/library/archive/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html#//apple_ref/doc/uid/TP40011226-CH1-SW17). Among them are `NSMenuView`, `NSFont` and `NSTextView`.
+Consider this case: I have a generic class `Tree`. It is a `Observable`, so tree nodes can observe their branches. Then I have an `Item` which derives from `Tree`. `Item` cannot extend or override the `Tree.Message`.
 
-When we create a custom `NSTextView` and try to observe it, we get a runtime error:
+In order to further specify what items can send to their observers, the `Tree` must use its messenger without direct conformance to `Observable`. This tree messenger should (somewhat redundantly) be named after its class: `treeMessenger`, so that there's no confusion in inheriting classes about which ancestor owns the messenger.
 
-~~~swift
-class MyTextView: NSTextView: CustomObservable {
-   let messenger = Messenger(TextEvent.none)
-   typealias UpdateType = TextEvent
-}
-
-let textView = MyTextView()
-
-observe(textView) { textEvent in
-   // process event
-}
-
-// the error reads:
-// objc[89748]: Cannot form weak reference to instance (0x600000c8a5e0) of class NSTextView. It is possible that this object was over-released, or is in the process of deallocation.
-~~~
-
-So, once again, we use a stored messenger without direct conformance to `CustomObservable`:
-
-~~~swift
-class MyTextView: NSTextView {
-   let messenger = Messenger(TextEvent.none)
-}
-
-let textView = MyTextView()
-
-observe(textView.messenger) { textEvent in
-   // process text event
-}
-~~~
-
-### 3. Inherit and Extend Observability
-
-Consider this case: I have a generic class `Tree`. It is a `CustomObservable`, so tree nodes can observe their branches. Then I have an `Item` which derives from `Tree`. `Item` cannot extend or override the `Tree.UpdateType`.
-
-In order to further specify what items can send to their observers, the `Tree` must to use its messenger without direct conformance to `CustomObservable`. This tree messenger should (somewhat redundantly) be named after its class: `treeMessenger`, so that there's no confusion in inheriting classes about which ancestor owns the messenger.
+Generally speaking, to be able to extend observability in derived classes, observability should be more granular in the base class. Instead of making the base class as a whole observable, one could give it observable properties or dedicated messengers.

@@ -2,8 +2,8 @@
     
     # meta infos
     s.name             = "SwiftObserver"
-    s.version          = "5.1.1"
-    s.summary          = "The Elegant Approach to Reactive Swift"
+    s.version          = "5.1.0"
+    s.summary          = "Reactive Swift. Minimalist, Readable, Consistent, Unintrusive, Powerful, Safe."
     s.description      = "SwiftObserver is a lightweight framework for reactive Swift. It's a bit unconventional and designed to be readable, easy, flexible, non-intrusive, simple and safe."
     s.homepage         = "http://flowtoolz.com"
     s.license          = 'MIT'
@@ -16,11 +16,11 @@
     s.swift_version = '5.0'
     
     # minimum platform SDKs
-    s.platforms = {:ios => "9.0", :osx => "10.10", :tvos => "9.0"}
+    s.platforms = {:ios => "9.0", :osx => "10.12", :tvos => "9.0"}
 
     # minimum deployment targets
     s.ios.deployment_target  = '9.0'
-    s.osx.deployment_target = '10.10'
+    s.osx.deployment_target = '10.12'
     s.tvos.deployment_target = '9.0'
 
     # sorces
