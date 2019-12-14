@@ -275,9 +275,16 @@ Note that `text` is a `var` instead of a `let`. It cannot be constant because Sw
 
 # Authors
 
-Every message has an author associated with it. This feature is only explicit in code if you use it.
+Every message has an author associated with it. This feature is only noticable in code if you use it.
 
 An observable can send an author together with a message via `observable.send(message, from: author)`. If noone specifies an author as in `observable.send(message)`, the observable itself becomes the author.
+
+Variables have a special value setter that allows to identify change authors:
+
+```swift
+let number = Var(0)
+number.set(42, as: controller) // controller will be the author of the update message
+```
 
 The observer can receive the author, by adding it as an argument to the message handling closure:
 
@@ -287,34 +294,28 @@ observer.observe(observable) { message, author in
 }
 ```
 
-Explicating authors enables observers to determine a message's origin, in particular to identify a change author or message sender:
+Through the author, observers can determine a message's origin. This is a useful addition to the plain messenger pattern, where it allows observers to identify message senders. And it is essential with all sorts of storage abstractions and caching hierarchies, where it allows observers to identify the change authors of data modifications:
 
 ```swift
-class SomeEntity: Observer {
-    func init() {
-        observe(messenger) { message, author in
-            if author === self {
-                // i'm the author of this message. no reaction necessary.
-            }
+class Collaborator: Observer {
+    func observeText() {
+        observe(sharedText) { update, author in
+            guard author !== self else { return }
+            // someone else edited the text
         }
     }
   
-    func foo() {
-        messenger.send("some message", from: self) // set custom message author
+    func editText() {
+        sharedText.set("my new text", as: self) // identify as author when editing
     }
   
     let receiver = Receiver()
 }
 
-let messenger = Messenger<String>()
+let sharedText = Var<String>()  // sends messages of type Update<String>
 ```
 
-Variables have a special value setter that allows to identify change authors:
-
-```swift
-let number = Var(0)
-number.set(42, as: observer) // observer will be author of the update message
-```
+Ignoring messages from `self` is typical when multiple entities observe and mutate shared data. An entity would only care about the modifications that others made, so it would identify itself as change author when modifying the data, and only process messages that are not from `self` when observing the data.
 
 # Transforms
 
@@ -435,22 +436,11 @@ let joesMessages = messenger.from(joe)  // sends String if message is from joe
 If **all but one** specific author are of interest, suppress messages from that author via `notFrom`:
 
 ```swift
-class Collaborator {
-    func observeText() {
-        observe(sharedText).notFrom(self) { update in
-            // someone else edited the text
-        }
-    }
-  
-    func editText() {
-        sharedText.set("my new text", as: self) // identify as author when editing
-    }
-}
-
-let sharedText = Var<String>()  // sends messages of type Update<String>
+let messenger = Messenger<String>()             // sends String
+let humanMessages = messenger.notFrom(hal9000)  // sends String, but not from an evil AI
 ```
 
-Excluding one author is particularly useful when multiple entities observe and change shared data. Those entities would only care about the changes that others made, so they would all identify themselves as change authors when they modify the data, and they would exclude themselves as authors when they observe the data.
+The above section on [authors](#authors) details the common pattern of ignoring messages from `self`.
 
 ## Chain Transforms
 
