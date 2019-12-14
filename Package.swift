@@ -11,7 +11,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/flowtoolz/SwiftyToolz.git",
-            .upToNextMajor(from: "1.5.2")
+            .upToNextMajor(from: "1.5.5")
         ),
     ],
     targets: [
