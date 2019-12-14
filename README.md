@@ -41,6 +41,8 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [State Changes](#state-changes)
     * [Weak Reference](#weak-reference)
 * [More](#more)
+    * [Further Reading](#further-reading)
+    * [Open Tasks](#open-tasks)
 
 # Get Involved
 
@@ -546,12 +548,22 @@ let numberValue = weakNumber.observable?.value
 
 # More
 
+## Further Reading
+
 * **Patterns:** Read more about some [patterns that emerged from using SwiftObserver](Documentation/specific-patterns.md#specific-patterns).
 * **Philosophy:** Read more about the [philosophy and features of SwiftObserver](Documentation/philosophy.md#the-philosophy-of-swiftobserver).
 * **Architecture:** Have a look at a [dependency diagram of the types of SwiftObserver](Documentation/architecture.md).
 * **License:** SwiftObserver is released under the MIT license. [See LICENSE](LICENSE) for details.
 
+## Open Tasks
 
+* Decompose, rework and extend unit test suite
+* Write API documentation comments
+* Update, rework and extend documentation of features, philosophy and patterns
+* Add bindings for interoperation with Combine and SwiftUI
+* Add syntax sugar for observing/processing on queues, if added API complexity is worth it
+* Leverage property wrappers where they offer any sort of benefit
+* Engage feedback and contribution
 
 [badge-gitter]: https://img.shields.io/badge/chat-Gitter-red.svg?style=flat-square
 
