@@ -112,7 +112,7 @@ dog.observe(Sky.shared) { color in
 
 ### Observers
 
-Any class can be an `Observer` if it has a `Receiver` for receiving messages:
+Any object can be an `Observer` if it has a `Receiver` for receiving messages:
 
 ```swift
 class Dog: Observer {
