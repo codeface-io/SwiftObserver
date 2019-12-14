@@ -56,14 +56,6 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
 
 ## Install
 
-With [**Carthage**](https://github.com/Carthage/Carthage), add this line to your [Cartfile](https://github.com/Carthage/Carthage/blob/master/Documentation/Artifacts.md#cartfile):
-
-```
-github "flowtoolz/SwiftObserver" ~> 6.0
-```
-
-Then follow [these instructions](https://github.com/Carthage/Carthage#adding-frameworks-to-an-application) and run `$ carthage update --platform ios`.
-
 With [**Cocoapods**](https://cocoapods.org), adjust your [Podfile](https://guides.cocoapods.org/syntax/podfile.html):
 
 ```ruby
@@ -80,7 +72,6 @@ With the [**Swift Package Manager**](https://github.com/apple/swift-package-mana
 
 ~~~swift
 // swift-tools-version:5.1
-
 import PackageDescription
 
 let package = Package(
@@ -580,7 +571,7 @@ let numberValue = weakNumber.observable?.value
 
 [badge-pod]: https://img.shields.io/cocoapods/v/SwiftObserver.svg?label=version&style=flat-square
 
-[badge-pms]: https://img.shields.io/badge/supports-CocoaPods%20%7C%20Carthage%20%7C%20SPM-green.svg?style=flat-square
+[badge-pms]: https://img.shields.io/badge/supports-SPM%20%7C%20CocoaPods-green.svg?style=flat-square
 [badge-languages]: https://img.shields.io/badge/language-Swift-orange.svg?style=flat-square
 [badge-platforms]: https://img.shields.io/badge/platforms-iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20watchOS%20%7C%20Linux-lightgrey.svg?style=flat-square
 [badge-mit]: https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat-square
