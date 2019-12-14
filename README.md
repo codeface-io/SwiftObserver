@@ -27,7 +27,6 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Install](#install)
     * [Introduction](#introduction)
 * [Messengers](#messengers)
-* [Custom Observables](#custom-observables)
 * [Variables](#variables)
     * [Observe Variables](#observe-variables)
     * [Use Variable Values](#use-variable-values) 
@@ -56,39 +55,38 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
 
 ## Install
 
-With [**Cocoapods**](https://cocoapods.org), adjust your [Podfile](https://guides.cocoapods.org/syntax/podfile.html):
+With the [**Swift Package Manager**](https://github.com/apple/swift-package-manager/tree/master/Documentation#swift-package-manager), you can just add the SwiftObserver package via Xcode (11+).
 
-```ruby
-use_frameworks!
-
-target "MyAppTarget" do
-  pod "SwiftObserver", "~> 6.0"
-end
-```
-
-Then run `$ pod install`.
-
-With the [**Swift Package Manager**](https://github.com/apple/swift-package-manager/tree/master/Documentation#swift-package-manager), adjust your [Package.swift](https://github.com/apple/swift-package-manager/blob/master/Documentation/Usage.md#create-a-package) file:
+Or you manually adjust the [Package.swift](https://github.com/apple/swift-package-manager/blob/master/Documentation/Usage.md#create-a-package) file of your project:
 
 ~~~swift
 // swift-tools-version:5.1
 import PackageDescription
 
 let package = Package(
-    name: "SPMExample",
+    name: "MyApp",
     dependencies: [
         .package(url: "https://github.com/flowtoolz/SwiftObserver.git",
                  .upToNextMajor(from: "6.0.0"))
     ],
     targets: [
-        .target(name: "SPMExample",
+        .target(name: "MyAppTarget",
                 dependencies: ["SwiftObserver"])
-    ],
-    swiftLanguageVersions: [.v5]
+    ]
 )
 ~~~
 
 Then run `$ swift build` or `$ swift run`.
+
+With [**Cocoapods**](https://cocoapods.org), adjust your [Podfile](https://guides.cocoapods.org/syntax/podfile.html):
+
+```ruby
+target "MyAppTarget" do
+  pod "SwiftObserver", "~> 6.0"
+end
+```
+
+Then run `$ pod install`.
 
 Finally, in your **Swift** files:
 
@@ -100,9 +98,9 @@ import SwiftObserver
 
 No need to learn a bunch of arbitrary metaphors, terms or types.
 
-SwiftObserver is simple: **Objects observe other objects**.
+SwiftObserver is simple: **Objects *observe* other objects**.
 
-Or a tad more technically: Observed objects send *messages* to their *observers*. 
+Or a tad more technically: ***Observable* objects send *messages* to their *observers***. 
 
 That's it. Just readable code:
 
@@ -122,7 +120,7 @@ class Dog: Observer {
 }
 ```
 
-The receiver retains the observer's observations. The observer just holds it strongly.
+The receiver retains the observer's observations. The observer just holds on to it strongly.
 
 An  `Observer` may start up to three observations with one combined call:
 
@@ -132,22 +130,44 @@ dog.observe(tv, bowl, doorbell) { image, food, sound in
 }
 ```
 
-For a message handling closure to be called, the observer must still be alive. There's no awareness after death in memory.
+Just starting to observe an `Observable` does **not** trigger it to send a message. This keeps everything simple, predictable and consistent.
+
+And for any message handling closure to be called, its observer must still be alive. There's no awareness after death in memory.
 
 ### Observables
 
-Observable objects conform to `Observable`. There are four ways to make these *observables*:
+Any object can be `Observable` if it has a `Messenger<Message>` for sending messages:
 
-1. Create a [*messenger*](#messengers). It's a minimal `Observable` through which other objects communicate.
-2. Implement a [custom](#custom-observables) `Observable` by conforming to `Observable`.
-3. Create a [*variable*](#variables). It's an `Observable` that holds a value and sends value updates.
-4. Create a [*transform*](#transforms). It's an `Observable` that wraps and transforms a *source observable*.
+```swift
+class Sky: Observable {
+    let messenger = Messenger<Color>()
+}
+```
 
-Just starting to observe an `Observable` does **not** trigger a *message*. This keeps it simple, predictable and consistent, in particular in combination with [*transforms*](#transforms). However, you can always make an `Observable` send a message via `observable.send(message)`.
+`Observable` has a function `send(_ message: Message)` for sending messages. Enums often make good `Message` types for custom observables:
+
+~~~swift
+class Model: Observable {
+    foo() { send(.willUpdate) }
+    bar() { send(.didUpdate) }
+    deinit { send(.willDie) }
+    let messenger = Messenger<Event>()
+    enum Event { case willUpdate, didUpdate, willDie }
+}
+~~~
+
+An `Observable` delivers messages in exactly the order in which they were sent, even when observers, from their message handling closures, somehow cause it to send further messages.
+
+There are four basic ways to create an `Observable`:
+
+1. Make a custom class `Observable` by giving it some `Messenger<Message>`.
+2. Create a [`Messenger<Message>`](#messengers). It's an `Observable` through which other entities communicate.
+3. Create a [`Variable<Value>`](#variables) (a.k.a. `Var<Value>`). It holds a value and sends value updates.
+4. Create a [*transform*](#make-transforms-observable) object. It wraps and transforms another observable.
 
 ### Memory Management
 
-When observers or observables die, SwiftObserver cleans up related observations automatically, and memory leaks are impossible. So there isn't really any memory management to worry about.
+When observers or observables die, SwiftObserver cleans up related observations automatically, making memory leaks impossible. So there isn't really any memory management to worry about.
 
 However, you can manually stop an observer's observations:
 
@@ -170,7 +190,9 @@ observer.observe(messenger) { message in
 messenger.send("my message")
 ```
 
-Having a `Messenger` is actually what defines `Observable`:
+`Messenger` embodies the common [messenger / notifier pattern](Documentation/specific-patterns.md#the-messenger-pattern) and can be used for that out of the box. 
+
+Having a messenger is actually what defines and object as being `Observable`:
 
 ```swift
 public protocol Observable: class {
@@ -179,39 +201,13 @@ public protocol Observable: class {
 }
 ```
 
- `Messenger` is itself `Observable` because it points to itself as the required `Messenger`:
+`Messenger` is itself `Observable` because it points to itself as the required `Messenger`:
 
 ```swift
 extension Messenger: Observable {
     public var messenger: Messenger<Message> { self }
 }
 ```
-
-A messenger delivers messages in exactly the order in which they were sent, even when observers make it send further messages from their message handling closures. Since `Observable` is defined in terms of `Messenger`, all observables keep that message order as well.
-
-The `Messenger` class embodies the common [messenger / notifier pattern](Documentation/specific-patterns.md#the-messenger-pattern) and can be used for that out of the box. 
-
-# Custom Observables
-
-Any class can be `Observable` if it has a `messenger: Messenger<Message>` for sending messages:
-
-~~~swift
-class MinimalObservable: Observable {
-    let messenger = Messenger<String>()
-}
-~~~
-
-The `Message` type is custom and yet well defined. An `Observable` sends whatever it likes whenever it wants via `send(_ message: Message)`. Enumerations often make good `Message` types for custom observables:
-
-~~~swift
-class Model: Observable {
-    foo() { send(.willUpdate) }
-    bar() { send(.didUpdate) }
-    deinit { send(.willDie) }
-    let messenger = Messenger<Event>()
-    enum Event { case willUpdate, didUpdate, willDie }
-}
-~~~
 
 # Variables
 
