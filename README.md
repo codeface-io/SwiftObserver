@@ -100,7 +100,7 @@ No need to learn a bunch of arbitrary metaphors, terms or types.
 
 SwiftObserver is simple: **Objects *observe* other objects**.
 
-Or a tad more technically: ***Observable* objects send *messages* to their *observers***. 
+Or a tad more technically: ***Observables* send *messages* to their *observers***.
 
 That's it. Just readable code:
 
@@ -132,7 +132,7 @@ dog.observe(tv, bowl, doorbell) { image, food, sound in
 
 Just starting to observe an `Observable` does **not** trigger it to send a message. This keeps everything simple, predictable and consistent.
 
-And for any message handling closure to be called, its observer must still be alive. There's no awareness after death in memory.
+Also, for any message handling closure to be called, its observer must still be alive. There's no awareness after death in memory.
 
 ### Observables
 
@@ -144,7 +144,7 @@ class Sky: Observable {
 }
 ```
 
-`Observable` has a function `send(_ message: Message)` for sending messages. Enums often make good `Message` types for custom observables:
+An `Observable` sends messages via `send(_ message: Message)`. The observable's clients, even its observers, are also free to call that function. Custom observables rely on `send` and often employ some `enum` as `Message` type:
 
 ~~~swift
 class Model: Observable {
@@ -160,16 +160,16 @@ An `Observable` delivers messages in exactly the order in which they were sent, 
 
 There are four basic ways to create an `Observable`:
 
-1. Make a custom class `Observable` by giving it some `Messenger<Message>`.
-2. Create a [`Messenger<Message>`](#messengers). It's an `Observable` through which other entities communicate.
+1. Make a custom class conform to `Observable` by giving it some `Messenger<Message>`.
+2. Create a [`Messenger<Message>`](#messengers). It's a mediator through which other entities communicate.
 3. Create a [`Variable<Value>`](#variables) (a.k.a. `Var<Value>`). It holds a value and sends value updates.
-4. Create a [*transform*](#make-transforms-observable) object. It wraps and transforms another observable.
+4. Create a [*transform*](#make-transforms-observable) object. It wraps and transforms another `Observable`.
 
 ### Memory Management
 
 When observers or observables die, SwiftObserver cleans up related observations automatically, making memory leaks impossible. So there isn't really any memory management to worry about.
 
-However, you can manually stop an observer's observations:
+However, observers can stop particular- or all their ongoing observations:
 
 ```swift
 dog.stopObserving(Sky.shared)  // no more messages from the sky
@@ -181,18 +181,18 @@ dog.stopObserving()            // no more messages at all
 `Messenger` is the simplest `Observable` and the basis of every other `Observable`. It doesn't send messages by itself but anyone can send messages through it, and use it for any type of message:
 
 ```swift
-let messenger = Messenger<String>()
+let textMessenger = Messenger<String>()
 
-observer.observe(messenger) { message in
-    // respond to message
+observer.observe(textMessenger) { textMessage in
+    // respond to textMessage
 }
 
-messenger.send("my message")
+textMessenger.send("my message")
 ```
 
 `Messenger` embodies the common [messenger / notifier pattern](Documentation/specific-patterns.md#the-messenger-pattern) and can be used for that out of the box. 
 
-Having a messenger is actually what defines and object as being `Observable`:
+Having a messenger is actually what defines `Observable` objects:
 
 ```swift
 public protocol Observable: class {
