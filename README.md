@@ -290,7 +290,7 @@ Note that `text` is a `var` instead of a `let`. It cannot be constant because Sw
 
 Every message has an author associated with it. This feature is only explicit in code if you use it.
 
-An observable can send an author together with a message via `observable.send(message, from: author)`. If noone specifies an author as in `observable.send()`, the observable itself becomes the author.
+An observable can send an author together with a message via `observable.send(message, from: author)`. If noone specifies an author as in `observable.send(message)`, the observable itself becomes the author.
 
 The observer can receive the author, by adding it as an argument to the message handling closure:
 
