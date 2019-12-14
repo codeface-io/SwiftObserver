@@ -436,14 +436,14 @@ If **all but one** specific author are of interest, suppress messages from that 
 
 ```swift
 class Collaborator {
-    init() {
+    func observeText() {
         observe(sharedText).notFrom(self) { update in
-            // some one else edited the text
+            // someone else edited the text
         }
     }
   
-    func foo() {
-        sharedText.set("my new text", as: self)
+    func editText() {
+        sharedText.set("my new text", as: self) // identify as author when editing
     }
 }
 
