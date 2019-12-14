@@ -350,7 +350,7 @@ Such stand-alone transforms can offer the same preprocessing to multiple observe
 
 ## Use Prebuilt Transforms
 
-Whether you apply transforms ad hoc or as stand-alone objects, they work the same way. The following list of available transforms illustrates them mostly as observable objects.
+Whether you apply transforms ad hoc or as stand-alone objects, they work the same way. The following list illustrates prebuilt transforms as observable objects.
 
 ### Map
 
