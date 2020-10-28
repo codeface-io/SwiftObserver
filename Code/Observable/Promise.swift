@@ -1,10 +1,5 @@
 public class Promise<Result>: Messenger<Result>
 {
-    public init(_ result: Result? = nil)
-    {
-        self.result = result
-    }
-    
     override func _send(_ message: Message, from author: AnyAuthor)
     {
         super._send(message, from: author)
@@ -24,5 +19,5 @@ public class Promise<Result>: Messenger<Result>
         }
     }
     
-    public private(set) var result: Result?
+    private var result: Result?
 }
