@@ -5,18 +5,23 @@ import PackageDescription
 let package = Package(
     name: "SwiftObserver",
     products: [
-        .library(name: "SwiftObserver",
-                 targets: ["SwiftObserver"]),
+        .library(
+            name: "SwiftObserver",
+            targets: ["SwiftObserver"]),
     ],
     dependencies: [
         .package(
             url: "https://github.com/flowtoolz/SwiftyToolz.git",
-            .upToNextMajor(from: "1.5.5")
+            .branch("master")
         ),
     ],
     targets: [
-        .target(name: "SwiftObserver",
-                dependencies: ["SwiftyToolz"],
-                path: "Code"),
+        .target(
+            name: "SwiftObserver",
+            dependencies: ["SwiftyToolz"],
+            path: "Code"),
+        .testTarget(
+            name: "SwiftObserverTests",
+            dependencies: ["SwiftObserver"]),
     ]
 )

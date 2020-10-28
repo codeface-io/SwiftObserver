@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "SwiftyToolz",
+        "repositoryURL": "https://github.com/flowtoolz/SwiftyToolz.git",
+        "state": {
+          "branch": "master",
+          "revision": "f435352a6f15b776bef0def970b0d3776c104779",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}

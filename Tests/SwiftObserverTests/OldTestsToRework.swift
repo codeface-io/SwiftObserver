@@ -1,6 +1,5 @@
 import XCTest
-@testable import SwiftObserverDev
-import SwiftObserver
+@testable import SwiftObserver
 
 class OldTestsToRework: XCTestCase
 {
