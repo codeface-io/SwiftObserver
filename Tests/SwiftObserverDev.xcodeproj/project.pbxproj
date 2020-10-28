@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -11,8 +11,7 @@
 		960534A823946D5700382142 /* OldTestsToRework.swift in Sources */ = {isa = PBXBuildFile; fileRef = 960534A723946D5700382142 /* OldTestsToRework.swift */; };
 		960534AA23946D5700382142 /* SwiftObserverDev.h in Headers */ = {isa = PBXBuildFile; fileRef = 9605349C23946D5700382142 /* SwiftObserverDev.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		966A7864239C428600972147 /* MessengerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 966A7863239C428600972147 /* MessengerTests.swift */; };
-		C42D709C2183E3EC84AC2092 /* Pods_SwiftObserverDev.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA1A02EE71A4C1AC62CF5A1B /* Pods_SwiftObserverDev.framework */; };
-		CAE503A63F3607014F430FAE /* Pods_SwiftObserverDev_SwiftObserverDevTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 70DA9AA181140AB864B584DA /* Pods_SwiftObserverDev_SwiftObserverDevTests.framework */; };
+		969FE52D2549EE6200CBCF16 /* SwiftObserver in Frameworks */ = {isa = PBXBuildFile; productRef = 969FE52C2549EE6200CBCF16 /* SwiftObserver */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -26,9 +25,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		70DA9AA181140AB864B584DA /* Pods_SwiftObserverDev_SwiftObserverDevTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftObserverDev_SwiftObserverDevTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		802BD5FAE078F5BFC1B903B0 /* Pods-SwiftObserverDev-SwiftObserverDevTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftObserverDev-SwiftObserverDevTests.debug.xcconfig"; path = "Target Support Files/Pods-SwiftObserverDev-SwiftObserverDevTests/Pods-SwiftObserverDev-SwiftObserverDevTests.debug.xcconfig"; sourceTree = "<group>"; };
-		83048C4657056E10D7CCE5BA /* Pods-SwiftObserverDev-SwiftObserverDevTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftObserverDev-SwiftObserverDevTests.release.xcconfig"; path = "Target Support Files/Pods-SwiftObserverDev-SwiftObserverDevTests/Pods-SwiftObserverDev-SwiftObserverDevTests.release.xcconfig"; sourceTree = "<group>"; };
 		9605349923946D5700382142 /* SwiftObserverDev.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftObserverDev.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9605349C23946D5700382142 /* SwiftObserverDev.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftObserverDev.h; sourceTree = "<group>"; };
 		9605349D23946D5700382142 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -36,9 +32,6 @@
 		960534A723946D5700382142 /* OldTestsToRework.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldTestsToRework.swift; sourceTree = "<group>"; };
 		960534A923946D5700382142 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		966A7863239C428600972147 /* MessengerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessengerTests.swift; sourceTree = "<group>"; };
-		A3A22E25FFFE97E3D484A58E /* Pods-SwiftObserverDev.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftObserverDev.debug.xcconfig"; path = "Target Support Files/Pods-SwiftObserverDev/Pods-SwiftObserverDev.debug.xcconfig"; sourceTree = "<group>"; };
-		BA1A02EE71A4C1AC62CF5A1B /* Pods_SwiftObserverDev.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftObserverDev.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		D3DBF94ECC6D72A57DE131E0 /* Pods-SwiftObserverDev.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftObserverDev.release.xcconfig"; path = "Target Support Files/Pods-SwiftObserverDev/Pods-SwiftObserverDev.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,7 +39,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C42D709C2183E3EC84AC2092 /* Pods_SwiftObserverDev.framework in Frameworks */,
+				969FE52D2549EE6200CBCF16 /* SwiftObserver in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -55,7 +48,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				960534A323946D5700382142 /* SwiftObserverDev.framework in Frameworks */,
-				CAE503A63F3607014F430FAE /* Pods_SwiftObserverDev_SwiftObserverDevTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,7 +60,6 @@
 				9605349B23946D5700382142 /* SwiftObserverDev */,
 				960534A623946D5700382142 /* SwiftObserverDevTests */,
 				9605349A23946D5700382142 /* Products */,
-				CB78F53885E2D71709A20628 /* Pods */,
 				A26A78393FEB5449B72CC7BB /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -104,21 +95,8 @@
 		A26A78393FEB5449B72CC7BB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				BA1A02EE71A4C1AC62CF5A1B /* Pods_SwiftObserverDev.framework */,
-				70DA9AA181140AB864B584DA /* Pods_SwiftObserverDev_SwiftObserverDevTests.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		CB78F53885E2D71709A20628 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				A3A22E25FFFE97E3D484A58E /* Pods-SwiftObserverDev.debug.xcconfig */,
-				D3DBF94ECC6D72A57DE131E0 /* Pods-SwiftObserverDev.release.xcconfig */,
-				802BD5FAE078F5BFC1B903B0 /* Pods-SwiftObserverDev-SwiftObserverDevTests.debug.xcconfig */,
-				83048C4657056E10D7CCE5BA /* Pods-SwiftObserverDev-SwiftObserverDevTests.release.xcconfig */,
-			);
-			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -139,7 +117,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 960534AD23946D5700382142 /* Build configuration list for PBXNativeTarget "SwiftObserverDev" */;
 			buildPhases = (
-				23120DE2594D0D2A517B2373 /* [CP] Check Pods Manifest.lock */,
 				9605349423946D5700382142 /* Headers */,
 				9605349523946D5700382142 /* Sources */,
 				9605349623946D5700382142 /* Frameworks */,
@@ -150,6 +127,9 @@
 			dependencies = (
 			);
 			name = SwiftObserverDev;
+			packageProductDependencies = (
+				969FE52C2549EE6200CBCF16 /* SwiftObserver */,
+			);
 			productName = SwiftObserverDev;
 			productReference = 9605349923946D5700382142 /* SwiftObserverDev.framework */;
 			productType = "com.apple.product-type.framework";
@@ -158,11 +138,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 960534B023946D5700382142 /* Build configuration list for PBXNativeTarget "SwiftObserverDevTests" */;
 			buildPhases = (
-				7DE2864FD4B0DF590BD171CF /* [CP] Check Pods Manifest.lock */,
 				9605349E23946D5700382142 /* Sources */,
 				9605349F23946D5700382142 /* Frameworks */,
 				960534A023946D5700382142 /* Resources */,
-				45338586DE207A1C6F2214BF /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -201,6 +179,9 @@
 				Base,
 			);
 			mainGroup = 9605348F23946D5700382142;
+			packageReferences = (
+				969FE52B2549EE6200CBCF16 /* XCRemoteSwiftPackageReference "SwiftObserver" */,
+			);
 			productRefGroup = 9605349A23946D5700382142 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -227,70 +208,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		23120DE2594D0D2A517B2373 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SwiftObserverDev-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		45338586DE207A1C6F2214BF /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SwiftObserverDev-SwiftObserverDevTests/Pods-SwiftObserverDev-SwiftObserverDevTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SwiftObserverDev-SwiftObserverDevTests/Pods-SwiftObserverDev-SwiftObserverDevTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SwiftObserverDev-SwiftObserverDevTests/Pods-SwiftObserverDev-SwiftObserverDevTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		7DE2864FD4B0DF590BD171CF /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SwiftObserverDev-SwiftObserverDevTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		9605349523946D5700382142 /* Sources */ = {
@@ -441,7 +358,6 @@
 		};
 		960534AE23946D5700382142 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A3A22E25FFFE97E3D484A58E /* Pods-SwiftObserverDev.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -466,7 +382,6 @@
 		};
 		960534AF23946D5700382142 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D3DBF94ECC6D72A57DE131E0 /* Pods-SwiftObserverDev.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -491,7 +406,6 @@
 		};
 		960534B123946D5700382142 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 802BD5FAE078F5BFC1B903B0 /* Pods-SwiftObserverDev-SwiftObserverDevTests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -510,7 +424,6 @@
 		};
 		960534B223946D5700382142 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 83048C4657056E10D7CCE5BA /* Pods-SwiftObserverDev-SwiftObserverDevTests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -558,6 +471,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		969FE52B2549EE6200CBCF16 /* XCRemoteSwiftPackageReference "SwiftObserver" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/flowtoolz/SwiftObserver";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		969FE52C2549EE6200CBCF16 /* SwiftObserver */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 969FE52B2549EE6200CBCF16 /* XCRemoteSwiftPackageReference "SwiftObserver" */;
+			productName = SwiftObserver;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 9605349023946D5700382142 /* Project object */;
 }

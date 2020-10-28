@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "SwiftObserver",
+        "repositoryURL": "https://github.com/flowtoolz/SwiftObserver",
+        "state": {
+          "branch": "master",
+          "revision": "1d53628f5cec55057f61c09ce7ba6a0faca22511",
+          "version": null
+        }
+      },
+      {
+        "package": "SwiftyToolz",
+        "repositoryURL": "https://github.com/flowtoolz/SwiftyToolz.git",
+        "state": {
+          "branch": null,
+          "revision": "bfe0eb4d62badbcabb09bca7e1a09f7c946c450c",
+          "version": "1.5.5"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
