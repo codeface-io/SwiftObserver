@@ -1,17 +1,26 @@
-public class Promise<Result>: Messenger<Result>
-{
-    override func _send(_ message: Message, from author: AnyAuthor)
+public class Promise<Value>: Messenger<Value>
+{   
+    public convenience init(fulfill: (Promise<Value>) -> Void)
     {
-        super._send(message, from: author)
-        // TODO: stop observations
-        result = message
+        self.init()
+        fulfill(self)
     }
     
-    public func done(_ receive: @escaping (Message) -> Void)
+    public func fulfill(_ value: Value)
     {
-        if let result = result
+        send(value)
+    }
+    
+    public func fulfill(_ value: Value, from author: AnyAuthor)
+    {
+        send(value, from: author)
+    }
+    
+    public func whenFulfilled(_ receive: @escaping (Value) -> Void)
+    {
+        if let value = value
         {
-            receive(result)
+            receive(value)
         }
         else
         {
@@ -19,5 +28,11 @@ public class Promise<Result>: Messenger<Result>
         }
     }
     
-    private var result: Result?
+    override func _send(_ message: Message, from author: AnyAuthor)
+    {
+        super._send(message, from: author)
+        value = message
+    }
+    
+    public private(set) var value: Value?
 }
