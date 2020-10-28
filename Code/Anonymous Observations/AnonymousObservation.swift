@@ -1,21 +1,9 @@
-public extension Observable
-{
-    func receive(_ receive: @escaping (Message, AnyAuthor) -> Void)
-    {
-        observe(self, receive: receive)
-    }
-    
-    func receive(_ receive: @escaping (Message) -> Void)
-    {
-        observe(self, receive: receive)
-    }
-}
-
 public func observe<O: Observable>(_ observable: O) -> ObservationTransformer<O.Message>
 {
     ObservationTransformer
     {
-        receive in observe(observable, receive: receive)
+        receive in AnonymousObserver.shared.observe(observable,
+                                                    receive: receive)
     }
 }
 
