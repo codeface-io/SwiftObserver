@@ -45,32 +45,6 @@ class MessengerTests: XCTestCase
         XCTAssertEqual(receivedNumbers[4], receivedNumbers[5])
     }
     
-    func testMessengerCanDeactivateMessageOrder()
-    {
-        let messenger = Messenger<Int>()
-        messenger.maintainsMessageOrder = false
-        let observer1 = TestObserver()
-        let observer2 = TestObserver()
-        var receivedNumbers = [Int]()
-        
-        observer1.observe(messenger)
-        {
-            receivedNumbers.append($0)
-            if $0 == 0 { messenger.send(1) }
-        }
-        
-        observer2.observe(messenger)
-        {
-            receivedNumbers.append($0)
-            if $0 == 0 { messenger.send(2) }
-        }
-        
-        messenger.send(0)
-        XCTAssertEqual(receivedNumbers.count, 6)
-        XCTAssertEqual(receivedNumbers[0], 0)
-        XCTAssertNotEqual(receivedNumbers[0], receivedNumbers[1])
-    }
-    
     func testMessengerCanSendAuthor()
     {
         let messenger = Messenger<Int>()
