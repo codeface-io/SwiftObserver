@@ -9,8 +9,7 @@ public extension Observer
                                 receive: @escaping (O.Message, AnyAuthor) -> Void)
     {
         let messenger = observable.messenger
-        let connection = Connection(messenger: messenger, receiver: receiver)
-        messenger.register(connection, receive: receive)
+        let connection = messenger.connect(receiver, receive: receive)
         receiver.retain(connection)
     }
     
@@ -18,8 +17,7 @@ public extension Observer
                                 receive: @escaping (O.Message) -> Void)
     {
         let messenger = observable.messenger
-        let connection = Connection(messenger: messenger, receiver: receiver)
-        messenger.register(connection, receive: receive)
+        let connection = messenger.connect(receiver, receive: receive)
         receiver.retain(connection)
     }
     

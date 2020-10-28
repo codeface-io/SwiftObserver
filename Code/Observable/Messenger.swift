@@ -2,7 +2,7 @@ import SwiftyToolz
 
 extension Messenger: MessengerInterface {}
 
-public final class Messenger<Message>
+public class Messenger<Message>
 {
     // MARK: - Life Cycle
     
@@ -10,13 +10,8 @@ public final class Messenger<Message>
     
     // MARK: - Send Messages to Receivers
     
-    internal func send(_ message: Message, from author: AnyAuthor)
+    internal func _send(_ message: Message, from author: AnyAuthor)
     {
-        guard maintainsMessageOrder else
-        {
-            return receivers.receive(message, from: author)
-        }
-        
         messagesFromAuthors.append((message, author))
 
         if messagesFromAuthors.count > 1 { return }
@@ -29,7 +24,6 @@ public final class Messenger<Message>
     }
     
     private var messagesFromAuthors = [(Message, AnyAuthor)]()
-    public var maintainsMessageOrder = true
     
     // MARK: - Manage Receivers
     
@@ -38,21 +32,16 @@ public final class Messenger<Message>
         receivers.contains(receiver)
     }
     
-    internal func register(_ connection: Connection,
-                           receive: @escaping (Message) -> Void)
+    internal func connect(_ receiver: ReceiverInterface,
+                           receive: @escaping (Message) -> Void) -> Connection
     {
-        register(connection) { message, _ in receive(message) }
+        connect(receiver) { message, _ in receive(message) }
     }
     
-    internal func register(_ connection: Connection,
-                           receive: @escaping (Message, AnyAuthor) -> Void)
+    internal func connect(_ receiver: ReceiverInterface,
+                          receive: @escaping (Message, AnyAuthor) -> Void) -> Connection
     {
-        if connection.messenger !== self
-        {
-            log(error: "\(Self.self) will register a connection that points to a different \(Self.self).")
-        }
-        
-        receivers.add(connection, receive: receive)
+        receivers.connect(self, to: receiver, receive: receive)
     }
     
     internal func unregister(_ connection: ConnectionInterface)

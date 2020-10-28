@@ -7,7 +7,7 @@ public extension Observable
 {
     func send(_ message: Message, from author: AnyAuthor? = nil)
     {
-        messenger.send(message, from: author ?? self)
+        messenger._send(message, from: author ?? self)
     }
 }
 

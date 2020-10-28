@@ -4,6 +4,26 @@ import SwiftObserver
 
 class OldTestsToRework: XCTestCase
 {
+//    func testPromise() {
+//        var result = ""
+//        asyncCall().done { result in
+//            print(result)
+//        }
+//
+//        // TODO: test async
+//    }
+//
+//    func asyncCall() -> Promise<String>
+//    {
+//        let promise = Promise<String>()
+//
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//            promise.send("success!")
+//        }
+//
+//        return promise
+//    }
+    
     func testStringProperty()
     {
         let text = Var("")

@@ -11,9 +11,9 @@ class ReceiverPool<Message>
     {
         receiverReferences.forEach
         {
-            (receiverKey, registration) in
+            (receiverKey, receiverReference) in
             
-            guard let connection = registration.connection else
+            guard let connection = receiverReference.connection else
             {
                 receiverReferences[receiverKey] = nil
                 return log(error: "Tried to send message via dead connection.")
@@ -25,7 +25,10 @@ class ReceiverPool<Message>
                 return log(error: "Tried to send message to dead receiver.")
             }
             
-            registration.receive(message, author)
+            receiverReference.messageHandlers.forEach
+            {
+                receive in receive(message, author)
+            }
         }
     }
     
@@ -34,11 +37,33 @@ class ReceiverPool<Message>
         receiverReferences[receiver.key]?.connection?.receiver === receiver
     }
     
-    func add(_ connection: Connection,
-             receive: @escaping (Message, AnyAuthor) -> Void)
+    func connect(_ messenger: MessengerInterface,
+                 to receiver: ReceiverInterface,
+                 receive: @escaping (Message, AnyAuthor) -> Void) -> Connection
     {
-        let reference = ReceiverReference(connection: connection, receive: receive)
-        receiverReferences[connection.receiverKey] = reference
+        
+        if let existingReceiverReference = receiverReferences[receiver.key]
+        {
+            existingReceiverReference.messageHandlers += receive
+            
+            if let connection = existingReceiverReference.connection
+            {
+                return connection
+            }
+            else
+            {
+                let connection = Connection(messenger: messenger, receiver: receiver)
+                existingReceiverReference.connection = connection
+                return connection
+            }
+        }
+        else
+        {
+            let connection = Connection(messenger: messenger, receiver: receiver)
+            let reference = ReceiverReference(connection: connection, receive: receive)
+            receiverReferences[receiver.key] = reference
+            return connection
+        }
     }
     
     func remove(_ connection: ConnectionInterface)
@@ -65,10 +90,10 @@ class ReceiverPool<Message>
         init(connection: Connection, receive: @escaping (Message, AnyAuthor) -> Void)
         {
             self.connection = connection
-            self.receive = receive
+            self.messageHandlers = [receive]
         }
         
         weak var connection: Connection?
-        let receive: (Message, _ from: AnyAuthor) -> Void
+        var messageHandlers: [(Message, _ from: AnyAuthor) -> Void]
     }
 }
