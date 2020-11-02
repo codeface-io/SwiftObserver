@@ -27,7 +27,9 @@ class PromiseTests: XCTestCase
         
         let valueReceived = expectation(description: "did reveive value from promise")
         
-        promise.whenFulfilled
+        let observer = TestObserver()
+        
+        observer.observe(promise)
         {
             XCTAssertEqual($0, 42)
             valueReceived.fulfill()
@@ -44,15 +46,7 @@ class PromiseTests: XCTestCase
         
         promise.fulfill(42)
         
-        var valueReceived = false
-        
-        promise.whenFulfilled
-        {
-            XCTAssertEqual($0, 42)
-            valueReceived = true
-        }
-        
-        XCTAssert(valueReceived)
+        XCTAssertEqual(promise.value, 42)
     }
     
     class TestObserver: Observer
