@@ -1,9 +1,9 @@
 import XCTest
 @testable import SwiftObserver
 
-class MessengerTests: XCTestCase
+class BasicTests: XCTestCase
 {
-    func testThatMessengerCanSendMessage()
+    func testThatObserverCanObserveObservable()
     {
         let messenger = Messenger<Int>()
         let observer = TestObserver()
@@ -18,7 +18,23 @@ class MessengerTests: XCTestCase
         XCTAssertEqual(receivedNumber, 42)
     }
     
-    func testThatMessengerMaintainsMessageOrder()
+    func testThatObservingAloneDoesNotSendAMessage()
+    {
+        let messenger = Messenger<Void>()
+        
+        var didTriggerUpdate = false
+        
+        let observer = TestObserver()
+        
+        observer.observe(messenger)
+        {
+            didTriggerUpdate = true
+        }
+        
+        XCTAssertFalse(didTriggerUpdate)
+    }
+    
+    func testThatObservableMaintainsMessageOrder()
     {
         let messenger = Messenger<Int>()
         let observer1 = TestObserver()
@@ -45,7 +61,7 @@ class MessengerTests: XCTestCase
         XCTAssertEqual(receivedNumbers[2], receivedNumbers[3])
     }
     
-    func testThatMessengerCanSendAuthor()
+    func testThatObserverCanReceiveAuthor()
     {
         let messenger = Messenger<Int>()
         let observer = TestObserver()
@@ -65,7 +81,7 @@ class MessengerTests: XCTestCase
         XCTAssert(receivedAuthor === observer)
     }
     
-    func testThatObserverCanHaveMultipleObservationsOfSameMessenger()
+    func testThatObserverCanHaveMultipleObservationsOfSameObservable()
     {
         let messenger = Messenger<Void>()
         let observer = TestObserver()
