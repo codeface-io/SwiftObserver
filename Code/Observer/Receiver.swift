@@ -4,6 +4,8 @@ extension Receiver: ReceiverInterface {}
 
 public final class Receiver
 {
+    // MARK: - Life Cycle
+    
     public init() {}
     
     deinit
@@ -11,13 +13,15 @@ public final class Receiver
         connections.values.forEach { $0.unregisterFromMessenger() }
     }
     
-    internal func closeConnection(for messengerKey: MessengerKey)
+    // MARK: - Manage Connections
+    
+    internal func disconnectMessenger(with messengerKey: MessengerKey)
     {
         connections[messengerKey]?.unregisterFromMessenger()
         connections[messengerKey] = nil
     }
     
-    internal func closeAllConnections()
+    internal func disconnectAllMessengers()
     {
         connections.values.forEach { $0.unregisterFromMessenger() }
         connections.removeAll()
@@ -33,10 +37,14 @@ public final class Receiver
         connections[connection.messengerKey] = connection
     }
     
+    // MARK: - ReceiverInterface
+    
     internal func releaseConnection(with messengerKey: MessengerKey)
     {
         connections[messengerKey] = nil
     }
     
-    private var connections = [MessengerKey : Connection]()
+    // MARK: - Connections
+    
+    private var connections = [MessengerKey: Connection]()
 }

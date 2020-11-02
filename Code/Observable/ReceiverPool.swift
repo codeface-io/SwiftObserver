@@ -2,6 +2,11 @@ import SwiftyToolz
 
 class ReceiverPool<Message>
 {
+    init(messenger: MessengerInterface)
+    {
+        self.messenger = messenger
+    }
+    
     deinit
     {
         receiverReferences.values.forEach { $0.connection?.releaseFromReceiver() }
@@ -9,26 +14,9 @@ class ReceiverPool<Message>
     
     func receive(_ message: Message, from author: AnyAuthor)
     {
-        receiverReferences.forEach
+        receiverReferences.values.forEach
         {
-            (receiverKey, receiverReference) in
-            
-            guard let connection = receiverReference.connection else
-            {
-                receiverReferences[receiverKey] = nil
-                return log(error: "Tried to send message via dead connection.")
-            }
-            
-            guard connection.receiver != nil else
-            {
-                receiverReferences[receiverKey] = nil
-                return log(error: "Tried to send message to dead receiver.")
-            }
-            
-            receiverReference.messageHandlers.forEach
-            {
-                receive in receive(message, author)
-            }
+            $0.receive(message, from: author)
         }
     }
     
@@ -37,25 +25,23 @@ class ReceiverPool<Message>
         receiverReferences[receiver.key]?.connection?.receiver === receiver
     }
     
-    func connect(_ messenger: MessengerInterface,
-                 to receiver: ReceiverInterface,
-                 receive: @escaping (Message, AnyAuthor) -> Void) -> Connection
+    func add(_ receiver: ReceiverInterface,
+             receive: @escaping (Message, AnyAuthor) -> Void) -> Connection
     {
-        
         if let existingReceiverReference = receiverReferences[receiver.key]
         {
-            existingReceiverReference.messageHandlers += receive
-            
-            if let connection = existingReceiverReference.connection
+            guard let connection = existingReceiverReference.connection else
             {
-                return connection
-            }
-            else
-            {
+                log(error: "Connection is dead, meaning its owning receiver is dead, which shouldn't happen since receivers, before they die, unregister their connections from the respective messengers.")
+                
+                existingReceiverReference.messageHandlers = [receive]
                 let connection = Connection(messenger: messenger, receiver: receiver)
                 existingReceiverReference.connection = connection
                 return connection
             }
+
+            existingReceiverReference.messageHandlers += receive
+            return connection
         }
         else
         {
@@ -66,9 +52,27 @@ class ReceiverPool<Message>
         }
     }
     
-    func removeConnection(with receiverKey: ReceiverKey)
+    func releaseConnectionFromReceiver(with receiverKey: ReceiverKey)
+    {
+        receiverReferences[receiverKey]?.connection?.releaseFromReceiver()
+    }
+    
+    func releaseAllConnectionsFromReceivers()
+    {
+        receiverReferences.values.forEach
+        {
+            $0.connection?.releaseFromReceiver()
+        }
+    }
+    
+    func removeReceiver(with receiverKey: ReceiverKey)
     {
         receiverReferences[receiverKey] = nil
+    }
+    
+    func removeAll()
+    {
+        receiverReferences.removeAll()
     }
     
     private var receiverReferences = [ReceiverKey : ReceiverReference]()
@@ -81,7 +85,27 @@ class ReceiverPool<Message>
             self.messageHandlers = [receive]
         }
         
+        func receive(_ message: Message, from author: AnyAuthor)
+        {
+            guard let connection = connection else
+            {
+                return log(error: "Tried to send message via dead connection.")
+            }
+            
+            guard connection.receiver != nil else
+            {
+                return log(error: "Tried to send message to dead receiver.")
+            }
+            
+            messageHandlers.forEach
+            {
+                receive in receive(message, author)
+            }
+        }
+        
         weak var connection: Connection?
         var messageHandlers: [(Message, _ from: AnyAuthor) -> Void]
     }
+    
+    private let messenger: MessengerInterface
 }

@@ -25,13 +25,13 @@ public extension Observer
     {
         observable.forSome
         {
-            receiver.closeConnection(for: $0.messenger.key)
+            receiver.disconnectMessenger(with: $0.messenger.key)
         }
     }
     
     func stopObserving()
     {
-        receiver.closeAllConnections()
+        receiver.disconnectAllMessengers()
     }
 }
 

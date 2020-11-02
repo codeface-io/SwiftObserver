@@ -17,13 +17,13 @@ class Connection
         receiver?.releaseConnection(with: messengerKey)
     }
     
-    let receiverKey: ReceiverKey
-    weak var receiver: ReceiverInterface?
-    
     func unregisterFromMessenger()
     {
         messenger?.unregisterConnection(with: receiverKey)
     }
+    
+    let receiverKey: ReceiverKey
+    weak var receiver: ReceiverInterface?
     
     let messengerKey: MessengerKey
     weak var messenger: MessengerInterface?
@@ -53,7 +53,7 @@ protocol MessengerInterface: class
     func unregisterConnection(with receiverKey: ReceiverKey)
 }
 
-// MARK: - Connection Interface
+// MARK: - Keys
 
 typealias ReceiverKey = ObjectIdentifier
 typealias MessengerKey = ObjectIdentifier
