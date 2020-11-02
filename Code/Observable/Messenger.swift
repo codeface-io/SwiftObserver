@@ -44,6 +44,17 @@ public class Messenger<Message>
         receivers.add(receiver, receive: receive)
     }
     
+    internal func disconnectReceiver(with receiverKey: ReceiverKey)
+    {
+        receivers.releaseConnectionFromReceiver(with: receiverKey)
+        receivers.removeReceiver(with: receiverKey)
+    }
+    
+    internal func disconnectAllReceivers()
+    {
+        receivers.releaseAllConnectionsFromReceivers()
+        receivers.removeAll()
+    }
     
     // MARK: - MessengerInterface
     
