@@ -64,4 +64,20 @@ class MessengerTests: XCTestCase
         XCTAssertEqual(receivedNumber, 42)
         XCTAssert(receivedAuthor === observer)
     }
+    
+    func testThatObserverCanHaveMultipleObservationsOfSameMessenger()
+    {
+        let messenger = Messenger<Void>()
+        let observer = TestObserver()
+        var sum = 0
+        
+        observer.observe(messenger) { sum += 1 }
+        observer.observe(messenger) { sum += 2 }
+        
+        XCTAssertEqual(sum, 0)
+        
+        messenger.send(())
+        
+        XCTAssertEqual(sum, 3)
+    }
 }
