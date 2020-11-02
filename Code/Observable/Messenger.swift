@@ -41,7 +41,7 @@ public class Messenger<Message>
     internal func connect(_ receiver: ReceiverInterface,
                           receive: @escaping (Message, AnyAuthor) -> Void) -> Connection
     {
-        receivers.add(receiver, receive: receive)
+        receivers.add(receiver, for: self, receive: receive)
     }
     
     internal func disconnectReceiver(with receiverKey: ReceiverKey)
@@ -65,5 +65,5 @@ public class Messenger<Message>
     
     // MARK: - Receivers
     
-    private lazy var receivers = ReceiverPool<Message>(messenger: self)
+    private let receivers = ReceiverPool<Message>()
 }

@@ -2,11 +2,6 @@ import SwiftyToolz
 
 class ReceiverPool<Message>
 {
-    init(messenger: MessengerInterface)
-    {
-        self.messenger = messenger
-    }
-    
     deinit
     {
         receiverReferences.values.forEach { $0.connection?.releaseFromReceiver() }
@@ -26,6 +21,7 @@ class ReceiverPool<Message>
     }
     
     func add(_ receiver: ReceiverInterface,
+             for messenger: MessengerInterface,
              receive: @escaping (Message, AnyAuthor) -> Void) -> Connection
     {
         if let existingReceiverReference = receiverReferences[receiver.key]
@@ -106,6 +102,4 @@ class ReceiverPool<Message>
         weak var connection: Connection?
         var messageHandlers: [(Message, _ from: AnyAuthor) -> Void]
     }
-    
-    private let messenger: MessengerInterface
 }
