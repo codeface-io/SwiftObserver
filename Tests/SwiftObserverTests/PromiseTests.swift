@@ -90,9 +90,13 @@ class PromiseTests: XCTestCase
             numberOfReceivedValues += 1
         }
         
+        XCTAssertEqual(numberOfReceivedValues, 0)
+        XCTAssertTrue(observer.isObserving(promise))
+        
         promise.fulfill(())
         
         XCTAssertEqual(numberOfReceivedValues, 1)
+        XCTAssertFalse(observer.isObserving(promise))
         
         promise.fulfill(())
         
