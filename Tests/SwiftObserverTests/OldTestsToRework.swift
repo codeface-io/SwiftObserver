@@ -3,26 +3,6 @@ import XCTest
 
 class OldTestsToRework: XCTestCase
 {
-//    func testPromise() {
-//        var result = ""
-//        asyncCall().done { result in
-//            print(result)
-//        }
-//
-//        // TODO: test async
-//    }
-//
-//    func asyncCall() -> Promise<String>
-//    {
-//        let promise = Promise<String>()
-//
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//            promise.send("success!")
-//        }
-//
-//        return promise
-//    }
-    
     func testStringProperty()
     {
         let text = Var("")
@@ -30,7 +10,6 @@ class OldTestsToRework: XCTestCase
         text.string += "append"
         
         XCTAssertEqual("append", text.value)
-        
     }
     
     func testWeakObservableWrapper()
@@ -768,7 +747,7 @@ class OldTestsToRework: XCTestCase
         let var2 = Var<Int?>()
         let var3 = Var<String?>()
         
-        let observer = Controller()
+        let observer = TestObserver()
         
         var observedString: String?
         var didFire = false
@@ -830,10 +809,5 @@ class OldTestsToRework: XCTestCase
         let messenger = Messenger<Update<String>>()
     }
     
-    let controller = Controller()
-    
-    class Controller: Observer
-    {
-        let receiver = Receiver()
-    }
+    let controller = TestObserver()
 }

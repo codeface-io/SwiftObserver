@@ -102,9 +102,4 @@ class PromiseTests: XCTestCase
         
         XCTAssertEqual(numberOfReceivedValues, 1)
     }
-    
-    class TestObserver: Observer
-    {
-        let receiver = Receiver()
-    }
 }

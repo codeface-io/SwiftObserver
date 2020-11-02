@@ -3,21 +3,22 @@ import XCTest
 
 class MessengerTests: XCTestCase
 {
-    func testMessengerCanSendMessage()
+    func testThatMessengerCanSendMessage()
     {
         let messenger = Messenger<Int>()
         let observer = TestObserver()
-        var receivedNumbers = [Int]()
+        var receivedNumber: Int?
         
-        observer.observe(messenger) { receivedNumbers.append($0) }
-        XCTAssertEqual(receivedNumbers.last, nil)
+        observer.observe(messenger) { receivedNumber = $0 }
+        
+        XCTAssertEqual(receivedNumber, nil)
         
         messenger.send(42)
-        XCTAssertEqual(receivedNumbers.last, 42)
-        XCTAssertEqual(receivedNumbers.count, 1)
+        
+        XCTAssertEqual(receivedNumber, 42)
     }
     
-    func testMessengerMaintainsMessageOrder()
+    func testThatMessengerMaintainsMessageOrder()
     {
         let messenger = Messenger<Int>()
         let observer1 = TestObserver()
@@ -37,35 +38,30 @@ class MessengerTests: XCTestCase
         }
         
         messenger.send(0)
+        
         XCTAssertEqual(receivedNumbers.count, 6)
         XCTAssertEqual(receivedNumbers[0], 0)
         XCTAssertEqual(receivedNumbers[1], 0)
         XCTAssertEqual(receivedNumbers[2], receivedNumbers[3])
-        XCTAssertEqual(receivedNumbers[4], receivedNumbers[5])
     }
     
-    func testMessengerCanSendAuthor()
+    func testThatMessengerCanSendAuthor()
     {
         let messenger = Messenger<Int>()
         let observer = TestObserver()
-        var receivedNumbers = [Int]()
-        var receivedAuthors = [AnyAuthor]()
+        var receivedNumber: Int?
+        var receivedAuthor: AnyAuthor?
         
         observer.observe(messenger)
         {
             number, author in
-            receivedNumbers.append(number)
-            receivedAuthors.append(author)
+            receivedNumber = number
+            receivedAuthor = author
         }
         
         messenger.send(42, from: observer)
-        XCTAssertEqual(receivedNumbers, [42])
-        XCTAssert(receivedAuthors.last === observer)
-        XCTAssertEqual(receivedNumbers.count, 1)
-    }
-    
-    class TestObserver: Observer
-    {
-        let receiver = Receiver()
+        
+        XCTAssertEqual(receivedNumber, 42)
+        XCTAssert(receivedAuthor === observer)
     }
 }
