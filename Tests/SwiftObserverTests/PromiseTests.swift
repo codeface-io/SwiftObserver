@@ -51,6 +51,31 @@ class PromiseTests: XCTestCase
         XCTAssertEqual(promise.value, 42)
     }
     
+    func testThatPromiseDiesAfterBeingFulfilledAsynchronously()
+    {
+        func asyncFunc() -> Promise<Void>
+        {
+            Promise { promise in DispatchQueue.main.async { promise.fulfill(()) } }
+        }
+        
+        weak var weakPromise = asyncFunc()
+        
+        XCTAssertNotNil(weakPromise)
+
+        let promiseFulfilled = expectation(description: "promise is fulfilled")
+
+        let observer = TestObserver()
+
+        observer.observe(weakPromise!)
+        {
+            promiseFulfilled.fulfill()
+        }
+
+        waitForExpectations(timeout: 3)
+        
+        XCTAssertNil(weakPromise)
+    }
+    
     class TestObserver: Observer
     {
         let receiver = Receiver()
