@@ -11,7 +11,7 @@ public class Promise<Value>: Messenger<Value>
         send(value)
     }
     
-    public func fulfill(_ value: Value, from author: AnyAuthor)
+    public func fulfill(_ value: Value, as author: AnyAuthor)
     {
         send(value, from: author)
     }
@@ -30,8 +30,9 @@ public class Promise<Value>: Messenger<Value>
     
     override func _send(_ message: Message, from author: AnyAuthor)
     {
-        super._send(message, from: author)
         value = message
+        super._send(message, from: author)
+        disconnectAllReceivers()
     }
     
     public private(set) var value: Value?

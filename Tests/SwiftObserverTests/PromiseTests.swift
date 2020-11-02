@@ -32,6 +32,7 @@ class PromiseTests: XCTestCase
         observer.observe(promise)
         {
             XCTAssertEqual($0, 42)
+            XCTAssertEqual($0, promise.value)
             valueReceived.fulfill()
         }
         
@@ -74,6 +75,28 @@ class PromiseTests: XCTestCase
         waitForExpectations(timeout: 3)
         
         XCTAssertNil(weakPromise)
+    }
+    
+    func testThatPromiseStopsBeingObservedAfterBeingFulfilled()
+    {
+        let promise = Promise<Void>()
+        
+        var numberOfReceivedValues = 0
+        
+        let observer = TestObserver()
+        
+        observer.observe(promise)
+        {
+            numberOfReceivedValues += 1
+        }
+        
+        promise.fulfill(())
+        
+        XCTAssertEqual(numberOfReceivedValues, 1)
+        
+        promise.fulfill(())
+        
+        XCTAssertEqual(numberOfReceivedValues, 1)
     }
     
     class TestObserver: Observer
