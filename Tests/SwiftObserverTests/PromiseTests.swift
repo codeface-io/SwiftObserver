@@ -44,6 +44,8 @@ class PromiseTests: XCTestCase
     {
         let promise = Promise<Int>()
         
+        XCTAssertEqual(promise.value, nil)
+        
         promise.fulfill(42)
         
         XCTAssertEqual(promise.value, 42)
