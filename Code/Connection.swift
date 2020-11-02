@@ -2,7 +2,7 @@ import SwiftyToolz
 
 // MARK: - Connection
 
-class Connection: ConnectionInterface
+class Connection
 {
     init(messenger: MessengerInterface, receiver: ReceiverInterface)
     {
@@ -14,7 +14,7 @@ class Connection: ConnectionInterface
     
     func releaseFromReceiver()
     {
-        receiver?.release(self)
+        receiver?.releaseConnection(with: messengerKey)
     }
     
     let receiverKey: ReceiverKey
@@ -22,7 +22,7 @@ class Connection: ConnectionInterface
     
     func unregisterFromMessenger()
     {
-        messenger?.unregister(self)
+        messenger?.unregisterConnection(with: receiverKey)
     }
     
     let messengerKey: MessengerKey
@@ -38,7 +38,7 @@ extension ReceiverInterface
 
 protocol ReceiverInterface: class
 {
-    func release(_ connection: ConnectionInterface)
+    func releaseConnection(with messengerKey: MessengerKey)
 }
 
 // MARK: - Messenger Interface
@@ -50,16 +50,10 @@ extension MessengerInterface
 
 protocol MessengerInterface: class
 {
-    func unregister(_ connection: ConnectionInterface)
+    func unregisterConnection(with receiverKey: ReceiverKey)
 }
 
 // MARK: - Connection Interface
-
-protocol ConnectionInterface: class
-{
-    var receiverKey: ReceiverKey { get }
-    var messengerKey: MessengerKey { get }
-}
 
 typealias ReceiverKey = ObjectIdentifier
 typealias MessengerKey = ObjectIdentifier

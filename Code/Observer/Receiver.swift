@@ -33,9 +33,9 @@ public final class Receiver
         connections[connection.messengerKey] = connection
     }
     
-    internal func release(_ connection: ConnectionInterface)
+    internal func releaseConnection(with messengerKey: MessengerKey)
     {
-        connections[connection.messengerKey] = nil
+        connections[messengerKey] = nil
     }
     
     private var connections = [MessengerKey : Connection]()

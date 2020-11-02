@@ -44,9 +44,9 @@ public class Messenger<Message>
         receivers.connect(self, to: receiver, receive: receive)
     }
     
-    internal func unregister(_ connection: ConnectionInterface)
+    internal func unregisterConnection(with receiverKey: ReceiverKey)
     {
-        receivers.remove(connection)
+        receivers.removeConnection(with: receiverKey)
     }
     
     private let receivers = ReceiverPool<Message>()

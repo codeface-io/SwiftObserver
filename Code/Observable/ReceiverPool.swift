@@ -66,20 +66,8 @@ class ReceiverPool<Message>
         }
     }
     
-    func remove(_ connection: ConnectionInterface)
+    func removeConnection(with receiverKey: ReceiverKey)
     {
-        let receiverKey = connection.receiverKey
-        
-        guard let existingConnection = receiverReferences[receiverKey]?.connection else
-        {
-            return
-        }
-        
-        guard existingConnection === connection else
-        {
-            return log(error: "Tried to remove a connection with an outdated reused receiver key. This can only happen if \(Receiver.self) is retained outside its owning Observer after the Observer has died. You're not supposed to do anything with the \(Receiver.self) object, let alone retain it.")
-        }
-        
         receiverReferences[receiverKey] = nil
     }
     
