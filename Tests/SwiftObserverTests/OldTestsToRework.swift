@@ -37,14 +37,6 @@ class OldTestsToRework: XCTestCase
         XCTAssertEqual(observedText, initialText)
     }
     
-    func testStringVariableStringAccess()
-    {
-        let text = Var("1234567")
-        
-        XCTAssertEqual(text.count, 7)
-        XCTAssertEqual(text[text.startIndex], "1")
-    }
-    
     func testThatMappesOfBufferedObservablesAreBuffered()
     {
         XCTAssertEqual(Var(1).new().latestMessage, 1)
@@ -479,26 +471,6 @@ class OldTestsToRework: XCTestCase
         XCTAssert(didUpdate)
     }
     
-    func testObservingVariableValueChange()
-    {
-        let text = Var<String?>()
-        
-        var observedNewValue: String?
-        var observedOldValue: String?
-        
-        controller.observe(text)
-        {
-            observedOldValue = $0.old
-            observedNewValue = $0.new
-        }
-        
-        text <- "new text"
-        
-        XCTAssertEqual(observedOldValue, nil)
-        XCTAssertEqual(observedNewValue, "new text")
-    }
-    
-    
     func testObservableMapping()
     {
         let model = ObservableModel()
@@ -514,127 +486,6 @@ class OldTestsToRework: XCTestCase
         model.send(.didUpdate)
         
         XCTAssert(didFire)
-    }
-    
-    
-    func testObservingTwoObservables()
-    {
-        let testModel = ObservableModel()
-        let number = Var<Int?>()
-        
-        var didFire = false
-        var lastObservedEvent: ObservableModel.Event?
-        var lastObservedNumber: Int?
-        
-        controller.observe(testModel, number)
-        {
-            event, numberUpdate in
-            
-            didFire = true
-            
-            lastObservedEvent = event
-            lastObservedNumber = numberUpdate.new
-        }
-        
-        testModel.send(.didUpdate)
-        
-        XCTAssert(didFire)
-        XCTAssertEqual(lastObservedEvent, .didUpdate)
-        
-        didFire = false
-        number <- 7
-        
-        XCTAssert(didFire)
-        XCTAssertEqual(lastObservedNumber, 7)
-    }
-    
-    func testVariableIsCodable()
-    {
-        var didEncode = false
-        var didDecode = false
-        
-        let variable = Var(123)
-        
-        if let variableData = try? JSONEncoder().encode(variable)
-        {
-            let actual = String(data: variableData, encoding: .utf8) ?? "fail"
-            let expected = "{\"storedValue\":123}"
-            XCTAssertEqual(actual, expected)
-            
-            didEncode = true
-            
-            if let decodedVariable = try? JSONDecoder().decode(Var<Int>.self,
-                                                               from: variableData)
-            {
-                XCTAssertEqual(decodedVariable.value, 123)
-                didDecode = true
-            }
-        }
-        
-        XCTAssert(didEncode)
-        XCTAssert(didDecode)
-    }
-    
-    func testCodingTheModel()
-    {
-        let model = CodableModel()
-        
-        var didEncode = false
-        var didDecode = false
-        
-        model.text <- "123"
-        model.number <- 123
-        
-        if let modelJson = try? JSONEncoder().encode(model)
-        {
-            let actual = String(data: modelJson, encoding: .utf8) ?? "fail"
-            let expected = "{\"number\":{\"storedValue\":123},\"text\":{\"storedValue\":\"123\"}}"
-            XCTAssertEqual(actual, expected)
-            
-            didEncode = true
-            
-            if let decodedModel = try? JSONDecoder().decode(CodableModel.self,
-                                                            from: modelJson)
-            {
-                XCTAssertEqual(decodedModel.text.value, "123")
-                XCTAssertEqual(decodedModel.number.value, 123)
-                didDecode = true
-            }
-        }
-        
-        XCTAssert(didEncode)
-        XCTAssert(didDecode)
-    }
-    
-    func testObservingThreeVariables()
-    {
-        let var1 = Var<Bool?>()
-        let var2 = Var<Int?>()
-        let var3 = Var<String?>()
-        
-        let observer = TestObserver()
-        
-        var observedString: String?
-        var didFire = false
-        
-        observer.observe(var1, var2, var3)
-        {
-            truth, number, string in
-            
-            didFire = true
-            observedString = string.new
-        }
-        
-        var3 <- "test"
-        
-        XCTAssert(didFire)
-        XCTAssertEqual(observedString, "test")
-    }
-    
-    class CodableModel: Codable
-    {
-        private(set) var text = Var<String?>()
-        private(set) var number = Var<Int?>()
     }
     
     class MinimalModel: Observable

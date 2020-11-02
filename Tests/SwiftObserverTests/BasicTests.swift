@@ -3,7 +3,7 @@ import XCTest
 
 class BasicTests: XCTestCase
 {
-    func testThatObserverCanObserveObservable()
+    func testObserverving()
     {
         let messenger = Messenger<Int>()
         let observer = TestObserver()
@@ -18,7 +18,7 @@ class BasicTests: XCTestCase
         XCTAssertEqual(receivedNumber, 42)
     }
     
-    func testThatObservingAloneDoesNotSendAMessage()
+    func testObservingAloneDoesNotSendAMessage()
     {
         let messenger = Messenger<Void>()
         
@@ -34,7 +34,7 @@ class BasicTests: XCTestCase
         XCTAssertFalse(didTriggerUpdate)
     }
     
-    func testThatObservableMaintainsMessageOrder()
+    func testMaintainingMessageOrder()
     {
         let messenger = Messenger<Int>()
         let observer1 = TestObserver()
@@ -61,7 +61,7 @@ class BasicTests: XCTestCase
         XCTAssertEqual(receivedNumbers[2], receivedNumbers[3])
     }
     
-    func testThatObserverCanReceiveAuthor()
+    func testObservingAndReceivingAuthor()
     {
         let messenger = Messenger<Int>()
         let observer = TestObserver()
@@ -81,7 +81,7 @@ class BasicTests: XCTestCase
         XCTAssert(receivedAuthor === observer)
     }
     
-    func testThatObserverCanHaveMultipleObservationsOfSameObservable()
+    func testObservingSameObservableWithMultipleMessageHandlers()
     {
         let messenger = Messenger<Void>()
         let observer = TestObserver()
@@ -95,5 +95,42 @@ class BasicTests: XCTestCase
         messenger.send(())
         
         XCTAssertEqual(sum, 3)
+    }
+    
+    func testCombinedObservation()
+    {
+        let text = Var<String?>()
+        var receivedText: String?
+        
+        let number = Var<Int?>()
+        var receivedNumber: Int?
+        
+        let observer = TestObserver()
+        
+        observer.observe(text, number)
+        {
+            textUpdate, numberUpdate in
+            
+            receivedText = textUpdate.new
+            receivedNumber = numberUpdate.new
+        }
+        
+        XCTAssertEqual(receivedText, nil)
+        XCTAssertEqual(receivedNumber, nil)
+        
+        text <- "new text"
+        
+        XCTAssertEqual(receivedText, "new text")
+        XCTAssertEqual(receivedNumber, nil)
+        
+        number <- 7
+        
+        XCTAssertEqual(receivedText, "new text")
+        XCTAssertEqual(receivedNumber, 7)
+        
+        text <- "newer text"
+        
+        XCTAssertEqual(receivedText, "newer text")
+        XCTAssertEqual(receivedNumber, 7)
     }
 }
