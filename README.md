@@ -12,7 +12,7 @@ SwiftObserver is a lightweight framework for reactive Swift. Its design goals ma
 4. [**Flexibility**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🤸🏻‍♀️<br>SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
 5. [**Safety**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#safety) ⛑<br>SwiftObserver does the memory management for you. Oh yeah, memory leaks are impossible.
 
-SwiftObserver is very few lines of production code, but it's also beyond a 1000 hours of work, thinking it through, letting go of fancy features, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/tree/master/Tests/SwiftObserverTests), and battle-testing it [in practice](http://flowlistapp.com).
+SwiftObserver is few lines of production code, but it's well beyond a 1000 hours of work, rethinking it, letting go of fancy features, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/tree/master/Tests/SwiftObserverTests), and battle-testing it [in practice](http://flowlistapp.com).
 
 ## Why the Hell Another Reactive Swift Framework?
 
@@ -36,9 +36,9 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Make Transforms Observable](#make-transforms-observable)
     * [Use Prebuilt Transforms](#use-prebuilt-transforms)
     * [Chain Transforms](#chain-transforms)
-* [Advanced Observables](#advanced-observables)
-    * [Message Buffering](#message-buffering)
-    * [State Changes](#state-changes)
+* [Advanced Stuff](#advanced-stuff)
+    * [Anonymous Observation](#anonymous-observation)
+    * [Buffered Messages](#buffered-messages)
     * [Weak Reference](#weak-reference)
 * [More](#more)
     * [Further Reading](#further-reading)
@@ -124,17 +124,12 @@ class Dog: Observer {
 
 The receiver retains the observer's observations. The observer just holds on to it strongly.
 
-An  `Observer` may start up to three observations with one combined call:
+A few notes on observation:
 
-```swift
-dog.observe(tv, bowl, doorbell) { image, food, sound in
-    // either the tv's going, I got some food, or the bell rang
-}
-```
+* Just starting to observe an `Observable` does **not** trigger it to send a message. This keeps everything simple, predictable and consistent.
 
-Just starting to observe an `Observable` does **not** trigger it to send a message. This keeps everything simple, predictable and consistent.
-
-Also, for any message handling closure to be called, its observer must still be alive. There's no awareness after death in memory.
+* For any message receiving closure to be called, the `Observer` must still be alive. There's no awareness after death in memory.
+* An `Observer` can do multiple simultaneous observations of the same `Observable`, starting each via the mentioned `observe(...)` function.
 
 ### Observables
 
@@ -160,27 +155,30 @@ class Model: Observable {
 
 An `Observable` delivers messages in exactly the order in which they were sent, even when observers, from their message handling closures, somehow cause it to send further messages.
 
-There are four basic ways to create an `Observable`:
+There are five basic ways to create an `Observable` object:
 
-1. Make a custom class conform to `Observable` by giving it some `Messenger<Message>`.
 2. Create a [`Messenger<Message>`](#messengers). It's a mediator through which other entities communicate.
+3. Create a `Promise<Value>`. It's a Messenger with conveniences for asynchronous returns.
 3. Create a [`Variable<Value>`](#variables) (a.k.a. `Var<Value>`). It holds a value and sends value updates.
-4. Create a [*transform*](#make-transforms-observable) object. It wraps and transforms another `Observable`.
+4. Create an object of a custom `Observable` class, utilizing `Messenger<Message>`.
+5. Create a [*transform*](#make-transforms-observable) object. It wraps and transforms another `Observable`.
 
 ### Memory Management
 
-When observers or observables die, SwiftObserver cleans up related observations automatically, making memory leaks impossible. So there isn't really any memory management to worry about.
+When observers or observables die, SwiftObserver cleans up the related observations automatically, making memory leaks impossible. So there isn't really any memory management to worry about.
 
-However, observers can stop particular- or all their ongoing observations:
+However, observers and observables can stop particular- or all their ongoing observations:
 
 ```swift
-dog.stopObserving(Sky.shared)  // no more messages from the sky
-dog.stopObserving()            // no more messages at all
+dog.stopObserving(Sky.shared)          // no more messages from the sky
+dog.stopObserving()                    // no more messages from anywhere
+Sky.shared.stopBeingObserved(by: dog)  // no more messages to dog
+Sky.shared.stopBeingObserved()         // no more messages to anywhere
 ```
 
 # Messengers
 
-`Messenger` is the simplest `Observable` and the basis of every other `Observable`. It doesn't send messages by itself but anyone can send messages through it, and use it for any type of message:
+`Messenger` is the simplest `Observable` and the basis of every other `Observable`. It doesn't send messages by itself but anyone can send messages through it and use it for any type of message:
 
 ```swift
 let textMessenger = Messenger<String>()
@@ -210,6 +208,38 @@ extension Messenger: Observable {
     public var messenger: Messenger<Message> { self }
 }
 ```
+
+# Promises
+
+`Promise` is a rudimentary promise implementation. It's enough to chain asynchronous calls and make them more managable.
+
+`Promise` is part of SwiftObserver because Combine's `Future` is unfortunately not a practical solution for one-shot asynchronous calls, and depending on `PromiseKit` might not be necessary in reasonably simple contexts. Also, integrating promises as regular observables yields some synergies and consistency.
+
+```swift
+func getID() -> Promise<Result<Int, Error>> {
+  Promise { promise in
+    getIDAsynchronously { idResult in
+      promise.fulfill(idResult)  // keeps the promise alive until it's fulfilled
+    } 
+  }
+}
+
+let idPromise = getID()
+
+func doAnythingWithID(_ executeWithID: (Int) -> Void) {
+  idPromise.whenFulfilled { idResult in 
+    do {
+      executeWithID(try idResult.get())
+    } catch {
+      log(error)
+    }
+  }  
+}
+
+```
+
+`whenFulfilled` provides the resulting value immediately if the promise is already fulfilled,
+otherwise it starts an anonymous observation of the promise and provides the value later. `fulfill(value)` is equivalent to any observable's function `send(message)`. Promises stop their observations after the first time they send a message or get fulfilled.
 
 # Variables
 
@@ -472,24 +502,27 @@ dog.observe(Sky.shared).map {
 } 
 ~~~
 
-# Advanced Observables
+# Advanced Stuff
 
-## Message Buffering
+## Anonymous Observation
+
+*Documentation coming soon ...*
+
+## Buffered Messages 
 
 A `BufferedObservable` is an `Observable` that also has a property `latestMessage: Message` which typically returns the last sent message or one that indicates that nothing has changed. `BufferedObservable` has a `func send()` that takes no argument and sends `latestMessage`.
 
 Only `BufferedObservable`s can be part of combined observations like this:
 
 ```swift
-observer.observe(observable1, observable2) { message1, message2 in 
-    // one of the observables sent a message, but we receive both messages
+dog.observe(tv, bowl, doorbell) { image, food, sound in
+    // either the tv's going, I got some food, or the bell rang
 }
 ```
 
 When one of the combined observables sends a message, the combined observation **pulls** messages from the other observables to provide all latest messages to the observer (read more on this design [here](Documentation/philosophy.md#the-philosophy-of-swiftobserver)).
 
-
- There are three kinds of buffered observables:
+### Three Kinds of Buffered Observables
 
 1. Any `Var` is buffered. Its `latestMessage` is an `Update` in which `old` and `new` are both the current `value`.
 
@@ -499,7 +532,7 @@ When one of the combined observables sends a message, the combined observation *
 
 3. Any of your custom observables is buffered **if** you make it conform to `BufferedObservable`. This is easy. Even if the message type isn't based on some state, you can still return a meaningful default value as `latestMessage` or make the message type optional and just return `nil`.
 
-## State Updates
+### Buffered Observables Sending Value Updates
 
 To implement an `Observable` like `Var<Value>` that sends value updates, you would use the message type  `Update<Value>`. If you also want to involve the observable in combined observations, you make it a `BufferedObservable` and let `latestMessage` return a message based on the latest (current) value:
 
