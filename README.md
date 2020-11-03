@@ -30,7 +30,6 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Understand Observables and Messengers](#understand-observables-and-messengers)
     * [Make Custom Observables ](#make-custom-observables)
 * [Promises](#promises)
-    * [Promise Life Cycle](#promise-life-cycle)
 * [Variables](#variables)
     * [Observe Variables](#observe-variables)
     * [Use Variable Values](#use-variable-values) 
