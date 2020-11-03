@@ -19,11 +19,9 @@ public func observe<O: Observable>(_ observable: O,
     AnonymousObserver.shared.observe(observable, receive: receive)
 }
 
-public class AnonymousObserver: Observer
+public class AnonymousObserver: AdhocObserver
 {
     public static let shared = AnonymousObserver()
     
-    private init() {}
-    
-    public let receiver = Receiver()
+    private override init() {}
 }

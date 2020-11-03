@@ -488,29 +488,24 @@ class OldTestsToRework: XCTestCase
         XCTAssert(didFire)
     }
     
-    class MinimalModel: Observable
-    {
-        let messenger = Messenger<Int?>()
-    }
-    
     class ObservableModel: BufferedObservable
     {
         var latestMessage: Event { .didNothing }
-        
+
         let messenger = Messenger<Event>()
-        
+
         enum Event: String { case didNothing, didUpdate, didReset }
     }
     
     let customObservable = ModelWithState()
-    
+
     class ModelWithState: BufferedObservable
     {
         var latestMessage: Update<String>
         {
             Update(state, state)
         }
-        
+
         var state = "initial state"
         {
             didSet
@@ -521,7 +516,7 @@ class OldTestsToRework: XCTestCase
                 }
             }
         }
-        
+
         let messenger = Messenger<Update<String>>()
     }
     

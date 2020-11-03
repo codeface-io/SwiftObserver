@@ -3,7 +3,7 @@ import XCTest
 
 class PromiseTests: XCTestCase
 {
-    func testThatPromiseCanBeFulfilledAsynchronously()
+    func testFulfillingPromiseAsynchronously()
     {
         let promise = Promise<Void>()
         
@@ -21,7 +21,19 @@ class PromiseTests: XCTestCase
         waitForExpectations(timeout: 3)
     }
     
-    func testThatPromiseProvidesValueAsynchronously()
+    func testCommonAnonymousAdhocObservationOfAsyncFunc()
+    {
+        let promiseFulfilled = expectation(description: "promise is fulfilled")
+        
+        SwiftObserver.observe(asyncFunc())
+        {
+            promiseFulfilled.fulfill()
+        }
+
+        waitForExpectations(timeout: 3)
+    }
+    
+    func testPromiseProvidesValueAsynchronously()
     {
         let promise = Promise<Int>()
         
@@ -32,7 +44,6 @@ class PromiseTests: XCTestCase
         observer.observe(promise)
         {
             XCTAssertEqual($0, 42)
-            XCTAssertEqual($0, promise.value)
             valueReceived.fulfill()
         }
         
@@ -41,24 +52,8 @@ class PromiseTests: XCTestCase
         waitForExpectations(timeout: 3)
     }
     
-    func testThatFulfilledPromiseProvidesValueSynchronously()
+    func testPromiseDiesAfterBeingFulfilledAsynchronously()
     {
-        let promise = Promise<Int>()
-        
-        XCTAssertEqual(promise.value, nil)
-        
-        promise.fulfill(42)
-        
-        XCTAssertEqual(promise.value, 42)
-    }
-    
-    func testThatPromiseDiesAfterBeingFulfilledAsynchronously()
-    {
-        func asyncFunc() -> Promise<Void>
-        {
-            Promise { promise in DispatchQueue.main.async { promise.fulfill(()) } }
-        }
-        
         weak var weakPromise = asyncFunc()
         
         XCTAssertNotNil(weakPromise)
@@ -77,7 +72,7 @@ class PromiseTests: XCTestCase
         XCTAssertNil(weakPromise)
     }
     
-    func testThatPromiseStopsBeingObservedAfterBeingFulfilled()
+    func testPromiseStopsBeingObservedAfterBeingFulfilled()
     {
         let promise = Promise<Void>()
         
@@ -101,5 +96,61 @@ class PromiseTests: XCTestCase
         promise.fulfill(())
         
         XCTAssertEqual(numberOfReceivedValues, 1)
+    }
+    
+    func testGettingValueMultipleTimesAsynchronouslyFromBufferedPromise()
+    {
+        let bufferedPromise = asyncFunc(returnValue: 42).buffer()
+        
+        let receivedValue = expectation(description: "received value")
+        let receivedValue2 = expectation(description: "received value too")
+        
+        bufferedPromise.whenFulfilled { value in
+            XCTAssertEqual(value, 42)
+            XCTAssertEqual(value, bufferedPromise.latestMessage)
+            receivedValue.fulfill()
+        }
+        
+        bufferedPromise.whenFulfilled { value in
+            XCTAssertEqual(value, 42)
+            XCTAssertEqual(value, bufferedPromise.latestMessage)
+            receivedValue2.fulfill()
+        }
+        
+        XCTAssertNil(bufferedPromise.latestMessage)
+        waitForExpectations(timeout: 3)
+        XCTAssertEqual(bufferedPromise.latestMessage, 42)
+    }
+    
+    func testGettingValueMultipleTimesSynchronouslyFromFulfilledBufferedPromise()
+    {
+        let bufferedPromise = Promise<Int>().buffer()
+        bufferedPromise.fulfill(42)
+        
+        XCTAssertEqual(bufferedPromise.latestMessage, 42)
+        
+        var receivedValue: Int?
+        var receivedValue2: Int?
+        
+        bufferedPromise.whenFulfilled { value in
+            receivedValue = value
+        }
+        
+        bufferedPromise.whenFulfilled { value in
+            receivedValue2 = value
+        }
+        
+        XCTAssertEqual(receivedValue, 42)
+        XCTAssertEqual(receivedValue2, 42)
+    }
+    
+    func asyncFunc() -> Promise<Void>
+    {
+        Promise { promise in DispatchQueue.main.async { promise.fulfill(()) } }
+    }
+    
+    func asyncFunc(returnValue: Int) -> Promise<Int>
+    {
+        Promise { promise in DispatchQueue.main.async { promise.fulfill(returnValue) } }
     }
 }

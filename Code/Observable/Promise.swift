@@ -1,39 +1,24 @@
 public class Promise<Value>: Messenger<Value>
 {   
-    public convenience init(fulfill: (Promise<Value>) -> Void)
+    public convenience init(fulfill: (Self) -> Void)
     {
         self.init()
         fulfill(self)
     }
     
-    public func fulfill(_ value: Value)
-    {
-        send(value)
-    }
-    
-    public func fulfill(_ value: Value, as author: AnyAuthor)
+    func fulfill(_ value: Value, as author: AnyAuthor)
     {
         send(value, from: author)
     }
     
-    public func whenFulfilled(_ receive: @escaping (Value) -> Void)
+    func fulfill(_ value: Value)
     {
-        if let value = value
-        {
-            receive(value)
-        }
-        else
-        {
-            observe(self, receive: receive)
-        }
+        send(value)
     }
     
     override func _send(_ message: Message, from author: AnyAuthor)
     {
-        value = message
         super._send(message, from: author)
         disconnectAllReceivers()
     }
-    
-    public private(set) var value: Value?
 }
