@@ -27,7 +27,7 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Install](#install)
     * [Introduction](#introduction)
 * [Messengers](#messengers)
-    * [Understand Messengers and Observables](#understand-messengers-and-observables)
+    * [Understand Observables and Messengers](#understand-observables-and-messengers)
     * [Make Custom Observables ](#make-custom-observables)
 * [Promises](#promises)
 * [Variables](#variables)
