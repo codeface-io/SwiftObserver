@@ -159,7 +159,7 @@ An `Observable` delivers messages in exactly the order in which they were sent, 
 There are five basic ways to create an `Observable` object:
 
 2. Create a [`Messenger<Message>`](#messengers). It's a mediator through which other entities communicate.
-3. Create a `Promise<Value>`. It's a Messenger with conveniences for asynchronous returns.
+3. Create a [`Promise<Value>`](#promises). It's a Messenger with conveniences for asynchronous returns.
 3. Create a [`Variable<Value>`](#variables) (a.k.a. `Var<Value>`). It holds a value and sends value updates.
 4. Create an object of a custom `Observable` class, utilizing `Messenger<Message>`.
 5. Create a [*transform*](#make-transforms-observable) object. It wraps and transforms another `Observable`.
@@ -214,7 +214,7 @@ extension Messenger: Observable {
 
 `Promise` is a rudimentary promise implementation. It's enough to chain asynchronous calls and make them more managable.
 
-`Promise` is part of SwiftObserver because Combine's `Future` is unfortunately not a practical solution for one-shot asynchronous calls, and depending on `PromiseKit` might not be necessary in reasonably simple contexts. Also, integrating promises as regular observables yields some synergies and consistency.
+`Promise` is part of SwiftObserver because Combine's `Future` is unfortunately not a practical solution for one-shot asynchronous calls, and to depend on `PromiseKit` might be unnecessary in reasonably simple contexts. Also, integrating promises as regular observables yields some consistency and synergy.
 
 ```swift
 func getID() -> Promise<Result<Int, Error>> {
@@ -240,7 +240,7 @@ func doAnythingWithID(_ executeWithID: (Int) -> Void) {
 ```
 
 `whenFulfilled` provides the resulting value immediately if the promise is already fulfilled,
-otherwise it starts an anonymous observation of the promise and provides the value later. `fulfill(value)` is equivalent to any observable's function `send(message)`. Promises stop their observations after the first time they send a message or get fulfilled.
+otherwise it starts an anonymous observation of the promise and provides the value later. `fulfill(value)` is equivalent to any observable's function `send(message)`. Promises stop being observed after the first time they send a message or get fulfilled.
 
 # Variables
 
