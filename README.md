@@ -567,11 +567,11 @@ When one of the combined observables sends a message, the combined observation *
 
 1. Any `Var` is buffered. Its `latestMessage` is an `Update` in which `old` and `new` are both the current `value`.
 
-2. Any observable transform that has a buffered source observable is itself buffered **if** it never suppresses (filters) messages. The `latestMessage` of a buffered transform returns the transformed `latestMessage` of its source. 
+2. Any observable transform that has a buffered source observable is itself buffered **if** it never suppresses (filters) messages. These transforms are: `map`, `new` and `unwrap(default)`.
 
-   Obviously, a filter, by definition, can't guarantee to output anything for every message from its source. Transforms that do filter messages are: `filter`, `unwrap()` (without default) and `select`. 
+   Be aware that the `latestMessage` of such a transform only ever returns the transformed `latestMessage` of its underlying buffered source. Calling `send(transformedMessage)` on the transform object itself will not "update" its `latestMessage`.
 
-3. Any of your custom observables is buffered **if** you make it conform to `BufferedObservable`. This is easy. Even if the message type isn't based on some state, you can still return a meaningful default value as `latestMessage` or make the message type optional and just return `nil`.
+3. Any of your custom observables is buffered **if** you make it conform to `BufferedObservable`. This is easy. Even if the message type isn't based on some state, you can still return a meaningful default value as `latestMessage` or make the message type optional and return `nil`.
 
 ### Buffered Value Updates
 

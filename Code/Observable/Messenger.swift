@@ -26,7 +26,7 @@ public class Messenger<Message>
     
     private var messagesFromAuthors = [(Message, AnyAuthor)]()
     
-    internal var latestAuthorInternal: AnyAuthor { storedLatestAuthor ?? self }
+    internal var _latestAuthor: AnyAuthor { storedLatestAuthor ?? self }
     private var storedLatestAuthor: AnyAuthor?
     
     // MARK: - Manage Receivers
