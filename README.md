@@ -233,20 +233,20 @@ class Model: Observable {
 
 # Promises
 
-`Promise<Value>` is a `Messenger<Value>` that offers a rudimentary promise implementation. It helps chaining asynchronous calls and makes them more managable.
+`Promise<Value>` is a `Messenger<Value>` that offers a simple promise implementation. It helps chaining asynchronous calls and makes them more managable.
 
 > `Promise` is part of SwiftObserver because Combine's `Future` is unfortunately not a practical solution for one-shot asynchronous calls, and to depend on `PromiseKit` might be unnecessary in reasonably simple contexts. Also, integrating promises as regular observables yields some consistency and synergy.
 
 ```swift
 func getID() -> Promise<Int> {
     Promise { promise in         // convenience initializer
-        getIDAsynchronously { id in
+        getIDAsync { id in
             promise.fulfill(id)  // retains the promise until it's fulfilled
         } 
     }
 }
 
-observe(getID()) { id in   // anonymous observation
+observe(getID()) { id in         // anonymous observation
     // so somethin with the ID
 }
 ```
@@ -269,7 +269,7 @@ bufferedIDPromise.whenFulfilled { id in
 }
 ```
 
-`whenFulfilled` is available on all buffered observables that have an optional message type. It provides an unwrapped message as soon as one is available. If `latestMessage` is still `nil`, `whenFulfilled` starts an anonymous observation of the buffered observable.
+`whenFulfilled` is available on all buffered observables that have an optional message type. It provides an unwrapped message as soon as one is available. If `latestMessage` is still `nil`, `whenFulfilled` starts an adhoc observation of the buffered observable. It stops that observation as soon as the buffered observable has sent a non-optional message.
 
 If you hold on to a promise directly, its observations still get cleaned up, since a promise actively stops being observed after the first time it sends a message or gets fulfilled. In the above example this just means that the buffered observable stops observing its underlying promise, as soon as that promise was fulfilled.
 
