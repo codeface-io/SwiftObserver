@@ -238,43 +238,40 @@ class Model: Observable {
 > `Promise` is part of SwiftObserver because Combine's `Future` is unfortunately not a practical solution for one-shot asynchronous calls, and to depend on `PromiseKit` might be unnecessary in reasonably simple contexts. Also, integrating promises as regular observables yields some consistency and synergy.
 
 ```swift
-func getID() -> Promise<Result<Int, Error>> {
-  Promise { promise in
-    getIDAsynchronously { idResult in
-      promise.fulfill(idResult)  // keeps the promise alive until it's fulfilled
-    } 
-  }
-}
-
-let idPromise = getID()
-
-func doAnythingWithID(_ executeWithID: (Int) -> Void) {
-  idPromise.whenFulfilled { idResult in 
-    do {
-      executeWithID(try idResult.get())
-    } catch {
-      log(error)
+func getID() -> Promise<Int> {
+    Promise { promise in         // convenience initializer
+        getIDAsynchronously { id in
+            promise.fulfill(id)  // retains the promise until it's fulfilled
+        } 
     }
-  }  
 }
 
+observe(getID()) { id in   // anonymous observation
+    // so somethin with the ID
+}
 ```
 
-`whenFulfilled` provides the resulting value immediately if the promise is already fulfilled,
-otherwise it starts an anonymous observation of the promise and provides the value later. Calling `fulfill(value)` is equivalent to calling `send(value)`.
+Calling `fulfill(value)` on a `Promise` is equivalent to calling `send(value)`.
 
-## Promise Life Cycle
+Typically, promises are shortlived observables that you don't store anywhere. That works fine since an asynchronous function returning a promise (above `getID()`) keeps that promise alive in order to fulfill it. So you can anonymously observe such a promise without storing it, and the promise as well as its observations get cleaned up automatically after the promise gets fulfilled.
 
-Typically, promises are shortlived observables that you don't even hold strongly anywhere. That works fine since an asynchronous function that returns a promise keeps that promise alive until it can fulfill it. So you can anonymously observe such a promise without saving it, and the promise as well as its observations get cleaned up automatically after the promise gets fulfilled:
+Sometimes, you want to do multiple things with an asynchronous result when it is available or later. Or you generally want to ensure that some asynchronous task has been completed before doing different other things. In that case you store a buffered promise, so you can access the promise's `latestMessage` repeatedly:
 
 ```swift
-// whenfulfilled anonymously observes the promise returned by getID()
-getID().whenFulfilled { idResult in 
-    // so somethin with the result
+let bufferedIDPromise = getID().buffer()
+
+bufferedIDPromise.whenFulfilled { id in
+    // do somethin with the ID
+}
+
+bufferedIDPromise.whenFulfilled { id in
+    // do somethin else with the ID
 }
 ```
 
-If you hold on to the promise, its observations still get cleaned up, since a promise actively stops being observed after the first time it sends a message or gets fulfilled.
+`whenFulfilled` is available on all buffered observables that have an optional message type. It provides an unwrapped message as soon as one is available. If `latestMessage` is still `nil`, `whenFulfilled` starts an anonymous observation of the buffered observable.
+
+If you hold on to a promise directly, its observations still get cleaned up, since a promise actively stops being observed after the first time it sends a message or gets fulfilled. In the above example this just means that the buffered observable stops observing its underlying promise, as soon as that promise was fulfilled.
 
 
 # Variables
