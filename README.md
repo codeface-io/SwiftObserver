@@ -261,7 +261,7 @@ func doAnythingWithID(_ executeWithID: (Int) -> Void) {
 ```
 
 `whenFulfilled` provides the resulting value immediately if the promise is already fulfilled,
-otherwise it starts an anonymous observation of the promise and provides the value later. `fulfill(value)` is equivalent to any observable's function `send(message)`.
+otherwise it starts an anonymous observation of the promise and provides the value later. Calling `fulfill(value)` is equivalent to calling `send(value)`.
 
 ## Promise Life Cycle
 
