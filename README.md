@@ -27,19 +27,20 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Install](#install)
     * [Introduction](#introduction)
 * [Messengers](#messengers)
+    * [Understand Messengers and Observables](#understand-messengers-and-observables)
+    * [Make Custom Observables ](#make-custom-observables)
 * [Promises](#promises)
 * [Variables](#variables)
     * [Observe Variables](#observe-variables)
     * [Use Variable Values](#use-variable-values) 
     * [Encode and Decode Variables](#encode-and-decode-variables)
-* [Authors](#authors)
 * [Transforms](#transforms)
     * [Make Transforms Observable](#make-transforms-observable)
     * [Use Prebuilt Transforms](#use-prebuilt-transforms)
     * [Chain Transforms](#chain-transforms)
 * [Advanced Stuff](#advanced-stuff)
-    * [Anonymous Observation](#anonymous-observation)
-    * [Buffered Messages](#buffered-messages)
+    * [Authors](#authors)
+    * [Buffered Observables](#buffered-observables)
     * [Weak Reference](#weak-reference)
 * [More](#more)
     * [Further Reading](#further-reading)
@@ -125,12 +126,23 @@ class Dog: Observer {
 
 The receiver retains the observer's observations. The observer just holds on to it strongly.
 
-A few notes on observation:
+#### Notes on Observers
 
-* Just starting to observe an `Observable` does **not** trigger it to send a message. This keeps everything simple, predictable and consistent.
-
-* For any message receiving closure to be called, the `Observer` must still be alive. There's no awareness after death in memory.
+* For a message receiving closure to be called, the `Observer` must still be alive. There's no awareness after death in memory.
 * An `Observer` can do multiple simultaneous observations of the same `Observable`, starting each via the mentioned `observe(...)` function.
+* You can check wether an observer is observing an observable via `observer.isObserving(observable)`.
+
+#### Anonymous Observer
+
+You don't even need an observer to start an observation:
+
+~~~swift
+observe(Sky.shared) { color in
+    // marvel at the sky changing its color
+}
+~~~
+
+This global `observe(...)` function lets the anonymous observer do the observation. It's equivalent to calling `AnonymousObserver.shared.observe(...)`.
 
 ### Observables
 
@@ -138,30 +150,22 @@ Any object can be `Observable` if it has a `Messenger<Message>` for sending mess
 
 ```swift
 class Sky: Observable {
-    let messenger = Messenger<Color>()
+    let messenger = Messenger<Color>()  // Message of type Color
 }
 ```
 
-An `Observable` sends messages via `send(_ message: Message)`. The observable's clients, even its observers, are also free to call that function. Custom observables rely on `send` and often employ some `enum` as `Message` type:
+#### Notes on Observables
 
-~~~swift
-class Model: Observable {
-    foo() { send(.willUpdate) }
-    bar() { send(.didUpdate) }
-    deinit { send(.willDie) }
-    let messenger = Messenger<Event>()
-    enum Event { case willUpdate, didUpdate, willDie }
-}
-~~~
+* An `Observable` sends messages via `send(_ message: Message)`. The observable's clients, even its observers, are also free to call that function. 
+* An `Observable` delivers messages in exactly the order in which they were sent, even when observers, from their message handling closures, somehow cause it to send further messages.
+* Just starting to observe an `Observable` does **not** trigger it to send a message. This keeps everything simple, predictable and consistent.
 
-An `Observable` delivers messages in exactly the order in which they were sent, even when observers, from their message handling closures, somehow cause it to send further messages.
+#### Ways to Create an Observable
 
-There are five basic ways to create an `Observable` object:
-
-2. Create a [`Messenger<Message>`](#messengers). It's a mediator through which other entities communicate.
+1. Create a [`Messenger<Message>`](#messengers). It's a mediator through which other entities communicate.
+2. Create an object of a [custom `Observable`](#make-custom-observables) class that utilizes `Messenger<Message>`.
 3. Create a [`Promise<Value>`](#promises). It's a Messenger with conveniences for asynchronous returns.
-3. Create a [`Variable<Value>`](#variables) (a.k.a. `Var<Value>`). It holds a value and sends value updates.
-4. Create an object of a custom `Observable` class, utilizing `Messenger<Message>`.
+4. Create a [`Variable<Value>`](#variables) (a.k.a. `Var<Value>`). It holds a value and sends value updates.
 5. Create a [*transform*](#make-transforms-observable) object. It wraps and transforms another `Observable`.
 
 ### Memory Management
@@ -176,6 +180,8 @@ dog.stopObserving()                    // no more messages from anywhere
 Sky.shared.stopBeingObserved(by: dog)  // no more messages to dog
 Sky.shared.stopBeingObserved()         // no more messages to anywhere
 ```
+
+Remember that you can involve the global `AnonymousObserver.shared` to stop certain or all anonymous observations.
 
 # Messengers
 
@@ -192,6 +198,8 @@ textMessenger.send("my message")
 ```
 
 `Messenger` embodies the common [messenger / notifier pattern](Documentation/specific-patterns.md#the-messenger-pattern) and can be used for that out of the box. 
+
+## Understand Observables and Messengers
 
 Having a messenger is actually what defines `Observable` objects:
 
@@ -210,9 +218,23 @@ extension Messenger: Observable {
 }
 ```
 
+## Make Custom Observables
+
+All other observables are either subclasses of `Messenger` or custom observables that provide some `Messenger<Message>`. Custom observables often employ some `enum` as their `Message` type:
+
+~~~swift
+class Model: Observable {
+    foo() { send(.willUpdate) }
+    bar() { send(.didUpdate) }
+    deinit { send(.willDie) }
+    let messenger = Messenger<Event>()
+    enum Event { case willUpdate, didUpdate, willDie }
+}
+~~~
+
 # Promises
 
-`Promise` is a rudimentary promise implementation. It's enough to chain asynchronous calls and make them more managable.
+`Promise` is a rudimentary promise implementation. It helps to chain asynchronous calls and makes them more managable.
 
 `Promise` is part of SwiftObserver because Combine's `Future` is unfortunately not a practical solution for one-shot asynchronous calls, and to depend on `PromiseKit` might be unnecessary in reasonably simple contexts. Also, integrating promises as regular observables yields some consistency and synergy.
 
@@ -306,49 +328,6 @@ class Model: Codable {
 
 Note that `text` is a `var` instead of a `let`. It cannot be constant because Swift's implicit decoder must mutate it. However, clients of `Model` would be supposed to set only `text.value` and not `text` itself, so the setter is private.
 
-# Authors
-
-Every message has an author associated with it. This feature is only noticable in code if you use it.
-
-An observable can send an author together with a message via `observable.send(message, from: author)`. If noone specifies an author as in `observable.send(message)`, the observable itself becomes the author.
-
-Variables have a special value setter that allows to identify change authors:
-
-```swift
-let number = Var(0)
-number.set(42, as: controller) // controller will be the author of the update message
-```
-
-The observer can receive the author, by adding it as an argument to the message handling closure:
-
-```swift
-observer.observe(observable) { message, author in
-    // process message from author
-}
-```
-
-Through the author, observers can determine a message's origin. This is a useful addition to the plain messenger pattern, where it allows observers to identify message senders. And it is essential with all sorts of storage abstractions and caching hierarchies, where it allows observers to identify the change authors of data modifications:
-
-```swift
-class Collaborator: Observer {
-    func observeText() {
-        observe(sharedText) { update, author in
-            guard author !== self else { return }
-            // someone else edited the text
-        }
-    }
-  
-    func editText() {
-        sharedText.set("my new text", as: self) // identify as author when editing
-    }
-  
-    let receiver = Receiver()
-}
-
-let sharedText = Var<String>()  // sends messages of type Update<String>
-```
-
-Ignoring messages from `self` is typical when multiple entities observe and mutate shared data. An entity would only care about the modifications that others made, so it would identify itself as change author when modifying the data, and only process messages that are not from `self` when observing the data.
 
 # Transforms
 
@@ -443,38 +422,6 @@ let points = Messenger<Int?>()         // sends Int?
 let pointsToShow = points.unwrap(0)    // sends Int with 0 for nil
 ~~~
 
-### Filter Author
-
-Filter authors the same way you filter messages:
-
-```swift
-let messenger = Messenger<String>()            // sends String
-
-let friendMessages = messenger.filterAuthor {  // sends String if message is from friend
-    friends.contains($0)
-} 
-```
-
-### From
-
-If only one specific author is of interest, filter authors with `from`:
-
-```swift
-let messenger = Messenger<String>()     // sends String
-let joesMessages = messenger.from(joe)  // sends String if message is from joe
-```
-
-### Not From
-
-If **all but one** specific author are of interest, suppress messages from that author via `notFrom`:
-
-```swift
-let messenger = Messenger<String>()             // sends String
-let humanMessages = messenger.notFrom(hal9000)  // sends String, but not from an evil AI
-```
-
-The above section on [authors](#authors) details the common pattern of ignoring messages from `self`.
-
 ## Chain Transforms
 
 You may chain transforms together:
@@ -505,13 +452,97 @@ dog.observe(Sky.shared).map {
 
 # Advanced Stuff
 
-## Anonymous Observation
+## Authors
 
-*Documentation coming soon ...*
+Every message has an author associated with it. This feature is only noticable in code if you use it.
 
-## Buffered Messages 
+An observable can send an author together with a message via `observable.send(message, from: author)`. If noone specifies an author as in `observable.send(message)`, the observable itself becomes the author.
+
+### Authors of Variable Updates
+
+Variables have a special value setter that allows to identify change authors:
+
+```swift
+let number = Var(0)
+number.set(42, as: controller) // controller will be the author of the update message
+```
+
+### Observing Authors
+
+The observer can receive the author, by adding it as an argument to the message handling closure:
+
+```swift
+observer.observe(observable) { message, author in
+    // process message from author
+}
+```
+
+Through the author, observers can determine a message's origin. This is a useful addition to the plain messenger pattern, where it allows observers to identify message senders.
+
+### Shared Mutable Data
+
+Identifying authors becomes essential with all sorts of storage abstractions and caching hierarchies, where it allows observers to identify the change authors of data modifications:
+
+```swift
+class Collaborator: Observer {
+    func observeText() {
+        observe(sharedText) { update, author in
+            guard author !== self else { return }
+            // someone else edited the text
+        }
+    }
+  
+    func editText() {
+        sharedText.set("my new text", as: self) // identify as author when editing
+    }
+  
+    let receiver = Receiver()
+}
+
+let sharedText = Var<String>()  // sends messages of type Update<String>
+```
+
+Ignoring messages from `self` is typical when multiple entities observe and mutate shared data. An entity would only care about the modifications that others made, so it would identify itself as change author when modifying the data, and only process messages that are not from `self` when observing the data.
+
+### Author Related Transforms
+
+There are three transforms related to message authors. You can apply them directly in observations or create them as standalone observables.
+
+#### Filter Author
+
+Filter authors the same way you filter messages:
+
+```swift
+let messenger = Messenger<String>()            // sends String
+
+let friendMessages = messenger.filterAuthor {  // sends String if message is from friend
+    friends.contains($0)
+} 
+```
+
+#### From
+
+If only one specific author is of interest, filter authors with `from`:
+
+```swift
+let messenger = Messenger<String>()     // sends String
+let joesMessages = messenger.from(joe)  // sends String if message is from joe
+```
+
+#### Not From
+
+If **all but one** specific author are of interest, suppress messages from that author via `notFrom`:
+
+```swift
+let messenger = Messenger<String>()             // sends String
+let humanMessages = messenger.notFrom(hal9000)  // sends String, but not from an evil AI
+```
+
+## Buffered Observables 
 
 A `BufferedObservable` is an `Observable` that also has a property `latestMessage: Message` which typically returns the last sent message or one that indicates that nothing has changed. `BufferedObservable` has a `func send()` that takes no argument and sends `latestMessage`.
+
+### Combined Observation
 
 Only `BufferedObservable`s can be part of combined observations like this:
 
@@ -533,7 +564,7 @@ When one of the combined observables sends a message, the combined observation *
 
 3. Any of your custom observables is buffered **if** you make it conform to `BufferedObservable`. This is easy. Even if the message type isn't based on some state, you can still return a meaningful default value as `latestMessage` or make the message type optional and just return `nil`.
 
-### Buffered Observables Sending Value Updates
+### Buffered Value Updates
 
 To implement an `Observable` like `Var<Value>` that sends value updates, you would use the message type  `Update<Value>`. If you also want to involve the observable in combined observations, you make it a `BufferedObservable` and let `latestMessage` return a message based on the latest (current) value:
 
