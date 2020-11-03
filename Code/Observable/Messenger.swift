@@ -18,12 +18,16 @@ public class Messenger<Message>
         
         while let (message, author) = messagesFromAuthors.first
         {
+            storedLatestAuthor = author
             receivers.receive(message, from: author)
             messagesFromAuthors.removeFirst()
         }
     }
     
     private var messagesFromAuthors = [(Message, AnyAuthor)]()
+    
+    internal var latestAuthorInternal: AnyAuthor { storedLatestAuthor ?? self }
+    private var storedLatestAuthor: AnyAuthor?
     
     // MARK: - Manage Receivers
     

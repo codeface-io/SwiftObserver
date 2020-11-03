@@ -9,6 +9,8 @@ public extension Observable
     {
         messenger._send(message, from: author ?? self)
     }
+    
+    var latestAuthor: AnyAuthor { messenger.latestAuthorInternal }
 }
 
 public protocol Observable: AnyAuthor
