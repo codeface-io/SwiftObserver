@@ -233,7 +233,7 @@ class Model: Observable {
 
 # Promises
 
-`Promise<Value>` is a `Messenger<Value>` that offers a rudimentary promise implementation. It helps to chain asynchronous calls and makes them more managable.
+`Promise<Value>` is a `Messenger<Value>` that offers a rudimentary promise implementation. It helps chaining asynchronous calls and makes them more managable.
 
 > `Promise` is part of SwiftObserver because Combine's `Future` is unfortunately not a practical solution for one-shot asynchronous calls, and to depend on `PromiseKit` might be unnecessary in reasonably simple contexts. Also, integrating promises as regular observables yields some consistency and synergy.
 
