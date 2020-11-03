@@ -30,6 +30,7 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Understand Observables and Messengers](#understand-observables-and-messengers)
     * [Make Custom Observables ](#make-custom-observables)
 * [Promises](#promises)
+    * [Promise Life Cycle](#promise-life-cycle)
 * [Variables](#variables)
     * [Observe Variables](#observe-variables)
     * [Use Variable Values](#use-variable-values) 
@@ -43,8 +44,6 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Buffered Observables](#buffered-observables)
     * [Weak Reference](#weak-reference)
 * [More](#more)
-    * [Further Reading](#further-reading)
-    * [Open Tasks](#open-tasks)
 
 # Get Involved
 
@@ -157,7 +156,7 @@ class Sky: Observable {
 #### Notes on Observables
 
 * An `Observable` sends messages via `send(_ message: Message)`. The observable's clients, even its observers, are also free to call that function. 
-* An `Observable` delivers messages in exactly the order in which they were sent, even when observers, from their message handling closures, somehow cause it to send further messages.
+* An `Observable` delivers messages in exactly the order in which `send(...)` is called, which helps when observers, from their message handling closures, somehow trigger further `send` calls.
 * Just starting to observe an `Observable` does **not** trigger it to send a message. This keeps everything simple, predictable and consistent.
 
 #### Ways to Create an Observable
@@ -181,7 +180,7 @@ Sky.shared.stopBeingObserved(by: dog)  // no more messages to dog
 Sky.shared.stopBeingObserved()         // no more messages to anywhere
 ```
 
-Remember that you can involve the global `AnonymousObserver.shared` to stop certain or all anonymous observations.
+You may involve `AnonymousObserver.shared` to stop certain or all anonymous observations.
 
 # Messengers
 
@@ -234,9 +233,9 @@ class Model: Observable {
 
 # Promises
 
-`Promise` is a rudimentary promise implementation. It helps to chain asynchronous calls and makes them more managable.
+`Promise` is a `Messenger` that offers a rudimentary promise implementation. It helps to chain asynchronous calls and makes them more managable.
 
-`Promise` is part of SwiftObserver because Combine's `Future` is unfortunately not a practical solution for one-shot asynchronous calls, and to depend on `PromiseKit` might be unnecessary in reasonably simple contexts. Also, integrating promises as regular observables yields some consistency and synergy.
+> `Promise` is part of SwiftObserver because Combine's `Future` is unfortunately not a practical solution for one-shot asynchronous calls, and to depend on `PromiseKit` might be unnecessary in reasonably simple contexts. Also, integrating promises as regular observables yields some consistency and synergy.
 
 ```swift
 func getID() -> Promise<Result<Int, Error>> {
@@ -262,7 +261,21 @@ func doAnythingWithID(_ executeWithID: (Int) -> Void) {
 ```
 
 `whenFulfilled` provides the resulting value immediately if the promise is already fulfilled,
-otherwise it starts an anonymous observation of the promise and provides the value later. `fulfill(value)` is equivalent to any observable's function `send(message)`. Promises stop being observed after the first time they send a message or get fulfilled.
+otherwise it starts an anonymous observation of the promise and provides the value later. `fulfill(value)` is equivalent to any observable's function `send(message)`.
+
+## Promise Life Cycle
+
+Typically, promises are shortlived observables that you don't even hold strongly anywhere. That works fine since an asynchronous function that returns a promise keeps that promise alive until it can fulfill it. So you can anonymously observe such a promise without saving it, and the promise as well as its observations get cleaned up automatically after the promise gets fulfilled:
+
+```swift
+// whenfulfilled anonymously observes the promise returned by getID()
+getID().whenFulfilled { idResult in 
+    // so somethin with the result
+}
+```
+
+If you hold on to the promise, its observations still get cleaned up, since a promise actively stops being observed after the first time it sends a message or gets fulfilled.
+
 
 # Variables
 
@@ -499,7 +512,7 @@ class Collaborator: Observer {
     let receiver = Receiver()
 }
 
-let sharedText = Var<String>()  // sends messages of type Update<String>
+let sharedText = Var<String>()
 ```
 
 Ignoring messages from `self` is typical when multiple entities observe and mutate shared data. An entity would only care about the modifications that others made, so it would identify itself as change author when modifying the data, and only process messages that are not from `self` when observing the data.
