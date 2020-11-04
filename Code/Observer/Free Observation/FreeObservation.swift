@@ -4,18 +4,18 @@ extension Observable
     {
         ObservationTransformer
         {
-            receive in AnonymousObserver.shared.observe(self, receive: receive)
+            receive in FreeObserver.shared.observe(self, receive: receive)
         }
     }
     
     func observe(_ receive: @escaping (Message, AnyAuthor) -> Void)
     {
-        AnonymousObserver.shared.observe(self, receive: receive)
+        FreeObserver.shared.observe(self, receive: receive)
     }
     
     func observe(_ receive: @escaping (Message) -> Void)
     {
-        AnonymousObserver.shared.observe(self, receive: receive)
+        FreeObserver.shared.observe(self, receive: receive)
     }
 }
 
@@ -23,7 +23,7 @@ public func observe<O: Observable>(_ observable: O) -> ObservationTransformer<O.
 {
     ObservationTransformer
     {
-        receive in AnonymousObserver.shared.observe(observable,
+        receive in FreeObserver.shared.observe(observable,
                                                     receive: receive)
     }
 }
@@ -31,18 +31,11 @@ public func observe<O: Observable>(_ observable: O) -> ObservationTransformer<O.
 public func observe<O: Observable>(_ observable: O,
                                    receive: @escaping (O.Message, AnyAuthor) -> Void)
 {
-    AnonymousObserver.shared.observe(observable, receive: receive)
+    FreeObserver.shared.observe(observable, receive: receive)
 }
 
 public func observe<O: Observable>(_ observable: O,
                                    receive: @escaping (O.Message) -> Void)
 {
-    AnonymousObserver.shared.observe(observable, receive: receive)
-}
-
-public class AnonymousObserver: AdhocObserver
-{
-    public static let shared = AnonymousObserver()
-    
-    private override init() {}
+    FreeObserver.shared.observe(observable, receive: receive)
 }

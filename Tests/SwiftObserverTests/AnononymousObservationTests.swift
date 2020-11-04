@@ -8,7 +8,7 @@ class AnononymousObservationTests: XCTestCase
         let messenger = Messenger<Void>()
         var messengerDidSend = false
         
-        AnonymousObserver.shared.observe(messenger)
+        FreeObserver.shared.observe(messenger)
         {
             messengerDidSend = true
         }
@@ -23,14 +23,14 @@ class AnononymousObservationTests: XCTestCase
         let messenger = Messenger<Void>()
         var messengerDidSend = false
         
-        XCTAssertFalse(AnonymousObserver.shared.isObserving(messenger))
+        XCTAssertFalse(FreeObserver.shared.isObserving(messenger))
         
         SwiftObserver.observe(messenger)
         {
             messengerDidSend = true
         }
         
-        XCTAssert(AnonymousObserver.shared.isObserving(messenger))
+        XCTAssert(FreeObserver.shared.isObserving(messenger))
         
         messenger.send(())
         
@@ -61,7 +61,7 @@ class AnononymousObservationTests: XCTestCase
         let messenger = Messenger<Void>()
         var receivedMessage = false
         
-        var observer: AdhocObserver?
+        var observer: FreeObserver?
         
         observer = observeOnce(messenger)
         {

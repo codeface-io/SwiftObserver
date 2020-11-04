@@ -9,7 +9,7 @@ class PromiseTests: XCTestCase
         
         let promiseFulfilled = expectation(description: "promise is fulfilled")
         
-        let observer = AdhocObserver()
+        let observer = FreeObserver()
         
         observer.observe(promise)
         {
@@ -39,7 +39,7 @@ class PromiseTests: XCTestCase
         
         let valueReceived = expectation(description: "did reveive value from promise")
         
-        let observer = AdhocObserver()
+        let observer = FreeObserver()
         
         observer.observe(promise)
         {
@@ -60,7 +60,7 @@ class PromiseTests: XCTestCase
 
         let promiseFulfilled = expectation(description: "promise is fulfilled")
 
-        let observer = AdhocObserver()
+        let observer = FreeObserver()
 
         observer.observe(weakPromise!)
         {
@@ -78,7 +78,7 @@ class PromiseTests: XCTestCase
         
         var numberOfReceivedValues = 0
         
-        let observer = AdhocObserver()
+        let observer = FreeObserver()
         
         observer.observe(promise)
         {

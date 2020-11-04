@@ -9,13 +9,13 @@ extension Observable
     }
     
     @discardableResult
-    func observeOnce(_ receive: @escaping (Message, AnyAuthor) -> Void) -> AdhocObserver
+    func observeOnce(_ receive: @escaping (Message, AnyAuthor) -> Void) -> FreeObserver
     {
         SwiftObserver.observeOnce(self, receive: receive)
     }
     
     @discardableResult
-    func observeOnce(_ receive: @escaping (Message) -> Void) -> AdhocObserver
+    func observeOnce(_ receive: @escaping (Message) -> Void) -> FreeObserver
     {
         SwiftObserver.observeOnce(self, receive: receive)
     }
@@ -31,30 +31,30 @@ public func observeOnce<O: Observable>(_ observable: O) -> ObservationTransforme
 
 @discardableResult
 public func observeOnce<O: Observable>(_ observabe: O,
-                                       receive: @escaping (O.Message) -> Void) -> AdhocObserver
+                                       receive: @escaping (O.Message) -> Void) -> FreeObserver
 {
-    let adhocObserver = AdhocObserver()
+    let observer = FreeObserver()
     
-    adhocObserver.observe(observabe)
+    observer.observe(observabe)
     {
-        adhocObserver.stopObserving()
+        observer.stopObserving()
         receive($0)
     }
     
-    return adhocObserver
+    return observer
 }
 
 @discardableResult
 public func observeOnce<O: Observable>(_ observabe: O,
-                                       receive: @escaping (O.Message, AnyAuthor) -> Void) -> AdhocObserver
+                                       receive: @escaping (O.Message, AnyAuthor) -> Void) -> FreeObserver
 {
-    let adhocObserver = AdhocObserver()
+    let observer = FreeObserver()
     
-    adhocObserver.observe(observabe)
+    observer.observe(observabe)
     {
-        adhocObserver.stopObserving()
+        observer.stopObserving()
         receive($0, $1)
     }
     
-    return adhocObserver
+    return observer
 }
