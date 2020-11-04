@@ -1,4 +1,4 @@
-public func firstly<First: Observable>(firstObservable: () -> First) -> First
+public func first<First: Observable>(firstObservable: () -> First) -> First
 {
     firstObservable()
 }
@@ -11,7 +11,7 @@ public extension Observable
         {
             promise in
         
-            observeOnce()
+            observeOnce
             {
                 nextObservable($0).observeOnce(promise.fulfill(_:))
             }
@@ -24,7 +24,7 @@ public extension Observable
         {
             promise in
     
-            observeOnce()
+            observeOnce
             {
                 nextObservable($0, $1).observeOnce(promise.fulfill(_:as:))
             }

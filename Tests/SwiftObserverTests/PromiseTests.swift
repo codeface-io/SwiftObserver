@@ -148,7 +148,7 @@ class PromiseTests: XCTestCase
     {
         let receivedValue = expectation(description: "received value")
         
-        firstly
+        first
         {
             asyncFunc(returnValue: 42)
         }
