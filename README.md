@@ -12,7 +12,7 @@ SwiftObserver is a lightweight framework for reactive Swift. Its design goals ma
 4. [**Flexibility**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🤸🏻‍♀️<br>SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
 5. [**Safety**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#safety) ⛑<br>SwiftObserver does the memory management for you. Oh yeah, memory leaks are impossible.
 
-SwiftObserver is few lines of production code, but it's well beyond a 1000 hours of work, rethinking it, letting go of fancy features, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/tree/master/Tests/SwiftObserverTests), and battle-testing it [in practice](http://flowlistapp.com).
+SwiftObserver is few lines of production code, but it's well beyond a 1000 hours of work, rethinking and reworking it over and over, letting go of fancy features, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/tree/master/Tests/SwiftObserverTests), and battle-testing it [in practice](http://flowlistapp.com).
 
 ## Why the Hell Another Reactive Swift Framework?
 
@@ -232,7 +232,7 @@ class Model: Observable {
 
 # Promises
 
-`Promise<Value>` is a `Messenger<Value>` that offers a simple promise implementation. It helps chaining asynchronous calls and makes them more managable.
+`Promise<Value>` is a `Messenger<Value>` that offers a simple promise implementation. It helps with chaining asynchronous calls and makes them more managable.
 
 > `Promise` is part of SwiftObserver because Combine's `Future` is unfortunately not a practical solution for one-shot asynchronous calls, and to depend on `PromiseKit` might be unnecessary in reasonably simple contexts. Also, integrating promises as regular observables yields some consistency and synergy.
 
@@ -252,9 +252,9 @@ observe(getID()) { id in         // anonymous observation
 
 Calling `fulfill(value)` on a `Promise` is equivalent to calling `send(value)`.
 
-Typically, promises are shortlived observables that you don't store anywhere. That works fine since an asynchronous function returning a promise (above `getID()`) keeps that promise alive in order to fulfill it. So you can anonymously observe such a promise without storing it, and the promise as well as its observations get cleaned up automatically after the promise gets fulfilled.
+Typically, promises are shortlived observables that you don't store anywhere. That works fine since an asynchronous function returning a promise (above `getID()`) keeps that promise alive in order to fulfill it. So you can anonymously observe such a promise without storing it, and the promise as well as its observation get cleaned up automatically when the promise was fulfilled.
 
-Sometimes, you want to do multiple things with an asynchronous result when it is available or later. Or you generally want to ensure that some asynchronous task has been completed before doing different other things. In that case you store a buffered promise, so you can access the promise's `latestMessage` repeatedly:
+Sometimes, you want to do multiple things with an asynchronous result when it is available or later. Or you generally want to ensure that some asynchronous task has been completed before doing different other things. In that case you store the [buffered](#buffered-observables) promise, so you can access the promise's `latestMessage` repeatedly:
 
 ```swift
 let bufferedIDPromise = getID().buffer()
@@ -268,9 +268,9 @@ bufferedIDPromise.whenFulfilled { id in
 }
 ```
 
-`whenFulfilled` is available on all buffered observables that have an optional message type. It provides an unwrapped message as soon as one is available. If `latestMessage` is still `nil`, `whenFulfilled` starts an adhoc observation of the buffered observable. It stops that observation as soon as the buffered observable has sent a non-optional message.
+`whenFulfilled` is available on all [buffered observables](#buffered-observables) that have an optional message type. It provides an unwrapped message as soon as one is available. If `latestMessage` is still `nil`, `whenFulfilled` starts an adhoc observation of the buffered observable. It stops that observation as soon as the buffered observable has sent a non-optional message.
 
-If you hold on to a promise directly, its observations still get cleaned up, since a promise actively stops being observed after the first time it sends a message or gets fulfilled. In the above example this just means that the buffered observable stops observing its underlying promise, as soon as that promise was fulfilled.
+If you hold on to a `Promise` directly, its observations still get cleaned up, since a `Promise` actively stops being observed after the first time it sends a message or gets fulfilled. In the above example this just means that the buffered observable stops observing its underlying promise as soon as the promise was fulfilled.
 
 
 # Variables
@@ -563,15 +563,17 @@ dog.observe(tv, bowl, doorbell) { image, food, sound in
 
 When one of the combined observables sends a message, the combined observation **pulls** messages from the other observables to provide all latest messages to the observer (read more on this design [here](Documentation/philosophy.md#the-philosophy-of-swiftobserver)).
 
-### Three Kinds of Buffered Observables
+### Four Kinds of Buffered Observables
 
-1. Any `Var` is buffered. Its `latestMessage` is an `Update` in which `old` and `new` are both the current `value`.
+1. Any `Var` is buffered. Its `latestMessage` is an `Update` in which `old` and `new` both hold the current `value`.
 
-2. Any observable transform that has a buffered source observable is itself buffered **if** it never suppresses (filters) messages. These transforms are: `map`, `new` and `unwrap(default)`.
+2. Calling `buffer()` on an `Observable` creates a `BufferedObservable`. The resulting buffered observable's `Message` will be optional but never a doubled optional, even if the original observable's `Message` is optional. This is the only transform that only works as a distinct observable object.
+
+3. Any observable transform that has a buffered source observable is itself buffered **if** it never suppresses (filters) messages. These transforms are: `map`, `new` and `unwrap(default)`.
 
    Be aware that the `latestMessage` of such a transform only ever returns the transformed `latestMessage` of its underlying buffered source. Calling `send(transformedMessage)` on the transform object itself will not "update" its `latestMessage`.
 
-3. Any of your custom observables is buffered **if** you make it conform to `BufferedObservable`. This is easy. Even if the message type isn't based on some state, you can still return a meaningful default value as `latestMessage` or make the message type optional and return `nil`.
+4. Any of your custom observables is buffered **if** you make it conform to `BufferedObservable`. This is easy. Even if the message type isn't based on some state, you can still return a meaningful default value as `latestMessage` or make the message type optional and return `nil`.
 
 ### Buffered Value Updates
 
