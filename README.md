@@ -136,14 +136,16 @@ The receiver retains the observer's observations. The observer just holds on to 
 You don't even need an explicit observer to start an observation:
 
 ~~~swift
-observe(Sky.shared) { color in  // implicitly calls FreeObserver.shared.observe(...)
+observe(Sky.shared) { color in
     // marvel at the sky changing its color
 }
 
-Sky.shared.observed { color in  // ... same
+Sky.shared.observed { color in
     // ...
 }
 ~~~
+
+The above examples internally call `FreeObserver.shared.observe(...)`.
 
 You can also instantiate your own `FreeObserver` to do observations even more "freely". Just remember to keep the observer alive as long as the observation shall last.
 
