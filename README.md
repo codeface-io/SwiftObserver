@@ -27,9 +27,10 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Install](#install)
     * [Introduction](#introduction)
 * [Messengers](#messengers)
-    * [Understand Observables and Messengers](#understand-observables-and-messengers)
-    * [Make Custom Observables ](#make-custom-observables)
 * [Promises](#promises)
+    * [Receive a Promised Value](#receive-a-promised-value)
+    * [Receive a Promised Value Again](#receive-a-promised-value-again)
+    * [Chain Observables](#chain-observables)
 * [Variables](#variables)
     * [Observe Variables](#observe-variables)
     * [Use Variable Values](#use-variable-values) 
@@ -130,7 +131,7 @@ The receiver retains the observer's observations. The observer just holds on to 
 * An `Observer` can do multiple simultaneous observations of the same `Observable`, starting each via the mentioned `observe(...)` function.
 * You can check wether an observer is observing an observable via `observer.isObserving(observable)`.
 
-#### Anonymous Observer
+#### Free Observers
 
 You don't even need an observer to start an observation:
 
@@ -140,7 +141,11 @@ observe(Sky.shared) { color in
 }
 ~~~
 
-This global `observe(...)` function lets the anonymous observer do the observation. It's equivalent to calling `AnonymousObserver.shared.observe(...)`.
+This global `observe(...)` function lets the shared free observer do the observation. It's equivalent to calling `FreeObserver.shared.observe(...)`.
+
+You can also instantiate your own `FreeObserver` to do observations even more "freely". Just remember to keep the observer alive as long as the observation shall last.
+
+And you can do one-time observations via `observeOnce(observable) { ... }` or even `observable.observeOnce { ... }`. This returns the involved `FreeObserver` as a discardable result. It will release the observation and the observer as soon as the observable has sent the first message.
 
 ### Observables
 
@@ -161,7 +166,7 @@ class Sky: Observable {
 #### Ways to Create an Observable
 
 1. Create a [`Messenger<Message>`](#messengers). It's a mediator through which other entities communicate.
-2. Create an object of a [custom `Observable`](#make-custom-observables) class that utilizes `Messenger<Message>`.
+2. Create an object of a [custom `Observable`](#messengers) class that utilizes `Messenger<Message>`.
 3. Create a [`Promise<Value>`](#promises). It's a Messenger with conveniences for asynchronous returns.
 4. Create a [`Variable<Value>`](#variables) (a.k.a. `Var<Value>`). It holds a value and sends value updates.
 5. Create a [*transform*](#make-transforms-observable) object. It wraps and transforms another `Observable`.
@@ -179,7 +184,7 @@ Sky.shared.stopBeingObserved(by: dog)  // no more messages to dog
 Sky.shared.stopBeingObserved()         // no more messages to anywhere
 ```
 
-You may involve `AnonymousObserver.shared` to stop certain or all anonymous observations.
+You may involve `FreeObserver.shared` to stop certain or all free global observations.
 
 # Messengers
 
@@ -196,8 +201,6 @@ textMessenger.send("my message")
 ```
 
 `Messenger` embodies the common [messenger / notifier pattern](Documentation/specific-patterns.md#the-messenger-pattern) and can be used for that out of the box. 
-
-## Understand Observables and Messengers
 
 Having a messenger is actually what defines `Observable` objects:
 
@@ -216,8 +219,6 @@ extension Messenger: Observable {
 }
 ```
 
-## Make Custom Observables
-
 All other observables are either subclasses of `Messenger` or custom observables that provide some `Messenger<Message>`. Custom observables often employ some `enum` as their `Message` type:
 
 ~~~swift
@@ -232,34 +233,36 @@ class Model: Observable {
 
 # Promises
 
-`Promise<Value>` is a `Messenger<Value>` that offers a simple promise implementation. It helps with chaining asynchronous calls and makes them more managable.
+`Promise<Value>` is a `Messenger<Value>` that offers a simple promise implementation. It helps with managing and chaining asynchronous calls.
 
-> `Promise` is part of SwiftObserver because Combine's `Future` is unfortunately not a practical solution for one-shot asynchronous calls, and to depend on `PromiseKit` might be unnecessary in reasonably simple contexts. Also, integrating promises as regular observables yields some consistency and synergy.
+> **Side Note:** `Promise` is part of SwiftObserver because [Combine's `Future`](https://developer.apple.com/documentation/combine/future) is unfortunately not a practical solution for one-shot asynchronous calls, to depend on [PromiseKit](https://github.com/mxcl/PromiseKit) might be unnecessary in reasonably simple contexts, and [Vapor/NIO's Async](https://docs.vapor.codes/4.0/async/) might also be too server-specific. Anyway, integrating promises as regular observables yields some consistency, simplicity and synergy here. However, at some point *all* promise/future implementations will be obsolete due to [Swift's async/await](https://github.com/DougGregor/swift-evolution/blob/async-await/proposals/nnnn-async-await.md).
+
+## Receive a Promised Value
 
 ```swift
-func getID() -> Promise<Int> {
+func getID() -> Promise<Int> {   // getID() promises an Int
     Promise { promise in         // convenience initializer
-        getIDAsync { id in
-            promise.fulfill(id)  // retains the promise until it's fulfilled
+        getIDAsync { id in       // handler retains the promise until it's fulfilled
+            promise.fulfill(id)  // equivalent to promise.send(id)
         } 
     }
 }
 
-observe(getID()) { id in         // anonymous observation
-    // so somethin with the ID
+getID().observe { id in          // free global observation
+    // do somethin with the ID
 }
 ```
 
-Calling `fulfill(value)` on a `Promise` is equivalent to calling `send(value)`.
+Typically, promises are shortlived observables that you don't store anywhere. That works fine since an asynchronous function returning a promise (like `getID()`) keeps that promise alive in order to fulfill it. So you can (globally) observe such a promise without even storing it, and the promise as well as its observations get cleaned up automatically when the promise is fulfilled and dies.
 
-Typically, promises are shortlived observables that you don't store anywhere. That works fine since an asynchronous function returning a promise (above `getID()`) keeps that promise alive in order to fulfill it. So you can anonymously observe such a promise without storing it, and the promise as well as its observation get cleaned up automatically when the promise was fulfilled.
+## Receive a Promised Value Again
 
-Sometimes, you want to do multiple things with an asynchronous result when it is available or later. Or you generally want to ensure that some asynchronous task has been completed before doing different other things. In that case you store the [buffered](#buffered-observables) promise, so you can retrieve the promised value repeatedly:
+Sometimes, you want to do multiple things with an asynchronous result (long) after receiving it. In that case you may keep a [buffer of the promise](#buffered-observables), so its value will be stored:
 
 ```swift
-let bufferedIDPromise = getID().buffer()
+let bufferedIDPromise = getID().buffer()  // a BufferedObservable
 
-bufferedIDPromise.whenFulfilled { id in
+bufferedIDPromise.whenFulfilled { id in   // gets id from buffer or from observation
     // do somethin with the ID
 }
 
@@ -268,9 +271,29 @@ bufferedIDPromise.whenFulfilled { id in
 }
 ```
 
-`whenFulfilled` is available on all [buffered observables](#buffered-observables) that have an optional message type. It provides an unwrapped message as soon as one is available. If `latestMessage` is still `nil`, `whenFulfilled` starts an adhoc observation of the buffered observable. It stops that observation as soon as the buffered observable has sent a non-optional message.
+The function `whenFulfilled` is available on all [buffered observables](#buffered-observables) that have an optional message type. It provides an unwrapped message as soon as one is available. If the buffer's `latestMessage` is still `nil`, `whenFulfilled` starts a one-time observation of the buffer.
 
-If you hold on to a `Promise` directly, its observations still get cleaned up, since a `Promise` actively stops being observed after the first time it sends a message or gets fulfilled. In the above example this just means that the buffered observable stops observing its underlying promise as soon as the promise was fulfilled.
+If you hold on to a `Promise` directly, its observations still get cleaned up, since a `Promise` actively stops being observed after the first time it sends a message or gets fulfilled. In the above example this just means that the buffer stops observing its underlying promise as soon as the promise was fulfilled.
+
+## Chain Observables
+
+Inspired by PromiseKit, SwiftObserver allows to chain observables:
+
+```swift
+first {                         
+    promiseInt()                // return `Promise<Int>`
+}.then {
+    promiseString(takeInt: $0)  // take Int sent by observable `first`, return `Promise<String>`
+}.observe {                     // observation dies when promise `then` is fulfilled
+    print($0)										// print String sent by promise `then`
+}
+```
+
+`first` is only for readability. It takes a closure that returns an `Observable` and just returns that `Observable`.
+
+You call `then` on a "source" `Observable`. It takes a closure that returns a "target" `Observable`. And it provides the next message from the "source" to the closure that returns the target, allowing the target to process the source message. `then` combines source and target into a new `Promise<TargetMessage>`.
+
+Of course, this is geared towards combining promises into new promises, but the closures you pass to `first` and `then` can return any type of `Observable`s.
 
 
 # Variables
@@ -515,7 +538,7 @@ Ignoring messages from `self` is typical when multiple entities observe and muta
 
 ### Author Related Transforms
 
-There are three transforms related to message authors. You can apply them directly in observations or create them as standalone observables.
+There are three transforms related to message authors. As with other transforms, you can apply them directly in observations or create them as standalone observables.
 
 #### Filter Author
 
