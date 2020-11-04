@@ -146,11 +146,11 @@ Sky.shared.observed { color in
 }
 ~~~
 
-This lets the shared free observer do the observation. It's equivalent to calling `FreeObserver.shared.observe(Sky.shared) { ... }`.
+This is equivalent to calling `FreeObserver.shared.observe(Sky.shared) { ... }`. The shared free observer can be used for many observations.
 
 You can also instantiate your own `FreeObserver` to do observations even more "freely". Just remember to keep the observer alive as long as the observation shall last.
 
-And you can do one-time observations via `observeOnce(observable) { ... }` and  `observable.observedOnce { ... }`. Both return the involved `FreeObserver` as a discardable result. The observer and the internal observation will die as soon as the observable has sent the first message.
+And you can do one-time observations via `observeOnce(observable) { ... }` and  `observable.observedOnce { ... }`. Both return the involved `FreeObserver` as a discardable result. But typically you ignore that observer since it will die together with its observation as soon as the observable has sent a first message.
 
 ### Observables
 
@@ -282,7 +282,7 @@ If you hold on to a `Promise` directly, its observations still get cleaned up, s
 
 ## Chain Observables
 
-Inspired by PromiseKit, SwiftObserver allows to chain observables:
+Inspired by PromiseKit, SwiftObserver allows to create promises by chaining observables:
 
 ```swift
 first {                         
