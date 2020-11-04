@@ -316,7 +316,7 @@ observer.observe(number) { update in
 }
 ~~~
 
-In addition, you can always manually call `variable.send()` (without argument) to send an update in which `old` and `new` both hold the current `value` (see [`BufferedObservable`](#message-buffering)).
+In addition, you can always manually call `variable.send()` (without argument) to send an update in which `old` and `new` both hold the current `value` (see [`BufferedObservable`](#buffered-observables)).
 
 ## Use Variable Values
 
