@@ -11,9 +11,9 @@ public extension Observable
         {
             promise in
         
-            observeOnce
+            observedOnce
             {
-                nextObservable($0).observeOnce(promise.fulfill(_:))
+                nextObservable($0).observedOnce(promise.fulfill(_:))
             }
         }
     }
@@ -24,9 +24,9 @@ public extension Observable
         {
             promise in
     
-            observeOnce
+            observedOnce
             {
-                nextObservable($0, $1).observeOnce(promise.fulfill(_:as:))
+                nextObservable($0, $1).observedOnce(promise.fulfill(_:as:))
             }
         }
     }

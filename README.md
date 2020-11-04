@@ -133,19 +133,24 @@ The receiver retains the observer's observations. The observer just holds on to 
 
 #### Free Observers
 
-You don't even need an observer to start an observation:
+You don't even need an explicit observer to start an observation:
 
 ~~~swift
 observe(Sky.shared) { color in
     // marvel at the sky changing its color
 }
+
+// or like this:
+Sky.shared.observed { color in 
+    // ...
+}
 ~~~
 
-This global `observe(...)` function lets the shared free observer do the observation. It's equivalent to calling `FreeObserver.shared.observe(...)`.
+This lets the shared free observer do the observation. It's equivalent to calling `FreeObserver.shared.observe(Sky.shared) { ... }`.
 
 You can also instantiate your own `FreeObserver` to do observations even more "freely". Just remember to keep the observer alive as long as the observation shall last.
 
-And you can do one-time observations via `observeOnce(observable) { ... }` or even `observable.observeOnce { ... }`. This returns the involved `FreeObserver` as a discardable result. It will release the observation and the observer as soon as the observable has sent the first message.
+And you can do one-time observations via `observeOnce(observable) { ... }` and  `observable.observedOnce { ... }`. Both return the involved `FreeObserver` as a discardable result. The observer and the internal observation will die as soon as the observable has sent the first message.
 
 ### Observables
 
@@ -248,7 +253,7 @@ func getID() -> Promise<Int> {   // getID() promises an Int
     }
 }
 
-getID().observe { id in          // free global observation
+getID().observed { id in         // observation by FreeObserver.shared
     // do somethin with the ID
 }
 ```
@@ -281,11 +286,11 @@ Inspired by PromiseKit, SwiftObserver allows to chain observables:
 
 ```swift
 first {                         
-    promiseInt()                // return `Promise<Int>`
+    promiseInt()                // return Promise<Int>
 }.then {
-    promiseString(takeInt: $0)  // take Int sent by observable `first`, return `Promise<String>`
-}.observe {                     // observation dies when promise `then` is fulfilled
-    print($0)										// print String sent by promise `then`
+    promiseString(takeInt: $0)  // take Int sent by observable 'first', return Promise<String>
+}.observed {                    // observation dies when promise 'then' is fulfilled
+    print($0)										// print String sent by promise 'then'
 }
 ```
 

@@ -9,7 +9,7 @@ public extension BufferedObservable
         }
         else
         {
-            observeOnce().unwrap(receiveUnwrapped: receive)
+            observedOnce().unwrap(receiveUnwrapped: receive)
         }
     }
     
@@ -22,7 +22,7 @@ public extension BufferedObservable
         }
         else
         {
-            observeOnce().unwrap(receiveUnwrapped: receive)
+            observedOnce().unwrap(receiveUnwrapped: receive)
         }
     }
 }

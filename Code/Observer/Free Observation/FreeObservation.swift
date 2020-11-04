@@ -1,6 +1,6 @@
 extension Observable
 {
-    func observe() -> ObservationTransformer<Message>
+    func observed() -> ObservationTransformer<Message>
     {
         ObservationTransformer
         {
@@ -8,12 +8,12 @@ extension Observable
         }
     }
     
-    func observe(_ receive: @escaping (Message, AnyAuthor) -> Void)
+    func observed(_ receive: @escaping (Message, AnyAuthor) -> Void)
     {
         FreeObserver.shared.observe(self, receive: receive)
     }
     
-    func observe(_ receive: @escaping (Message) -> Void)
+    func observed(_ receive: @escaping (Message) -> Void)
     {
         FreeObserver.shared.observe(self, receive: receive)
     }

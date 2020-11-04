@@ -1,23 +1,23 @@
 extension Observable
 {
-    func observeOnce() -> ObservationTransformer<Message>
+    func observedOnce() -> ObservationTransformer<Message>
     {
         ObservationTransformer
         {
-            receive in SwiftObserver.observeOnce(self, receive: receive)
+            receive in observeOnce(self, receive: receive)
         }
     }
     
     @discardableResult
-    func observeOnce(_ receive: @escaping (Message, AnyAuthor) -> Void) -> FreeObserver
+    func observedOnce(_ receive: @escaping (Message, AnyAuthor) -> Void) -> FreeObserver
     {
-        SwiftObserver.observeOnce(self, receive: receive)
+        observeOnce(self, receive: receive)
     }
     
     @discardableResult
-    func observeOnce(_ receive: @escaping (Message) -> Void) -> FreeObserver
+    func observedOnce(_ receive: @escaping (Message) -> Void) -> FreeObserver
     {
-        SwiftObserver.observeOnce(self, receive: receive)
+        observeOnce(self, receive: receive)
     }
 }
 

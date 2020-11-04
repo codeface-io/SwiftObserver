@@ -156,7 +156,7 @@ class PromiseTests: XCTestCase
         {
             self.asyncFunc(returnValue: "\($0)")
         }
-        .observe()
+        .observed()
         .map
         {
             $0.count
