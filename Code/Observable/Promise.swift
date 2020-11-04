@@ -7,19 +7,28 @@ public extension Observable
 {
     func then<Next: Observable>(_ nextObservable: @escaping (Message) -> Next) -> Promise<Next.Message>
     {
-        let promise = Promise<Next.Message>()
+        Promise
+        {
+            promise in
         
-        let observer = AdhocObserver()
-        
-        observer.observe(self) {
-            observer.stopObserving()
-            observer.observe(nextObservable($0)) {
-                observer.stopObserving()
-                promise.fulfill($0)
+            observeOnce()
+            {
+                nextObservable($0).observeOnce(promise.fulfill(_:))
             }
         }
-        
-        return promise
+    }
+    
+    func then<Next: Observable>(_ nextObservable: @escaping (Message, AnyAuthor) -> Next) -> Promise<Next.Message>
+    {
+        Promise
+        {
+            promise in
+    
+            observeOnce()
+            {
+                nextObservable($0, $1).observeOnce(promise.fulfill(_:as:))
+            }
+        }
     }
 }
 
