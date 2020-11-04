@@ -3,7 +3,7 @@ import XCTest
 
 class AnononymousObservationTests: XCTestCase
 {
-    func testThatAnonymousObserverIsAvailable()
+    func testAnonymousObserverIsAvailable()
     {
         let messenger = Messenger<Void>()
         var messengerDidSend = false
@@ -18,7 +18,7 @@ class AnononymousObservationTests: XCTestCase
         XCTAssert(messengerDidSend)
     }
     
-    func testThatAnonymousObserverCanBeUsedImplicitly()
+    func testAnonymousObserverCanBeUsedImplicitly()
     {
         let messenger = Messenger<Void>()
         var messengerDidSend = false
@@ -37,7 +37,7 @@ class AnononymousObservationTests: XCTestCase
         XCTAssert(messengerDidSend)
     }
     
-    func testThatAnonymousObservationCanBeTransformed()
+    func testAnonymousObservationCanBeTransformed()
     {
         let messenger = Messenger<Void>()
         var messengerDidSend = false
@@ -54,5 +54,41 @@ class AnononymousObservationTests: XCTestCase
         messenger.send(())
         
         XCTAssert(messengerDidSend)
+    }
+    
+    func testObserveOnce()
+    {
+        let messenger = Messenger<Void>()
+        var receivedMessage = false
+        
+        var observer: AdhocObserver?
+        
+        observer = observeOnce(messenger)
+        {
+            XCTAssertFalse(observer?.isObserving(messenger) ?? true)
+            receivedMessage = true
+        }
+        
+        XCTAssert(observer!.isObserving(messenger))
+        XCTAssertFalse(receivedMessage)
+        
+        messenger.send(())
+        XCTAssertFalse(observer!.isObserving(messenger))
+        XCTAssert(receivedMessage)
+        
+        receivedMessage = false
+        messenger.send(())
+        XCTAssertFalse(receivedMessage)
+    }
+    
+    func testObserveOnceObserverDies()
+    {
+        let messenger = Messenger<Void>()
+        
+        weak var observer = observeOnce(messenger) {}
+        
+        XCTAssertNotNil(observer)
+        messenger.send(())
+        XCTAssertNil(observer)
     }
 }

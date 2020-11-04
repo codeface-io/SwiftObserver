@@ -9,16 +9,7 @@ public extension BufferedObservable
         }
         else
         {
-            let fulfillmentObserver = AdhocObserver()
-            
-            fulfillmentObserver.observe(self).unwrap
-            {
-                unwrapped in
-                
-                fulfillmentObserver.stopObserving()
-                
-                receive(unwrapped)
-            }
+            observeOnce().unwrap(receiveUnwrapped: receive)
         }
     }
     
@@ -31,16 +22,7 @@ public extension BufferedObservable
         }
         else
         {
-            let fulfillmentObserver = AdhocObserver()
-            
-            fulfillmentObserver.observe(self).unwrap
-            {
-                unwrapped, author in
-                
-                fulfillmentObserver.stopObserving()
-                
-                receive(unwrapped, author)
-            }
+            observeOnce().unwrap(receiveUnwrapped: receive)
         }
     }
 }
