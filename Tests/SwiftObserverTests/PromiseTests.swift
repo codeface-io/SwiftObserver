@@ -144,12 +144,43 @@ class PromiseTests: XCTestCase
         XCTAssertEqual(receivedValue2, 42)
     }
     
+    func testChainingFirstlyThenObserveAndObservationMapper()
+    {
+        let receivedValue = expectation(description: "received value")
+        
+        firstly
+        {
+            asyncFunc(returnValue: 42)
+        }
+        .then
+        {
+            self.asyncFunc(returnValue: "\($0)")
+        }
+        .observe()
+        .map
+        {
+            $0.count
+        }
+        .receive
+        {
+            XCTAssertEqual($0, 2)
+            receivedValue.fulfill()
+        }
+        
+        waitForExpectations(timeout: 3)
+    }
+    
     func asyncFunc() -> Promise<Void>
     {
         Promise { promise in DispatchQueue.main.async { promise.fulfill(()) } }
     }
     
     func asyncFunc(returnValue: Int) -> Promise<Int>
+    {
+        Promise { promise in DispatchQueue.main.async { promise.fulfill(returnValue) } }
+    }
+    
+    func asyncFunc(returnValue: String) -> Promise<String>
     {
         Promise { promise in DispatchQueue.main.async { promise.fulfill(returnValue) } }
     }

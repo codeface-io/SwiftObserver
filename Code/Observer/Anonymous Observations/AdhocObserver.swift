@@ -2,5 +2,9 @@
 
 public class AdhocObserver: Observer
 {
+//    init() { print("🥚") }
+//    
+//    deinit { print("💀") }
+    
     public let receiver = Receiver()
 }
