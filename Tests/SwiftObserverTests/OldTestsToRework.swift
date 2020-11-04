@@ -520,5 +520,5 @@ class OldTestsToRework: XCTestCase
         let messenger = Messenger<Update<String>>()
     }
     
-    let controller = TestObserver()
+    let controller = AdhocObserver()
 }

@@ -10,7 +10,7 @@ class VariableTests: XCTestCase
         var observedNewValue: String?
         var observedOldValue: String?
         
-        let observer = TestObserver()
+        let observer = AdhocObserver()
         
         observer.observe(text)
         {
@@ -114,7 +114,7 @@ class VariableTests: XCTestCase
         
         var didUpdate = false
         
-        let observer = TestObserver()
+        let observer = AdhocObserver()
         
         observer.observe(text)
         {
