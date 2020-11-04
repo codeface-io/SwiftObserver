@@ -254,7 +254,7 @@ Calling `fulfill(value)` on a `Promise` is equivalent to calling `send(value)`.
 
 Typically, promises are shortlived observables that you don't store anywhere. That works fine since an asynchronous function returning a promise (above `getID()`) keeps that promise alive in order to fulfill it. So you can anonymously observe such a promise without storing it, and the promise as well as its observation get cleaned up automatically when the promise was fulfilled.
 
-Sometimes, you want to do multiple things with an asynchronous result when it is available or later. Or you generally want to ensure that some asynchronous task has been completed before doing different other things. In that case you store the [buffered](#buffered-observables) promise, so you can access the promise's `latestMessage` repeatedly:
+Sometimes, you want to do multiple things with an asynchronous result when it is available or later. Or you generally want to ensure that some asynchronous task has been completed before doing different other things. In that case you store the [buffered](#buffered-observables) promise, so you can retrieve the promised value repeatedly:
 
 ```swift
 let bufferedIDPromise = getID().buffer()
