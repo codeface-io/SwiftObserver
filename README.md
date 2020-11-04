@@ -290,13 +290,13 @@ first {
 }.then {
     promiseString(takeInt: $0)  // take Int sent by observable 'first', return Promise<String>
 }.observed {                    // observation dies when promise 'then' is fulfilled
-    print($0)										// print String sent by promise 'then'
+    print($0)                   // print String sent by promise 'then'
 }
 ```
 
 `first` is only for readability. It takes a closure that returns an `Observable` and just returns that `Observable`.
 
-You call `then` on a "source" `Observable`. It takes a closure that returns a "target" `Observable`. And it provides the next message from the "source" to the closure that returns the target, allowing the target to process the source message. `then` combines source and target into a new `Promise<TargetMessage>`.
+You call `then` on a "source" `Observable`, and pass it a closure that returns a "target" `Observable`. It provides the next message from the "source" to the closure that returns the target, allowing the target to process the source message. `then` basically combines source and target into a new `Promise<TargetMessage>`.
 
 Of course, this is geared towards combining promises into new promises, but the closures you pass to `first` and `then` can return any type of `Observable`s.
 
