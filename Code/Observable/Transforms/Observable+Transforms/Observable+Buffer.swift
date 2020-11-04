@@ -1,7 +1,12 @@
 public extension Observable
 {
-    func buffer() -> Buffer<Self>
+    func buffer<Unwrapped>() -> BufferForOptionalMessage<Self, Unwrapped>
     {
-        Buffer(self)
+        BufferForOptionalMessage(self)
+    }
+
+    func buffer<Unwrapped>() -> BufferForNonOptionalMessage<Self, Unwrapped>
+    {
+        BufferForNonOptionalMessage(self)
     }
 }
