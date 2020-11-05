@@ -12,7 +12,7 @@ SwiftObserver is a lightweight framework for reactive Swift. Its design goals ma
 4. [**Flexibility**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🤸🏻‍♀️<br>SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
 5. [**Safety**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#safety) ⛑<br>SwiftObserver does the memory management for you. Oh yeah, memory leaks are impossible.
 
-SwiftObserver is just 1600 lines of production code, but it's well beyond a 1000 hours of work, rethinking and reworking it, letting go of fancy features, documenting it, [unit-testing it](https://github.com/flowtoolz/SwiftObserver/tree/master/Tests/SwiftObserverTests), and battle-testing it [in practice](http://flowlistapp.com).
+SwiftObserver is only 1700+ lines of production code, but it's well beyond a 1000 hours of work, re-imagining and reworking it many times, letting go of fancy features, documenting, [unit-testing](https://github.com/flowtoolz/SwiftObserver/tree/master/Tests/SwiftObserverTests), and battle-testing it [in practice](http://flowlistapp.com).
 
 ## Why the Hell Another Reactive Swift Framework?
 
@@ -394,7 +394,15 @@ observer.observe(titleLength) { titleLength in
 }
 ```
 
-Such stand-alone transforms can offer the same preprocessing to multiple observers. But since these transforms are distinct `Observable` objects, you must hold them strongly somewhere. Holding transforms as dedicated observable objects suits entities like view models that represent transformations of other data.
+Every transform object has a property `origin` that exposes the underlying transformed observable. You may even replace `origin`:
+
+```swift
+let titleLength = Var("Dummy Title").new().map { $0.count }
+let title = Var("New Title")
+titleLength.origin.origin = title
+```
+
+Such stand-alone transforms can offer the same preprocessing to multiple observers. But since these transforms are distinct `Observable` objects, you must hold them strongly somewhere. Holding transform chains as dedicated observable objects suits entities like view models that represent transformations of other data.
 
 ## Use Prebuilt Transforms
 
@@ -594,11 +602,11 @@ When one of the combined observables sends a message, the combined observation *
 
 1. Any `Var` is buffered. Its `latestMessage` is an `Update` in which `old` and `new` both hold the current `value`.
 
-2. Calling `buffer()` on an `Observable` creates a `BufferedObservable`. The resulting buffered observable's `Message` will be optional but never a doubled optional, even if the original observable's `Message` is optional. This is the only transform that only works as a distinct observable object.
+2. Calling `buffer()` on an `Observable` creates a `BufferedObservable`. The resulting buffered observable's `Message` will be optional but never a doubled optional, even if the original observable's `Message` is optional. Of course, `buffer()` wouldn't make sense as an adhoc transform of an observation, so it only works as a distinct observable object.
 
-3. Any observable transform that has a buffered source observable is itself buffered **if** it never suppresses (filters) messages. These transforms are: `map`, `new` and `unwrap(default)`.
+3. Any transform that has a buffered origin is itself implicitly buffered **if** it never suppresses (filters) messages. These compatible transforms are: `map`, `new` and `unwrap(default)`.
 
-   Be aware that the `latestMessage` of such a transform only ever returns the transformed `latestMessage` of its underlying buffered source. Calling `send(transformedMessage)` on the transform object itself will not "update" its `latestMessage`.
+   Be aware that the `latestMessage` of an implicitly buffered transform always returns the transformed `latestMessage` of its underlying buffered origin. Calling `send(transformedMessage)` on the implicitly buffered transform itself will not "update" its `latestMessage`.
 
 4. Any of your custom observables is buffered **if** you make it conform to `BufferedObservable`. This is easy. Even if the message type isn't based on some state, you can still return a meaningful default value as `latestMessage` or make the message type optional and return `nil`.
 
@@ -626,7 +634,7 @@ class Model: BufferedObservable {
 
 ## Weak Reference
 
-When you want to put an `Observable` into some data structure or as the *source* into a *transform* but hold it there as a `weak` reference, you may want to wrap it in `Weak<O: Observable>`:
+When you want to put an `Observable` into some data structure or as the *origin* into a *transform* but hold it there as a `weak` reference, you may want to wrap it in `Weak<O: Observable>`:
 
 ~~~swift
 let number = Var(12)
