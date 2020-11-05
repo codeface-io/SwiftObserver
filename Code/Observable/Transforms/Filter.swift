@@ -1,24 +1,38 @@
 public final class Filter<O: Observable>: Observable, Observer
 {
-    public init(_ observable: O,
+    public init(_ origin: O,
                 _ keep: @escaping (O.Message) -> Bool)
     {
-        self.observable = observable
+        self.origin = origin
         self.keep = keep
-        
-        observe(observable)
+        observe(origin: origin)
+    }
+    
+    public var origin: O
+    {
+        willSet
+        {
+            stopObserving(origin)
+            observe(origin: newValue)
+        }
+    }
+    
+    private func observe(origin: O)
+    {
+        observe(origin)
         {
             [weak self] message, author in
             
-            if keep(message)
+            guard let self = self else { return }
+            
+            if self.keep(message)
             {
-                self?.send(message, from: author)
+                self.send(message, from: author)
             }
         }
     }
     
     internal let keep: (O.Message) -> Bool
-    internal let observable: O
     
     public let messenger = Messenger<O.Message>()
     public let receiver = Receiver()

@@ -1,21 +1,35 @@
 public class Mapper<O: Observable, Mapped>: Observable, Observer
 {
-    public init(_ observable: O,
+    public init(_ origin: O,
                 _ map: @escaping (O.Message) -> Mapped)
     {
-        self.observable = observable
+        self.origin = origin
         self.map = map
-        
-        observe(observable)
+        observe(origin: origin)
+    }
+    
+    public var origin: O
+    {
+        willSet
+        {
+            stopObserving(origin)
+            observe(origin: newValue)
+        }
+    }
+    
+    private func observe(origin: O)
+    {
+        observe(origin)
         {
             [weak self] message, author in
             
-            self?.send(map(message), from: author)
+            guard let self = self else { return }
+            
+            self.send(self.map(message), from: author)
         }
     }
     
     internal let map: (O.Message) -> Mapped
-    internal let observable: O
     
     public let messenger = Messenger<Mapped>()
     public let receiver = Receiver()
