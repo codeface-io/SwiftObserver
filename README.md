@@ -394,7 +394,7 @@ observer.observe(titleLength) { titleLength in
 }
 ```
 
-Every transform object has a property `origin` that exposes the underlying transformed observable. You may even replace `origin`:
+Every transform object exposes its underlying `Observable` as `origin`. You may even replace `origin`:
 
 ```swift
 let titleLength = Var("Dummy Title").new().map { $0.count }
