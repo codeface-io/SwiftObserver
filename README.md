@@ -314,7 +314,7 @@ observer.observe(number) { update in
 }
 ~~~
 
-In addition, you can always manually call `variable.send()` (without argument) to send an update in which `old` and `new` both hold the current `value` (see [`Cache`](#cached-messages)).
+In addition, you can always manually call `variable.send()` (without argument) to send an update in which `old` and `new` both hold the current `value` (see [`Cached Messages`](#cached-messages)).
 
 ## Use Variable Values
 
@@ -584,9 +584,23 @@ let humanMessages = messenger.notFrom(hal9000)  // sends String, but not from an
 
 A `Cache` is an `Observable` that also has a property `latestMessage: Message` which typically returns the last sent message or one that indicates that nothing has changed. `Cache` has a `func send()` that takes no argument and sends `latestMessage`.
 
+### Four Kinds of Caches
+
+1. Any `Var` is a cache. Its `latestMessage` is an `Update` in which `old` and `new` both hold the current `value`.
+
+2. Calling `cache()` on an `Observable` creates a [transform](#make-transforms-observable) that is a `Cache`. That cache's `Message` will be optional but never an *optional optional*, even when the origin's `Message` is already optional.
+
+   Of course, `cache()` wouldn't make sense as an adhoc transform of an observation, so it can only create a distinct observable object.
+
+3. Any transform whose origin is a `Cache` is itself implicitly a `Cache` **if** it never suppresses (filters) messages. These compatible transforms are: `map`, `new` and `unwrap(default)`.
+
+   Note that the `latestMessage` of a transform that is an implicit `Cache` returns the transformed `latestMessage` of its underlying `Cache` origin. Calling `send(transformedMessage)` on that transform itself will not "update" its `latestMessage`.
+
+4. Custom observables can easily conform to `Cache`. Even if their message type isn't based on some state, `latestMessage` can still return a meaningful default value - or even `nil` where `Message` is optional.
+
 ### Combined Observation
 
-Only observables that cache their latest message can be part of combined observations like this:
+Observables that cache their latest message can be part of combined observations like this:
 
 ```swift
 dog.observe(tv, bowl, doorbell) { image, food, sound in
@@ -595,20 +609,6 @@ dog.observe(tv, bowl, doorbell) { image, food, sound in
 ```
 
 When one of the combined observables sends a message, the combined observation **pulls** messages from the other observables to provide all latest messages to the observer (read more on this design [here](Documentation/philosophy.md#the-philosophy-of-swiftobserver)).
-
-### Four Kinds of Observable Caches
-
-1. Any `Var` is a cache. Its `latestMessage` is an `Update` in which `old` and `new` both hold the current `value`.
-
-2. Calling `cache()` on an `Observable` creates a `Cache`. That cache's `Message` will be optional but never an *optional optional*, even when the origin's `Message` is already optional.
-
-   Of course, `cache()` wouldn't make sense as an adhoc transform of an observation, so it can only create a distinct observable object.
-
-3. Any transform that has a cache origin is itself implicitly a cache **if** it never suppresses (filters) messages. These compatible transforms are: `map`, `new` and `unwrap(default)`.
-
-   Note that the `latestMessage` of an implicitly caching transform always returns the transformed `latestMessage` of its underlying caching origin. Calling `send(transformedMessage)` on the implicitly caching transform itself will not "update" its `latestMessage`.
-
-4. Any of your custom observables is a cache **if** you make it conform to `Cache`. This is easy. Even if the message type isn't based on some state, you can still return a meaningful default value as `latestMessage` or make the message type optional and return `nil`.
 
 ### Cached Value Updates
 
