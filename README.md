@@ -264,18 +264,18 @@ Typically, promises are shortlived observables that you don't store anywhere. Th
 Sometimes, you want to do multiple things with an asynchronous result (long) after receiving it. In that case you may keep a [buffer of the promise](#buffered-observables), so its value will be stored:
 
 ```swift
-let bufferedIDPromise = getID().buffer()  // a BufferedObservable
+let idPromiseBuffer = getID().buffer()  // a BufferedObservable
 
-bufferedIDPromise.whenFulfilled { id in   // gets id from buffer or from observation
+idPromiseBuffer.whenFilled { id in      // get buffered id or observe buffer
     // do somethin with the ID
 }
 
-bufferedIDPromise.whenFulfilled { id in
+idPromiseBuffer.whenFilled { id in
     // do somethin else with the ID
 }
 ```
 
-The function `whenFulfilled` is available on all [buffered observables](#buffered-observables) that have an optional message type. It provides an unwrapped message as soon as one is available. If the buffer's `latestMessage` is still `nil`, `whenFulfilled` starts a one-time observation of the buffer.
+The function `whenFilled` is available on all [buffered observables](#buffered-observables) that have an optional message type. It provides an unwrapped message as soon as one is available. If the buffer's `latestMessage` is still `nil`, `whenFilled` observes the buffer until the buffer sends a non-optional message.
 
 If you hold on to a `Promise` directly, its observations still get cleaned up, since a `Promise` actively stops being observed every time it sends a message or gets fulfilled. In the above example this just means that the buffer stops observing its underlying promise as soon as the promise was fulfilled.
 

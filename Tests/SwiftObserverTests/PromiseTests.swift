@@ -100,43 +100,43 @@ class PromiseTests: XCTestCase
     
     func testGettingValueMultipleTimesAsynchronouslyFromBufferedPromise()
     {
-        let bufferedPromise = asyncFunc(returnValue: 42).buffer()
+        let promiseBuffer = asyncFunc(returnValue: 42).buffer()
         
         let receivedValue = expectation(description: "received value")
         let receivedValue2 = expectation(description: "received value too")
         
-        bufferedPromise.whenFulfilled { value in
+        promiseBuffer.whenFilled { value in
             XCTAssertEqual(value, 42)
-            XCTAssertEqual(value, bufferedPromise.latestMessage)
+            XCTAssertEqual(value, promiseBuffer.latestMessage)
             receivedValue.fulfill()
         }
         
-        bufferedPromise.whenFulfilled { value in
+        promiseBuffer.whenFilled { value in
             XCTAssertEqual(value, 42)
-            XCTAssertEqual(value, bufferedPromise.latestMessage)
+            XCTAssertEqual(value, promiseBuffer.latestMessage)
             receivedValue2.fulfill()
         }
         
-        XCTAssertNil(bufferedPromise.latestMessage)
+        XCTAssertNil(promiseBuffer.latestMessage)
         waitForExpectations(timeout: 3)
-        XCTAssertEqual(bufferedPromise.latestMessage, 42)
+        XCTAssertEqual(promiseBuffer.latestMessage, 42)
     }
     
     func testGettingValueMultipleTimesSynchronouslyFromFulfilledBufferedPromise()
     {
-        let bufferedPromise = Promise<Int>().buffer()
-        bufferedPromise.fulfill(42)
+        let promiseBuffer = Promise<Int>().buffer()
+        promiseBuffer.fill(42)
         
-        XCTAssertEqual(bufferedPromise.latestMessage, 42)
+        XCTAssertEqual(promiseBuffer.latestMessage, 42)
         
         var receivedValue: Int?
         var receivedValue2: Int?
         
-        bufferedPromise.whenFulfilled { value in
+        promiseBuffer.whenFilled { value in
             receivedValue = value
         }
         
-        bufferedPromise.whenFulfilled { value in
+        promiseBuffer.whenFilled { value in
             receivedValue2 = value
         }
         

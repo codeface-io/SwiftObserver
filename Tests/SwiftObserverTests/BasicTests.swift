@@ -133,4 +133,21 @@ class BasicTests: XCTestCase
         XCTAssertEqual(receivedText, "newer text")
         XCTAssertEqual(receivedNumber, 7)
     }
+    
+    func testWhenFilledObservesUntilNonOptionalMessage()
+    {
+        let buffer = Messenger<Int>().buffer()
+        
+        var receivedNonOptionalValue = false
+        
+        buffer.whenFilled
+        {
+            _ in receivedNonOptionalValue = true
+        }
+        
+        buffer.send(nil)
+        buffer.send(1)
+        
+        XCTAssert(receivedNonOptionalValue)
+    }
 }
