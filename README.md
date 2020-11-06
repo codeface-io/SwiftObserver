@@ -226,7 +226,7 @@ extension Messenger: Observable {
 Every other `Observable` class is either a subclass of `Messenger` or a custom `Observable` class that provides a `Messenger`. Custom observables often employ some `enum` as their `Message` type:
 
 ~~~swift
-class Model: Observable {
+class Model: SuperModel, Observable {
     foo() { send(.willUpdate) }
     bar() { send(.didUpdate) }
     deinit { send(.willDie) }
