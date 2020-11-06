@@ -1,9 +1,10 @@
-public class Unwrapper<O: Observable, Unwrapped>: Observable, Observer
+public class Unwrapper<O: Observable, Unwrapped>: Messenger<Unwrapped>, Observer
     where O.Message == Unwrapped?
 {
     public init(_ origin: O)
     {
         self.origin = origin
+        super.init()
         observe(origin: origin)
     }
     
@@ -31,6 +32,5 @@ public class Unwrapper<O: Observable, Unwrapped>: Observable, Observer
         }
     }
     
-    public let messenger = Messenger<Unwrapped>()
     public let receiver = Receiver()
 }

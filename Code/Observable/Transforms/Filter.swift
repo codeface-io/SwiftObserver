@@ -1,10 +1,11 @@
-public final class Filter<O: Observable>: Observable, Observer
+public final class Filter<O: Observable>: Messenger<O.Message>, Observer
 {
     public init(_ origin: O,
                 _ keep: @escaping (O.Message) -> Bool)
     {
         self.origin = origin
         self.keep = keep
+        super.init()
         observe(origin: origin)
     }
     
@@ -34,6 +35,5 @@ public final class Filter<O: Observable>: Observable, Observer
     
     internal let keep: (O.Message) -> Bool
     
-    public let messenger = Messenger<O.Message>()
     public let receiver = Receiver()
 }

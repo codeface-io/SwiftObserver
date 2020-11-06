@@ -1,10 +1,11 @@
-public class Mapper<O: Observable, Mapped>: Observable, Observer
+public class Mapper<O: Observable, Mapped>: Messenger<Mapped>, Observer
 {
     public init(_ origin: O,
                 _ map: @escaping (O.Message) -> Mapped)
     {
         self.origin = origin
         self.map = map
+        super.init()
         observe(origin: origin)
     }
     
@@ -31,6 +32,5 @@ public class Mapper<O: Observable, Mapped>: Observable, Observer
     
     internal let map: (O.Message) -> Mapped
     
-    public let messenger = Messenger<Mapped>()
     public let receiver = Receiver()
 }

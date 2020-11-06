@@ -1,10 +1,11 @@
-public final class AuthorFilter<O: Observable>: Observable, Observer
+public final class AuthorFilter<O: Observable>: Messenger<O.Message>, Observer
 {
     public init(_ origin: O,
                 _ keep: @escaping (AnyAuthor) -> Bool)
     {
         self.origin = origin
         self.keep = keep
+        super.init()
         observe(origin: origin)
     }
     
@@ -34,6 +35,5 @@ public final class AuthorFilter<O: Observable>: Observable, Observer
     
     private let keep: (AnyAuthor) -> Bool
     
-    public let messenger = Messenger<O.Message>()
     public let receiver = Receiver()
 }
