@@ -223,7 +223,7 @@ extension Messenger: Observable {
 }
 ```
 
-All other observables are either subclasses of `Messenger` or custom observables that provide some `Messenger<Message>`. Custom observables often employ some `enum` as their `Message` type:
+Every other `Observable` class is either a subclass of `Messenger` or a custom `Observable` class that provides a `Messenger`. Custom observables often employ some `enum` as their `Message` type:
 
 ~~~swift
 class Model: Observable {
@@ -237,7 +237,7 @@ class Model: Observable {
 
 # Messengers as Promises
 
-A `Promise<Value>` is just a `Messenger<Value>`. It makes our intention more explicit when we use `Messenger`s for managing and chaining asynchronous calls.
+A `Promise<Value>` is basically just a `Messenger<Value>`. It makes our intention more explicit when we use messengers for managing and chaining asynchronous calls.
 
 > **Side Note:** `Promise` is part of SwiftObserver because [Combine's `Future`](https://developer.apple.com/documentation/combine/future) is unfortunately not a practical solution for one-shot asynchronous calls, to depend on [PromiseKit](https://github.com/mxcl/PromiseKit) might be unnecessary in reasonably simple contexts, and [Vapor/NIO's Async](https://docs.vapor.codes/4.0/async/) might also be too server-specific. Anyway, integrating promises as regular observables yields some consistency, simplicity and synergy here. However, at some point *all* promise/future implementations will be obsolete due to [Swift's async/await](https://github.com/DougGregor/swift-evolution/blob/async-await/proposals/nnnn-async-await.md).
 
@@ -257,7 +257,7 @@ getID().observed { id in         // observation by FreeObserver.shared
 }
 ```
 
-Typically, promises are shortlived observables that you don't store anywhere. That works fine since an asynchronous function returning a promise (like `getID()`) keeps that promise alive in order to fulfill it. So you can (globally) observe such a promise without even storing it, and the promise as well as its observations get cleaned up automatically when the promise is fulfilled and dies.
+Typically, promises are shortlived observables that you don't store anywhere. That works fine since an asynchronous function like `getID()` that returns a promise keeps that promise alive in order to fulfill it. So you can (globally) observe such a promise without even storing it, and the promise as well as its observations get cleaned up automatically when the promise is fulfilled and dies.
 
 ## Receive a Promised Value Again
 
@@ -275,7 +275,7 @@ idPromiseBuffer.whenFilled { id in
 }
 ```
 
-The function `whenFilled` is available on all [buffered observables](#buffered-observables) that have an optional message type. It provides an unwrapped message as soon as one is available. If the buffer's `latestMessage` is still `nil`, `whenFilled` observes the buffer until the buffer sends a non-optional message.
+The function `whenFilled` is available on all [buffered observables](#buffered-observables) that have an optional message type. It provides an unwrapped message as soon as one is available. If buffer's `latestMessage` is not `nil`, `whenFilled` immediatly provides the unwrapped message, otherwise it observes the buffer until the buffer sends a message other than `nil`.
 
 ## Chain Observables
 
