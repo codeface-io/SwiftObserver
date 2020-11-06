@@ -133,7 +133,7 @@ The receiver retains the observer's observations. The observer just holds on to 
 
 You don't even need an explicit observer to start an observation:
 
-~~~swift
+```swift
 observe(Sky.shared) { color in
     // marvel at the sky changing its color
 }
@@ -141,13 +141,25 @@ observe(Sky.shared) { color in
 Sky.shared.observed { color in  // ... same
     // ...
 }
-~~~
+```
 
-The above examples internally call `FreeObserver.shared.observe(...)`.
+Both examples internally call `FreeObserver.shared.observe(...)`.
 
-You can also instantiate your own `FreeObserver` to do observations even more "freely". Just remember to keep the observer alive as long as the observation shall last. Such a free observer is like a "Cancellable" or "Token" in other reactive contexts.
+You can also instantiate your own `FreeObserver` to do observations even more "freely". Just keep the observer alive as long as the observation shall last. Such a free observer is like a "Cancellable" or "Token" in other reactive contexts.
 
-And you can do one-time observations via `observeOnce(observable) { ... }` and  `observable.observedOnce { ... }`. Both return the involved `FreeObserver` as a discardable result. But typically you ignore that observer since it will die together with the observation as soon as the observable has sent a first message.
+And you can do *one-time* observations:
+
+```swift
+observeOnce(Sky.shared) { color in
+    // notice new color. observation has stopped.
+}
+
+Sky.shared.observedOnce { color in  // ... same
+    // ...
+}
+```
+
+Both functions return the involved `FreeObserver` as a discardable result. Typically you ignore that observer and it will die together with the observation as soon as it has received one message.
 
 ### Observables
 
@@ -261,21 +273,19 @@ Typically, promises are shortlived observables that you don't store anywhere. Th
 
 ### Receive a Promised Value Again
 
-Sometimes, you want to do multiple things with an asynchronous result (long) after receiving it. In that case you may keep a [cache of the promise](#cached-messages), so the promised value will be cached:
+Sometimes, you want to do multiple things with an asynchronous result (long) after receiving it. In that case you may keep a [`Cache`](#cached-messages) of the promise, so the promised value will be cached:
 
 ```swift
-let idPromiseCache = getID().cache()  // an observable Cache
+let idCache = getID().cache()   // CacheForNonOptionalMessage<Promise<Int>>
 
-idPromiseCache.whenCached { id in     // get cached id or observe cache
-    // do somethin with the ID
+idCache.whenCached { id in      // get cached id or observe cache
+    // do somethin with id
 }
 
-idPromiseCache.whenCached { id in
-    // do somethin else with the ID
+idCache.whenCached { id in
+    // do somethin else with id
 }
 ```
-
-The function `whenCached` is available on all [caches](#cached-messages) that have an optional message type. It provides an unwrapped message as soon as one is available. If the cache's `latestMessage` is not `nil`, `whenCached` immediatly provides that message, otherwise it observes the cache until the cache sends a message other than `nil`.
 
 ### Chain Observables
 
@@ -295,7 +305,7 @@ first {
 
 You call `then` on a "source" `Observable`, and pass it a closure that returns a "target" `Observable`. It provides the next message from the "source" to the closure that returns the target, allowing the target to process the source message. `then` basically combines source and target into a new `Promise<TargetMessage>`.
 
-Of course, this is geared towards combining promises into new promises, but the closures you pass to `first` and `then` can return any type of `Observable`s.
+Of course, this is geared towards combining promises into new promises, but the closures you pass to `first` and `then` can return any kinds of observables.
 
 
 # Variables
@@ -396,7 +406,7 @@ Every transform object exposes its underlying `Observable` as `origin`. You may 
 
 ```swift
 let titleLength = Var("Dummy Title").new().map { $0.count }
-let title = Var("New Title")
+let title = Var("Real Title")
 titleLength.origin.origin = title
 ```
 
@@ -500,16 +510,16 @@ Every message has an author associated with it. This feature is only noticable i
 
 An observable can send an author together with a message via `observable.send(message, from: author)`. If noone specifies an author as in `observable.send(message)`, the observable itself becomes the author.
 
-### Authors of Variable Updates
+### Mutate Variables
 
 Variables have a special value setter that allows to identify change authors:
 
 ```swift
 let number = Var(0)
-number.set(42, as: controller) // controller will be the author of the update message
+number.set(42, as: controller) // controller becomes author of the update message
 ```
 
-### Observing Authors
+### Receive Authors
 
 The observer can receive the author, by adding it as an argument to the message handling closure:
 
@@ -519,11 +529,13 @@ observer.observe(observable) { message, author in
 }
 ```
 
-Through the author, observers can determine a message's origin. This is a useful addition to the plain messenger pattern, where it allows observers to identify message senders.
+Through the author, observers can determine a message's origin. In the plain messenger pattern, the origin would simply be the message sender.
 
-### Shared Mutable Data
+### Share Observables
 
-Identifying authors becomes essential with all sorts of storage abstractions and caching hierarchies, where it allows observers to identify the change authors of data modifications:
+Identifying message authors can become essential whenever multiple observers observe the same observable while their actions can cause it so send messages.
+
+Mutable data is a common type of such shared observables. For example, when multiple entities observe and modify a storage abstraction or caching hierarchy, they often want to avoid reacting to their own actions. Such overreaction might lead to redundant work or inifnite response cycles. So they identify as change authors when modifying the data and ignore messages from `self` when observing it:
 
 ```swift
 class Collaborator: Observer {
@@ -544,8 +556,6 @@ class Collaborator: Observer {
 let sharedText = Var<String>()
 ```
 
-Ignoring messages from `self` is typical when multiple entities observe and mutate shared data. An entity would only care about the modifications that others made, so it would identify itself as change author when modifying the data, and only process messages that are not from `self` when observing the data.
-
 ### Author Related Transforms
 
 There are three transforms related to message authors. As with other transforms, you can apply them directly in observations or create them as standalone observables.
@@ -555,9 +565,9 @@ There are three transforms related to message authors. As with other transforms,
 Filter authors the same way you filter messages:
 
 ```swift
-let messenger = Messenger<String>()            // sends String
+let messenger = Messenger<String>()             // sends String
 
-let friendMessages = messenger.filterAuthor {  // sends String if message is from friend
+let friendMessages = messenger.filterAuthor {   // sends String if message is from friend
     friends.contains($0)
 } 
 ```
@@ -567,8 +577,8 @@ let friendMessages = messenger.filterAuthor {  // sends String if message is fro
 If only one specific author is of interest, filter authors with `from`:
 
 ```swift
-let messenger = Messenger<String>()     // sends String
-let joesMessages = messenger.from(joe)  // sends String if message is from joe
+let messenger = Messenger<String>()             // sends String
+let joesMessages = messenger.from(joe)          // sends String if message is from joe
 ```
 
 #### Not From
@@ -584,9 +594,11 @@ let humanMessages = messenger.notFrom(hal9000)  // sends String, but not from an
 
 A `Cache` is an `Observable` that also has a property `latestMessage: Message` which typically returns the last sent message or one that indicates that nothing has changed. `Cache` has a `func send()` that takes no argument and sends `latestMessage`.
 
+A `Cache` with an optional `Message` has a function `whenCached` that asynchronously provides a non-optional message as soon as one is available. If the cache's `latestMessage` is not `nil`, `whenCached` immediatly provides that message, otherwise it observes the cache until the cache sends a message other than `nil`.
+
 ### Four Kinds of Caches
 
-1. Any `Var` is a cache. Its `latestMessage` is an `Update` in which `old` and `new` both hold the current `value`.
+1. Any `Var` is a `Cache`. Its `latestMessage` is an `Update` in which `old` and `new` both hold the current `value`.
 
 2. Calling `cache()` on an `Observable` creates a [transform](#make-transforms-observable) that is a `Cache`. That cache's `Message` will be optional but never an *optional optional*, even when the origin's `Message` is already optional.
 
@@ -597,6 +609,24 @@ A `Cache` is an `Observable` that also has a property `latestMessage: Message` w
    Note that the `latestMessage` of a transform that is an implicit `Cache` returns the transformed `latestMessage` of its underlying `Cache` origin. Calling `send(transformedMessage)` on that transform itself will not "update" its `latestMessage`.
 
 4. Custom observables can easily conform to `Cache`. Even if their message type isn't based on some state, `latestMessage` can still return a meaningful default value - or even `nil` where `Message` is optional.
+
+### State-Based Messages 
+
+An `Observable` like `Var`, that derives its messages from its state, can generate a "latest message" on demand and therefore act as a `Cache`:
+
+```swift
+class Model: Messenger<String>, Cache {  // informs about the latest state
+    var latestMessage: String { state }  // ... either on demand
+  
+    var state = "initial state" {
+        didSet {
+            if state != oldValue {
+                send(state)              // ... or when the state changes
+            }
+        }
+    }
+}
+```
 
 ### Combined Observation
 
@@ -609,28 +639,6 @@ dog.observe(tv, bowl, doorbell) { image, food, sound in
 ```
 
 When one of the combined observables sends a message, the combined observation **pulls** messages from the other observables to provide all latest messages to the observer (read more on this design [here](Documentation/philosophy.md#the-philosophy-of-swiftobserver)).
-
-### Cached Value Updates
-
-To implement an `Observable` like `Var<Value>` that sends value updates, you would use the message type  `Update<Value>`. If you also want to involve the observable in combined observations, you make it a `Cache` and let `latestMessage` return a message based on the latest (current) value:
-
-~~~swift
-class Model: Cache {
-    var latestMessage: Update<String> {
-        Update(state, state)
-    }
-  
-    var state: String = "" {
-        didSet {
-            if state != oldValue {
-                send(Update(oldValue, state))
-            }
-        }
-    }
-  
-    let messenger = Messenger<Update<String>>()
-}
-~~~
 
 ## Weak Observables
 
