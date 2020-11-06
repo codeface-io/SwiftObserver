@@ -37,10 +37,10 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Make Transforms Observable](#make-transforms-observable)
     * [Use Prebuilt Transforms](#use-prebuilt-transforms)
     * [Chain Transforms](#chain-transforms)
-* [Advanced Stuff](#advanced-stuff)
-    * [Authors](#authors)
+* [Advanced](#advanced)
+    * [Message Authors](#message-authors)
     * [Buffered Observables](#buffered-observables)
-    * [Weak Reference](#weak-reference)
+    * [Weak Observables](#weak-observables)
 * [More](#more)
 
 # Get Involved
@@ -492,9 +492,9 @@ dog.observe(Sky.shared).map {
 } 
 ~~~
 
-# Advanced Stuff
+# Advanced
 
-## Authors
+## Message Authors
 
 Every message has an author associated with it. This feature is only noticable in code if you use it.
 
@@ -600,11 +600,13 @@ When one of the combined observables sends a message, the combined observation *
 
 1. Any `Var` is buffered. Its `latestMessage` is an `Update` in which `old` and `new` both hold the current `value`.
 
-2. Calling `buffer()` on an `Observable` creates a `BufferedObservable`. The resulting buffered observable's `Message` will be optional but never a doubled optional, even if the original observable's `Message` is optional. Of course, `buffer()` wouldn't make sense as an adhoc transform of an observation, so it only works as a distinct observable object.
+2. Calling `buffer()` on an `Observable` creates a `BufferedObservable`. That buffer's `Message` will be optional but never an *optional optional*, even when the origin's `Message` is already optional.
+
+   Of course, `buffer()` wouldn't make sense as an adhoc transform of an observation, so it can only create a distinct observable object.
 
 3. Any transform that has a buffered origin is itself implicitly buffered **if** it never suppresses (filters) messages. These compatible transforms are: `map`, `new` and `unwrap(default)`.
 
-   Be aware that the `latestMessage` of an implicitly buffered transform always returns the transformed `latestMessage` of its underlying buffered origin. Calling `send(transformedMessage)` on the implicitly buffered transform itself will not "update" its `latestMessage`.
+   Note that the `latestMessage` of an implicitly buffered transform always returns the transformed `latestMessage` of its underlying buffered origin. Calling `send(transformedMessage)` on the implicitly buffered transform itself will not "update" its `latestMessage`.
 
 4. Any of your custom observables is buffered **if** you make it conform to `BufferedObservable`. This is easy. Even if the message type isn't based on some state, you can still return a meaningful default value as `latestMessage` or make the message type optional and return `nil`.
 
@@ -630,13 +632,13 @@ class Model: BufferedObservable {
 }
 ~~~
 
-## Weak Reference
+## Weak Observables
 
-When you want to put an `Observable` into some data structure or as the *origin* into a *transform* but hold it there as a `weak` reference, you may want to wrap it in `Weak<O: Observable>`:
+When you want to put an `Observable` into some data structure or as the *origin* into a *transform* but hold it there as a `weak` reference, you may transform it via `observable.weak()`:
 
 ~~~swift
 let number = Var(12)
-let weakNumber = Weak(number)
+let weakNumber = number.weak()
 
 observer.observe(weakNumber) { update in
     // process update of type Update<Int>
@@ -646,14 +648,7 @@ var weakNumbers = [Weak<Var<Int>>]()
 weakNumbers.append(weakNumber)
 ~~~
 
-`Weak<O: Observable>` is itself an `Observable` and functions as a complete substitute for its wrapped `weak` `Observable`, which you can access via the `observable` property:
-
-~~~swift
-let numberIsAlive = weakNumber.observable != nil
-let numberValue = weakNumber.observable?.value
-~~~
-
-`Weak` isn't buffered and doesn't duplicate any messages. It would be easy to implement a class `BufferedWeak` that wraps a `BufferedObservable` weakly. If you like to see that, maybe even just for consistency/completeness, let me know.
+Of course, `weak()` wouldn't make sense as an adhoc transform, so it can only create a distinct observable object.
 
 # More
 

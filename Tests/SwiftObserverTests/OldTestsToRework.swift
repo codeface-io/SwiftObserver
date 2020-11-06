@@ -14,12 +14,12 @@ class OldTestsToRework: XCTestCase
     
     func testWeakObservableWrapper()
     {
-        let weakNumber1 = Weak(Var(1))
-        XCTAssertNil(weakNumber1.observable)
+        let weakNumber1 = Var(1).weak()
+        XCTAssertNil(weakNumber1.origin)
         
         let strongNumber = Var(2)
-        let weakNumber2 = Weak(strongNumber)
-        XCTAssertEqual(weakNumber2.observable?.value, 2)
+        let weakNumber2 = strongNumber.weak()
+        XCTAssertEqual(weakNumber2.origin?.value, 2)
     }
     
     func testSendOnVariable()
@@ -289,13 +289,13 @@ class OldTestsToRework: XCTestCase
     {
         var strongObservable: Var<Int>? = Var(10)
         
-        let weakObservable = Weak(strongObservable!)
+        let weakObservable = strongObservable!.weak()
         
-        XCTAssert(strongObservable === weakObservable.observable)
+        XCTAssert(strongObservable === weakObservable.origin)
         
         strongObservable = nil
         
-        XCTAssertNil(weakObservable.observable)
+        XCTAssertNil(weakObservable.origin)
     }
     
     func testSingleObservationFilter()
