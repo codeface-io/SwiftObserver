@@ -27,7 +27,7 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Install](#install)
     * [Introduction](#introduction)
 * [Messengers](#messengers)
-* [Promises](#promises)
+* [Messengers as Promises](#messengers-as-promises)
     * [Receive a Promised Value](#receive-a-promised-value)
     * [Receive a Promised Value Again](#receive-a-promised-value-again)
     * [Chain Observables](#chain-observables)
@@ -171,7 +171,7 @@ class Sky: Observable {
 
 1. Create a [`Messenger<Message>`](#messengers). It's a mediator through which other entities communicate.
 2. Create an object of a [custom `Observable`](#messengers) class that utilizes `Messenger<Message>`.
-3. Create a [`Promise<Value>`](#promises). It's a Messenger with conveniences for asynchronous returns.
+3. Create a [`Promise<Value>`](#messengers-as-promises). It's a Messenger with conveniences for asynchronous returns.
 4. Create a [`Variable<Value>`](#variables) (a.k.a. `Var<Value>`). It holds a value and sends value updates.
 5. Create a [*transform*](#make-transforms-observable) object. It wraps and transforms another `Observable`.
 
@@ -235,9 +235,9 @@ class Model: Observable {
 }
 ~~~
 
-# Promises
+# Messengers as Promises
 
-A `Promise<Value>` is a `Messenger<Value>` that terminates its observations everytime it sends a message. `Promise` helps with managing and chaining asynchronous calls.
+A `Promise<Value>` is just a `Messenger<Value>`. It makes our intention more explicit when we use `Messenger`s for managing and chaining asynchronous calls.
 
 > **Side Note:** `Promise` is part of SwiftObserver because [Combine's `Future`](https://developer.apple.com/documentation/combine/future) is unfortunately not a practical solution for one-shot asynchronous calls, to depend on [PromiseKit](https://github.com/mxcl/PromiseKit) might be unnecessary in reasonably simple contexts, and [Vapor/NIO's Async](https://docs.vapor.codes/4.0/async/) might also be too server-specific. Anyway, integrating promises as regular observables yields some consistency, simplicity and synergy here. However, at some point *all* promise/future implementations will be obsolete due to [Swift's async/await](https://github.com/DougGregor/swift-evolution/blob/async-await/proposals/nnnn-async-await.md).
 
@@ -276,8 +276,6 @@ idPromiseBuffer.whenFilled { id in
 ```
 
 The function `whenFilled` is available on all [buffered observables](#buffered-observables) that have an optional message type. It provides an unwrapped message as soon as one is available. If the buffer's `latestMessage` is still `nil`, `whenFilled` observes the buffer until the buffer sends a non-optional message.
-
-If you hold on to a `Promise` directly, its observations still get cleaned up, since a `Promise` actively stops being observed every time it sends a message or gets fulfilled. In the above example this just means that the buffer stops observing its underlying promise as soon as the promise was fulfilled.
 
 ## Chain Observables
 

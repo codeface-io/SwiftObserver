@@ -72,32 +72,6 @@ class PromiseTests: XCTestCase
         XCTAssertNil(weakPromise)
     }
     
-    func testPromiseStopsBeingObservedAfterBeingFulfilled()
-    {
-        let promise = Promise<Void>()
-        
-        var numberOfReceivedValues = 0
-        
-        let observer = FreeObserver()
-        
-        observer.observe(promise)
-        {
-            numberOfReceivedValues += 1
-        }
-        
-        XCTAssertEqual(numberOfReceivedValues, 0)
-        XCTAssertTrue(observer.isObserving(promise))
-        
-        promise.fulfill(())
-        
-        XCTAssertEqual(numberOfReceivedValues, 1)
-        XCTAssertFalse(observer.isObserving(promise))
-        
-        promise.fulfill(())
-        
-        XCTAssertEqual(numberOfReceivedValues, 1)
-    }
-    
     func testGettingValueMultipleTimesAsynchronouslyFromBufferedPromise()
     {
         let promiseBuffer = asyncFunc(returnValue: 42).buffer()
