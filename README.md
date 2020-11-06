@@ -27,10 +27,8 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Install](#install)
     * [Introduction](#introduction)
 * [Messengers](#messengers)
-* [Messengers as Promises](#messengers-as-promises)
-    * [Receive a Promised Value](#receive-a-promised-value)
-    * [Receive a Promised Value Again](#receive-a-promised-value-again)
-    * [Chain Observables](#chain-observables)
+    * [Understand Observables](#understand-observables)
+    * [Use Messengers as Promises](#use-messengers-as-promises)
 * [Variables](#variables)
     * [Observe Variables](#observe-variables)
     * [Use Variable Values](#use-variable-values) 
@@ -170,8 +168,8 @@ class Sky: Observable {
 #### Ways to Create an Observable
 
 1. Create a [`Messenger<Message>`](#messengers). It's a mediator through which other entities communicate.
-2. Create an object of a [custom `Observable`](#messengers) class that utilizes `Messenger<Message>`.
-3. Create a [`Promise<Value>`](#messengers-as-promises). It's a Messenger with conveniences for asynchronous returns.
+2. Create an object of a [custom `Observable`](#understand-observables) class that utilizes `Messenger<Message>`.
+3. Create a [`Promise<Value>`](#use-messengers-as-promises). It's a Messenger with conveniences for asynchronous returns.
 4. Create a [`Variable<Value>`](#variables) (a.k.a. `Var<Value>`). It holds a value and sends value updates.
 5. Create a [*transform*](#make-transforms-observable) object. It wraps and transforms another `Observable`.
 
@@ -206,6 +204,8 @@ textMessenger.send("my message")
 
 `Messenger` embodies the common [messenger / notifier pattern](Documentation/specific-patterns.md#the-messenger-pattern) and can be used for that out of the box. 
 
+## Understand Observables
+
 Having a messenger is actually what defines `Observable` objects:
 
 ```swift
@@ -235,13 +235,13 @@ class Model: Observable {
 }
 ~~~
 
-# Messengers as Promises
+## Use Messengers as Promises
 
-A `Promise<Value>` is basically just a `Messenger<Value>`. It makes our intention more explicit when we use messengers for managing and chaining asynchronous calls.
+A `Promise<Value>` is basically just a `Messenger<Value>`. It makes our intention more explicit when we use messengers for managing and chaining asynchronous returns.
 
 > **Side Note:** `Promise` is part of SwiftObserver because [Combine's `Future`](https://developer.apple.com/documentation/combine/future) is unfortunately not a practical solution for one-shot asynchronous calls, to depend on [PromiseKit](https://github.com/mxcl/PromiseKit) might be unnecessary in reasonably simple contexts, and [Vapor/NIO's Async](https://docs.vapor.codes/4.0/async/) might also be too server-specific. Anyway, integrating promises as regular observables yields some consistency, simplicity and synergy here. However, at some point *all* promise/future implementations will be obsolete due to [Swift's async/await](https://github.com/DougGregor/swift-evolution/blob/async-await/proposals/nnnn-async-await.md).
 
-## Receive a Promised Value
+### Receive a Promised Value
 
 ```swift
 func getID() -> Promise<Int> {   // getID() promises an Int
@@ -259,7 +259,7 @@ getID().observed { id in         // observation by FreeObserver.shared
 
 Typically, promises are shortlived observables that you don't store anywhere. That works fine since an asynchronous function like `getID()` that returns a promise keeps that promise alive in order to fulfill it. So you can (globally) observe such a promise without even storing it, and the promise as well as its observations get cleaned up automatically when the promise is fulfilled and dies.
 
-## Receive a Promised Value Again
+### Receive a Promised Value Again
 
 Sometimes, you want to do multiple things with an asynchronous result (long) after receiving it. In that case you may keep a [buffer of the promise](#buffered-observables), so its value will be stored:
 
@@ -277,7 +277,7 @@ idPromiseBuffer.whenFilled { id in
 
 The function `whenFilled` is available on all [buffered observables](#buffered-observables) that have an optional message type. It provides an unwrapped message as soon as one is available. If buffer's `latestMessage` is not `nil`, `whenFilled` immediatly provides the unwrapped message, otherwise it observes the buffer until the buffer sends a message other than `nil`.
 
-## Chain Observables
+### Chain Observables
 
 Inspired by PromiseKit, SwiftObserver allows to create promises by chaining observables:
 
