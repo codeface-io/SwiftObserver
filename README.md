@@ -140,7 +140,7 @@ observe(Sky.shared) { color in
     // marvel at the sky changing its color
 }
 
-Sky.shared.observed { color in  // ...same
+Sky.shared.observed { color in  // ... same
     // ...
 }
 ~~~
@@ -149,7 +149,7 @@ The above examples internally call `FreeObserver.shared.observe(...)`.
 
 You can also instantiate your own `FreeObserver` to do observations even more "freely". Just remember to keep the observer alive as long as the observation shall last. Such a free observer is like a "Cancellable" or "Token" in other reactive contexts.
 
-And you can do one-time observations via `observeOnce(observable) { ... }` and  `observable.observedOnce { ... }`. Both return the involved `FreeObserver` as a discardable result. But typically you ignore that observer since it will die together with its observation as soon as the observable has sent a first message.
+And you can do one-time observations via `observeOnce(observable) { ... }` and  `observable.observedOnce { ... }`. Both return the involved `FreeObserver` as a discardable result. But typically you ignore that observer since it will die together with the observation as soon as the observable has sent a first message.
 
 ### Observables
 
