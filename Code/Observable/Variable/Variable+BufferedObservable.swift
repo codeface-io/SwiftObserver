@@ -1,4 +1,4 @@
-extension Variable: BufferedObservable
+extension Variable: Cache
 {
     public var latestMessage: Update<Value>
     {

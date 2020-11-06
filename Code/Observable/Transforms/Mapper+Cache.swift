@@ -1,4 +1,4 @@
-extension Mapper: BufferedObservable where O: BufferedObservable
+extension Mapper: Cache where O: Cache
 {
     public var latestMessage: Mapped
     {

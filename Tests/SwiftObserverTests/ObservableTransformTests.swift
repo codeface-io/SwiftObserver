@@ -10,36 +10,36 @@ class ObservableTransformTests: XCTestCase, LogObserver
         Log.shared.minimumLevel = .error
     }
     
-    func testBufferLatestMessageIsOptionalOnObservableWithOptionalMessage()
+    func testCacheLatestMessageIsOptionalOnObservableWithOptionalMessage()
     {
-        let buffer = Messenger<Int?>().buffer()
-        XCTAssert(type(of: buffer.latestMessage) == Int?.self)
+        let cache = Messenger<Int?>().cache()
+        XCTAssert(type(of: cache.latestMessage) == Int?.self)
     }
     
-    func testBufferLatestMessageIsOptionalOnObservableWithNonOptionalMessage()
+    func testCacheLatestMessageIsOptionalOnObservableWithNonOptionalMessage()
     {
-        let buffer = Messenger<Int>().buffer()
-        XCTAssert(type(of: buffer.latestMessage) == Int?.self)
+        let cache = Messenger<Int>().cache()
+        XCTAssert(type(of: cache.latestMessage) == Int?.self)
     }
     
-    func testLogWarningWhenApplyingBufferToBufferWithNonOptionalMessage()
+    func testLogWarningWhenApplyingCacheToCacheWithNonOptionalMessage()
     {
         Log.shared.add(observer: self)
-        let alreadyBuffered = Var<Int?>()
-        let expectedWarning = alreadyBuffered.warningWhenApplyingBuffer(messageIsOptional: false)
-        _ = alreadyBuffered.buffer()
+        let alreadyACache = Var<Int?>()
+        let expectedWarning = alreadyACache.warningWhenApplyingCache(messageIsOptional: false)
+        _ = alreadyACache.cache()
         XCTAssert(latestLogEntry?.message.contains(expectedWarning) ?? false)
         Log.shared.remove(observer: self)
     }
     
-    func testLogWarningWhenApplyingBufferToBufferWithOptionalMessage()
+    func testLogWarningWhenApplyingCacheToCacheWithOptionalMessage()
     {
         Log.shared.add(observer: self)
         latestLogEntry = nil
-        let alreadyBuffered = Messenger<Int>().buffer()
+        let alreadyACache = Messenger<Int>().cache()
         XCTAssertNil(latestLogEntry)
-        let expectedWarning = alreadyBuffered.warningWhenApplyingBuffer(messageIsOptional: true)
-        _ = alreadyBuffered.buffer()
+        let expectedWarning = alreadyACache.warningWhenApplyingCache(messageIsOptional: true)
+        _ = alreadyACache.cache()
         XCTAssert(latestLogEntry?.message.contains(expectedWarning) ?? false)
         Log.shared.remove(observer: self)
     }

@@ -39,7 +39,7 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Chain Transforms](#chain-transforms)
 * [Advanced](#advanced)
     * [Message Authors](#message-authors)
-    * [Buffered Observables](#buffered-observables)
+    * [Cached Messages](#cached-messages)
     * [Weak Observables](#weak-observables)
 * [More](#more)
 
@@ -261,21 +261,21 @@ Typically, promises are shortlived observables that you don't store anywhere. Th
 
 ### Receive a Promised Value Again
 
-Sometimes, you want to do multiple things with an asynchronous result (long) after receiving it. In that case you may keep a [buffer of the promise](#buffered-observables), so its value will be stored:
+Sometimes, you want to do multiple things with an asynchronous result (long) after receiving it. In that case you may keep a [cache of the promise](#cached-messages), so the promised value will be cached:
 
 ```swift
-let idPromiseBuffer = getID().buffer()  // a BufferedObservable
+let idPromiseCache = getID().cache()  // an observable Cache
 
-idPromiseBuffer.whenFilled { id in      // get buffered id or observe buffer
+idPromiseCache.whenCached { id in     // get cached id or observe cache
     // do somethin with the ID
 }
 
-idPromiseBuffer.whenFilled { id in
+idPromiseCache.whenCached { id in
     // do somethin else with the ID
 }
 ```
 
-The function `whenFilled` is available on all [buffered observables](#buffered-observables) that have an optional message type. It provides an unwrapped message as soon as one is available. If buffer's `latestMessage` is not `nil`, `whenFilled` immediatly provides the unwrapped message, otherwise it observes the buffer until the buffer sends a message other than `nil`.
+The function `whenCached` is available on all [caches](#cached-messages) that have an optional message type. It provides an unwrapped message as soon as one is available. If the cache's `latestMessage` is not `nil`, `whenCached` immediatly provides that message, otherwise it observes the cache until the cache sends a message other than `nil`.
 
 ### Chain Observables
 
@@ -314,7 +314,7 @@ observer.observe(number) { update in
 }
 ~~~
 
-In addition, you can always manually call `variable.send()` (without argument) to send an update in which `old` and `new` both hold the current `value` (see [`BufferedObservable`](#buffered-observables)).
+In addition, you can always manually call `variable.send()` (without argument) to send an update in which `old` and `new` both hold the current `value` (see [`Cache`](#cached-messages)).
 
 ## Use Variable Values
 
@@ -580,13 +580,13 @@ let messenger = Messenger<String>()             // sends String
 let humanMessages = messenger.notFrom(hal9000)  // sends String, but not from an evil AI
 ```
 
-## Buffered Observables 
+## Cached Messages 
 
-A `BufferedObservable` is an `Observable` that also has a property `latestMessage: Message` which typically returns the last sent message or one that indicates that nothing has changed. `BufferedObservable` has a `func send()` that takes no argument and sends `latestMessage`.
+A `Cache` is an `Observable` that also has a property `latestMessage: Message` which typically returns the last sent message or one that indicates that nothing has changed. `Cache` has a `func send()` that takes no argument and sends `latestMessage`.
 
 ### Combined Observation
 
-Only `BufferedObservable`s can be part of combined observations like this:
+Only observables that cache their latest message can be part of combined observations like this:
 
 ```swift
 dog.observe(tv, bowl, doorbell) { image, food, sound in
@@ -596,26 +596,26 @@ dog.observe(tv, bowl, doorbell) { image, food, sound in
 
 When one of the combined observables sends a message, the combined observation **pulls** messages from the other observables to provide all latest messages to the observer (read more on this design [here](Documentation/philosophy.md#the-philosophy-of-swiftobserver)).
 
-### Four Kinds of Buffered Observables
+### Four Kinds of Observable Caches
 
-1. Any `Var` is buffered. Its `latestMessage` is an `Update` in which `old` and `new` both hold the current `value`.
+1. Any `Var` is a cache. Its `latestMessage` is an `Update` in which `old` and `new` both hold the current `value`.
 
-2. Calling `buffer()` on an `Observable` creates a `BufferedObservable`. That buffer's `Message` will be optional but never an *optional optional*, even when the origin's `Message` is already optional.
+2. Calling `cache()` on an `Observable` creates a `Cache`. That cache's `Message` will be optional but never an *optional optional*, even when the origin's `Message` is already optional.
 
-   Of course, `buffer()` wouldn't make sense as an adhoc transform of an observation, so it can only create a distinct observable object.
+   Of course, `cache()` wouldn't make sense as an adhoc transform of an observation, so it can only create a distinct observable object.
 
-3. Any transform that has a buffered origin is itself implicitly buffered **if** it never suppresses (filters) messages. These compatible transforms are: `map`, `new` and `unwrap(default)`.
+3. Any transform that has a cache origin is itself implicitly a cache **if** it never suppresses (filters) messages. These compatible transforms are: `map`, `new` and `unwrap(default)`.
 
-   Note that the `latestMessage` of an implicitly buffered transform always returns the transformed `latestMessage` of its underlying buffered origin. Calling `send(transformedMessage)` on the implicitly buffered transform itself will not "update" its `latestMessage`.
+   Note that the `latestMessage` of an implicitly caching transform always returns the transformed `latestMessage` of its underlying caching origin. Calling `send(transformedMessage)` on the implicitly caching transform itself will not "update" its `latestMessage`.
 
-4. Any of your custom observables is buffered **if** you make it conform to `BufferedObservable`. This is easy. Even if the message type isn't based on some state, you can still return a meaningful default value as `latestMessage` or make the message type optional and return `nil`.
+4. Any of your custom observables is a cache **if** you make it conform to `Cache`. This is easy. Even if the message type isn't based on some state, you can still return a meaningful default value as `latestMessage` or make the message type optional and return `nil`.
 
-### Buffered Value Updates
+### Cached Value Updates
 
-To implement an `Observable` like `Var<Value>` that sends value updates, you would use the message type  `Update<Value>`. If you also want to involve the observable in combined observations, you make it a `BufferedObservable` and let `latestMessage` return a message based on the latest (current) value:
+To implement an `Observable` like `Var<Value>` that sends value updates, you would use the message type  `Update<Value>`. If you also want to involve the observable in combined observations, you make it a `Cache` and let `latestMessage` return a message based on the latest (current) value:
 
 ~~~swift
-class Model: BufferedObservable {
+class Model: Cache {
     var latestMessage: Update<String> {
         Update(state, state)
     }

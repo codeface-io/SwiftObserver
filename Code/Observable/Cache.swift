@@ -1,9 +1,9 @@
-public extension BufferedObservable
+public extension Cache
 {
     func send() { send(latestMessage) }
 }
 
-public protocol BufferedObservable: Observable
+public protocol Cache: Observable
 {
     var latestMessage: Message { get }
 }

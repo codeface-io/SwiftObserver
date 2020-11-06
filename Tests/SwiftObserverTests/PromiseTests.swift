@@ -72,45 +72,45 @@ class PromiseTests: XCTestCase
         XCTAssertNil(weakPromise)
     }
     
-    func testGettingValueMultipleTimesAsynchronouslyFromBufferedPromise()
+    func testGettingValueMultipleTimesAsynchronouslyFromPromiseCache()
     {
-        let promiseBuffer = asyncFunc(returnValue: 42).buffer()
+        let promiseCache = asyncFunc(returnValue: 42).cache()
         
         let receivedValue = expectation(description: "received value")
         let receivedValue2 = expectation(description: "received value too")
         
-        promiseBuffer.whenFilled { value in
+        promiseCache.whenCached { value in
             XCTAssertEqual(value, 42)
-            XCTAssertEqual(value, promiseBuffer.latestMessage)
+            XCTAssertEqual(value, promiseCache.latestMessage)
             receivedValue.fulfill()
         }
         
-        promiseBuffer.whenFilled { value in
+        promiseCache.whenCached { value in
             XCTAssertEqual(value, 42)
-            XCTAssertEqual(value, promiseBuffer.latestMessage)
+            XCTAssertEqual(value, promiseCache.latestMessage)
             receivedValue2.fulfill()
         }
         
-        XCTAssertNil(promiseBuffer.latestMessage)
+        XCTAssertNil(promiseCache.latestMessage)
         waitForExpectations(timeout: 3)
-        XCTAssertEqual(promiseBuffer.latestMessage, 42)
+        XCTAssertEqual(promiseCache.latestMessage, 42)
     }
     
-    func testGettingValueMultipleTimesSynchronouslyFromFulfilledBufferedPromise()
+    func testGettingValueMultipleTimesSynchronouslyFromCacheOfFulfilledPromise()
     {
-        let promiseBuffer = Promise<Int>().buffer()
-        promiseBuffer.fill(42)
+        let promiseCache = Promise<Int>().cache()
+        promiseCache.send(42)
         
-        XCTAssertEqual(promiseBuffer.latestMessage, 42)
+        XCTAssertEqual(promiseCache.latestMessage, 42)
         
         var receivedValue: Int?
         var receivedValue2: Int?
         
-        promiseBuffer.whenFilled { value in
+        promiseCache.whenCached { value in
             receivedValue = value
         }
         
-        promiseBuffer.whenFilled { value in
+        promiseCache.whenCached { value in
             receivedValue2 = value
         }
         

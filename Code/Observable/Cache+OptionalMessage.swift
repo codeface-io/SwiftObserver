@@ -1,18 +1,6 @@
-public extension BufferedObservable
+public extension Cache
 {
-    func fill<Unwrapped>(_ unwrapped: Unwrapped)
-        where Message == Unwrapped?
-    {
-        send(unwrapped)
-    }
-    
-    func fill<Unwrapped>(_ unwrapped: Unwrapped, as author: AnyAuthor)
-        where Message == Unwrapped?
-    {
-        send(unwrapped, from: author)
-    }
-    
-    func whenFilled<Unwrapped>(_ receive: @escaping (Unwrapped) -> Void)
+    func whenCached<Unwrapped>(_ receive: @escaping (Unwrapped) -> Void)
         where Message == Unwrapped?
     {
         if let message = latestMessage
@@ -31,7 +19,7 @@ public extension BufferedObservable
         }
     }
     
-    func whenFilled<Unwrapped>(_ receive: @escaping (Unwrapped, AnyAuthor) -> Void)
+    func whenCached<Unwrapped>(_ receive: @escaping (Unwrapped, AnyAuthor) -> Void)
         where Message == Unwrapped?
     {
         if let message = latestMessage

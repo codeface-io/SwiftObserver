@@ -37,7 +37,7 @@ class OldTestsToRework: XCTestCase
         XCTAssertEqual(observedText, initialText)
     }
     
-    func testThatMappesOfBufferedObservablesAreBuffered()
+    func testThatMappersOfCachesAreCaches()
     {
         XCTAssertEqual(Var(1).new().latestMessage, 1)
         XCTAssertEqual(Var<Int?>().new().unwrap(23).latestMessage, 23)
@@ -488,7 +488,7 @@ class OldTestsToRework: XCTestCase
         XCTAssert(didFire)
     }
     
-    class ObservableModel: BufferedObservable
+    class ObservableModel: Cache
     {
         var latestMessage: Event { .didNothing }
 
@@ -499,7 +499,7 @@ class OldTestsToRework: XCTestCase
     
     let customObservable = ModelWithState()
 
-    class ModelWithState: BufferedObservable
+    class ModelWithState: Cache
     {
         var latestMessage: Update<String>
         {

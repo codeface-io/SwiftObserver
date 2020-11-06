@@ -95,13 +95,13 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 
   - SwiftObserver never duplicates the *messages* that are being sent around, in particular in [combined observations](#combined-observations) and transforms. This is in stark contrast to other reactive libraries yet without compomising functional aspects.
 
-  > Note: Not having to duplicate data where multiple things must be observed is one of the reasons to use combined observations in the first place. However, some reactive libraries choose to not make full use of object-orientation, so far that the combined observables could be value types. This forces these libraries to duplicate data by buffering the messages sent from observables.
+  > Note: Not having to duplicate data where multiple things must be observed is one of the reasons to use combined observations in the first place. However, some reactive libraries choose to not make full use of object-orientation, so far that the combined observables could be value types. This forces these libraries to duplicate data by caching the messages sent from observables.
   >
   > SwiftObserver not only leverages object-orientation, for combined observations, it also offers a regular "pull model" in which observers can pull messages from observables, in addition to the typical reactive "push model" in which observables push their messages to observers.
   >
   > "Pulling" just reflects the natural way objects operate. Observers can act on observables without problem, since that is the actual technical direction of control and dependence. The problem that reactive techiques solve is propagating data **against** the direction of control. 
   >
-  > A "pull model" is also in line with functional programming: Instead of buffering state, the combined observation calls and combines functions on observables.
+  > A "pull model" is also in line with functional programming: Instead of caching state, the combined observation calls and combines functions on observables.
 
 ## Simplicity and Flexibility
 
@@ -141,7 +141,7 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 
 - Variables are `Codable`, so model types are easy to encode and persist.
 
-- Pull the current *message* from any buffered *observable* via `latestMessage`. 
+- Pull the current *message* from any caching *observable* via `latestMessage`. 
 
 - Receive the old **and** new value from variables
 
@@ -173,7 +173,7 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 
 # Why SwiftObserver Limits Combined Observation
 
-Combined observation is limited to observables that can be pulled, i.e. they are themselves buffered and conform to `BufferedObservable`. This decision is the result of a long process, involving many practical applications, discovering what's really essential, and letting go of big fancy features, one by one.
+Combined observation is limited to observables that can be pulled, i.e. they conform to `Cache`. This decision is the result of a long process, involving many practical applications, discovering what's really essential, and letting go of big fancy features, one by one.
 
 The alternative to pulling the latest messages from the observables would be to remember all latest messages in the combined observation itself. SwiftObserver avoids that for a few reasons:
 
