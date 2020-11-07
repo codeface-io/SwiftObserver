@@ -1,21 +1,21 @@
 import SwiftyToolz
 
-public extension Cache
+public extension ObservableCache
 {
-    func cache<Unwrapped>() -> CacheForOptionalMessage<Self, Unwrapped>
+    func cache<Unwrapped>() -> CacheOnOptionalMessage<Self, Unwrapped>
     {
         log(warning: warningWhenApplyingCache(messageIsOptional: true))
-        return CacheForOptionalMessage(self)
+        return CacheOnOptionalMessage(self)
     }
 
-    func cache<Unwrapped>() -> CacheForNonOptionalMessage<Self, Unwrapped>
+    func cache<Unwrapped>() -> Cache<Self, Unwrapped>
     {
         log(warning: warningWhenApplyingCache(messageIsOptional: false))
-        return CacheForNonOptionalMessage(self)
+        return Cache(self)
     }
 }
 
-internal extension Cache
+internal extension ObservableCache
 {
     func warningWhenApplyingCache(messageIsOptional: Bool) -> String
     {
@@ -32,13 +32,13 @@ internal extension Cache
 
 public extension Observable
 {
-    func cache<Unwrapped>() -> CacheForOptionalMessage<Self, Unwrapped>
+    func cache<Unwrapped>() -> CacheOnOptionalMessage<Self, Unwrapped>
     {
-        CacheForOptionalMessage(self)
+        CacheOnOptionalMessage(self)
     }
 
-    func cache<Unwrapped>() -> CacheForNonOptionalMessage<Self, Unwrapped>
+    func cache<Unwrapped>() -> Cache<Self, Unwrapped>
     {
-        CacheForNonOptionalMessage(self)
+        Cache(self)
     }
 }

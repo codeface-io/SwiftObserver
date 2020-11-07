@@ -1,4 +1,4 @@
-extension Variable: Cache
+extension Variable: ObservableCache
 {
     public var latestMessage: Update<Value>
     {

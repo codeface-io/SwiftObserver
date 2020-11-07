@@ -273,10 +273,10 @@ Typically, promises are shortlived observables that you don't store anywhere. Th
 
 ### Receive a Promised Value Again
 
-Sometimes, you want to do multiple things with an asynchronous result (long) after receiving it. In that case you may keep a [`Cache`](#cached-messages) of the promise, so the promised value will be cached:
+Sometimes, you want to do multiple things with an asynchronous result (long) after receiving it. In that case you may keep an [`ObservableCache`](#cached-messages) of the promise, so the promised value will be cached:
 
 ```swift
-let idCache = getID().cache()   // CacheForNonOptionalMessage<Promise<Int>>
+let idCache = getID().cache()   // Cache<Promise<Int>>
 
 idCache.whenCached { id in      // get cached id or observe cache
     // do somethin with id
@@ -592,36 +592,36 @@ let humanMessages = messenger.notFrom(hal9000)  // sends String, but not from an
 
 ## Cached Messages 
 
-A `Cache` is an `Observable` that also has a property `latestMessage: Message` which typically returns the last sent message or one that indicates that nothing has changed. `Cache` has a `func send()` that takes no argument and sends `latestMessage`.
+An `ObservableCache` is an `Observable` that has a property `latestMessage: Message` which typically returns the last sent message or one that indicates that nothing has changed. `ObservableCache` has a `func send()` that takes no argument and sends `latestMessage`.
 
-A `Cache` with an optional `Message` has a function `whenCached` that asynchronously provides a non-optional message as soon as one is available. If the cache's `latestMessage` is not `nil`, `whenCached` immediatly provides that message, otherwise it observes the cache until the cache sends a message other than `nil`.
+An `ObservableCache` with an optional `Message` has a function `whenCached` that asynchronously provides a non-optional message as soon as one is available. If the cache's `latestMessage` is not `nil`, `whenCached` immediatly provides that message, otherwise it observes the cache until the cache sends a message other than `nil`.
 
 ### Four Kinds of Caches
 
-1. Any `Var` is a `Cache`. Its `latestMessage` is an `Update` in which `old` and `new` both hold the current `value`.
+1. Any `Var` is an `ObservableCache`. Its `latestMessage` is an `Update` in which `old` and `new` both hold the current `value`.
 
-2. Calling `cache()` on an `Observable` creates a [transform](#make-transforms-observable) that is a `Cache`. That cache's `Message` will be optional but never an *optional optional*, even when the origin's `Message` is already optional.
+2. Calling `cache()` on an `Observable` creates a [transform](#make-transforms-observable) that is an `ObservableCache`. That cache's `Message` will be optional but never an *optional optional*, even when the origin's `Message` is already optional.
 
    Of course, `cache()` wouldn't make sense as an adhoc transform of an observation, so it can only create a distinct observable object.
 
-3. Any transform whose origin is a `Cache` is itself implicitly a `Cache` **if** it never suppresses (filters) messages. These compatible transforms are: `map`, `new` and `unwrap(default)`.
+3. Any transform whose origin is a `ObservableCache` is itself implicitly a `ObservableCache` **if** it never suppresses (filters) messages. These compatible transforms are: `map`, `new` and `unwrap(default)`.
 
-   Note that the `latestMessage` of a transform that is an implicit `Cache` returns the transformed `latestMessage` of its underlying `Cache` origin. Calling `send(transformedMessage)` on that transform itself will not "update" its `latestMessage`.
+   Note that the `latestMessage` of a transform that is an implicit `ObservableCache` returns the transformed `latestMessage` of its underlying `ObservableCache` origin. Calling `send(transformedMessage)` on that transform itself will not "update" its `latestMessage`.
 
-4. Custom observables can easily conform to `Cache`. Even if their message type isn't based on some state, `latestMessage` can still return a meaningful default value - or even `nil` where `Message` is optional.
+4. Custom observables can easily conform to `ObservableCache`. Even if their message type isn't based on some state, `latestMessage` can still return a meaningful default value - or even `nil` where `Message` is optional.
 
 ### State-Based Messages 
 
-An `Observable` like `Var`, that derives its messages from its state, can generate a "latest message" on demand and therefore act as a `Cache`:
+An `Observable` like `Var`, that derives its messages from its state, can generate a "latest message" on demand and therefore act as an `ObservableCache`:
 
 ```swift
-class Model: Messenger<String>, Cache {  // informs about the latest state
-    var latestMessage: String { state }  // ... either on demand
+class Model: Messenger<String>, ObservableCache {  // informs about the latest state
+    var latestMessage: String { state }            // ... either on demand
   
     var state = "initial state" {
         didSet {
             if state != oldValue {
-                send(state)              // ... or when the state changes
+                send(state)                        // ... or when the state changes
             }
         }
     }

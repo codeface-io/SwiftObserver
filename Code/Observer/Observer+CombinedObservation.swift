@@ -1,6 +1,6 @@
 public extension Observer
 {
-    func observe<O1: Cache, O2: Cache>(
+    func observe<O1: ObservableCache, O2: ObservableCache>(
         _ observable1: O1,
         _ observable2: O2,
         _ receive: @escaping (O1.Message, O2.Message) -> Void)
@@ -20,7 +20,7 @@ public extension Observer
         }
     }
     
-    func observe<O1: Cache, O2: Cache>(
+    func observe<O1: ObservableCache, O2: ObservableCache>(
         _ observable1: O1,
         _ observable2: O2,
         _ receive: @escaping (O1.Message, O2.Message, AnyAuthor) -> Void)
@@ -40,7 +40,7 @@ public extension Observer
         }
     }
     
-    func observe<O1: Cache, O2: Cache, O3: Cache>(
+    func observe<O1: ObservableCache, O2: ObservableCache, O3: ObservableCache>(
         _ observable1: O1,
         _ observable2: O2,
         _ observable3: O3,
@@ -68,7 +68,7 @@ public extension Observer
         }
     }
     
-    func observe<O1: Cache, O2: Cache, O3: Cache>(
+    func observe<O1: ObservableCache, O2: ObservableCache, O3: ObservableCache>(
         _ observable1: O1,
         _ observable2: O2,
         _ observable3: O3,

@@ -1,4 +1,4 @@
-public extension Cache
+public extension ObservableCache
 {
     func whenCached<Unwrapped>(_ receive: @escaping (Unwrapped) -> Void)
         where Message == Unwrapped?

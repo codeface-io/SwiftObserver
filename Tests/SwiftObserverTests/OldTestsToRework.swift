@@ -488,7 +488,7 @@ class OldTestsToRework: XCTestCase
         XCTAssert(didFire)
     }
     
-    class ObservableModel: Cache
+    class ObservableModel: ObservableCache
     {
         var latestMessage: Event { .didNothing }
 
@@ -499,7 +499,7 @@ class OldTestsToRework: XCTestCase
     
     let customObservable = ModelWithState()
 
-    class ModelWithState: Cache
+    class ModelWithState: ObservableCache
     {
         var latestMessage: Update<String>
         {

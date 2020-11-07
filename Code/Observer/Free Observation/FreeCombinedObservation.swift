@@ -1,4 +1,4 @@
-public func observe<O1: Cache, O2: Cache>(
+public func observe<O1: ObservableCache, O2: ObservableCache>(
     _ observable1: O1,
     _ observable2: O2,
     _ receive: @escaping (O1.Message, O2.Message) -> Void)
@@ -6,7 +6,7 @@ public func observe<O1: Cache, O2: Cache>(
     FreeObserver.shared.observe(observable1, observable2, receive)
 }
 
-public func observe<O1: Cache, O2: Cache>(
+public func observe<O1: ObservableCache, O2: ObservableCache>(
     _ observable1: O1,
     _ observable2: O2,
     _ receive: @escaping (O1.Message, O2.Message, AnyAuthor) -> Void)
@@ -14,7 +14,7 @@ public func observe<O1: Cache, O2: Cache>(
     FreeObserver.shared.observe(observable1, observable2, receive)
 }
 
-public func observe<O1: Cache, O2: Cache, O3: Cache>(
+public func observe<O1: ObservableCache, O2: ObservableCache, O3: ObservableCache>(
     _ observable1: O1,
     _ observable2: O2,
     _ observable3: O3,
@@ -23,7 +23,7 @@ public func observe<O1: Cache, O2: Cache, O3: Cache>(
     FreeObserver.shared.observe(observable1, observable2, observable3, receive)
 }
 
-public func observe<O1: Cache, O2: Cache, O3: Cache>(
+public func observe<O1: ObservableCache, O2: ObservableCache, O3: ObservableCache>(
     _ observable1: O1,
     _ observable2: O2,
     _ observable3: O3,

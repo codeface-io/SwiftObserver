@@ -1,8 +1,8 @@
-public final class CacheForOptionalMessage<O: Observable, Unwrapped>:
+public final class Cache<O: Observable, Unwrapped>:
     Messenger<Unwrapped?>,
-    Cache,
+    ObservableCache,
     Observer
-    where O.Message == Unwrapped?
+    where O.Message == Unwrapped
 {
     public init(_ origin: O)
     {

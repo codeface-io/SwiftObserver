@@ -1,4 +1,4 @@
-extension Mapper: Cache where O: Cache
+extension Mapper: ObservableCache where O: ObservableCache
 {
     public var latestMessage: Mapped
     {
