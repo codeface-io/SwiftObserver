@@ -590,9 +590,12 @@ let humanMessages = messenger.notFrom(hal9000)  // sends String, but not from an
 
 ## Cached Messages 
 
-An `ObservableCache` is an `Observable` that has a property `latestMessage: Message` which typically returns the last sent message or one that indicates that nothing has changed. `ObservableCache` has a `func send()` that takes no argument and sends `latestMessage`.
+An `ObservableCache` is an `Observable` that has a property `latestMessage: Message` which typically returns the last sent message or one that indicates that nothing has changed.
 
-An `ObservableCache` with an optional `Message` has a function `whenCached` that asynchronously provides a non-optional message as soon as one is available. If the cache's `latestMessage` is not `nil`, `whenCached` immediatly provides that message, otherwise it observes the cache until the cache sends a message other than `nil`.
+`ObservableCache` also has two convenience functions:
+
+*  `send()` takes no argument and sends `latestMessage`.
+*  `whenCached` is available where `Message` is optional. It asynchronously provides a non-optional message as soon as one is available. If the cache's `latestMessage` is not `nil`, `whenCached` immediatly provides that message, otherwise it observes the cache until the cache sends a message other than `nil`.
 
 ### Four Kinds of Caches
 
@@ -602,7 +605,7 @@ An `ObservableCache` with an optional `Message` has a function `whenCached` that
 
    Of course, `cache()` wouldn't make sense as an adhoc transform of an observation, so it can only create a distinct observable object.
 
-3. Any transform whose origin is a `ObservableCache` is itself implicitly a `ObservableCache` **if** it never suppresses (filters) messages. These compatible transforms are: `map`, `new` and `unwrap(default)`.
+3. Any transform whose origin is an `ObservableCache` is itself implicitly an `ObservableCache` **if** it never suppresses (filters) messages. These compatible transforms are: `map`, `new` and `unwrap(default)`.
 
    Note that the `latestMessage` of a transform that is an implicit `ObservableCache` returns the transformed `latestMessage` of its underlying `ObservableCache` origin. Calling `send(transformedMessage)` on that transform itself will not "update" its `latestMessage`.
 
