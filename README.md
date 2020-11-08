@@ -129,38 +129,6 @@ The receiver retains the observer's observations. The observer just holds on to 
 * An `Observer` can do multiple simultaneous observations of the same `Observable`, starting each via the mentioned `observe(...)` function.
 * You can check wether an observer is observing an observable via `observer.isObserving(observable)`.
 
-#### Free Observers
-
-You don't even need an explicit observer to start an observation:
-
-```swift
-observe(Sky.shared) { color in
-    // marvel at the sky changing its color
-}
-
-Sky.shared.observed { color in  // ... same
-    // ...
-}
-```
-
-Both examples internally call `FreeObserver.shared.observe(...)`.
-
-You can also instantiate your own `FreeObserver` to do observations even more "freely". Just keep the observer alive as long as the observation shall last. Such a free observer is like a "Cancellable" or "Token" in other reactive contexts.
-
-And you can do *one-time* observations:
-
-```swift
-observeOnce(Sky.shared) { color in
-    // notice new color. observation has stopped.
-}
-
-Sky.shared.observedOnce { color in  // ... same
-    // ...
-}
-```
-
-Both functions return the involved `FreeObserver` as a discardable result. Typically you ignore that observer and it will die together with the observation as soon as it has received one message.
-
 ### Observables
 
 Any object can be `Observable` if it has a `Messenger<Message>` for sending messages:
@@ -198,7 +166,37 @@ Sky.shared.stopBeingObserved(by: dog)  // no more messages to dog
 Sky.shared.stopBeingObserved()         // no more messages to anywhere
 ```
 
-You may involve `FreeObserver.shared` to stop certain or all free global observations.
+### Free Observers
+
+You don't even need an explicit observer to start an observation:
+
+```swift
+observe(Sky.shared) { color in
+    // marvel at the sky changing its color
+}
+
+Sky.shared.observed { color in  // ... same
+    // ...
+}
+```
+
+Both examples internally call `FreeObserver.shared.observe(...)`. You may reference `FreeObserver.shared` explicitly to stop particular or all such free global observations.
+
+You can also instantiate your own `FreeObserver` to do observations even more "freely". Just keep it alive as long as the observation shall last. Such a free observer is like a "Cancellable" or "Token" in other reactive contexts.
+
+And you can do *one-time* observations:
+
+```swift
+observeOnce(Sky.shared) { color in
+    // notice new color. observation has stopped.
+}
+
+Sky.shared.observedOnce { color in  // ... same
+    // ...
+}
+```
+
+Both functions return the involved `FreeObserver` as a discardable result. Typically you ignore that observer and it will die together with the observation as soon as it has received one message.
 
 # Messengers
 
