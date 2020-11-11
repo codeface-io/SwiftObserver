@@ -68,7 +68,7 @@ let package = Package(
     name: "MyApp",
     dependencies: [
         .package(url: "https://github.com/flowtoolz/SwiftObserver.git",
-                 .upToNextMajor(from: "6.0.0"))
+                 .upToNextMajor(from: "6.1.0"))
     ],
     targets: [
         .target(name: "MyAppTarget",
@@ -83,7 +83,7 @@ With [**Cocoapods**](https://cocoapods.org), adjust your [Podfile](https://guide
 
 ```ruby
 target "MyAppTarget" do
-  pod "SwiftObserver", "~> 6.0"
+  pod "SwiftObserver", "~> 6.1"
 end
 ```
 
