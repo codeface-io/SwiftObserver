@@ -285,26 +285,38 @@ idCache.whenCached { id in
 }
 ```
 
-### Chain Observables
+### Compose Promises
 
-Inspired by PromiseKit, SwiftObserver allows to create promises by chaining observables:
+Inspired by PromiseKit, SwiftObserver allows to compose asynchronous calls using promises. You can chain asynchronous calls sequentially:
 
 ```swift
-first {                         
-    promiseInt()                // return Promise<Int>
-}.then {
-    promiseString(takeInt: $0)  // take Int sent by observable 'first', return Promise<String>
-}.observed {                    // observation dies when promise 'then' is fulfilled
-    print($0)                   // print String sent by promise 'then'
+promise {                   // just for nice consistent closure syntax 
+    getInt()                // return Promise<Int>
+}.then {                    // chain another promise sequentially
+    getString(takeInt: $0)  // take Int sent by 'promise', return Promise<String>
+}.observed {                // observation dies when promise 'then' is fulfilled
+    print($0)               // print String sent by promise 'then'
 }
 ```
 
-`first` is only for readability. It takes a closure that returns an `Observable` and just returns that `Observable`.
+`promise` is only for readability. It takes a closure that returns a `Promise` and simply returns that `Promise`.
 
-You call `then` on a "source" `Observable`, and pass it a closure that returns a "target" `Observable`. It provides the next message from the "source" to the closure that returns the target, allowing the target to process the source message. `then` basically combines source and target into a new `Promise<TargetMessage>`.
+You call `then` on a first `Promise` and pass it a closure that returns the second `Promise`. That closure takes the value of the first promise, allowing the second promise to depend on it. `then` returns a new `Promise` that provides the value of the second promise.
 
-Of course, this is geared towards combining promises into new promises, but the closures you pass to `first` and `then` can return any kinds of observables.
+And you can start asynchronous calls concurrently:
 
+```swift
+promise {                    
+    getInt()                
+}.and {                     // chain another promise concurrently
+    getString()             
+}.observed {                
+    print($0.0)             // print Int sent by 'promise'
+    print($0.1)             // print String sent by promise 'getString()'
+}
+```
+
+You call `and` on a `Promise` and pass it a closure that returns another `Promise`. This immediatly observes both promises. `and` returns a new `Promise` that provides the combined values of both promises.
 
 # Variables
 
