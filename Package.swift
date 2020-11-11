@@ -22,6 +22,6 @@ let package = Package(
             path: "Code"),
         .testTarget(
             name: "SwiftObserverTests",
-            dependencies: ["SwiftObserver"]),
+            dependencies: ["SwiftObserver", "SwiftyToolz"]),
     ]
 )

@@ -27,5 +27,5 @@
     s.source_files = 'Code/**/*.swift'
 
     # dependencies
-    s.dependency 'SwiftyToolz', '~> 1.5'
+    s.dependency 'SwiftyToolz', '~> 1.6'
 end
