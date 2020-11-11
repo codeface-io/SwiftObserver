@@ -134,7 +134,7 @@ class BasicTests: XCTestCase
         XCTAssertEqual(receivedNumber, 7)
     }
     
-    func testWhenFilledObservesUntilNonOptionalMessage()
+    func testWhenCachedObservesUntilNonOptionalMessage()
     {
         let messengerCache = Messenger<Int>().cache()
         

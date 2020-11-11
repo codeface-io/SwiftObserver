@@ -1,7 +1,7 @@
 import XCTest
 @testable import SwiftObserver
 
-class AnononymousObservationTests: XCTestCase
+class FreeObservationTests: XCTestCase
 {
     func testAnonymousObserverIsAvailable()
     {
