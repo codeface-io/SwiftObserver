@@ -21,7 +21,7 @@ class PromiseTests: XCTestCase
         waitForExpectations(timeout: 3)
     }
     
-    func testCommonAnonymousAdhocObservationOfAsyncFunc()
+    func testCommonFreeAdhocObservationOfAsyncFunc()
     {
         let promiseFulfilled = expectation(description: "promise is fulfilled")
         

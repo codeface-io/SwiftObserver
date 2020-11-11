@@ -3,7 +3,7 @@ import XCTest
 
 class FreeObservationTests: XCTestCase
 {
-    func testAnonymousObserverIsAvailable()
+    func testFreeObserverIsAvailable()
     {
         let messenger = Messenger<Void>()
         var messengerDidSend = false
@@ -18,7 +18,7 @@ class FreeObservationTests: XCTestCase
         XCTAssert(messengerDidSend)
     }
     
-    func testAnonymousObserverCanBeUsedImplicitly()
+    func testFreeObserverCanBeUsedImplicitly()
     {
         let messenger = Messenger<Void>()
         var messengerDidSend = false
@@ -37,7 +37,7 @@ class FreeObservationTests: XCTestCase
         XCTAssert(messengerDidSend)
     }
     
-    func testAnonymousObservationCanBeTransformed()
+    func testFreeObservationCanBeTransformed()
     {
         let messenger = Messenger<Void>()
         var messengerDidSend = false
@@ -81,7 +81,7 @@ class FreeObservationTests: XCTestCase
         XCTAssertFalse(receivedMessage)
     }
     
-    func testObserveOnceObserverDies()
+    func testObserveOnceObserverDiesWhenObservableSendsMessage()
     {
         let messenger = Messenger<Void>()
         
