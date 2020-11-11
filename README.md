@@ -287,7 +287,9 @@ idCache.whenCached { id in
 
 ### Compose Promises
 
-Inspired by PromiseKit, SwiftObserver allows to compose asynchronous calls using promises. You can chain asynchronous calls sequentially:
+Inspired by PromiseKit, SwiftObserver allows to compose asynchronous calls using promises.
+
+#### Sequential Composition
 
 ```swift
 promise {                   // just for nice consistent closure syntax 
@@ -303,7 +305,7 @@ promise {                   // just for nice consistent closure syntax
 
 You call `then` on a first `Promise` and pass it a closure that returns the second `Promise`. That closure takes the value of the first promise, allowing the second promise to depend on it. `then` returns a new `Promise` that provides the value of the second promise.
 
-And you can start asynchronous calls concurrently:
+#### Concurrent Composition
 
 ```swift
 promise {                    
