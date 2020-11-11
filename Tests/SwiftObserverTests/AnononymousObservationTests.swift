@@ -91,4 +91,15 @@ class FreeObservationTests: XCTestCase
         messenger.send(())
         XCTAssertNil(observer)
     }
+    
+    func testObserveOnceObserverDiesWhenObservableDies()
+    {
+        var messenger: Messenger<Void>? = Messenger<Void>()
+        
+        weak var observer = observeOnce(messenger!) {}
+        
+        XCTAssertNotNil(observer)
+        messenger = nil
+        XCTAssertNil(observer)
+    }
 }
