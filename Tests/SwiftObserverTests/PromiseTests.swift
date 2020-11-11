@@ -118,11 +118,11 @@ class PromiseTests: XCTestCase
         XCTAssertEqual(receivedValue2, 42)
     }
     
-    func testChainingFirstlyThenObserveAndObservationMapper()
+    func testSequentialPromises()
     {
         let receivedValue = expectation(description: "received value")
-        
-        first
+
+        promise
         {
             asyncFunc(returnValue: 42)
         }
@@ -139,6 +139,28 @@ class PromiseTests: XCTestCase
         {
             XCTAssertEqual($0, 2)
             receivedValue.fulfill()
+        }
+
+        waitForExpectations(timeout: 3)
+    }
+    
+    func testConcurrentPromises()
+    {
+        let receivedValues = expectation(description: "received values")
+        
+        promise
+        {
+            asyncFunc(returnValue: 42)
+        }
+        .and
+        {
+            self.asyncFunc(returnValue: "42")
+        }
+        .observed
+        {
+            XCTAssertEqual($0.0, 42)
+            XCTAssertEqual($0.1, "42")
+            receivedValues.fulfill()
         }
         
         waitForExpectations(timeout: 3)

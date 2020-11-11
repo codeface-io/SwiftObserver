@@ -6,12 +6,12 @@ public class Promise<Value>: Messenger<Value>
         fulfill(self)
     }
     
-    func fulfill(_ value: Message)
+    func fulfill(_ value: Value)
     {
         send(value)
     }
     
-    func fulfill(_ value: Message, as author: AnyAuthor)
+    func fulfill(_ value: Value, as author: AnyAuthor)
     {
         send(value, from: author)
     }
