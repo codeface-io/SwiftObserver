@@ -130,14 +130,9 @@ class PromiseTests: XCTestCase
         {
             self.asyncFunc(returnValue: "\($0)")
         }
-        .observed()
-        .map
+        .observed
         {
-            $0.count
-        }
-        .receive
-        {
-            XCTAssertEqual($0, 2)
+            XCTAssertEqual($0, "42")
             receivedValue.fulfill()
         }
 
@@ -154,7 +149,7 @@ class PromiseTests: XCTestCase
         }
         .and
         {
-            self.asyncFunc(returnValue: "42")
+            asyncFunc(returnValue: "42")
         }
         .observed
         {
