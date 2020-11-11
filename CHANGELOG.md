@@ -1,6 +1,26 @@
 # SwiftObserver Changelog
 
-# v6
+## v6.1
+
+All that's new is also compatible with message authors and ad-hoc transform chains:
+* Promises:
+  * `Promise<Value>` is a `Messenger<Value>` with some conveniences for async returns
+  * Promise composition functions `promise`, `then` and `and`
+* Free Observers:
+  * Class for adhoc observers `FreeObserver`
+  * Global function `observe(...)`, and `observed(...)` on observables, both use `FreeObserver.shared`
+  * Global function `observeOnce(...)`, and `observedOnce(...)` on observables, both use `FreeObserver`
+* `BufferedObservable`:
+  * `BufferedObservable` has been renamed to `ObservableCache`.
+  * `ObservableCache` can be created via observable transform `cache()`, which makes `Message` optional only when necessary.
+  * `whenCached` retrieves non-optional message from caches that have optional `Message`.
+* Observables can stop their observations via `stopBeingObserved()` and `stopBeingObserved(by: observer)`.
+* `Weak` is available as observable transform `weak()` and is generally a regular transform object.
+* All transforms have mutable property `origin` which is the underlying observable whose messages get transformed. 
+* It's possible for an observer to do multiple simultaneous observations of the same observable.
+
+
+## v6
 
 * Memory management is new:
   * Before 6.0, memory leaks were *technically* impossible, because SwiftObserver still had a handle on dead observers, and you could flush them out when you wanted "to be sure". Now, dead observations are actually impossible and you don't need to worry about them.
@@ -38,11 +58,7 @@
   * `Update` is `Equatable` when its `Value` is `Equatable`, so messages of variables can be selected via `select(Update(specificOldValue, specificNewValue))` or any specific value update you define.
   * The issue that certain Apple classes (like NSTextView) cannot directly be `Observable` because they can't be referenced weakly is gone. SwiftObserver now only references an `Observable`'s `messenger` weakly.
 
-# v5
-
-## v5.0
-
-### v5.0.1 Consistent Variable Operators, SPM, Gitter
+## v5.0.1 Consistent Variable Operators, SPM, Gitter
 
 * Removed
   * Variable string assignment operator
@@ -55,7 +71,7 @@
   * SPM Support
   * Gitter chat
 
-### v5.0.0 Performance, Consistency, Expressiveness, Safety
+## v5 Performance, Consistency, Expressiveness, Safety
 
 * **Renamings:**
   * Some memory management functions have been renamed to be more consistent with the overall terminology.
@@ -73,25 +89,19 @@
   * The operators on string- and number variables now work on all combinations of optional and non-optional generic and main types. For instance, string concatenation via `+` works on all pairs of `String`, `String?`, `Var<String>`, `Var<String?>`, `Var<String>?` and `Var<String?>?`.
   * All variables with values of type `String`, `Int`, `Float` and `Double` also have a non-optional property that is named after the value type (`string`, `int` ...).
 
-# v4
-
-## v4.2
-
-### v4.2.0 Messengers
+## v4.2 Messengers
 
 * Added class `Messenger` 
 * Added class `ObservabeObject` as a mostly internally used abstract base class for *observables*. `Var`, `Mapping` and `Messenger` now derive from `ObservableObject`.
 
-## v4.1
-
-### v4.1.0 Consistent Mappings
+## v4.1 Consistent Mappings
 
 * Made *Mapping* API more consistent
   * Renamed `prefilter` to `filter`
   * Added `filterMap` to *mappings* as their (mostly internally used) designated transform function
   * Removed `prefilter` argument from `map` function
 
-### v4.0.0 Ad Hoc Mapping
+## v4 Ad Hoc Mapping
 
 * Added Ad Hoc Mapping of observations
 * Added filter mapping `select` for all *observables*
