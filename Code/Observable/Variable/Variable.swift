@@ -2,7 +2,7 @@ import SwiftyToolz
 
 public typealias Var = Variable
 
-public final class Variable<Value: Equatable & Codable>: Observable, Equatable, Codable
+public final class Variable<Value: Equatable & Codable>: Messenger<Update<Value>>, Equatable, Codable
 {
     // MARK: - Initialization
     
@@ -44,8 +44,4 @@ public final class Variable<Value: Equatable & Codable>: Observable, Equatable, 
     private enum CodingKeys: String, CodingKey { case storedValue }
     
     private var storedValue: Value
-    
-    // MARK: - Observable
-    
-    public let messenger = Messenger<Update<Value>>()
 }
