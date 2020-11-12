@@ -6,6 +6,7 @@ All that's new is also compatible with message authors and ad-hoc transform chai
 * Promises:
   * `Promise<Value>` is a `Messenger<Value>` with some conveniences for async returns
   * Promise composition functions `promise`, `then` and `and`
+  * Promise value mapping functions `map(...)`, `unwrap(default)` and `new()`
 * Free Observers:
   * Class for adhoc observers `FreeObserver`
   * Global function `observe(...)`, and `observed(...)` on observables, both use `FreeObserver.shared`

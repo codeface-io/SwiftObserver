@@ -161,6 +161,63 @@ class PromiseTests: XCTestCase
         waitForExpectations(timeout: 3)
     }
     
+    func testMapPromiseWithoutHoldingMapping()
+    {
+        let receivedValue = expectation(description: "received value")
+        
+        promise
+        {
+            asyncFunc(returnValue: 42)
+        }
+        .map
+        {
+            "\($0)"
+        }
+        .observed
+        {
+            XCTAssertEqual($0, "42")
+            receivedValue.fulfill()
+        }
+        
+        waitForExpectations(timeout: 3)
+    }
+    
+    func testUnwrapWithDefaultOnPromiseWithoutHoldingTransform()
+    {
+        let receivedValue = expectation(description: "received value")
+        
+        Promise<Int?>
+        {
+            promise in DispatchQueue.main.async { promise.fulfill(nil) }
+        }
+        .unwrap(42)
+        .observed
+        {
+            XCTAssertEqual($0, 42)
+            receivedValue.fulfill()
+        }
+        
+        waitForExpectations(timeout: 3)
+    }
+    
+    func testNewOnPromiseWithoutHoldingTransform()
+    {
+        let receivedValue = expectation(description: "received value")
+        
+        Promise<Update<Int>>
+        {
+            promise in DispatchQueue.main.async { promise.fulfill(Update(23, 42)) }
+        }
+        .new()
+        .observed
+        {
+            XCTAssertEqual($0, 42)
+            receivedValue.fulfill()
+        }
+        
+        waitForExpectations(timeout: 3)
+    }
+    
     func asyncFunc() -> Promise<Void>
     {
         Promise { promise in DispatchQueue.main.async { promise.fulfill(()) } }

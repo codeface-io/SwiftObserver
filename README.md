@@ -28,7 +28,9 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Introduction](#introduction)
 * [Messengers](#messengers)
     * [Understand Observables](#understand-observables)
-    * [Use Messengers as Promises](#use-messengers-as-promises)
+* [Promises](#promises)
+  * [Receive a Promised Value](#receive-a-promised-value)
+  * [Compose Promises](#compose-promises)
 * [Variables](#variables)
     * [Observe Variables](#observe-variables)
     * [Use Variable Values](#use-variable-values) 
@@ -149,7 +151,7 @@ class Sky: Observable {
 
 1. Create a [`Messenger<Message>`](#messengers). It's a mediator through which other entities communicate.
 2. Create an object of a [custom `Observable`](#understand-observables) class that utilizes `Messenger<Message>`.
-3. Create a [`Promise<Value>`](#use-messengers-as-promises). It's a Messenger with conveniences for asynchronous returns.
+3. Create a [`Promise<Value>`](#promises). It's a Messenger with conveniences for asynchronous returns.
 4. Create a [`Variable<Value>`](#variables) (a.k.a. `Var<Value>`). It holds a value and sends value updates.
 5. Create a [*transform*](#make-transforms-observable) object. It wraps and transforms another `Observable`.
 
@@ -245,13 +247,15 @@ class Model: SuperModel, Observable {
 }
 ~~~
 
-## Use Messengers as Promises
+# Promises
 
-A `Promise<Value>` is basically just a `Messenger<Value>`. It makes our intention more explicit when we use messengers for managing and chaining asynchronous returns.
+A `Promise<Value>` is basically just a `Messenger<Value>`. It helps managing asynchronous returns and makes that intention more explicit.
 
 > **Side Note:** `Promise` is part of SwiftObserver because [Combine's `Future`](https://developer.apple.com/documentation/combine/future) is unfortunately not a practical solution for one-shot asynchronous calls, to depend on [PromiseKit](https://github.com/mxcl/PromiseKit) might be unnecessary in reasonably simple contexts, and [Vapor/NIO's Async](https://docs.vapor.codes/4.0/async/) might also be too server-specific. Anyway, integrating promises as regular observables yields some consistency, simplicity and synergy here. However, at some point *all* promise/future implementations will be obsolete due to [Swift's async/await](https://github.com/DougGregor/swift-evolution/blob/async-await/proposals/nnnn-async-await.md).
 
-### Receive a Promised Value
+## Receive a Promised Value
+
+### Receive It Once
 
 ```swift
 func getID() -> Promise<Int> {   // getID() promises an Int
@@ -267,9 +271,9 @@ getID().observed { id in         // observation by FreeObserver.shared
 }
 ```
 
-Typically, promises are shortlived observables that you don't store anywhere. That works fine since an asynchronous function like `getID()` that returns a promise keeps that promise alive in order to fulfill it. So you can (globally) observe such a promise without even storing it, and the promise as well as its observations get cleaned up automatically when the promise is fulfilled and dies.
+Typically, promises are shortlived observables that you don't hold on to. That works fine since an asynchronous function like `getID()` that returns a promise keeps that promise alive in order to fulfill it. So you can (globally) observe such a promise without even holding it anywhere, and the promise as well as its observations get cleaned up automatically when the promise is fulfilled and dies.
 
-### Receive a Promised Value Again
+### Receive It Again
 
 Sometimes, you want to do multiple things with an asynchronous result (long) after receiving it. In that case you may keep an [`ObservableCache`](#cached-messages) of the promise, so the promised value will be cached:
 
@@ -285,14 +289,14 @@ idCache.whenCached { id in
 }
 ```
 
-### Compose Promises
+## Compose Promises
 
 Inspired by PromiseKit, SwiftObserver allows to compose asynchronous calls using promises.
 
-#### Sequential Composition
+### Sequential Composition
 
 ```swift
-promise {                   // just for nice consistent closure syntax 
+promise {                   // establish context and increase readability 
     getInt()                // return Promise<Int>
 }.then {                    // chain another promise sequentially
     getString(takeInt: $0)  // take Int sent by 'promise', return Promise<String>
@@ -301,11 +305,11 @@ promise {                   // just for nice consistent closure syntax
 }
 ```
 
-`promise` is only for readability. It takes a closure that returns a `Promise` and simply returns that `Promise`.
+`promise` is for readability. It allows for nice consistent closure syntax and makes it clear that we're working with promises. It takes a closure that returns a `Promise` and simply returns that `Promise`.
 
 You call `then` on a first `Promise` and pass it a closure that returns the second `Promise`. That closure takes the value of the first promise, allowing the second promise to depend on it. `then` returns a new `Promise` that provides the value of the second promise.
 
-#### Concurrent Composition
+### Concurrent Composition
 
 ```swift
 promise {                    
@@ -319,6 +323,20 @@ promise {
 ```
 
 You call `and` on a `Promise` and pass it a closure that returns another `Promise`. This immediatly observes both promises. `and` returns a new `Promise` that provides the combined values of both promises.
+
+### Value Mapping
+
+A transform function that neither filters messages nor exclusively creates a standalone transform will create a new `Promise` when called on a `Promise`. These functions are `map(...)`, `unwrap(default)` and `new()`. The advantage here is, as with any function that returns a promise, that you don't need to keep that observable alive in order to observe it: 
+
+```swift
+promise {                    
+    getInt()                
+}.map {                     // chain a mapping promise sequentially
+    "\($0)"                 // map Int to String
+}.observed {                
+    print($0)               // print String sent by 'map'
+}
+```
 
 # Variables
 
