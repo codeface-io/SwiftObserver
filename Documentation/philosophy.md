@@ -7,7 +7,6 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
   * [Non-intrusive Design](#non-intrusive-design)
   * [Simplicity and Flexibility](#simplicity-and-flexibility)
   * [Safety](#safety)
-* [Why SwiftObserver Limits Combined Observation](#why-swiftobserver-limits-combined-observation)
 * [Why Combined Observation is Overrated](#why-combined-observation-is-overrated)
 * [What You Might Not Like](#what-you-might-not-like)
 
@@ -171,30 +170,19 @@ This is the opinionated side of SwiftObserver. I invite you put it on like a sho
 - Stop observations in the same expressive way you start them: `observer.stopObserving(observable)`
 - Stop **all** observations of an *observer* with **one** call: `observer.stopObserving()`
 
-# Why SwiftObserver Limits Combined Observation
-
-Combined observation is limited to observables that can be pulled, i.e. they conform to `Cache`. This decision is the result of a long process, involving many practical applications, discovering what's really essential, and letting go of big fancy features, one by one.
-
-The alternative to pulling the latest messages from the observables would be to remember all latest messages in the combined observation itself. SwiftObserver avoids that for a few reasons:
-
-1. It would duplicate data.
-2. It would make the messages optional (for initial value `nil`), possibly introducing optional optionals into the observation chain.
-3. It misrepresents filtered observables by using some outdated messages for further processing, which invites misuse. Basically, when the need to involve filtered observables in a combined observation comes up at all, it is probably misguided anyway.
-4. It has emerged as part of the philosophy (or insight if you will) on which SwiftObserver is built, that combined observation is a non-essential feature to the purpose of the observer pattern, dependency inversion, reactive code design and clean architecture. I would even argue that combined observation is an anti pattern. So SwiftObserver will not blow up its complexity or compromise its elegance, consistency or principles, just to support combined observation in general. Read more on this below.
-
-Pulling `latestMessage` works just fine and covers virtually all observables that would reasonably be part of a combined observation.
-
 # Why Combined Observation is Overrated
 
-At one point, I was convinced combined observations are an essential part of reactive programming. Practice has changed my mind.
+Other reactive libraries dump the combine functions `merge`, `zip` and `combineLatest` on your brain. And at one point, I was convinced combined observations are an essential part of reactive programming. Practice has changed my mind. SwiftObserver offers no combined observation anymore. This decision is the result of a long process, involving many practical applications, discovering what's really essential, and letting go of big fancy features, one by one.
 
-While SwiftObserver offers just one universal function for observing up to three *observables*, other reactive libraries dump at least the combine functions `merge`, `zip` and `combineLatest` on your brain. In SwiftObserver, `latestMessage` generally provides the latest message, so its combined observation is equivalent to `combineLatest`, which is by far the most used combine function in practice. 
+It has emerged as part of the philosophy (or insight if you will) on which SwiftObserver is built, that combined observation is a non-essential feature to the purpose of the observer pattern, dependency inversion, reactive code design and clean architecture. I would even argue that combined observation is an anti pattern. So SwiftObserver will not blow up its complexity or compromise its elegance, consistency or principles, just to support combined observation.
 
-You could implement `merge` and `zip` with SwiftObserver's primitives, but SwiftObserver's universal observation already covers practically all needs for combined observation. This even gets amplified by the fact that the pull model, as manifested in `latestMessage`, reduces the need to combine observations at all, since the interesting data can always be pulled from the *observables*.
+Combined observation can always easily be replaced by single observations. Each single observation would just call a function that does the "combined" update and pulls the necessary data from wherever it needs to.
+
+`combineLatest` is by far the most used combine function in practice and covers practically all "needs" for combined observation. The above suggested update function can be equivalent to `combineLatest` when the involved observables conform to `ObservableCache`, so the update function can directly pull the latest message from them. `ObservableCache` generally reduces the need for explicit combine functions in the first place, since the interesting data can often be pulled directly from *observables*. 
 
 As the founder of SwiftObserver, I even have to note, that I don't use combined observation anymore at all. It never offers me a benefit over single observation in practice. To the contrary: Managing observations proves to be harder when they're coupled. 
 
-My hunch is that `merge`, `zip` and `combineLatest` in other reactive libraries originate less from practical need and more from a desire to gerneralize and to max out the metaphor of "data streams" or "sequences". The underlying conceptual mis-alignment here would be, that *observables* in an *observer-observable* relationship are really **supposed** to send **messages** rather than anonymous **data**. I'll explain why.
+My hunch is that `merge`, `zip` and `combineLatest` in other reactive libraries originate less from practical need and more from a desire to gerneralize and to max out the metaphors of "data streams" or "sequences". The underlying conceptual mis-alignment here would be, that *observables* in an *observer-observable* relationship are really **supposed** to send **messages** rather than anonymous **data**. I'll explain why.
 
 All that is required for dependency inversion is that the *observer* gets informed about events that it might need to react to. The *observer* then decides whether to act at all, how to act and what data it requires, and it pulls exactly that data from wherever it needs to, including from *observables*. It is not the job of the *observable* to presume what data any *observer* might need. It's not supposed to depend on the *observer's* concerns, which is the whole reason why we invert that dependency through the *Observer Pattern*. The *observable's* job is just to tell what happened. 
 

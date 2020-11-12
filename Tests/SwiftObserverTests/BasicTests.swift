@@ -97,43 +97,6 @@ class BasicTests: XCTestCase
         XCTAssertEqual(sum, 3)
     }
     
-    func testCombinedObservation()
-    {
-        let text = Var<String?>()
-        var receivedText: String?
-        
-        let number = Var<Int?>()
-        var receivedNumber: Int?
-        
-        let observer = FreeObserver()
-        
-        observer.observe(text, number)
-        {
-            textUpdate, numberUpdate in
-            
-            receivedText = textUpdate.new
-            receivedNumber = numberUpdate.new
-        }
-        
-        XCTAssertEqual(receivedText, nil)
-        XCTAssertEqual(receivedNumber, nil)
-        
-        text <- "new text"
-        
-        XCTAssertEqual(receivedText, "new text")
-        XCTAssertEqual(receivedNumber, nil)
-        
-        number <- 7
-        
-        XCTAssertEqual(receivedText, "new text")
-        XCTAssertEqual(receivedNumber, 7)
-        
-        text <- "newer text"
-        
-        XCTAssertEqual(receivedText, "newer text")
-        XCTAssertEqual(receivedNumber, 7)
-    }
-    
     func testWhenCachedObservesUntilNonOptionalMessage()
     {
         let messengerCache = Messenger<Int>().cache()

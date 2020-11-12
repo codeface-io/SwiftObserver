@@ -12,7 +12,7 @@ SwiftObserver is a lightweight framework for reactive Swift. Its design goals ma
 4. [**Flexibility**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🤸🏻‍♀️<br>SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
 5. [**Safety**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#safety) ⛑<br>SwiftObserver does the memory management for you. Oh yeah, memory leaks are impossible.
 
-SwiftObserver is only 1800+ lines of production code, but it's well beyond a 1000 hours of work, re-imagining and reworking it many times, letting go of fancy features, documenting, [unit-testing](https://github.com/flowtoolz/SwiftObserver/tree/master/Tests/SwiftObserverTests), and battle-testing it [in practice](http://flowlistapp.com).
+SwiftObserver is only 1700+ lines of production code, but it's well beyond a 1000 hours of work, re-imagining and reworking it many times, letting go of fancy features, documenting, [unit-testing](https://github.com/flowtoolz/SwiftObserver/tree/master/Tests/SwiftObserverTests), and battle-testing it in practice.
 
 ## Why the Hell Another Reactive Swift Framework?
 
@@ -659,18 +659,6 @@ class Model: Messenger<String>, ObservableCache {  // informs about the latest s
     }
 }
 ```
-
-### Combined Observation
-
-Observables that cache their latest message can be part of combined observations like this:
-
-```swift
-dog.observe(tv, bowl, doorbell) { image, food, sound in
-    // either the tv's going, I got some food, or the bell rang
-}
-```
-
-When one of the combined observables sends a message, the combined observation **pulls** messages from the other observables to provide all latest messages to the observer (read more on this design [here](Documentation/philosophy.md#the-philosophy-of-swiftobserver)).
 
 ## Weak Observables
 
