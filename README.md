@@ -12,7 +12,7 @@ SwiftObserver is a lightweight framework for reactive Swift. Its design goals ma
 4. [**Flexibility**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🤸🏻‍♀️<br>SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
 5. [**Safety**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#safety) ⛑<br>SwiftObserver does the memory management for you. Oh yeah, memory leaks are impossible.
 
-SwiftObserver is only 1700+ lines of production code, but it's well beyond a 1000 hours of work, re-imagining and reworking it many times, letting go of fancy features, documenting, [unit-testing](https://github.com/flowtoolz/SwiftObserver/tree/master/Tests/SwiftObserverTests), and battle-testing it [in practice](http://flowlistapp.com).
+SwiftObserver is only 1800+ lines of production code, but it's well beyond a 1000 hours of work, re-imagining and reworking it many times, letting go of fancy features, documenting, [unit-testing](https://github.com/flowtoolz/SwiftObserver/tree/master/Tests/SwiftObserverTests), and battle-testing it [in practice](http://flowlistapp.com).
 
 ## Why the Hell Another Reactive Swift Framework?
 
@@ -390,7 +390,7 @@ You call `and` on a `Promise` and pass it a closure that returns another `Promis
 
 ### Value Mapping
 
-A transform function that neither filters messages nor exclusively creates a standalone transform will create a new `Promise` when called on a `Promise`. These functions are `map(...)`, `unwrap(default)` and `new()`. The advantage here is, as with any function that returns a promise, that you don't need to keep that observable alive in order to observe it: 
+[Transform](#transforms) functions that neither filter messages nor exclusively create standalone transforms actually return a new `Promise` when called on a `Promise`. These functions are `map(...)`, `unwrap(default)` and `new()`. The advantage here is, as with any function that returns a promise, that you don't need to keep that observable alive in order to observe it: 
 
 ```swift
 promise {                    
