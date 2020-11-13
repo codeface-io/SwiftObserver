@@ -123,12 +123,12 @@ class Dog: Observer {
 }
 ```
 
-The receiver retains the observer's observations. The observer just holds on to it strongly.
+The receiver keeps the observer's observations alive. The observer just holds on to it strongly.
 
 #### Notes on Observers
 
-* For a message receiving closure to be called, the `Observer` must still be alive. There's no awareness after death in memory.
-* An `Observer` can do multiple simultaneous observations of the same `Observable`, starting each via the mentioned `observe(...)` function.
+* For a message receiving closure to be called, the `Observer`/`Receiver` must still be alive. There's no awareness after death in memory.
+* An `Observer` can do multiple simultaneous observations of the same `Observable`, for example by calling `observe(...)` multiple times.
 * You can check wether an observer is observing an observable via `observer.isObserving(observable)`.
 
 ### Observables
@@ -137,14 +137,14 @@ Any object can be `Observable` if it has a `Messenger<Message>` for sending mess
 
 ```swift
 class Sky: Observable {
-    let messenger = Messenger<Color>()  // Message of type Color
+    let messenger = Messenger<Color>()  // Message == Color
 }
 ```
 
 #### Notes on Observables
 
 * An `Observable` sends messages via `send(_ message: Message)`. The observable's clients, even its observers, are also free to call that function. 
-* An `Observable` delivers messages in exactly the order in which `send(...)` is called, which helps when observers, from their message handling closures, somehow trigger further `send` calls.
+* An `Observable` delivers messages in exactly the order in which `send` is called, which helps when observers, from their message handling closures, somehow trigger further calls of `send`.
 * Just starting to observe an `Observable` does **not** trigger it to send a message. This keeps everything simple, predictable and consistent.
 
 #### Ways to Create an Observable
@@ -152,12 +152,12 @@ class Sky: Observable {
 1. Create a [`Messenger<Message>`](#messengers). It's a mediator through which other entities communicate.
 2. Create an object of a [custom `Observable`](#understand-observables) class that utilizes `Messenger<Message>`.
 3. Create a [`Variable<Value>`](#variables) (a.k.a. `Var<Value>`). It holds a value and sends value updates.
-4. Create a [`Promise<Value>`](#promises). It's a Messenger with conveniences for asynchronous returns.
+4. Create a [`Promise<Value>`](#promises). It helps with managing and composing asynchronous calls.
 5. Create a [*transform*](#make-transforms-observable) object. It wraps and transforms another `Observable`.
 
 ### Memory Management
 
-When observers or observables die, SwiftObserver cleans up the related observations automatically, making memory leaks impossible. So there isn't really any memory management to worry about.
+When an `Observer` or `Observable` dies, SwiftObserver cleans up all related observations automatically, making memory leaks impossible. So there isn't really any memory management to worry about.
 
 However, observers and observables can stop particular- or all their ongoing observations:
 
@@ -170,7 +170,7 @@ Sky.shared.stopBeingObserved()         // no more messages to anywhere
 
 ### Free Observers
 
-You don't even need an explicit observer to start an observation:
+You may start an observation without an explicit observer:
 
 ```swift
 observe(Sky.shared) { color in
@@ -182,9 +182,9 @@ Sky.shared.observed { color in  // ... same
 }
 ```
 
-Both examples internally call `FreeObserver.shared.observe(...)`. You may reference `FreeObserver.shared` explicitly to stop particular or all such free global observations.
+Both examples internally use the global observer `FreeObserver.shared`. You may reference `FreeObserver.shared` explicitly to stop particular or all such free global observations.
 
-You can also instantiate your own `FreeObserver` to do observations even more "freely". Just keep it alive as long as the observation shall last. Such a free observer is like a "Cancellable" or "Token" in other reactive contexts.
+You can also instantiate your own `FreeObserver` to do observations even more "freely". Just keep it alive as long as the observation shall last. Such a free observer is like a "Cancellable" or "Token" in other reactive frameworks.
 
 And you can do *one-time* observations:
 
@@ -202,7 +202,7 @@ Both functions return the involved `FreeObserver` as a discardable result. Typic
 
 # Messengers
 
-`Messenger` is the simplest `Observable` and the basis of every other `Observable`. It doesn't send messages by itself but anyone can send messages through it and use it for any type of message:
+`Messenger` is the simplest `Observable` and the basis of every other `Observable`. It doesn't send messages by itself, but anyone can send messages through it and use it for any type of message:
 
 ```swift
 let textMessenger = Messenger<String>()
@@ -218,7 +218,7 @@ textMessenger.send("my message")
 
 ## Understand Observables
 
-Having a messenger is actually what defines `Observable` objects:
+Having a `Messenger` is actually what defines `Observable` objects:
 
 ```swift
 public protocol Observable: class {
@@ -235,14 +235,14 @@ extension Messenger: Observable {
 }
 ```
 
-Every other `Observable` class is either a subclass of `Messenger` or a custom `Observable` class that provides a `Messenger`. Custom observables often employ some `enum` as their `Message` type:
+Every other `Observable` class is either a subclass of `Messenger` or a custom `Observable` class that provides a `Messenger`. Custom observables often employ some `enum` as their message type:
 
 ~~~swift
 class Model: SuperModel, Observable {
-    foo() { send(.willUpdate) }
-    bar() { send(.didUpdate) }
+    func foo() { send(.willUpdate) }
+    func bar() { send(.didUpdate) }
     deinit { send(.willDie) }
-    let messenger = Messenger<Event>()
+    let messenger = Messenger<Event>()  // Message == Event
     enum Event { case willUpdate, didUpdate, willDie }
 }
 ~~~
@@ -253,7 +253,7 @@ class Model: SuperModel, Observable {
 
 ## Observe Variables
 
-Whenever its `value` changes, `Var<Value>` sends a *message* of type `Update<Value>`, informing about the `old` and `new` value:
+Whenever its `value` changes, `Var<Value>` sends a message of type `Update<Value>`, informing about the `old` and `new` value:
 
 ~~~swift
 let number = Var(42)
@@ -313,7 +313,7 @@ Note that `text` is a `var` instead of a `let`. It cannot be constant because Sw
 
 # Promises
 
-A `Promise<Value>` is basically just a `Messenger<Value>`. It helps managing asynchronous returns and makes that intention more explicit.
+A `Promise<Value>` is a `Messenger<Value>` that helps managing asynchronous returns and makes that intention more explicit.
 
 > **Side Note:** `Promise` is part of SwiftObserver because [Combine's `Future`](https://developer.apple.com/documentation/combine/future) is unfortunately not a practical solution for one-shot asynchronous calls, to depend on [PromiseKit](https://github.com/mxcl/PromiseKit) might be unnecessary in reasonably simple contexts, and [Vapor/NIO's Async](https://docs.vapor.codes/4.0/async/) might also be too server-specific. Anyway, integrating promises as regular observables yields some consistency, simplicity and synergy here. However, at some point *all* promise/future implementations will be obsolete due to [Swift's async/await](https://github.com/DougGregor/swift-evolution/blob/async-await/proposals/nnnn-async-await.md).
 
@@ -363,7 +363,7 @@ Inspired by PromiseKit, SwiftObserver allows to compose asynchronous calls using
 promise {                   // establish context and increase readability 
     getInt()                // return a Promise<Int>
 }.then {                    // chain another promise sequentially
-    getString(takeInt: $0)  // take Int sent by 'promise', return Promise<String>
+    getString(takeInt: $0)  // take Int sent by 'promise', return a Promise<String>
 }.observed {                // observation dies when promise 'then' is fulfilled
     print($0)               // print String sent by promise 'then'
 }
@@ -390,17 +390,17 @@ You call `and` on a `Promise` and pass it a closure that returns another `Promis
 
 ### Value Mapping
 
-[Transform](#transforms) functions that neither filter messages nor exclusively create standalone transforms actually return a new `Promise` when called on a `Promise`. These functions are `map(...)`, `unwrap(default)` and `new()`. The advantage here is, as with any function that returns a promise, that you don't need to keep that observable alive in order to observe it: 
-
 ```swift
 promise {                    
     getInt()                
 }.map {                     // chain a mapping promise sequentially
     "\($0)"                 // map Int sent by 'promise' to String
 }.observed {                
-    print($0)               // print String sent by 'map'
+    print($0)               // print String sent by promise 'map'
 }
 ```
+
+[Transform](#transforms) functions that neither filter messages nor exclusively create standalone transforms actually return a new `Promise` when called on a `Promise`. These functions are `map(...)`, `unwrap(default)` and `new()`. The advantage here is, as with any function that returns a promise, that you don't need to keep that observable alive in order to observe it.
 
 # Transforms
 
@@ -585,7 +585,7 @@ class Collaborator: Observer {
 let sharedText = Var<String>()
 ```
 
-### Author Related Transforms
+### Filter by Author
 
 There are three transforms related to message authors. As with other transforms, you can apply them directly in observations or create them as standalone observables.
 
