@@ -2,7 +2,7 @@
     
     # meta infos
     s.name             = "SwiftObserver"
-    s.version          = "6.2.0"
+    s.version          = "6.2.1"
     s.summary          = "Reactive Swift. Minimalist, Readable, Consistent, Unintrusive, Powerful, Safe."
     s.description      = "SwiftObserver is a lightweight framework for reactive Swift. It's a bit unconventional and designed to be readable, easy, flexible, non-intrusive, simple and safe."
     s.homepage         = "http://flowtoolz.com"
