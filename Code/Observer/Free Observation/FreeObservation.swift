@@ -1,4 +1,4 @@
-extension Observable
+public extension Observable
 {
     func observed() -> ObservationTransformer<Message>
     {
