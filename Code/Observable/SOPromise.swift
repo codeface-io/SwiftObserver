@@ -1,4 +1,4 @@
-public class Promise<Value>: Messenger<Value>
+public class SOPromise<Value>: Messenger<Value>
 {
     public convenience init(fulfill: (Self) -> Void)
     {
