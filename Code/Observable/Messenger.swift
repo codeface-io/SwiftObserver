@@ -12,7 +12,7 @@ public class Messenger<Message>
     
     internal func _send(_ message: Message, from author: AnyAuthor)
     {
-        messagesFromAuthors.append((message, author))
+        messagesFromAuthors += (message, author)
 
         if messagesFromAuthors.count > 1 { return }
         
