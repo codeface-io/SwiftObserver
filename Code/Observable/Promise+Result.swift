@@ -1,10 +1,10 @@
 public extension SOPromise
 {
-    func onSuccess<Success, Failure, NextSuccess>(
-        _ nextPromise: @escaping (Success) -> SOPromise<Result<NextSuccess, Failure>>
+    func onSuccess<Success, NextSuccess>(
+        _ nextPromise: @escaping (Success) -> ResultPromise<NextSuccess>
     )
-        -> SOPromise<Result<NextSuccess, Failure>>
-        where Value == Result<Success, Failure>
+        -> ResultPromise<NextSuccess>
+        where Value == Result<Success, Error>
     {
         then
         {
@@ -18,22 +18,32 @@ public extension SOPromise
         }
     }
     
-    func mapSuccess<Success, Failure, NextSuccess>(
-        _ handleSuccess: @escaping (Success) -> Result<NextSuccess, Failure>
+    func mapSuccess<Success, NextSuccess>(
+        _ handleSuccess: @escaping (Success) throws -> NextSuccess
     )
-        -> SOPromise<Result<NextSuccess, Failure>>
-        where Value == Result<Success, Failure>
+        -> ResultPromise<NextSuccess>
+        where Value == Result<Success, Error>
     {
-        map { $0.flatMap(handleSuccess) }
+        map
+        {
+            switch $0
+            {
+            case .success(let successValue):
+                do { return .success(try handleSuccess(successValue)) }
+                catch { return .failure(error) }
+            case .failure(let error):
+                return .failure(error)
+            }
+        }
     }
     
     @discardableResult
-    func observedSuccess<Success, Failure>(
+    func observedSuccess<Success>(
         _ handleSuccess: @escaping (Success) -> Void,
-        failure handleFailure: @escaping (Failure) -> Void
+        failure handleFailure: @escaping (Error) -> Void
     )
         -> FreeObserver
-        where Value == Result<Success, Failure>
+        where Value == Result<Success, Error>
     {
         observedOnce
         {
@@ -47,27 +57,29 @@ public extension SOPromise
         }
     }
     
-    func fulfill<Success, Failure>(_ error: Failure)
-        where Value == Result<Success, Failure>
+    func fulfill<Success>(_ error: Error)
+        where Value == Result<Success, Error>
     {
         fulfill(.failure(error))
     }
     
-    func fulfill<Success, Failure>(_ resultValue: Success)
-        where Value == Result<Success, Failure>
+    func fulfill<Success>(_ resultValue: Success)
+        where Value == Result<Success, Error>
     {
         fulfill(.success(resultValue))
     }
     
-    static func fulfilled<Success, Failure>(_ error: Failure) -> SOPromise
-        where Value == Result<Success, Failure>
+    static func fulfilled<Success>(_ error: Error) -> SOPromise
+        where Value == Result<Success, Error>
     {
         fulfilled(.failure(error))
     }
     
-    static func fulfilled<Success, Failure>(_ resultValue: Success) -> SOPromise
-        where Value == Result<Success, Failure>
+    static func fulfilled<Success>(_ resultValue: Success) -> SOPromise
+        where Value == Result<Success, Error>
     {
         fulfilled(.success(resultValue))
     }
 }
+
+public typealias ResultPromise<Value> = SOPromise<Result<Value, Error>>
