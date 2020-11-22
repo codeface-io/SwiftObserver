@@ -1,8 +1,8 @@
-public class SOPromise<Value>: Messenger<Value>
+public class Promise<Value>: Messenger<Value>
 {
-    public static func fulfilled(_ value: Value) -> SOPromise
+    public static func fulfilled(_ value: Value) -> Promise
     {
-        SOPromise { $0.fulfill(value) }
+        Promise { $0.fulfill(value) }
     }
     
     public convenience init(fulfill: (Self) -> Void)

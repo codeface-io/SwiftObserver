@@ -5,7 +5,7 @@ class PromiseTests: XCTestCase
 {
     func testFulfillingPromiseAsynchronously()
     {
-        let promise = SOPromise<Void>()
+        let promise = Promise<Void>()
         
         let promiseFulfilled = expectation(description: "promise is fulfilled")
         
@@ -35,7 +35,7 @@ class PromiseTests: XCTestCase
     
     func testPromiseProvidesValueAsynchronously()
     {
-        let promise = SOPromise<Int>()
+        let promise = Promise<Int>()
         
         let valueReceived = expectation(description: "did reveive value from promise")
         
@@ -98,7 +98,7 @@ class PromiseTests: XCTestCase
     
     func testGettingValueMultipleTimesSynchronouslyFromCacheOfFulfilledPromise()
     {
-        let promiseCache = SOPromise<Int>().cache()
+        let promiseCache = Promise<Int>().cache()
         promiseCache.send(42)
         
         XCTAssertEqual(promiseCache.latestMessage, 42)
@@ -186,7 +186,7 @@ class PromiseTests: XCTestCase
     {
         let receivedValue = expectation(description: "received value")
         
-        SOPromise<Int?>
+        Promise<Int?>
         {
             promise in DispatchQueue.main.async { promise.fulfill(nil) }
         }
@@ -204,7 +204,7 @@ class PromiseTests: XCTestCase
     {
         let receivedValue = expectation(description: "received value")
         
-        SOPromise<Update<Int>>
+        Promise<Update<Int>>
         {
             promise in DispatchQueue.main.async { promise.fulfill(Update(23, 42)) }
         }
@@ -218,18 +218,18 @@ class PromiseTests: XCTestCase
         waitForExpectations(timeout: 3)
     }
     
-    func asyncFunc() -> SOPromise<Void>
+    func asyncFunc() -> Promise<Void>
     {
-        SOPromise { promise in DispatchQueue.main.async { promise.fulfill(()) } }
+        Promise { promise in DispatchQueue.main.async { promise.fulfill(()) } }
     }
     
-    func asyncFunc(returnValue: Int) -> SOPromise<Int>
+    func asyncFunc(returnValue: Int) -> Promise<Int>
     {
-        SOPromise { promise in DispatchQueue.main.async { promise.fulfill(returnValue) } }
+        Promise { promise in DispatchQueue.main.async { promise.fulfill(returnValue) } }
     }
     
-    func asyncFunc(returnValue: String) -> SOPromise<String>
+    func asyncFunc(returnValue: String) -> Promise<String>
     {
-        SOPromise { promise in DispatchQueue.main.async { promise.fulfill(returnValue) } }
+        Promise { promise in DispatchQueue.main.async { promise.fulfill(returnValue) } }
     }
 }

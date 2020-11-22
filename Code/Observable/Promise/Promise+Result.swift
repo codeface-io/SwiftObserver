@@ -1,4 +1,4 @@
-public extension SOPromise
+public extension Promise
 {
     func onSuccess<Success, NextSuccess>(
         _ nextPromise: @escaping (Success) throws -> ResultPromise<NextSuccess>
@@ -87,17 +87,17 @@ public extension SOPromise
         fulfill(.success(resultValue))
     }
     
-    static func fulfilled<Success>(_ error: Error) -> SOPromise
+    static func fulfilled<Success>(_ error: Error) -> Promise
         where Value == Result<Success, Error>
     {
         fulfilled(.failure(error))
     }
     
-    static func fulfilled<Success>(_ resultValue: Success) -> SOPromise
+    static func fulfilled<Success>(_ resultValue: Success) -> Promise
         where Value == Result<Success, Error>
     {
         fulfilled(.success(resultValue))
     }
 }
 
-public typealias ResultPromise<Value> = SOPromise<Result<Value, Error>>
+public typealias ResultPromise<Value> = Promise<Result<Value, Error>>

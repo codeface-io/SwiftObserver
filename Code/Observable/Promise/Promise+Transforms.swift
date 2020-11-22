@@ -1,8 +1,8 @@
-public extension SOPromise
+public extension Promise
 {
-    func map<Mapped>(_ map: @escaping (Value) -> Mapped) -> SOPromise<Mapped>
+    func map<Mapped>(_ map: @escaping (Value) -> Mapped) -> Promise<Mapped>
     {
-        SOPromise<Mapped>
+        Promise<Mapped>
         {
             promise in
 
@@ -13,10 +13,10 @@ public extension SOPromise
         }
     }
     
-    func unwrap<Wrapped>(_ defaultValue: Wrapped) -> SOPromise<Wrapped>
+    func unwrap<Wrapped>(_ defaultValue: Wrapped) -> Promise<Wrapped>
         where Value == Wrapped?
     {
-        SOPromise<Wrapped>
+        Promise<Wrapped>
         {
             promise in
 
@@ -27,10 +27,10 @@ public extension SOPromise
         }
     }
     
-    func new<UpdateValue>() -> SOPromise<UpdateValue>
+    func new<UpdateValue>() -> Promise<UpdateValue>
         where Value == Update<UpdateValue>
     {
-        SOPromise<UpdateValue>
+        Promise<UpdateValue>
         {
             promise in
 
