@@ -1,7 +1,7 @@
 public extension SOPromise
 {
     func onSuccess<Success, NextSuccess>(
-        _ nextPromise: @escaping (Success) -> ResultPromise<NextSuccess>
+        _ nextPromise: @escaping (Success) throws -> ResultPromise<NextSuccess>
     )
         -> ResultPromise<NextSuccess>
         where Value == Result<Success, Error>
@@ -11,7 +11,8 @@ public extension SOPromise
             switch $0
             {
             case .success(let successValue):
-                return nextPromise(successValue)
+                do { return try nextPromise(successValue) }
+                catch { return .fulfilled(.failure(error)) }
             case .failure(let error):
                 return .fulfilled(.failure(error))
             }
@@ -39,7 +40,7 @@ public extension SOPromise
     
     @discardableResult
     func observedSuccess<Success>(
-        _ handleSuccess: @escaping (Success) -> Void,
+        _ handleSuccess: @escaping (Success) throws -> Void,
         failure handleFailure: @escaping (Error) -> Void
     )
         -> FreeObserver
@@ -50,8 +51,25 @@ public extension SOPromise
             switch $0
             {
             case .success(let successValue):
-                handleSuccess(successValue)
+                do { try handleSuccess(successValue) }
+                catch { handleFailure(error) }
             case .failure(let error):
+                handleFailure(error)
+            }
+        }
+    }
+    
+    @discardableResult
+    func observedFailure<Success>(
+        _ handleFailure: @escaping (Error) -> Void
+    )
+        -> FreeObserver
+        where Value == Result<Success, Error>
+    {
+        observedOnce
+        {
+            if case .failure(let error) = $0
+            {
                 handleFailure(error)
             }
         }
