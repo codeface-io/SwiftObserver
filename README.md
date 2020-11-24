@@ -623,12 +623,7 @@ let humanMessages = messenger.notFrom(hal9000)  // sends String, but not from an
 
 ## Cached Messages 
 
-An `ObservableCache` is an `Observable` that has a property `latestMessage: Message` which typically returns the last sent message or one that indicates that nothing has changed.
-
-`ObservableCache` also has two convenience functions:
-
-*  `send()` takes no argument and sends `latestMessage`.
-*  `whenCached` is available where `Message` is optional. It asynchronously provides a non-optional message as soon as one is available. If the cache's `latestMessage` is not `nil`, `whenCached` immediatly provides that message, otherwise it observes the cache until the cache sends a message other than `nil`.
+An `ObservableCache` is an `Observable` that has a property `latestMessage: Message` which typically returns the last sent message or one that indicates that nothing has changed. `ObservableCache` has a function `send()` that takes no argument and sends `latestMessage`.
 
 ### Four Kinds of Caches
 

@@ -96,21 +96,4 @@ class BasicTests: XCTestCase
         
         XCTAssertEqual(sum, 3)
     }
-    
-    func testWhenCachedObservesUntilNonOptionalMessage()
-    {
-        let messengerCache = Messenger<Int>().cache()
-        
-        var receivedNonOptionalValue = false
-        
-        messengerCache.whenCached
-        {
-            _ in receivedNonOptionalValue = true
-        }
-        
-        messengerCache.send(nil)
-        messengerCache.send(1)
-        
-        XCTAssert(receivedNonOptionalValue)
-    }
 }
