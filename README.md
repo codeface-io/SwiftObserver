@@ -335,7 +335,7 @@ getID().whenFulfilled { id in    // get id (if fulfilled) or observe promise
 }
 ```
 
-Because a `Promise` might already be fulfilled we normally **don't** observe it directly. Instead we call `whenFulfilled`.
+Because a `Promise` might already be fulfilled, we **don't** observe it directly but call `whenFulfilled`.
 
 Typically, promises are shortlived observables that we don't hold on to. That works fine since an asynchronous function like `getID()` that returns a promise keeps that promise alive in order to fulfill it. So we get the promised value asynchronously without even holding the promise anywhere, and the promise as well as its observations get cleaned up automatically when the promise is fulfilled and dies.
 
@@ -356,8 +356,6 @@ idPromise.whenFulfilled { id in
 ```
 
 ## Compose Promises
-
-Inspired by PromiseKit, SwiftObserver allows to compose asynchronous calls using promises.
 
 ### Sequential Composition
 
@@ -398,7 +396,7 @@ promise {
 }.whenFulfilled {           // returns 'promise' so the chain can continue
     print($0)               // print Int sent by 'promise'
 }.map {                     // chain a mapping promise sequentially
-    "\($0)"                 // map Int sent by 'promise' to String
+    "\($0)"                 // map Int sent by promise 'whenFulfilled' to String
 }.whenFulfilled {                
     print($0)               // print String sent by promise 'map'
 }
