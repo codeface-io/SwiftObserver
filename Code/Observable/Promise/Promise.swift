@@ -1,8 +1,13 @@
+import Dispatch
+
 public class Promise<Value>: Messenger<Value>
 {
-    public static func fulfilled(_ value: Value) -> Promise
+    public static func fulfilling(_ value: Value) -> Promise
     {
-        Promise { $0.fulfill(value) }
+        Promise
+        {
+            promise in DispatchQueue.main.async { promise.fulfill(value) }
+        }
     }
     
     public convenience init(fulfill: (Self) -> Void)

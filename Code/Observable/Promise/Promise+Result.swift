@@ -12,9 +12,9 @@ public extension Promise
             {
             case .success(let successValue):
                 do { return try nextPromise(successValue) }
-                catch { return .fulfilled(.failure(error)) }
+                catch { return .fulfilling(.failure(error)) }
             case .failure(let error):
-                return .fulfilled(.failure(error))
+                return .fulfilling(.failure(error))
             }
         }
     }
@@ -87,16 +87,16 @@ public extension Promise
         fulfill(.success(resultValue))
     }
     
-    static func fulfilled<Success>(_ error: Error) -> Promise
+    static func fulfilling<Success>(_ error: Error) -> Promise
         where Value == Result<Success, Error>
     {
-        fulfilled(.failure(error))
+        fulfilling(.failure(error))
     }
     
-    static func fulfilled<Success>(_ resultValue: Success) -> Promise
+    static func fulfilling<Success>(_ resultValue: Success) -> Promise
         where Value == Result<Success, Error>
     {
-        fulfilled(.success(resultValue))
+        fulfilling(.success(resultValue))
     }
 }
 

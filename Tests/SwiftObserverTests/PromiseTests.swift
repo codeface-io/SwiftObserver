@@ -218,6 +218,21 @@ class PromiseTests: XCTestCase
         waitForExpectations(timeout: 3)
     }
     
+    func testCreateSelfFulfillingPromise()
+    {
+        func asyncFuncReturningEarly() -> Promise<Int> { .fulfilling(42) }
+        
+        let receivedValue = expectation(description: "received value")
+        
+        asyncFuncReturningEarly().observed
+        {
+            XCTAssertEqual($0, 42)
+            receivedValue.fulfill()
+        }
+        
+        waitForExpectations(timeout: 3)
+    }
+    
     func asyncFunc() -> Promise<Void>
     {
         Promise { promise in DispatchQueue.main.async { promise.fulfill(()) } }
