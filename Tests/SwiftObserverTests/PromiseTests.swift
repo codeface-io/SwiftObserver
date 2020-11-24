@@ -5,13 +5,11 @@ class PromiseTests: XCTestCase
 {
     func testFulfillingPromiseAsynchronously()
     {
-        let promise = Promise<Void>()
+        let promise: Promise<Void> = Promise { _ in }
         
         let promiseFulfilled = expectation(description: "promise is fulfilled")
         
-        let observer = FreeObserver()
-        
-        observer.observe(promise)
+        promise.whenFulfilled
         {
             promiseFulfilled.fulfill()
         }
@@ -21,11 +19,11 @@ class PromiseTests: XCTestCase
         waitForExpectations(timeout: 3)
     }
     
-    func testCommonFreeAdhocObservationOfAsyncFunc()
+    func testCommonAdhocObservationOfAsyncFunc()
     {
         let promiseFulfilled = expectation(description: "promise is fulfilled")
         
-        SwiftObserver.observe(asyncFunc())
+        asyncFunc().whenFulfilled
         {
             promiseFulfilled.fulfill()
         }
@@ -35,19 +33,15 @@ class PromiseTests: XCTestCase
     
     func testPromiseProvidesValueAsynchronously()
     {
-        let promise = Promise<Int>()
+        let promise = asyncFunc(returnValue: 42)
         
         let valueReceived = expectation(description: "did reveive value from promise")
         
-        let observer = FreeObserver()
-        
-        observer.observe(promise)
+        promise.whenFulfilled
         {
             XCTAssertEqual($0, 42)
             valueReceived.fulfill()
         }
-        
-        DispatchQueue.main.async { promise.fulfill(42) }
         
         waitForExpectations(timeout: 3)
     }
@@ -60,9 +54,7 @@ class PromiseTests: XCTestCase
 
         let promiseFulfilled = expectation(description: "promise is fulfilled")
 
-        let observer = FreeObserver()
-
-        observer.observe(weakPromise!)
+        weakPromise!.whenFulfilled
         {
             promiseFulfilled.fulfill()
         }
@@ -74,43 +66,36 @@ class PromiseTests: XCTestCase
     
     func testGettingValueMultipleTimesAsynchronouslyFromPromiseCache()
     {
-        let promiseCache = asyncFunc(returnValue: 42).cache()
+        let promise = asyncFunc(returnValue: 42)
         
         let receivedValue = expectation(description: "received value")
         let receivedValue2 = expectation(description: "received value too")
         
-        promiseCache.whenCached { value in
+        promise.whenFulfilled { value in
             XCTAssertEqual(value, 42)
-            XCTAssertEqual(value, promiseCache.latestMessage)
             receivedValue.fulfill()
         }
         
-        promiseCache.whenCached { value in
+        promise.whenFulfilled { value in
             XCTAssertEqual(value, 42)
-            XCTAssertEqual(value, promiseCache.latestMessage)
             receivedValue2.fulfill()
         }
         
-        XCTAssertNil(promiseCache.latestMessage)
         waitForExpectations(timeout: 3)
-        XCTAssertEqual(promiseCache.latestMessage, 42)
     }
     
     func testGettingValueMultipleTimesSynchronouslyFromCacheOfFulfilledPromise()
     {
-        let promiseCache = Promise<Int>().cache()
-        promiseCache.send(42)
-        
-        XCTAssertEqual(promiseCache.latestMessage, 42)
+        let promise: Promise<Int> = .fulfilled(42)
         
         var receivedValue: Int?
         var receivedValue2: Int?
         
-        promiseCache.whenCached { value in
+        promise.whenFulfilled { value in
             receivedValue = value
         }
         
-        promiseCache.whenCached { value in
+        promise.whenFulfilled { value in
             receivedValue2 = value
         }
         
