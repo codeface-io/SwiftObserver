@@ -313,7 +313,7 @@ Note that `text` is a `var` instead of a `let`. It cannot be constant because Sw
 
 # Promises
 
-A `Promise<Value>` is a `Messenger<Value>` that helps managing asynchronous returns and makes that intention more explicit.
+A `Promise<Value>` helps managing asynchronous returns and makes that intention explicit.
 
 > **Side Note:** `Promise` is part of SwiftObserver because [Combine's `Future`](https://developer.apple.com/documentation/combine/future) is unfortunately not a practical solution for one-shot asynchronous calls, to depend on [PromiseKit](https://github.com/mxcl/PromiseKit) might be unnecessary in reasonably simple contexts, and [Vapor/NIO's Async](https://docs.vapor.codes/4.0/async/) might also be too server-specific. Anyway, integrating promises as regular observables yields some consistency, simplicity and synergy here. However, at some point *all* promise/future implementations will be obsolete due to [Swift's async/await](https://github.com/DougGregor/swift-evolution/blob/async-await/proposals/nnnn-async-await.md).
 
@@ -325,30 +325,32 @@ A `Promise<Value>` is a `Messenger<Value>` that helps managing asynchronous retu
 func getID() -> Promise<Int> {   // getID() promises an Int
     Promise { promise in         // convenience initializer
         getIDAsync { id in       // handler retains the promise until it's fulfilled
-            promise.fulfill(id)  // equivalent to promise.send(id)
+            promise.fulfill(id)  // triggers message: Promise.Event.wasFulfilled(id)
         } 
     }
 }
 
-getID().observed { id in         // observation by FreeObserver.shared
+getID().whenFulfilled { id in    // get id (if fulfilled) or observe promise
     // do somethin with the ID
 }
 ```
 
-Typically, promises are shortlived observables that you don't hold on to. That works fine since an asynchronous function like `getID()` that returns a promise keeps that promise alive in order to fulfill it. So you can (globally) observe such a promise without even holding it anywhere, and the promise as well as its observations get cleaned up automatically when the promise is fulfilled and dies.
+Because a `Promise` might already be fulfilled we normally **don't** observe it directly. Instead we call `whenFulfilled`.
+
+Typically, promises are shortlived observables that we don't hold on to. That works fine since an asynchronous function like `getID()` that returns a promise keeps that promise alive in order to fulfill it. So we get the promised value asynchronously without even holding the promise anywhere, and the promise as well as its observations get cleaned up automatically when the promise is fulfilled and dies.
 
 ### Receive It Again
 
-Sometimes, you want to do multiple things with an asynchronous result (long) after receiving it. In that case you may keep an [`ObservableCache`](#cached-messages) of the promise, so the promised value will be cached:
+Sometimes, you want to do multiple things with an asynchronous result (long) after receiving it:
 
 ```swift
-let idCache = getID().cache()   // Cache<Promise<Int>>
+let idPromise = getID()           // Promise<Int>
 
-idCache.whenCached { id in      // get cached id or observe cache
+idPromise.whenFulfilled { id in
     // do somethin with id
 }
 
-idCache.whenCached { id in
+idPromise.whenFulfilled { id in
     // do somethin else with id
 }
 ```
@@ -364,7 +366,7 @@ promise {                   // establish context and increase readability
     getInt()                // return a Promise<Int>
 }.then {                    // chain another promise sequentially
     getString(takeInt: $0)  // take Int sent by 'promise', return a Promise<String>
-}.observed {                // observation dies when promise 'then' is fulfilled
+}.whenFulfilled {           // observation dies when promise 'then' is fulfilled
     print($0)               // print String sent by promise 'then'
 }
 ```
@@ -380,7 +382,7 @@ promise {
     getInt()                
 }.and {                     // chain another promise concurrently
     getString()             
-}.observed {                
+}.whenFulfilled {                
     print($0.0)             // print Int sent by 'promise'
     print($0.1)             // print String sent by promise 'getString()'
 }
@@ -393,9 +395,11 @@ You call `and` on a `Promise` and pass it a closure that returns another `Promis
 ```swift
 promise {                    
     getInt()                
+}.whenFulfilled {           // returns 'promise' so the chain can continue
+    print($0)               // print Int sent by 'promise'
 }.map {                     // chain a mapping promise sequentially
     "\($0)"                 // map Int sent by 'promise' to String
-}.observed {                
+}.whenFulfilled {                
     print($0)               // print String sent by promise 'map'
 }
 ```
