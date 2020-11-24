@@ -6,9 +6,9 @@ public extension Promise
         {
             promise in
 
-            observedOnce
+            whenFulfilled
             {
-                promise.fulfill(map($0), as: $1)
+                promise.fulfill(map($0))
             }
         }
     }
@@ -20,9 +20,9 @@ public extension Promise
         {
             promise in
 
-            observedOnce
+            whenFulfilled
             {
-                promise.fulfill($0 ?? defaultValue, as: $1)
+                promise.fulfill($0 ?? defaultValue)
             }
         }
     }
@@ -34,9 +34,9 @@ public extension Promise
         {
             promise in
 
-            observedOnce
+            whenFulfilled
             {
-                promise.fulfill($0.new, as: $1)
+                promise.fulfill($0.new)
             }
         }
     }

@@ -11,22 +11,9 @@ public extension Promise
         {
             promise in
 
-            observedOnce
+            whenFulfilled
             {
-                nextPromise($0).observedOnce(promise.fulfill(_:))
-            }
-        }
-    }
-    
-    func then<NextValue>(_ nextPromise: @escaping (Value, AnyAuthor) -> Promise<NextValue>) -> Promise<NextValue>
-    {
-        Promise<NextValue>
-        {
-            promise in
-
-            observedOnce
-            {
-                nextPromise($0, $1).observedOnce(promise.fulfill(_:as:))
+                nextPromise($0).whenFulfilled(promise.fulfill(_:))
             }
         }
     }
@@ -48,17 +35,38 @@ public extension Promise
                 promise.fulfill((value, concurrentValue))
             }
 
-            observedOnce
+            whenFulfilled
             {
                 value = $0
                 fulfillPromiseIfValuesPresent()
             }
 
-            concurrentPromise().observedOnce
+            concurrentPromise().whenFulfilled
             {
                 concurrentValue = $0
                 fulfillPromiseIfValuesPresent()
             }
         }
+    }
+    
+    @discardableResult
+    func whenFulfilled(_ handleValue: @escaping (Value) -> Void) -> Self
+    {
+        switch state
+        {
+        case .fulfilled(let value):
+            handleValue(value)
+        case .unfulfilled:
+            observedOnce
+            {
+                switch $0
+                {
+                case .wasFulfilled(let value):
+                    handleValue(value)
+                }
+            }
+        }
+        
+        return self
     }
 }

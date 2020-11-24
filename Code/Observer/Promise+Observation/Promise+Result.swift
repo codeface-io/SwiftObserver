@@ -12,9 +12,9 @@ public extension Promise
             {
             case .success(let successValue):
                 do { return try nextPromise(successValue) }
-                catch { return .fulfilling(.failure(error)) }
+                catch { return .fulfilled(error) }
             case .failure(let error):
-                return .fulfilling(.failure(error))
+                return .fulfilled(error)
             }
         }
     }
@@ -39,14 +39,14 @@ public extension Promise
     }
     
     @discardableResult
-    func observedSuccess<Success>(
+    func whenSucceeded<Success>(
         _ handleSuccess: @escaping (Success) throws -> Void,
-        failure handleFailure: @escaping (Error) -> Void
+        failed handleFailure: @escaping (Error) -> Void
     )
-        -> FreeObserver
+        -> Self
         where Value == Result<Success, Error>
     {
-        observedOnce
+        whenFulfilled
         {
             switch $0
             {
@@ -57,22 +57,26 @@ public extension Promise
                 handleFailure(error)
             }
         }
+        
+        return self
     }
     
     @discardableResult
-    func observedFailure<Success>(
+    func whenFailed<Success>(
         _ handleFailure: @escaping (Error) -> Void
     )
-        -> FreeObserver
+        -> Self
         where Value == Result<Success, Error>
     {
-        observedOnce
+        whenFulfilled
         {
             if case .failure(let error) = $0
             {
                 handleFailure(error)
             }
         }
+        
+        return self
     }
     
     func fulfill<Success>(_ error: Error)
@@ -87,16 +91,16 @@ public extension Promise
         fulfill(.success(resultValue))
     }
     
-    static func fulfilling<Success>(_ error: Error) -> Promise
+    static func fulfilled<Success>(_ error: Error) -> Promise
         where Value == Result<Success, Error>
     {
-        fulfilling(.failure(error))
+        fulfilled(.failure(error))
     }
     
-    static func fulfilling<Success>(_ resultValue: Success) -> Promise
+    static func fulfilled<Success>(_ resultValue: Success) -> Promise
         where Value == Result<Success, Error>
     {
-        fulfilling(.success(resultValue))
+        fulfilled(.success(resultValue))
     }
 }
 

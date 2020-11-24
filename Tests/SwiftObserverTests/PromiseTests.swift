@@ -130,7 +130,7 @@ class PromiseTests: XCTestCase
         {
             self.asyncFunc(returnValue: "\($0)")
         }
-        .observed
+        .whenFulfilled
         {
             XCTAssertEqual($0, "42")
             receivedValue.fulfill()
@@ -151,7 +151,7 @@ class PromiseTests: XCTestCase
         {
             asyncFunc(returnValue: "42")
         }
-        .observed
+        .whenFulfilled
         {
             XCTAssertEqual($0.0, 42)
             XCTAssertEqual($0.1, "42")
@@ -173,7 +173,7 @@ class PromiseTests: XCTestCase
         {
             "\($0)"
         }
-        .observed
+        .whenFulfilled
         {
             XCTAssertEqual($0, "42")
             receivedValue.fulfill()
@@ -191,7 +191,7 @@ class PromiseTests: XCTestCase
             promise in DispatchQueue.main.async { promise.fulfill(nil) }
         }
         .unwrap(42)
-        .observed
+        .whenFulfilled
         {
             XCTAssertEqual($0, 42)
             receivedValue.fulfill()
@@ -209,7 +209,7 @@ class PromiseTests: XCTestCase
             promise in DispatchQueue.main.async { promise.fulfill(Update(23, 42)) }
         }
         .new()
-        .observed
+        .whenFulfilled
         {
             XCTAssertEqual($0, 42)
             receivedValue.fulfill()
@@ -218,13 +218,13 @@ class PromiseTests: XCTestCase
         waitForExpectations(timeout: 3)
     }
     
-    func testCreateSelfFulfillingPromise()
+    func testFulfillSynchronously()
     {
-        func asyncFuncReturningEarly() -> Promise<Int> { .fulfilling(42) }
+        func asyncFuncReturningEarly() -> Promise<Int> { .fulfilled(42) }
         
         let receivedValue = expectation(description: "received value")
         
-        asyncFuncReturningEarly().observed
+        asyncFuncReturningEarly().whenFulfilled
         {
             XCTAssertEqual($0, 42)
             receivedValue.fulfill()
