@@ -1,10 +1,12 @@
 import Dispatch
 import SwiftyToolz
+import Foundation
 
-public class Promise<Value>: Observable
+public class Promise<Value>
 {
     public static func fulfilled(_ value: Value) -> Promise
     {
+        "dfg".write(to: file, atomically: true, encoding: .utf8)
         Promise(value)
     }
     
@@ -28,7 +30,7 @@ public class Promise<Value>: Observable
         }
         
         state = .fulfilled(value)
-        send(.wasFulfilled(value))
+        messenger.send(.wasFulfilled(value))
     }
     
     @discardableResult
@@ -39,7 +41,7 @@ public class Promise<Value>: Observable
         case .fulfilled(let value):
             handleValue(value)
         case .unfulfilled:
-            observedOnce
+            messenger.observedOnce
             {
                 switch $0
                 {
@@ -55,6 +57,6 @@ public class Promise<Value>: Observable
     public private(set) var state: State = .unfulfilled
     public enum State { case unfulfilled, fulfilled(Value) }
     
-    public let messenger = Messenger<Event>()
-    public enum Event { case wasFulfilled(Value) }
+    private let messenger = Messenger<Event>()
+    private enum Event { case wasFulfilled(Value) }
 }
