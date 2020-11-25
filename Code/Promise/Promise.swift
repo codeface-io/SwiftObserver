@@ -31,6 +31,27 @@ public class Promise<Value>: Observable
         send(.wasFulfilled(value))
     }
     
+    @discardableResult
+    public func whenFulfilled(_ handleValue: @escaping (Value) -> Void) -> Self
+    {
+        switch state
+        {
+        case .fulfilled(let value):
+            handleValue(value)
+        case .unfulfilled:
+            observedOnce
+            {
+                switch $0
+                {
+                case .wasFulfilled(let value):
+                    handleValue(value)
+                }
+            }
+        }
+        
+        return self
+    }
+    
     public private(set) var state: State = .unfulfilled
     public enum State { case unfulfilled, fulfilled(Value) }
     

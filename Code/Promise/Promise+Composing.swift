@@ -48,25 +48,4 @@ public extension Promise
             }
         }
     }
-    
-    @discardableResult
-    func whenFulfilled(_ handleValue: @escaping (Value) -> Void) -> Self
-    {
-        switch state
-        {
-        case .fulfilled(let value):
-            handleValue(value)
-        case .unfulfilled:
-            observedOnce
-            {
-                switch $0
-                {
-                case .wasFulfilled(let value):
-                    handleValue(value)
-                }
-            }
-        }
-        
-        return self
-    }
 }
