@@ -32,13 +32,14 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Observe Variables](#observe-variables)
     * [Use Variable Values](#use-variable-values) 
     * [Encode and Decode Variables](#encode-and-decode-variables)
-* [Promises](#promises)
-  * [Receive a Promised Value](#receive-a-promised-value)
-  * [Compose Promises](#compose-promises)
 * [Transforms](#transforms)
     * [Make Transforms Observable](#make-transforms-observable)
     * [Use Prebuilt Transforms](#use-prebuilt-transforms)
     * [Chain Transforms](#chain-transforms)
+* [Promises](#promises)
+    * [Receive a Promised Value](#receive-a-promised-value)
+    * [Compose Promises](#compose-promises)
+    * [Promise a Failable Result](#promise-a-failable-result)
 * [Advanced](#advanced)
     * [Message Authors](#message-authors)
     * [Cached Messages](#cached-messages)
@@ -152,7 +153,6 @@ class Sky: Observable {
 1. Create a [`Messenger<Message>`](#messengers). It's a mediator through which other entities communicate.
 2. Create an object of a [custom `Observable`](#understand-observables) class that utilizes `Messenger<Message>`.
 3. Create a [`Variable<Value>`](#variables) (a.k.a. `Var<Value>`). It holds a value and sends value updates.
-4. Create a [`Promise<Value>`](#promises). It helps with managing and composing asynchronous calls.
 5. Create a [*transform*](#make-transforms-observable) object. It wraps and transforms another `Observable`.
 
 ### Memory Management
@@ -311,99 +311,6 @@ class Model: Codable {
 
 Note that `text` is a `var` instead of a `let`. It cannot be constant because Swift's implicit decoder must mutate it. However, clients of `Model` would be supposed to set only `text.value` and not `text` itself, so the setter is private.
 
-# Promises
-
-A `Promise<Value>` helps managing asynchronous returns and makes that intention explicit.
-
-> **Side Note:** `Promise` is part of SwiftObserver because [Combine's `Future`](https://developer.apple.com/documentation/combine/future) is unfortunately not a practical solution for one-shot asynchronous calls, to depend on [PromiseKit](https://github.com/mxcl/PromiseKit) might be unnecessary in reasonably simple contexts, and [Vapor/NIO's Async](https://docs.vapor.codes/4.0/async/) might also be too server-specific. Anyway, integrating promises as regular observables yields some consistency, simplicity and synergy here. However, at some point *all* promise/future implementations will be obsolete due to [Swift's async/await](https://github.com/DougGregor/swift-evolution/blob/async-await/proposals/nnnn-async-await.md).
-
-## Receive a Promised Value
-
-### Receive It Once
-
-```swift
-func getID() -> Promise<Int> {   // getID() promises an Int
-    Promise { promise in         // convenience initializer
-        getIDAsync { id in       // handler retains the promise until it's fulfilled
-            promise.fulfill(id)  // triggers message: Promise.Event.wasFulfilled(id)
-        } 
-    }
-}
-
-getID().whenFulfilled { id in    // get id (if fulfilled) or observe promise
-    // do somethin with the ID
-}
-```
-
-Because a `Promise` might already be fulfilled, we **don't** observe it directly but call `whenFulfilled`.
-
-Typically, promises are shortlived observables that we don't hold on to. That works fine since an asynchronous function like `getID()` that returns a promise keeps that promise alive in order to fulfill it. So we get the promised value asynchronously without even holding the promise anywhere, and the promise as well as its observations get cleaned up automatically when the promise is fulfilled and dies.
-
-### Receive It Again
-
-Sometimes, you want to do multiple things with an asynchronous result (long) after receiving it:
-
-```swift
-let idPromise = getID()           // Promise<Int>
-
-idPromise.whenFulfilled { id in
-    // do somethin with id
-}
-
-idPromise.whenFulfilled { id in
-    // do somethin else with id
-}
-```
-
-## Compose Promises
-
-### Sequential Composition
-
-```swift
-promise {                   // establish context and increase readability 
-    getInt()                // return a Promise<Int>
-}.then {                    // chain another promise sequentially
-    getString(takeInt: $0)  // take Int sent by 'promise', return a Promise<String>
-}.whenFulfilled {           // observation dies when promise 'then' is fulfilled
-    print($0)               // print String sent by promise 'then'
-}
-```
-
-`promise` is for readability. It allows for nice consistent closure syntax and makes it clear that we're working with promises. It takes a closure that returns a `Promise` and simply returns that `Promise`.
-
-You call `then` on a first `Promise` and pass it a closure that returns the second `Promise`. That closure takes the value of the first promise, allowing the second promise to depend on it. `then` returns a new `Promise` that provides the value of the second promise.
-
-### Concurrent Composition
-
-```swift
-promise {                    
-    getInt()                
-}.and {                     // chain another promise concurrently
-    getString()             
-}.whenFulfilled {                
-    print($0.0)             // print Int sent by 'promise'
-    print($0.1)             // print String sent by promise 'getString()'
-}
-```
-
-You call `and` on a `Promise` and pass it a closure that returns another `Promise`. This immediatly observes both promises. `and` returns a new `Promise` that provides the combined values of both promises.
-
-### Value Mapping
-
-```swift
-promise {                    
-    getInt()                
-}.whenFulfilled {           // returns 'promise' so the chain can continue
-    print($0)               // print Int sent by 'promise'
-}.map {                     // chain a mapping promise sequentially
-    "\($0)"                 // map Int sent by promise 'whenFulfilled' to String
-}.whenFulfilled {                
-    print($0)               // print String sent by promise 'map'
-}
-```
-
-[Transform](#transforms) functions that neither filter messages nor exclusively create standalone transforms actually return a new `Promise` when called on a `Promise`. These functions are `map(...)`, `unwrap(default)` and `new()`. The advantage here is, as with any function that returns a promise, that you don't need to keep that observable alive in order to observe it.
-
 # Transforms
 
 Transforms make common steps of message processing more succinct and readable. They allow to map, filter and unwrap messages in many ways. You may freely chain these transforms together and also define new ones with them.
@@ -532,6 +439,135 @@ dog.observe(Sky.shared).map {
     print("Will we go outside? \($0 ? "Yes" : "No")!")
 } 
 ~~~
+
+# Promises
+
+A `Promise<Value>` helps managing asynchronous returns and makes that intention explicit.
+
+> **Side Note:** `Promise` is part of SwiftObserver because [Combine's `Future`](https://developer.apple.com/documentation/combine/future) is unfortunately not a practical solution for one-shot asynchronous calls, to depend on [PromiseKit](https://github.com/mxcl/PromiseKit) might be unnecessary in reasonably simple contexts, and [Vapor/NIO's Async](https://docs.vapor.codes/4.0/async/) might also be too server-specific. Anyway, integrating promises as regular observables yields some consistency, simplicity and synergy here. However, at some point *all* promise/future implementations will be obsolete due to [Swift's async/await](https://github.com/DougGregor/swift-evolution/blob/async-await/proposals/nnnn-async-await.md).
+
+## Receive a Promised Value
+
+### Receive It Once
+
+```swift
+func getID() -> Promise<Int> {   // getID() promises an Int
+    Promise { promise in         // convenience initializer
+        getIDAsync { id in       // handler retains the promise until it's fulfilled
+            promise.fulfill(id)
+        } 
+    }
+}
+
+getID().whenFulfilled { id in    // get id (if fulfilled) or observe promise
+    // do somethin with the ID
+}
+```
+
+A `Promise` is either fulfilled or not. When it is fulfilled it stays that way. When we receive a `Promise`, it might already be fulfilled and not change anymore. So, to avoid different usage mistakes, `Promise` is not directly `Observable`. Instead we call `whenFulfilled`, which starts an internal one-shot observation of the promise if the promise isn't yet fulfilled.
+
+Typically, promises are shortlived objects that we don't hold on to. That works fine since an asynchronous function like `getID()` that returns a promise keeps that promise alive in order to fulfill it. So we get the promised value asynchronously without even holding the promise anywhere, and the promise as well as its internal observations get cleaned up automatically when the promise is fulfilled and dies.
+
+### Receive It Again
+
+Sometimes, you want to do multiple things with an asynchronous result (long) after receiving it:
+
+```swift
+let idPromise = getID()           // Promise<Int>
+
+idPromise.whenFulfilled { id in
+    // do somethin with id
+}
+
+idPromise.whenFulfilled { id in
+    // do somethin else with id
+}
+```
+
+## Compose Promises
+
+### Sequential Composition
+
+```swift
+promise {                   // establish context and increase readability 
+    getInt()                // return a Promise<Int>
+}.then {                    // chain another promise sequentially
+    getString(takeInt: $0)  // take Int sent by 'promise', return a Promise<String>
+}.whenFulfilled {           // observation dies when promise 'then' is fulfilled
+    print($0)               // print String sent by promise 'then'
+}
+```
+
+`promise` is for readability. It allows for nice consistent closure syntax and makes it clear that we're working with promises. It takes a closure that returns a `Promise` and simply returns that `Promise`.
+
+You call `then` on a first `Promise` and pass it a closure that returns the second `Promise`. That closure takes the value of the first promise, allowing the second promise to depend on it. `then` returns a new `Promise` that provides the value of the second promise.
+
+### Concurrent Composition
+
+```swift
+promise {                    
+    getInt()                
+}.and {                     // chain another promise concurrently
+    getString()             
+}.whenFulfilled {                
+    print($0.0)             // print Int sent by 'promise'
+    print($0.1)             // print String sent by promise 'getString()'
+}
+```
+
+You call `and` on a `Promise` and pass it a closure that returns another `Promise`. This immediatly observes both promises. `and` returns a new `Promise` that provides the combined values of both promises.
+
+### Value Mapping
+
+```swift
+promise {                    
+    getInt()                
+}.whenFulfilled {           // returns 'promise' so the chain can continue
+    print($0)               // print Int sent by 'promise'
+}.map {                     // chain a mapping promise sequentially
+    "\($0)"                 // map Int sent by promise 'whenFulfilled' to String
+}.whenFulfilled {                
+    print($0)               // print String sent by promise 'map'
+}
+```
+
+[Transform](#transforms) functions that neither filter messages nor exclusively create standalone transforms actually return a new `Promise` when called on a `Promise`. These functions are `map(...)`, `unwrap(default)` and `new()`. The advantage here is, as with any function that returns a promise, that you don't need to keep that observable alive in order to observe it.
+
+## Promise a Failable Result
+
+A function that can fail cannot promise a pure value. It can only promise a `Result`, which contains a value on success and an error on failure:
+
+```swift
+func getID() -> ResultPromise<Int> {  // typealias for Promise<Result<Int, Error>>
+    Promise { promise in        
+        getIDAsync { result in      
+            promise.fulfill(result)   // pass in Result, Result.Value or Error
+        } 
+    }
+}
+
+getID().whenSucceeded { id in         // corresponds to whenFulfilled
+    // do somethin with id
+} failed: { error in                  // whenSucceeded requires handling failure
+    // do somethin with error
+}
+```
+
+When composing result promises, we often only care about either success or failure:
+
+```swift
+promise {
+    getID()
+}.whenFailed {          // whenFailed / whenSucceeded don't need to end the chain
+    log(error: $0)
+}.onSuccess {           // corresponds to then
+    getName(forID: $0)
+}.mapSuccess {          // corresponds to map
+    try Data(name: $0)  // mapSuccess, onSuccess and whenSucceeded can throw
+}                       // finally returns a ResultPromise<Data>
+```
+
+Every closure that handles the success case can throw an `Error`.
 
 # Advanced
 
