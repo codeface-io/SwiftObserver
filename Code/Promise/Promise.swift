@@ -1,12 +1,10 @@
 import Dispatch
 import SwiftyToolz
-import Foundation
 
 public class Promise<Value>
 {
     public static func fulfilled(_ value: Value) -> Promise
     {
-        "dfg".write(to: file, atomically: true, encoding: .utf8)
         Promise(value)
     }
     
