@@ -59,7 +59,7 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
 
 ## Install
 
-With the [**Swift Package Manager**](https://github.com/apple/swift-package-manager/tree/master/Documentation#swift-package-manager), you can just add the SwiftObserver package [via Xcode](https://developer.apple.com/documentation/xcode/adding_package_dependencies_to_your_app) (11+).
+With the [**Swift Package Manager**](https://github.com/apple/swift-package-manager/tree/master/Documentation#swift-package-manager), you add the SwiftObserver package [via Xcode](https://developer.apple.com/documentation/xcode/adding_package_dependencies_to_your_app) (11+).
 
 Or you manually adjust the [Package.swift](https://github.com/apple/swift-package-manager/blob/master/Documentation/Usage.md#create-a-package) file of your project:
 
@@ -198,7 +198,7 @@ Sky.shared.observedOnce { color in  // ... same
 }
 ```
 
-Both functions return the involved `FreeObserver` as a discardable result. Typically you ignore that observer and it will die together with the observation as soon as it has received one message.
+Both functions return the involved `FreeObserver` as a discardable result. Typically we ignore that observer and it will die together with the observation as soon as it has received one message.
 
 # Messengers
 
@@ -442,9 +442,9 @@ dog.observe(Sky.shared).map {
 
 # Promises
 
-A `Promise<Value>` helps managing asynchronous returns and makes that intention explicit.
+`Promise<Value>` helps managing asynchronous returns and makes that intention explicit.
 
-> **Side Note:** `Promise` is part of SwiftObserver because [Combine's `Future`](https://developer.apple.com/documentation/combine/future) is unfortunately not a practical solution for one-shot asynchronous calls, to depend on [PromiseKit](https://github.com/mxcl/PromiseKit) might be unnecessary in reasonably simple contexts, and [Vapor/NIO's Async](https://docs.vapor.codes/4.0/async/) might also be too server-specific. Anyway, integrating promises as regular observables yields some consistency, simplicity and synergy here. However, at some point *all* promise/future implementations will be obsolete due to [Swift's async/await](https://github.com/DougGregor/swift-evolution/blob/async-await/proposals/nnnn-async-await.md).
+> **Side Note:** `Promise` is part of SwiftObserver because [Combine's `Future`](https://developer.apple.com/documentation/combine/future) is unfortunately an impractical and incomplete solution for one-shot asynchronous calls and to depend on [PromiseKit](https://github.com/mxcl/PromiseKit) or [Vapor/NIO's Async](https://docs.vapor.codes/4.0/async/) might be overkill (and too server-specific) in many contexts. Also, integrating promises in SwiftObserver offers the advantages of consistency, simplicity and readbility. However, at some point *all* promise/future implementations will be obsolete due to [Swift's async/await](https://github.com/DougGregor/swift-evolution/blob/async-await/proposals/nnnn-async-await.md).
 
 ## Receive a Promised Value
 
@@ -464,13 +464,13 @@ getID().whenFulfilled { id in    // get id (if fulfilled) or observe promise
 }
 ```
 
-A `Promise` is either fulfilled or not. When it is fulfilled it stays that way. When we receive a `Promise`, it might already be fulfilled and not change anymore. So, to avoid different usage mistakes, `Promise` is not directly `Observable`. Instead we call `whenFulfilled`, which starts an internal one-shot observation of the promise if the promise isn't yet fulfilled.
+A `Promise` is either fulfilled or not. When it is fulfilled it stays that way. When a function makes us a `Promise`, that promise might already be fulfilled and not change anymore. Also, only mapping transforms make sense on promises. So, to guard against misuse, `Promise` is **not directly `Observable`**. Instead we call `whenFulfilled` on it, which starts an internal one-shot observation of the promise if the promise isn't yet fulfilled.
 
 Typically, promises are shortlived objects that we don't hold on to. That works fine since an asynchronous function like `getID()` that returns a promise keeps that promise alive in order to fulfill it. So we get the promised value asynchronously without even holding the promise anywhere, and the promise as well as its internal observations get cleaned up automatically when the promise is fulfilled and dies.
 
 ### Receive It Again
 
-Sometimes, you want to do multiple things with an asynchronous result (long) after receiving it:
+Sometimes, we wanna do multiple things with an asynchronous result (long) after receiving it:
 
 ```swift
 let idPromise = getID()           // Promise<Int>
@@ -500,7 +500,7 @@ promise {                   // establish context and increase readability
 
 `promise` is for readability. It allows for nice consistent closure syntax and makes it clear that we're working with promises. It takes a closure that returns a `Promise` and simply returns that `Promise`.
 
-You call `then` on a first `Promise` and pass it a closure that returns the second `Promise`. That closure takes the value of the first promise, allowing the second promise to depend on it. `then` returns a new `Promise` that provides the value of the second promise.
+We call `then` on a first `Promise` and pass it a closure that returns the second `Promise`. That closure takes the value of the first promise, allowing the second promise to depend on the value of the first. `then` returns a new `Promise` that provides the value of the second promise.
 
 ### Concurrent Composition
 
@@ -515,7 +515,7 @@ promise {
 }
 ```
 
-You call `and` on a `Promise` and pass it a closure that returns another `Promise`. This immediatly observes both promises. `and` returns a new `Promise` that provides the combined values of both promises.
+We call `and` on a `Promise` and pass it a closure that returns another `Promise`. This immediatly observes both promises and returns a new `Promise` that provides the combined values of both.
 
 ### Value Mapping
 
@@ -531,7 +531,7 @@ promise {
 }
 ```
 
-[Transform](#transforms) functions that neither filter messages nor exclusively create standalone transforms actually return a new `Promise` when called on a `Promise`. These functions are `map(...)`, `unwrap(default)` and `new()`. The advantage here is, as with any function that returns a promise, that you don't need to keep that observable alive in order to observe it.
+[Transform](#transforms) functions that neither filter messages nor exclusively create standalone transforms return a new `Promise` when called on a `Promise`. These functions are `map(...)`, `unwrap(default)` and `new()`. The advantage here is, as with any function that returns a promise, that we don't need to keep that promise alive in order to receive the promised value.
 
 ## Promise a Failable Result
 
@@ -573,7 +573,7 @@ Every closure that handles the success case can throw an `Error`.
 
 ## Message Authors
 
-Every message has an author associated with it. This feature is only noticable in code if you use it.
+Every message has an author associated with it. This feature is only noticable in code if we use it.
 
 An observable can send an author together with a message via `observable.send(message, from: author)`. If noone specifies an author as in `observable.send(message)`, the observable itself becomes the author.
 
@@ -625,11 +625,11 @@ let sharedText = Var<String>()
 
 ### Filter by Author
 
-There are three transforms related to message authors. As with other transforms, you can apply them directly in observations or create them as standalone observables.
+There are three transforms related to message authors. As with other transforms, we can apply them directly in observations or create them as standalone observables.
 
 #### Filter Author
 
-Filter authors the same way you filter messages:
+We filter authors just like messages:
 
 ```swift
 let messenger = Messenger<String>()             // sends String
@@ -695,7 +695,7 @@ class Model: Messenger<String>, ObservableCache {  // informs about the latest s
 
 ## Weak Observables
 
-When you want to put an `Observable` into some data structure or as the *origin* into a *transform* but hold it there as a `weak` reference, you may transform it via `observable.weak()`:
+When you want to put an `Observable` into some data structure or as the *origin* into a *transform* object but hold it there as a `weak` reference, transform it via `observable.weak()`:
 
 ~~~swift
 let number = Var(12)
