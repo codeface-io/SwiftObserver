@@ -464,7 +464,7 @@ getID().whenFulfilled { id in    // get id (if fulfilled) or observe promise
 }
 ```
 
-A `Promise` is either fulfilled or not. When it is fulfilled it stays that way. When a function makes us a `Promise`, that promise might already be fulfilled and not change anymore. Also, only mapping transforms make sense on promises. So, to guard against misuse, `Promise` is **not directly `Observable`**. Instead we call `whenFulfilled` on it, which starts an internal one-shot observation of the promise if the promise isn't yet fulfilled.
+A `Promise` is either fulfilled or not. When it is fulfilled it stays that way. When a function returns a `Promise`, that promise might already be fulfilled and not change anymore. Also, mappings are the only transforms that make sense on promises. So, to guard against misuse, `Promise` is **not directly `Observable`**. Instead we call `whenFulfilled` on it, which starts an internal one-shot observation of the promise if the promise isn't yet fulfilled.
 
 Typically, promises are shortlived objects that we don't hold on to. That works fine since an asynchronous function like `getID()` that returns a promise keeps that promise alive in order to fulfill it. So we get the promised value asynchronously without even holding the promise anywhere, and the promise as well as its internal observations get cleaned up automatically when the promise is fulfilled and dies.
 
@@ -541,7 +541,7 @@ A function that can fail cannot promise a pure value. It can only promise a `Res
 func getID() -> ResultPromise<Int> {  // typealias for Promise<Result<Int, Error>>
     Promise { promise in        
         getIDAsync { result in      
-            promise.fulfill(result)   // pass in Result, Result.Value or Error
+            promise.fulfill(result)   // fulfill with Result, Result.Value or Error
         } 
     }
 }
