@@ -444,7 +444,7 @@ dog.observe(Sky.shared).map {
 
 `Promise<Value>` helps managing asynchronous returns and makes that intention explicit.
 
-> **Side Note:** `Promise` is part of SwiftObserver because [Combine's `Future`](https://developer.apple.com/documentation/combine/future) is unfortunately an impractical and incomplete solution for one-shot asynchronous calls and to depend on [PromiseKit](https://github.com/mxcl/PromiseKit) or [Vapor/NIO's Async](https://docs.vapor.codes/4.0/async/) might be overkill (and too server-specific) in many contexts. Also, integrating promises in SwiftObserver offers the advantages of consistency, simplicity and readbility. However, at some point *all* promise/future implementations will be obsolete due to [Swift's async/await](https://github.com/DougGregor/swift-evolution/blob/async-await/proposals/nnnn-async-await.md).
+> **Side Note:** `Promise` is part of SwiftObserver because [Combine's `Future`](https://developer.apple.com/documentation/combine/future) is unfortunately an impractical and incomplete solution for one-shot asynchronous calls and to depend on [PromiseKit](https://github.com/mxcl/PromiseKit) or [Vapor/NIO's Async](https://docs.vapor.codes/4.0/async/) might be overkill (and too server-specific) in many contexts. Also, integrating promises in SwiftObserver offers the advantages of consistency, simplicity and readability. However, at some point *all* promise/future implementations will be obsolete due to [Swift's async/await](https://github.com/DougGregor/swift-evolution/blob/async-await/proposals/nnnn-async-await.md).
 
 ## Receive a Promised Value
 
@@ -464,7 +464,7 @@ getID().whenFulfilled { id in    // get id (if fulfilled) or observe promise
 }
 ```
 
-A `Promise` is either fulfilled or not. When it is fulfilled it stays that way. When a function returns a `Promise`, that promise might already be fulfilled and not change anymore. Also, mappings are the only transforms that make sense on promises. So, to guard against misuse, `Promise` is **not directly `Observable`**. Instead we call `whenFulfilled` on it, which starts an internal one-shot observation of the promise if the promise isn't yet fulfilled.
+A `Promise` is either fulfilled or not. When it is fulfilled it stays that way. When a function returns a `Promise`, that promise might already be fulfilled and not change anymore. Also, mappings are the only transforms that make sense on promises. So, to guard against mistakes, `Promise` is **not directly `Observable`**. Instead we call `whenFulfilled` on it, which does an internal one-shot observation of the promise if the promise isn't yet fulfilled.
 
 Typically, promises are shortlived objects that we don't hold on to. That works fine since an asynchronous function like `getID()` that returns a promise keeps that promise alive in order to fulfill it. So we get the promised value asynchronously without even holding the promise anywhere, and the promise as well as its internal observations get cleaned up automatically when the promise is fulfilled and dies.
 
@@ -500,7 +500,7 @@ promise {                   // establish context and increase readability
 
 `promise` is for readability. It allows for nice consistent closure syntax and makes it clear that we're working with promises. It takes a closure that returns a `Promise` and simply returns that `Promise`.
 
-We call `then` on a first `Promise` and pass it a closure that returns the second `Promise`. That closure takes the value of the first promise, allowing the second promise to depend on the value of the first. `then` returns a new `Promise` that provides the value of the second promise.
+We call `then` on a first `Promise` and pass it a closure that returns a second `Promise`. That closure takes the value of the first promise, allowing the second promise to depend on the value of the first. `then` returns a new `Promise` that provides the value of the second promise.
 
 ### Concurrent Composition
 
