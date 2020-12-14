@@ -1,8 +1,10 @@
 import SwiftyToolz
 
+extension Var: Codable where Value: Codable {}
+
 public typealias Var = Variable
 
-public final class Variable<Value: Equatable & Codable>: Messenger<Update<Value>>, Equatable, Codable
+public final class Variable<Value: Equatable>: Messenger<Update<Value>>, Equatable
 {
     // MARK: - Initialization
     
@@ -18,7 +20,8 @@ public final class Variable<Value: Equatable & Codable>: Messenger<Update<Value>
     
     // MARK: - Equatable
     
-    public static func == (lhs: Variable<Value>, rhs: Variable<Value>) -> Bool
+    public static func == (lhs: Variable<Value>,
+                           rhs: Variable<Value>) -> Bool
     {
         lhs.storedValue == rhs.storedValue
     }
@@ -33,9 +36,10 @@ public final class Variable<Value: Equatable & Codable>: Messenger<Update<Value>
     
     public func set(_ value: Value, as author: AnyAuthor)
     {
-        if value != storedValue
+        let oldValue = storedValue
+        
+        if value != oldValue
         {
-            let oldValue = storedValue
             storedValue = value
             send(Update(oldValue, value), from: author)
         }

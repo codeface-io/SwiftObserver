@@ -301,7 +301,7 @@ numVar <- Var(1) + 2         // numVar.value == 3
 
 ## Encode and Decode Variables
 
-Every `Var<Value>` is `Codable` and requires its `Value` to be `Codable`. So when one of your types has `Var` properties, you can still make that type `Codable` by simply adopting the `Codable` protocol:
+A `Var<Value>` is automatically `Codable` if its `Value` is. So when one of your types has `Var` properties, you can make that type `Codable` by simply adopting the `Codable` protocol:
 
 ~~~swift
 class Model: Codable {
