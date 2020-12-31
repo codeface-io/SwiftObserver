@@ -607,14 +607,13 @@ Mutable data is a common type of such shared observables. For example, when mult
 ```swift
 class Collaborator: Observer {
     func observeText() {
-        observe(sharedText) { update, author in
-            guard author !== self else { return }
+        observe(sharedText).notFrom(self) { update, author in  // see author filters below
             // someone else edited the text
         }
     }
   
     func editText() {
-        sharedText.set("my new text", as: self) // identify as author when editing
+        sharedText.set("my new text", as: self)                // identify as change author
     }
   
     let receiver = Receiver()
@@ -641,7 +640,7 @@ let friendMessages = messenger.filterAuthor {   // sends String if message is fr
 
 #### From
 
-If only one specific author is of interest, filter authors with `from`:
+If only one specific author is of interest, filter authors with `from`. It captures the selected author weakly:
 
 ```swift
 let messenger = Messenger<String>()             // sends String
@@ -650,7 +649,7 @@ let joesMessages = messenger.from(joe)          // sends String if message is fr
 
 #### Not From
 
-If **all but one** specific author are of interest, suppress messages from that author via `notFrom`:
+If **all but one** specific author are of interest, use `notFrom`. It also captures the excluded author weakly:
 
 ```swift
 let messenger = Messenger<String>()             // sends String
