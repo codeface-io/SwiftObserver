@@ -1,6 +1,6 @@
 extension Update: Equatable where Value : Equatable
 {
-    var isChange: Bool { old != new }
+    public var isChange: Bool { old != new }
 }
 
 public struct Update<Value>
