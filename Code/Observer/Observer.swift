@@ -35,7 +35,7 @@ public extension Observer
     }
 }
 
-public protocol Observer: class
+public protocol Observer: AnyObject
 {
     var receiver: Receiver { get }
 }

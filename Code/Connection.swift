@@ -36,7 +36,7 @@ extension ReceiverInterface
     var key: ReceiverKey { ReceiverKey(self) }
 }
 
-protocol ReceiverInterface: class
+protocol ReceiverInterface: AnyObject
 {
     func releaseConnection(with messengerKey: MessengerKey)
 }
@@ -48,7 +48,7 @@ extension MessengerInterface
     var key: MessengerKey { MessengerKey(self) }
 }
 
-protocol MessengerInterface: class
+protocol MessengerInterface: AnyObject
 {
     func unregisterConnection(with receiverKey: ReceiverKey)
 }
