@@ -2,7 +2,7 @@
 
 # SwiftObserver
 
-[![badge-pod]](http://cocoapods.org/pods/SwiftObserver) ![badge-pms] ![badge-languages] [![badge-gitter]](https://gitter.im/flowtoolz/SwiftObserver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) ![badge-platforms] ![badge-mit]
+![badge-pms] ![badge-languages] [![badge-gitter]](https://gitter.im/flowtoolz/SwiftObserver?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) ![badge-platforms] ![badge-mit]
 
 SwiftObserver is a lightweight framework for reactive Swift. Its design goals make it easy to learn and a joy to use:
 
@@ -64,7 +64,7 @@ With the [**Swift Package Manager**](https://github.com/apple/swift-package-mana
 Or you manually adjust the [Package.swift](https://github.com/apple/swift-package-manager/blob/master/Documentation/Usage.md#create-a-package) file of your project:
 
 ~~~swift
-// swift-tools-version:5.1
+// swift-tools-version:5.4
 import PackageDescription
 
 let package = Package(
@@ -81,16 +81,6 @@ let package = Package(
 ~~~
 
 Then run `$ swift build` or `$ swift run`.
-
-With [**Cocoapods**](https://cocoapods.org), adjust your [Podfile](https://guides.cocoapods.org/syntax/podfile.html):
-
-```ruby
-target "MyAppTarget" do
-  pod "SwiftObserver", "~> 6.2"
-end
-```
-
-Then run `$ pod install`.
 
 Finally, in your **Swift** files:
 
@@ -724,16 +714,14 @@ Of course, `weak()` wouldn't make sense as an adhoc transform, so it can only cr
 * Decompose, rework and extend unit test suite
 * Write API documentation comments
 * Update, rework and extend documentation of features, philosophy and patterns
-* Add bindings for interoperation with Combine and SwiftUI
+* Document adapters for interoperation with Combine and SwiftUI
 * Add syntax sugar for observing/processing on queues, if added API complexity is worth it
 * Leverage property wrappers where they offer any sort of benefit
 * Engage feedback and contribution
 
 [badge-gitter]: https://img.shields.io/badge/chat-Gitter-red.svg?style=flat-square
 
-[badge-pod]: https://img.shields.io/cocoapods/v/SwiftObserver.svg?label=version&style=flat-square
-
-[badge-pms]: https://img.shields.io/badge/supports-SPM%20%7C%20CocoaPods-green.svg?style=flat-square
+[badge-pms]: https://img.shields.io/badge/supports-SPM-green.svg?style=flat-square
 [badge-languages]: https://img.shields.io/badge/language-Swift-orange.svg?style=flat-square
 [badge-platforms]: https://img.shields.io/badge/platforms-iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20watchOS%20%7C%20Linux-lightgrey.svg?style=flat-square
 [badge-mit]: https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat-square
