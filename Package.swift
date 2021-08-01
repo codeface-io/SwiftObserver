@@ -4,10 +4,17 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftObserver",
+    platforms: [
+        .iOS(.v13), .macOS(.v10_15), .tvOS(.v13), .watchOS(.v6)
+    ],
     products: [
         .library(
             name: "SwiftObserver",
             targets: ["SwiftObserver"]
+        ),
+        .library(
+            name: "CombineObserver",
+            targets: ["CombineObserver"]
         ),
     ],
     dependencies: [
@@ -20,7 +27,12 @@ let package = Package(
         .target(
             name: "SwiftObserver",
             dependencies: ["SwiftyToolz"],
-            path: "Code"
+            path: "Code/SwiftObserver"
+        ),
+        .target(
+            name: "CombineObserver",
+            dependencies: ["SwiftObserver", "SwiftyToolz"],
+            path: "Code/CombineObserver"
         ),
         .testTarget(
             name: "SwiftObserverTests",
