@@ -1,4 +1,4 @@
-public final class Filter<O: Observable>: Messenger<O.Message>, Observer
+public final class Filter<O: ObservableObject>: Messenger<O.Message>, Observer
 {
     public init(_ origin: O,
                 _ keep: @escaping (O.Message) -> Bool)

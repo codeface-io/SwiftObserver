@@ -26,11 +26,11 @@ public struct PublisherOnObservableCache<O: ObservableCache>: Publisher {
     public typealias Failure = Never
 }
 
-public extension Observable {
+public extension SwiftObserver.ObservableObject {
     func publisher() -> PublisherOnObservable<Self> { .init(self) }
 }
 
-public struct PublisherOnObservable<O: Observable>: Publisher {
+public struct PublisherOnObservable<O: SwiftObserver.ObservableObject>: Publisher {
     
     init(_ observable: O) {
         self.observable = observable

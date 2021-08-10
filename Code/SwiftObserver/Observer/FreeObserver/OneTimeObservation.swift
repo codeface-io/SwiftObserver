@@ -1,4 +1,4 @@
-public extension Observable
+public extension ObservableObject
 {
     func observedOnce() -> ObservationTransformer<Message>
     {
@@ -21,7 +21,7 @@ public extension Observable
     }
 }
 
-public func observeOnce<O: Observable>(_ observable: O) -> ObservationTransformer<O.Message>
+public func observeOnce<O: ObservableObject>(_ observable: O) -> ObservationTransformer<O.Message>
 {
     ObservationTransformer
     {
@@ -30,7 +30,7 @@ public func observeOnce<O: Observable>(_ observable: O) -> ObservationTransforme
 }
 
 @discardableResult
-public func observeOnce<O: Observable>(_ observabe: O,
+public func observeOnce<O: ObservableObject>(_ observabe: O,
                                        receive: @escaping (O.Message) -> Void) -> FreeObserver
 {
     let observer = FreeObserver()
@@ -45,7 +45,7 @@ public func observeOnce<O: Observable>(_ observabe: O,
 }
 
 @discardableResult
-public func observeOnce<O: Observable>(_ observabe: O,
+public func observeOnce<O: ObservableObject>(_ observabe: O,
                                        receive: @escaping (O.Message, AnyAuthor) -> Void) -> FreeObserver
 {
     let observer = FreeObserver()

@@ -1,4 +1,4 @@
-public class Mapper<O: Observable, Mapped>: Messenger<Mapped>, Observer
+public class Mapper<O: ObservableObject, Mapped>: Messenger<Mapped>, Observer
 {
     public init(_ origin: O,
                 _ map: @escaping (O.Message) -> Mapped)

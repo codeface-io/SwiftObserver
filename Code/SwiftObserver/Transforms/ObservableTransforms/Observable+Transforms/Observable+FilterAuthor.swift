@@ -1,4 +1,4 @@
-public extension Observable
+public extension ObservableObject
 {
     func filterAuthor(_ keep: @escaping (AnyAuthor) -> Bool) -> AuthorFilter<Self>
     {

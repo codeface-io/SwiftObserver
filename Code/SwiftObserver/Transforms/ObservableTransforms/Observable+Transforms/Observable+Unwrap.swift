@@ -1,4 +1,4 @@
-public extension Observable
+public extension ObservableObject
 {
     func unwrap<Wrapped>() -> Unwrapper<Self, Wrapped>
         where Message == Wrapped?

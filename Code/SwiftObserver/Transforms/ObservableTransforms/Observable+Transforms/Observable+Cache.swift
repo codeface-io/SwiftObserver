@@ -30,7 +30,7 @@ internal extension ObservableCache
     }
 }
 
-public extension Observable
+public extension ObservableObject
 {
     func cache<Unwrapped>() -> CacheOnOptionalMessage<Self, Unwrapped>
     {

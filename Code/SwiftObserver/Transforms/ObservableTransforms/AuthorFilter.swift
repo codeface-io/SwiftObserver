@@ -1,4 +1,4 @@
-public final class AuthorFilter<O: Observable>: Messenger<O.Message>, Observer
+public final class AuthorFilter<O: ObservableObject>: Messenger<O.Message>, Observer
 {
     public init(_ origin: O,
                 _ keep: @escaping (AnyAuthor) -> Bool)

@@ -1,4 +1,4 @@
-extension Observable
+extension ObservableObject
 {
     func stopBeingObserved(by observer: Observer)
     {

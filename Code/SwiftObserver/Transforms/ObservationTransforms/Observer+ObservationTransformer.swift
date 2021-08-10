@@ -1,6 +1,6 @@
 public extension Observer
 {
-    func observe<O: Observable>(_ observable: O) -> ObservationTransformer<O.Message>
+    func observe<O: ObservableObject>(_ observable: O) -> ObservationTransformer<O.Message>
     {
         ObservationTransformer
         {

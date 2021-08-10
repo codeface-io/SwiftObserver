@@ -1,4 +1,4 @@
-public extension Observable
+public extension ObservableObject
 {
     func observed() -> ObservationTransformer<Message>
     {
@@ -19,7 +19,7 @@ public extension Observable
     }
 }
 
-public func observe<O: Observable>(_ observable: O) -> ObservationTransformer<O.Message>
+public func observe<O: ObservableObject>(_ observable: O) -> ObservationTransformer<O.Message>
 {
     ObservationTransformer
     {
@@ -28,13 +28,13 @@ public func observe<O: Observable>(_ observable: O) -> ObservationTransformer<O.
     }
 }
 
-public func observe<O: Observable>(_ observable: O,
+public func observe<O: ObservableObject>(_ observable: O,
                                    receive: @escaping (O.Message, AnyAuthor) -> Void)
 {
     FreeObserver.shared.observe(observable, receive: receive)
 }
 
-public func observe<O: Observable>(_ observable: O,
+public func observe<O: ObservableObject>(_ observable: O,
                                    receive: @escaping (O.Message) -> Void)
 {
     FreeObserver.shared.observe(observable, receive: receive)

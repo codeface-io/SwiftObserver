@@ -1,4 +1,4 @@
-public final class CacheOnOptionalMessage<O: Observable, Unwrapped>:
+public final class CacheOnOptionalMessage<O: ObservableObject, Unwrapped>:
     Messenger<Unwrapped?>,
     ObservableCache,
     Observer

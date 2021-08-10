@@ -1,11 +1,11 @@
 public extension Observer
 {
-    func isObserving<O: Observable>(_ observable: O) -> Bool
+    func isObserving<O: ObservableObject>(_ observable: O) -> Bool
     {
         observable.messenger.isConnected(to: receiver)
     }
     
-    func observe<O: Observable>(_ observable: O,
+    func observe<O: ObservableObject>(_ observable: O,
                                 receive: @escaping (O.Message, AnyAuthor) -> Void)
     {
         let messenger = observable.messenger
@@ -13,7 +13,7 @@ public extension Observer
         receiver.retain(connection)
     }
     
-    func observe<O: Observable>(_ observable: O,
+    func observe<O: ObservableObject>(_ observable: O,
                                 receive: @escaping (O.Message) -> Void)
     {
         let messenger = observable.messenger
@@ -21,7 +21,7 @@ public extension Observer
         receiver.retain(connection)
     }
     
-    func stopObserving<O: Observable>(_ observable: O?)
+    func stopObserving<O: ObservableObject>(_ observable: O?)
     {
         observable.forSome
         {

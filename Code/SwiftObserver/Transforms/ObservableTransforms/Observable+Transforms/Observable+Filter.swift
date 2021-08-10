@@ -1,4 +1,4 @@
-public extension Observable
+public extension ObservableObject
 {
     func filter(_ keep: @escaping (Message) -> Bool) -> Filter<Self>
     {

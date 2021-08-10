@@ -1,4 +1,4 @@
-public class Unwrapper<O: Observable, Unwrapped>: Messenger<Unwrapped>, Observer
+public class Unwrapper<O: ObservableObject, Unwrapped>: Messenger<Unwrapped>, Observer
     where O.Message == Unwrapped?
 {
     public init(_ origin: O)

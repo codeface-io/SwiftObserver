@@ -1,4 +1,4 @@
-public class Weak<O: Observable>: Messenger<O.Message>, Observer
+public class Weak<O: ObservableObject>: Messenger<O.Message>, Observer
 {
     public init(_ origin: O)
     {

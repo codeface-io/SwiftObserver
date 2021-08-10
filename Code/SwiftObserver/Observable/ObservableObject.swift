@@ -1,9 +1,9 @@
-extension Messenger: Observable
+extension Messenger: ObservableObject
 {
     public var messenger: Messenger<Message> { self }
 }
 
-public extension Observable
+public extension ObservableObject
 {
     func send(_ message: Message, from author: AnyAuthor? = nil)
     {
@@ -13,7 +13,7 @@ public extension Observable
     internal var latestAuthor: AnyAuthor { messenger._latestAuthor }
 }
 
-public protocol Observable: AnyAuthor
+public protocol ObservableObject: AnyAuthor
 {
     var messenger: Messenger<Message> { get }
     associatedtype Message: Any

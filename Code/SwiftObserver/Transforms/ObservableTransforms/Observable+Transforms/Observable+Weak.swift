@@ -1,4 +1,4 @@
-public extension Observable
+public extension ObservableObject
 {
     func weak() -> Weak<Self>
     {
