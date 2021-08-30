@@ -1,10 +1,12 @@
 import Combine
 import SwiftObserver
 
+@available(iOS 13.0, macOS 10.15, *)
 public extension ObservableCache {
     func publisher() -> PublisherOnObservableCache<Self> { .init(self) }
 }
 
+@available(iOS 13.0, macOS 10.15, *)
 public struct PublisherOnObservableCache<O: ObservableCache>: Publisher {
     
     init(_ observable: O) {
@@ -26,10 +28,12 @@ public struct PublisherOnObservableCache<O: ObservableCache>: Publisher {
     public typealias Failure = Never
 }
 
+@available(iOS 13.0, macOS 10.15, *)
 public extension SwiftObserver.ObservableObject {
     func publisher() -> PublisherOnObservable<Self> { .init(self) }
 }
 
+@available(iOS 13.0, macOS 10.15, *)
 public struct PublisherOnObservable<O: SwiftObserver.ObservableObject>: Publisher {
     
     init(_ observable: O) {
