@@ -26,6 +26,11 @@ extension Var:
         string[position]
     }
     
+    public subscript(bounds: Range<String.Index>) -> String.SubSequence
+    {
+        string[bounds]
+    }
+    
     public var startIndex: String.Index
     {
         string.startIndex
