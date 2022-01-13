@@ -27,7 +27,7 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Install](#install)
     * [Introduction](#introduction)
 * [Messengers](#messengers)
-    * [Understand Observables](#understand-observables)
+    * [Understand Observable Objects](#understand-observables)
 * [Variables](#variables)
     * [Observe Variables](#observe-variables)
     * [Use Variable Values](#use-variable-values) 
@@ -43,7 +43,7 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
 * [Advanced](#advanced)
     * [Message Authors](#message-authors)
     * [Cached Messages](#cached-messages)
-    * [Weak Observables](#weak-observables)
+    * [Weak Observable Objects](#weak-observables)
 * [More](#more)
 
 # Get Involved
@@ -94,7 +94,7 @@ No need to learn a bunch of arbitrary metaphors, terms or types.
 
 SwiftObserver is simple: **Objects *observe* other objects**.
 
-Or a tad more technically: ***Observables* send *messages* to their *observers***.
+Or a tad more technically: ***Observable objects* send *messages* to their *observers***.
 
 That's it. Just readable code:
 
@@ -119,37 +119,37 @@ The receiver keeps the observer's observations alive. The observer just holds on
 #### Notes on Observers
 
 * For a message receiving closure to be called, the `Observer`/`Receiver` must still be alive. There's no awareness after death in memory.
-* An `Observer` can do multiple simultaneous observations of the same `Observable`, for example by calling `observe(...)` multiple times.
-* You can check wether an observer is observing an observable via `observer.isObserving(observable)`.
+* An `Observer` can do multiple simultaneous observations of the same `ObservableObject`, for example by calling `observe(...)` multiple times.
+* You can check wether an observer is observing an "observable" via `observer.isObserving(observable)`.
 
-### Observables
+### Observable Objects
 
-Any object can be `Observable` if it has a `Messenger<Message>` for sending messages:
+Any object can be an `ObservableObject` if it has a `Messenger<Message>` for sending messages:
 
 ```swift
-class Sky: Observable {
+class Sky: ObservableObject {
     let messenger = Messenger<Color>()  // Message == Color
 }
 ```
 
-#### Notes on Observables
+#### Notes on Observable Objects
 
-* An `Observable` sends messages via `send(_ message: Message)`. The observable's clients, even its observers, are also free to call that function. 
-* An `Observable` delivers messages in exactly the order in which `send` is called, which helps when observers, from their message handling closures, somehow trigger further calls of `send`.
-* Just starting to observe an `Observable` does **not** trigger it to send a message. This keeps everything simple, predictable and consistent.
+* An `ObservableObject` sends messages via `send(_ message: Message)`. The object's clients, even its observers, are also free to call that function. 
+* An `ObservableObject` delivers messages in exactly the order in which `send` is called, which helps when observers, from their message handling closures, somehow trigger further calls of `send`.
+* Just starting to observe an `ObservableObject` does **not** trigger it to send a message. This keeps everything simple, predictable and consistent.
 
-#### Ways to Create an Observable
+#### Ways to Create an Observable Object
 
 1. Create a [`Messenger<Message>`](#messengers). It's a mediator through which other entities communicate.
-2. Create an object of a [custom `Observable`](#understand-observables) class that utilizes `Messenger<Message>`.
+2. Create an object of a [custom `ObservableObject`](#understand-observables) class that utilizes `Messenger<Message>`.
 3. Create a [`Variable<Value>`](#variables) (a.k.a. `Var<Value>`). It holds a value and sends value updates.
-5. Create a [*transform*](#make-transforms-observable) object. It wraps and transforms another `Observable`.
+5. Create a [*transform*](#make-transforms-observable) object. It wraps and transforms another `ObservableObject`.
 
 ### Memory Management
 
-When an `Observer` or `Observable` dies, SwiftObserver cleans up all related observations automatically, making memory leaks impossible. So there isn't really any memory management to worry about.
+When an `Observer` or `ObservableObject` dies, SwiftObserver cleans up all related observations automatically, making memory leaks impossible. So there isn't really any memory management to worry about.
 
-However, observers and observables can stop particular- or all their ongoing observations:
+However, observing- and observed objects can stop particular- or all their ongoing observations:
 
 ```swift
 dog.stopObserving(Sky.shared)          // no more messages from the sky
@@ -192,7 +192,7 @@ Both functions return the involved `FreeObserver` as a discardable result. Typic
 
 # Messengers
 
-`Messenger` is the simplest `Observable` and the basis of every other `Observable`. It doesn't send messages by itself, but anyone can send messages through it and use it for any type of message:
+`Messenger` is the simplest `ObservableObject` and the basis of every other `ObservableObject`. It doesn't send messages by itself, but anyone can send messages through it and use it for any type of message:
 
 ```swift
 let textMessenger = Messenger<String>()
@@ -206,40 +206,40 @@ textMessenger.send("my message")
 
 `Messenger` embodies the common [messenger / notifier pattern](Documentation/specific-patterns.md#the-messenger-pattern) and can be used for that out of the box. 
 
-## Understand Observables
+## Understand Observable Objects
 
-Having a `Messenger` is actually what defines `Observable` objects:
+Having a `Messenger` is actually what defines `ObservableObject`:
 
 ```swift
-public protocol Observable: class {
+public protocol ObservableObject: class {
     var messenger: Messenger<Message> { get }
     associatedtype Message: Any
 }
 ```
 
-`Messenger` is itself `Observable` because it points to itself as the required `Messenger`:
+`Messenger` is itself `ObservableObject` because it points to itself as the required `Messenger`:
 
 ```swift
-extension Messenger: Observable {
+extension Messenger: ObservableObject {
     public var messenger: Messenger<Message> { self }
 }
 ```
 
-Every other `Observable` class is either a subclass of `Messenger` or a custom `Observable` class that provides a `Messenger`. Custom observables often employ some `enum` as their message type:
+Every other `ObservableObject` class is either a subclass of `Messenger` or a custom `ObservableObject` class that provides a `Messenger`. Custom observables often employ some `enum` as their message type:
 
-~~~swift
-class Model: SuperModel, Observable {
+```swift
+class Model: SuperModel, ObservableObject {
     func foo() { send(.willUpdate) }
     func bar() { send(.didUpdate) }
     deinit { send(.willDie) }
     let messenger = Messenger<Event>()  // Message == Event
     enum Event { case willUpdate, didUpdate, willDie }
 }
-~~~
+```
 
 # Variables
 
- `Var<Value>` is an `Observable` that has a property `value: Value`. 
+ `Var<Value>` is an `ObservableObject` that has a property `value: Value`. 
 
 ## Observe Variables
 
@@ -319,7 +319,7 @@ observer.observe(title).new().unwrap("Untitled").map({ $0.count }) { titleLength
 
 You may transform a particular observation directly on the fly, like in the above example. Such ad hoc transforms give the observer lots of flexibility.
 
-Or you may instantiate a new `Observable` that has the transform chain baked into it. The above example could then look like this:
+Or you may instantiate a new `ObservableObject` that has the transform chain baked into it. The above example could then look like this:
 
 ```swift
 let title = Var<String?>()
@@ -330,7 +330,7 @@ observer.observe(titleLength) { titleLength in
 }
 ```
 
-Every transform object exposes its underlying `Observable` as `origin`. You may even replace `origin`:
+Every transform object exposes its underlying `ObservableObject` as `origin`. You may even replace `origin`:
 
 ```swift
 let titleLength = Var("Dummy Title").new().map { $0.count }
@@ -338,7 +338,7 @@ let title = Var("Real Title")
 titleLength.origin.origin = title
 ```
 
-Such stand-alone transforms can offer the same preprocessing to multiple observers. But since these transforms are distinct `Observable` objects, you must hold them strongly somewhere. Holding transform chains as dedicated observable objects suits entities like view models that represent transformations of other data.
+Such stand-alone transforms can offer the same preprocessing to multiple observers. But since these transforms are distinct `ObservableObject`s, you must hold them strongly somewhere. Holding transform chains as dedicated observable objects suits entities like view models that represent transformations of other data.
 
 ## Use Prebuilt Transforms
 
@@ -355,7 +355,7 @@ let stringToInt = messenger.map { Int($0) }  // sends Int?
 
 ### New
 
-When an `Observable` like a `Var<Value>` sends *messages* of type `Update<Value>`, we often only care about  the `new` value, so we map the update with `new()`:
+When an `ObservableObject` like a `Var<Value>` sends *messages* of type `Update<Value>`, we often only care about  the `new` value, so we map the update with `new()`:
 
 ~~~swift
 let errorCode = Var<Int>()          // sends Update<Int>
@@ -454,7 +454,7 @@ getID().whenFulfilled { id in    // get id (if fulfilled) or observe promise
 }
 ```
 
-A `Promise` is either fulfilled or not. When it is fulfilled it stays that way. When a function returns a `Promise`, that promise might already be fulfilled and not change anymore. Also, mappings are the only transforms that make sense on promises. So, to guard against mistakes, `Promise` is **not directly `Observable`**. Instead we call `whenFulfilled` on it, which does an internal one-shot observation of the promise if the promise isn't yet fulfilled.
+A `Promise` is either fulfilled or not. When it is fulfilled it stays that way. When a function returns a `Promise`, that promise might already be fulfilled and not change anymore. Also, mappings are the only transforms that make sense on promises. So, to guard against mistakes, `Promise` is **not directly `ObservableObject`**. Instead we call `whenFulfilled` on it, which does an internal one-shot observation of the promise if the promise isn't yet fulfilled.
 
 Typically, promises are shortlived objects that we don't hold on to. That works fine since an asynchronous function like `getID()` that returns a promise keeps that promise alive in order to fulfill it. So we get the promised value asynchronously without even holding the promise anywhere, and the promise as well as its internal observations get cleaned up automatically when the promise is fulfilled and dies.
 
@@ -565,7 +565,7 @@ Every closure that handles the success case can throw an `Error`.
 
 Every message has an author associated with it. This feature is only noticable in code if we use it.
 
-An observable can send an author together with a message via `observable.send(message, from: author)`. If noone specifies an author as in `observable.send(message)`, the observable itself becomes the author.
+An observable object can send an author together with a message via `object.send(message, from: author)`. If noone specifies an author as in `object.send(message)`, the observable object itself becomes the author.
 
 ### Mutate Variables
 
@@ -581,18 +581,18 @@ number.set(42, as: controller) // controller becomes author of the update messag
 The observer can receive the author, by adding it as an argument to the message handling closure:
 
 ```swift
-observer.observe(observable) { message, author in
+observer.observe(observableObject) { message, author in
     // process message from author
 }
 ```
 
 Through the author, observers can determine a message's origin. In the plain messenger pattern, the origin would simply be the message sender.
 
-### Share Observables
+### Share Observable Objects
 
-Identifying message authors can become essential whenever multiple observers observe the same observable while their actions can cause it so send messages.
+Identifying message authors can become essential whenever multiple observers observe the same object while their actions can cause it so send messages.
 
-Mutable data is a common type of such shared observables. For example, when multiple entities observe and modify a storage abstraction or caching hierarchy, they often want to avoid reacting to their own actions. Such overreaction might lead to redundant work or inifnite response cycles. So they identify as change authors when modifying the data and ignore messages from `self` when observing it:
+Mutable data is a common type of such shared observable objects. For example, when multiple entities observe and modify a storage abstraction or caching hierarchy, they often want to avoid reacting to their own actions. Such overreaction might lead to redundant work or inifnite response cycles. So they identify as change authors when modifying the data and ignore messages from `self` when observing it:
 
 ```swift
 class Collaborator: Observer {
@@ -614,7 +614,7 @@ let sharedText = Var<String>()
 
 ### Filter by Author
 
-There are three transforms related to message authors. As with other transforms, we can apply them directly in observations or create them as standalone observables.
+There are three transforms related to message authors. As with other transforms, we can apply them directly in observations or create them as standalone observable objects.
 
 #### Filter Author
 
@@ -648,13 +648,13 @@ let humanMessages = messenger.notFrom(hal9000)  // sends String, but not from an
 
 ## Cached Messages 
 
-An `ObservableCache` is an `Observable` that has a property `latestMessage: Message` which typically returns the last sent message or one that indicates that nothing has changed. `ObservableCache` has a function `send()` that takes no argument and sends `latestMessage`.
+An `ObservableCache` is an `ObservableObject` that has a property `latestMessage: Message` which typically returns the last sent message or one that indicates that nothing has changed. `ObservableCache` has a function `send()` that takes no argument and sends `latestMessage`.
 
 ### Four Kinds of Caches
 
 1. Any `Var` is an `ObservableCache`. Its `latestMessage` is an `Update` in which `old` and `new` both hold the current `value`.
 
-2. Calling `cache()` on an `Observable` creates a [transform](#make-transforms-observable) that is an `ObservableCache`. That cache's `Message` will be optional but never an *optional optional*, even when the origin's `Message` is already optional.
+2. Calling `cache()` on an `ObservableObject` creates a [transform](#make-transforms-observable) that is an `ObservableCache`. That cache's `Message` will be optional but never an *optional optional*, even when the origin's `Message` is already optional.
 
    Of course, `cache()` wouldn't make sense as an adhoc transform of an observation, so it can only create a distinct observable object.
 
@@ -662,11 +662,11 @@ An `ObservableCache` is an `Observable` that has a property `latestMessage: Mess
 
    Note that the `latestMessage` of a transform that is an implicit `ObservableCache` returns the transformed `latestMessage` of its underlying `ObservableCache` origin. Calling `send(transformedMessage)` on that transform itself will not "update" its `latestMessage`.
 
-4. Custom observables can easily conform to `ObservableCache`. Even if their message type isn't based on some state, `latestMessage` can still return a meaningful default value - or even `nil` where `Message` is optional.
+4. Custom observable objects can easily conform to `ObservableCache`. Even if their message type isn't based on some state, `latestMessage` can still return a meaningful default value - or even `nil` where `Message` is optional.
 
 ### State-Based Messages 
 
-An `Observable` like `Var`, that derives its messages from its state, can generate a "latest message" on demand and therefore act as an `ObservableCache`:
+An `ObservableObject` like `Var`, that derives its messages from its state, can generate a "latest message" on demand and therefore act as an `ObservableCache`:
 
 ```swift
 class Model: Messenger<String>, ObservableCache {  // informs about the latest state
@@ -682,9 +682,9 @@ class Model: Messenger<String>, ObservableCache {  // informs about the latest s
 }
 ```
 
-## Weak Observables
+## Weak Observable Objects
 
-When you want to put an `Observable` into some data structure or as the *origin* into a *transform* object but hold it there as a `weak` reference, transform it via `observable.weak()`:
+When you want to put an `ObservableObject` into some data structure or as the *origin* into a *transform* object but hold it there as a `weak` reference, transform it via `observableObject.weak()`:
 
 ~~~swift
 let number = Var(12)
