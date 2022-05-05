@@ -14,7 +14,7 @@ public class Promise<Value>
         state = .fulfilled(value)
     }
     
-    public convenience init(fulfill: (Self) -> Void)
+    public convenience init(fulfill: (Promise<Value>) -> Void)
     {
         self.init()
         fulfill(self)
@@ -32,7 +32,7 @@ public class Promise<Value>
     }
     
     @discardableResult
-    public func whenFulfilled(_ handleValue: @escaping (Value) -> Void) -> Self
+    public func whenFulfilled(_ handleValue: @escaping (Value) -> Void) -> Promise<Value>
     {
         switch state
         {
