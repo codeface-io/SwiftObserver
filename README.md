@@ -434,7 +434,7 @@ dog.observe(Sky.shared).map {
 
 `Promise<Value>` helps managing asynchronous returns and makes that intention explicit.
 
-> **Side Note:** `Promise` is part of SwiftObserver because [Combine's `Future`](https://developer.apple.com/documentation/combine/future) is unfortunately an impractical and incomplete solution for one-shot asynchronous calls and to depend on [PromiseKit](https://github.com/mxcl/PromiseKit) or [Vapor/NIO's Async](https://docs.vapor.codes/4.0/async/) might be overkill (and too server-specific) in many contexts. Also, integrating promises in SwiftObserver offers the advantages of consistency, simplicity and readability. However, at some point *all* promise/future implementations will be obsolete due to [Swift's async/await](https://github.com/DougGregor/swift-evolution/blob/async-await/proposals/nnnn-async-await.md).
+> **Side Note:** Promise/Future implementations are now obsolete due to [Swift's native async/await](https://docs.swift.org/swift-book/LanguageGuide/Concurrency.html). `Promise` was added to SwiftObserver before async/await existed. I intent to replace any use of `Promise` by async/await in my own apps and then remove `Promise` from SwiftObserver. I had added it for these reasons: [Combine's `Future`](https://developer.apple.com/documentation/combine/future) is unfortunately an impractical and incomplete solution for one-shot asynchronous calls and to depend on [PromiseKit](https://github.com/mxcl/PromiseKit) or [Vapor/NIO's Async](https://docs.vapor.codes/4.0/async/) might be overkill (and too server-specific) in many contexts. Also, integrating promises in SwiftObserver offers the advantages of consistency, simplicity and readability.
 
 ## Receive a Promised Value
 
