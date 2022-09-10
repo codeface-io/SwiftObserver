@@ -30,7 +30,6 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Understand Observable Objects](#understand-observables)
 * [Variables](#variables)
     * [Observe Variables](#observe-variables)
-    * [Use Variable Values](#use-variable-values) 
     * [Encode and Decode Variables](#encode-and-decode-variables)
 * [Transforms](#transforms)
     * [Make Transforms Observable](#make-transforms-observable)
@@ -254,40 +253,6 @@ observer.observe(number) { update in
 ~~~
 
 In addition, you can always manually call `variable.send()` (without argument) to send an update in which `old` and `new` both hold the current `value` (see [`Cached Messages`](#cached-messages)).
-
-## Use Variable Values
-
-`Value` must be `Equatable`, and based on its `value` the whole `Var<Value>` is `Equatable`.  Where `Value` is `Comparable`, `Var<Value>` will also be `Comparable`.
-
-You can set `value` via initializer, directly and via the `<-` operator:
-
-~~~swift
-let text = Var<String?>()    // text.value == nil
-text.value = "a text"
-let number = Var(23)         // number.value == 23
-number <- 42                 // number.value == 42
-~~~
-
-### Number Values
-
-If `Value` is some number type `Number` that is either an `Int`, `Float` or `Double`:
-
-1. Every `Var<Number>`, `Var<Number?>`, `Var<Number>?` and `Var<Number?>?` has a respective property `var int: Int`, `var float: Float` or `var double: Double`. That property is non-optional and interprets `nil` values as zero.
-
-2. You can apply numeric operators `+`, `-`, `*` and `/` to all pairs of `Number`, `Number?`, `Var<Number>`, `Var<Number?>`, `Var<Number>?` and `Var<Number?>?`.
-
-```swift
-let numVar = Var<Int?>()     // numVar.value == nil
-print(numVar.int)            // 0
-numVar.int += 5              // numVar.value == 5
-numVar <- Var(1) + 2         // numVar.value == 3
-```
-
-### String Values
-
-1. Every `Var<String>`, `Var<String?>`, `Var<String>?` and `Var<String?>?` has a property `var string: String`. That property is non-optional and interprets `nil` values as `""`.
-3. You can apply concatenation operator `+` to all pairs of `String`, `String?`, `Var<String>`, `Var<String?>`, `Var<String>?` and `Var<String?>?`.
-3. Representing its `string` property, every `Var<String>` and `Var<String?>` conforms to `TextOutputStream`, `BidirectionalCollection`, `Collection`, `Sequence`, `CustomDebugStringConvertible` and `CustomStringConvertible`.
 
 ## Encode and Decode Variables
 

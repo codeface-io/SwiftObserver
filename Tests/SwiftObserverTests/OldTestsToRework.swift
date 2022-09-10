@@ -3,15 +3,6 @@ import SwiftObserver
 
 class OldTestsToRework: XCTestCase
 {
-    func testStringProperty()
-    {
-        let text = Var("")
-        
-        text.string += "append"
-        
-        XCTAssertEqual("append", text.value)
-    }
-    
     func testWeakObservableWrapper()
     {
         let weakNumber1 = Var(1).weak()
