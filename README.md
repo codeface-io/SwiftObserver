@@ -190,6 +190,14 @@ Sky.shared.observedOnce { color in  // ... same
 
 Both functions return the involved `FreeObserver` as a discardable result. Typically we ignore that observer and it will die together with the observation as soon as it has received one message.
 
+### Architecture
+
+Have a look at the codebase with its essential internal dependencies:
+
+![](Documentation/Architecture/SwiftObserver.png)
+
+Diagrams of all top-level source folders [are over here](Documentation/Architecture/architecture.md). The images were generated with the [Codeface.io](https://www.codeface.io) app. 
+
 # Messengers
 
 `Messenger` is the simplest `ObservableObject` and the basis of every other `ObservableObject`. It doesn't send messages by itself, but anyone can send messages through it and use it for any type of message:
@@ -690,7 +698,6 @@ Of course, `weak()` wouldn't make sense as an adhoc transform, so it can only cr
 
 * **Patterns:** Read more about some [patterns that emerged from using SwiftObserver](Documentation/specific-patterns.md#specific-patterns).
 * **Philosophy:** Read more about the [philosophy and features of SwiftObserver](Documentation/philosophy.md#the-philosophy-of-swiftobserver).
-* **Architecture:** Have a look at a [dependency diagram of the types of SwiftObserver](Documentation/architecture.md).
 * **License:** SwiftObserver is released under the MIT license. [See LICENSE](LICENSE) for details.
 
 ## Open Tasks
