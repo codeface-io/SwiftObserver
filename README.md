@@ -30,6 +30,7 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Understand Observable Objects](#understand-observables)
 * [Variables](#variables)
     * [Observe Variables](#observe-variables)
+    * [Enjoy the Property Wrapper](#enjoy-the-property-wrapper)
     * [Encode and Decode Variables](#encode-and-decode-variables)
 * [Transforms](#transforms)
     * [Make Transforms Observable](#make-transforms-observable)
@@ -250,9 +251,27 @@ let number = Var(42)
 observer.observe(number) { update in
     let whatsTheBigDifference = update.new - update.old
 }
+
+number <- 123
 ~~~
 
 In addition, you can always manually call `variable.send()` (without argument) to send an update in which `old` and `new` both hold the current `value` (see [`Cached Messages`](#cached-messages)).
+
+## Enjoy the Property Wrapper
+
+Using the property wrapper `Observable`, the above example would look like this:
+
+~~~swift
+@Observable var number = 42
+
+observer.observe($number) { update in
+    let whatsTheBigDifference = update.new - update.old
+}
+
+number = 123
+~~~
+
+The wrapper's projected value provides the underlying `Var<Value>`, which you access via the `$` sign like in the above example. This is analogous to how you access publishers in Combine.
 
 ## Encode and Decode Variables
 
@@ -676,12 +695,10 @@ Of course, `weak()` wouldn't make sense as an adhoc transform, so it can only cr
 
 ## Open Tasks
 
-* Decompose, rework and extend unit test suite
+* Decompose and rework legacy unit tests
 * Write API documentation comments
-* Update, rework and extend documentation of features, philosophy and patterns
-* Document adapters for interoperation with Combine and SwiftUI
-* Add syntax sugar for observing/processing on queues, if added API complexity is worth it
-* Leverage property wrappers where they offer any sort of benefit
+* Update and rework (or simply delete) texts about philosophy and patterns
+* Document CombineObserver
 * Engage feedback and contribution
 
 [badge-gitter]: https://img.shields.io/badge/chat-Gitter-red.svg?style=flat-square

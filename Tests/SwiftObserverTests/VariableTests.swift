@@ -112,4 +112,25 @@ class VariableTests: XCTestCase
         XCTAssert(didEncode)
         XCTAssert(didDecode)
     }
+    
+    func testPropertyWrapper()
+    {
+        @Observable var text: String? = "old text"
+        
+        var observedNewValue: String?
+        var observedOldValue: String?
+        
+        let observer = FreeObserver()
+        
+        observer.observe($text)
+        {
+            observedOldValue = $0.old
+            observedNewValue = $0.new
+        }
+        
+        text = "new text"
+        
+        XCTAssertEqual(observedOldValue, "old text")
+        XCTAssertEqual(observedNewValue, "new text")
+    }
 }
