@@ -6,13 +6,13 @@
 
 SwiftObserver is a lightweight framework for reactive Swift. Its design goals make it easy to learn and a joy to use:
 
-1. [**Meaningful Code**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#meaningful-code) 💡<br>SwiftObserver promotes meaningful metaphors, names and syntax, producing highly readable code.
-2. [**Non-intrusive Design**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#non-intrusive-design) ✊🏻<br>SwiftObserver doesn't limit or modulate your design. It just makes it easy to do the right thing.
-3. [**Simplicity**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🕹<br>SwiftObserver employs few radically simple concepts and applies them consistently without exceptions.
-4. [**Flexibility**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🤸🏻‍♀️<br>SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
-5. [**Safety**](https://github.com/flowtoolz/SwiftObserver/blob/master/Documentation/philosophy.md#safety) ⛑<br>SwiftObserver does the memory management for you. Oh yeah, memory leaks are impossible.
+1. [**Meaningful Code**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#meaningful-code) 💡<br>SwiftObserver promotes meaningful metaphors, names and syntax, producing highly readable code.
+2. [**Non-intrusive Design**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#non-intrusive-design) ✊🏻<br>SwiftObserver doesn't limit or modulate your design. It just makes it easy to do the right thing.
+3. [**Simplicity**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🕹<br>SwiftObserver employs few radically simple concepts and applies them consistently without exceptions.
+4. [**Flexibility**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🤸🏻‍♀️<br>SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
+5. [**Safety**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#safety) ⛑<br>SwiftObserver does the memory management for you. Oh yeah, memory leaks are impossible.
 
-SwiftObserver is only 1800 lines of production code, but it's well beyond a 1000 hours of work, re-imagining and reworking it many times, letting go of fancy features, documenting, [unit-testing](https://github.com/flowtoolz/SwiftObserver/tree/master/Tests/SwiftObserverTests), and battle-testing it in practice.
+SwiftObserver is only 1800 lines of production code, but it's well beyond a 1000 hours of work, re-imagining and reworking it many times, letting go of fancy features, documenting, [unit-testing](https://github.com/codeface-io/SwiftObserver/tree/master/Tests/SwiftObserverTests), and battle-testing it in practice.
 
 ## Why the Hell Another Reactive Swift Framework?
 
@@ -48,9 +48,9 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
 
 # Get Involved
 
-* Found a **bug**? Create a [github issue](https://github.com/flowtoolz/SwiftObserver/issues/new/choose).
-* Need a **feature**? Create a [github issue](https://github.com/flowtoolz/SwiftObserver/issues/new/choose).
-* Want to **improve** stuff? Create a [pull request](https://github.com/flowtoolz/SwiftObserver/pulls).
+* Found a **bug**? Create a [github issue](https://github.com/codeface-io/SwiftObserver/issues/new/choose).
+* Need a **feature**? Create a [github issue](https://github.com/codeface-io/SwiftObserver/issues/new/choose).
+* Want to **improve** stuff? Create a [pull request](https://github.com/codeface-io/SwiftObserver/pulls).
 * Want to start a **discussion**? Visit [Gitter](https://gitter.im/flowtoolz/SwiftObserver/).
 * Need **support** and troubleshooting? Write at <swiftobserver@flowtoolz.com>.
 * Want to **contact** us? Write at <swiftobserver@flowtoolz.com>.
@@ -70,7 +70,7 @@ import PackageDescription
 let package = Package(
     name: "MyApp",
     dependencies: [
-        .package(url: "https://github.com/flowtoolz/SwiftObserver.git",
+        .package(url: "https://github.com/codeface-io/SwiftObserver.git",
                  .upToNextMajor(from: "6.2.0"))
     ],
     targets: [
