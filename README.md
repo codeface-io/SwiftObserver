@@ -51,9 +51,8 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
 * Found a **bug**? Create a [github issue](https://github.com/codeface-io/SwiftObserver/issues/new/choose).
 * Need a **feature**? Create a [github issue](https://github.com/codeface-io/SwiftObserver/issues/new/choose).
 * Want to **improve** stuff? Create a [pull request](https://github.com/codeface-io/SwiftObserver/pulls).
-* Want to start a **discussion**? Visit [Gitter](https://gitter.im/flowtoolz/SwiftObserver/).
-* Need **support** and troubleshooting? Write at <swiftobserver@flowtoolz.com>.
-* Want to **contact** us? Write at <swiftobserver@flowtoolz.com>.
+* Need **support** and troubleshooting? Write at <hello@codeface.io>.
+* Want to **contact** us? Write at <hello@codeface.io>.
 
 # Get Started
 
