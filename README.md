@@ -171,20 +171,6 @@ Both examples internally use the global observer `FreeObserver.shared`. You may 
 
 You can also instantiate your own `FreeObserver` to do observations even more "freely". Just keep it alive as long as the observation shall last. Such a free observer is like a "Cancellable" or "Token" in other reactive frameworks.
 
-And you can do *one-time* observations:
-
-```swift
-observeOnce(Sky.shared) { color in
-    // notice new color. observation has stopped.
-}
-
-Sky.shared.observedOnce { color in  // ... same
-    // ...
-}
-```
-
-Both functions return the involved `FreeObserver` as a discardable result. Typically we ignore that observer and it will die together with the observation as soon as it has received one message.
-
 ### Architecture
 
 Have a look at the codebase with its essential internal dependencies:
