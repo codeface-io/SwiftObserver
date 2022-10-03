@@ -422,9 +422,8 @@ let cancellable = numberPublisher.dropFirst().sink { numberUpdate in
     print("\(numberUpdate.new)")
 }
 
-number = 42 // prints 42
+number = 42 // prints "42"
 ```
-
 
 ## Message Authors
 
