@@ -93,6 +93,164 @@ class ObservableTransformTests: XCTestCase, LogObserver
         XCTAssertEqual(lastUpdateFromTransform, "42")
     }
     
+    func testThatMappersOfCachesAreCaches()
+    {
+        XCTAssertEqual(Var(1).new().latestMessage, 1)
+        XCTAssertEqual(Var<Int?>().new().unwrap(23).latestMessage, 23)
+        XCTAssertEqual(Var(5).map({ $0.new == 5 }).latestMessage, true)
+    }
+    
+    func testMappingSelect()
+    {
+        let text = Var<String?>()
+        let textMapping = text.new().unwrap("").select("test")
+        
+        var didFire = false
+        
+        let observer = FreeObserver()
+        
+        observer.observe(textMapping)
+        {
+            didFire = true
+        }
+        
+        text <- "test"
+        XCTAssert(didFire)
+        
+        didFire = false
+        text <- "test2"
+        XCTAssert(!didFire)
+    }
+    
+    func testMappingsIncludingFilter()
+    {
+        let number = Var<Int?>(99)
+        let doubleDigits = number.new().unwrap(0).filter { $0 > 9 }
+        
+        var observedNumbers = [Int]()
+        
+        let observer = FreeObserver()
+        
+        observer.observe(doubleDigits)
+        {
+            observedNumbers.append($0)
+        }
+        
+        number <- 10
+        number <- nil
+        number <- 11
+        number <- 1
+        number <- 12
+        number <- 2
+        
+        XCTAssertEqual(observedNumbers, [10, 11, 12])
+    }
+    
+    func testFilterSupressesMessage()
+    {
+        let messenger = Messenger<Int?>()
+        let transform = Filter(messenger) { $0 != nil }
+        
+        var observedNumber: Int? = nil
+        
+        let observer = FreeObserver()
+        
+        observer.observe(transform)
+        {
+            observedNumber = $0
+            XCTAssertNotNil($0)
+        }
+        
+        messenger.send(3)
+        XCTAssertEqual(observedNumber, 3)
+
+        messenger.send(nil)
+        XCTAssertEqual(observedNumber, 3)
+    }
+    
+    func testObservableTransformObject()
+    {
+        let textMessenger = Var<String?>().new()
+        var receivedMessage: String?
+        let expectedMessage = "message"
+        
+        let observer = FreeObserver()
+        
+        observer.observe(textMessenger)
+        {
+            receivedMessage = $0
+        }
+        
+        textMessenger.send(expectedMessage)
+        
+        XCTAssertEqual(receivedMessage, expectedMessage)
+    }
+    
+    func testObservableMapObject()
+    {
+        let text = Var<String?>()
+        
+        let nonOptionalText = text.map { $0.new ?? "" }
+        
+        var didUpdate = false
+        
+        let observer = FreeObserver()
+        
+        observer.observe(nonOptionalText)
+        {
+            XCTAssertEqual($0, "")
+            
+            didUpdate = true
+        }
+        
+        text.send()
+        
+        XCTAssert(didUpdate)
+    }
+    
+    func testObservableNewAndUnwrapObject()
+    {
+        let text = Var<String?>()
+        let unwrappedText = text.new().unwrap("")
+        
+        var didUpdate = false
+        
+        let observer = FreeObserver()
+        
+        observer.observe(unwrappedText)
+        {
+            XCTAssertEqual($0, "")
+            didUpdate = true
+        }
+        
+        text.send()
+        
+        XCTAssert(didUpdate)
+    }
+    
+    func testWeakObservableWrapper()
+    {
+        let weakNumber1 = Var(1).weak()
+        XCTAssertNil(weakNumber1.origin)
+        
+        let strongNumber = Var(2)
+        let weakNumber2 = strongNumber.weak()
+        XCTAssertEqual(weakNumber2.origin?.value, 2)
+    }
+    
+    func testWeakObservable()
+    {
+        var strongObservable: Var<Int>? = Var(10)
+        
+        let weakObservable = strongObservable!.weak()
+        
+        XCTAssert(strongObservable === weakObservable.origin)
+        
+        strongObservable = nil
+        
+        XCTAssertNil(weakObservable.origin)
+    }
+    
     func receive(_ entry: Log.Entry) { latestLogEntry = entry }
     private var latestLogEntry: Log.Entry?
 }

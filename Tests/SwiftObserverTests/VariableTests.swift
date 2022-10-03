@@ -133,4 +133,21 @@ class VariableTests: XCTestCase
         XCTAssertEqual(observedOldValue, "old text")
         XCTAssertEqual(observedNewValue, "new text")
     }
+    
+    func testSendOnVariable()
+    {
+        let initialText = "initial text"
+        
+        let text = Var(initialText)
+        
+        var observedText: String?
+        
+        let observer = FreeObserver()
+        
+        observer.observe(text) { observedText = $0.new }
+        
+        text.send()
+        
+        XCTAssertEqual(observedText, initialText)
+    }
 }
