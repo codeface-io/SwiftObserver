@@ -6,10 +6,6 @@ The following diagrams show the internal architecture (composition and dependenc
 
 ![](SwiftObserver.png)
 
-## Promise
-
-![](Promise.png)
-
 ## FreeObserver
 
 ![](FreeObserver.png)
