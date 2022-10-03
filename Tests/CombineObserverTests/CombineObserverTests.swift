@@ -21,6 +21,22 @@ class CombineObserverTests: XCTestCase
         cancellable.cancel() // just to avoid warning
     }
     
+    func testUsingDropFirstOnPublisher()
+    {
+        @Observable var number = 7
+        let numberPublisher = $number.publisher()
+        
+        var receivedNumbers = [Int]()
+        
+        let cancellable = numberPublisher.dropFirst().sink { receivedNumbers += $0.new }
+        XCTAssertEqual(receivedNumbers, [])
+        
+        number = 42
+        XCTAssertEqual(receivedNumbers, [42])
+        
+        cancellable.cancel() // just to avoid warning
+    }
+    
     func testCreatingPublisherOnUncachedObservable()
     {
         @Observable var number = 200
