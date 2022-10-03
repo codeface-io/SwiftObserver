@@ -419,7 +419,7 @@ import CombineObserver
 let numberPublisher = $number.publisher()   // Combine
 
 let cancellable = numberPublisher.dropFirst().sink { numberUpdate in
-	print("\(numberUpdate.new)")
+    print("\(numberUpdate.new)")
 }
 
 number = 42 // prints 42
