@@ -38,5 +38,9 @@ let package = Package(
             name: "SwiftObserverTests",
             dependencies: ["SwiftObserver", "SwiftyToolz"]
         ),
+        .testTarget(
+            name: "CombineObserverTests",
+            dependencies: ["CombineObserver", "SwiftObserver", "SwiftyToolz"]
+        )
     ]
 )
