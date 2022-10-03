@@ -37,6 +37,7 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Use Prebuilt Transforms](#use-prebuilt-transforms)
     * [Chain Transforms](#chain-transforms)
 * [Advanced](#advanced)
+    * [Interoperate With Combine](#interoperate-with-combine)
     * [Message Authors](#message-authors)
     * [Cached Messages](#cached-messages)
     * [Weak Observable Objects](#weak-observables)
@@ -404,6 +405,26 @@ dog.observe(Sky.shared).map {
 ~~~
 
 # Advanced
+
+## Interoperate With Combine
+
+SwiftObserver is for pure Swift-/model code without any dependencies – not even on Combine. When combined with Combine (oops), SwiftObserver would be employed in the model core of an application, while Combine would be used more with I/O periphery like SwiftUI and other system-specific APIs that already rely on Combine. That means, the "Combine layer" should be able to observe the "SwiftObserver layer" – but hardly the other way around.
+
+CombineObserver is a library contained in the SwiftObserver package. It depends on SwiftObserver and adds a simple way to transform SwiftObserver's `ObservableObject` into Combine's `Publisher`:
+
+```swift
+import CombineObserver
+
+@Observable var number = 7                  // SwiftObserver
+let numberPublisher = $number.publisher()   // Combine
+
+let cancellable = numberPublisher.dropFirst().sink { numberUpdate in
+	print("\(numberUpdate.new)")
+}
+
+number = 42 // prints 42
+```
+
 
 ## Message Authors
 
