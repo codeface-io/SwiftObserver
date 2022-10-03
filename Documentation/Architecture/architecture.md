@@ -1,6 +1,6 @@
 # Architecture
 
-The following diagrams show the internal architecture (composition and dependencies) of all top-level source folders. They were generated with the [Codeface.io](https://www.codeface.io) app:
+The following diagrams show the internal architecture (composition and dependencies) of all top-level source folders. They were generated with the [Codeface app](https://codeface.io):
 
 ## SwiftObserver
 
@@ -21,3 +21,7 @@ The following diagrams show the internal architecture (composition and dependenc
 ## ObservableObject
 
 ![](ObservableObject.png)
+
+## CombineObserver
+
+![](CombineObserver.png)
