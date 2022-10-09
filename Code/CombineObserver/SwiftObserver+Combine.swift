@@ -7,15 +7,15 @@ public extension ObservableCache {
 }
 
 @available(iOS 13.0, macOS 10.15, *)
-public struct PublisherOnObservableCache<O: ObservableCache>: Publisher {
+public class PublisherOnObservableCache<O: ObservableCache>: Publisher, Observer {
     
     init(_ observable: O) {
         self.observable = observable
         publisher = .init(observable.latestMessage)
-        observer.observe(observable, receive: publisher.send)
+        observe(observable, receive: publisher.send)
     }
     
-    private let observer = FreeObserver()
+    public let receiver = Receiver()
     private let observable: O
     
     public func receive<S>(subscriber: S) where S: Subscriber, Failure == S.Failure, Output == S.Input {
@@ -34,14 +34,14 @@ public extension SwiftObserver.ObservableObject {
 }
 
 @available(iOS 13.0, macOS 10.15, *)
-public struct PublisherOnObservable<O: SwiftObserver.ObservableObject>: Publisher {
+public class PublisherOnObservable<O: SwiftObserver.ObservableObject>: Publisher, Observer {
     
     init(_ observable: O) {
         self.observable = observable
-        observer.observe(observable, receive: publisher.send)
+        observe(observable, receive: publisher.send)
     }
     
-    private let observer = FreeObserver()
+    public let receiver = Receiver()
     private let observable: O
     
     public func receive<S>(subscriber: S) where S: Subscriber, Failure == S.Failure, Output == S.Input {

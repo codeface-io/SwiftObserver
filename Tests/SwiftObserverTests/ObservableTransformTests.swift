@@ -50,7 +50,7 @@ class ObservableTransformTests: XCTestCase, LogObserver
         
         let transform = original.new().unwrap().map { "\($0)" }
         
-        let observer = FreeObserver()
+        let observer = TestObserver()
         
         var lastUpdateFromOriginal: Update<Int?>?
         
@@ -107,7 +107,7 @@ class ObservableTransformTests: XCTestCase, LogObserver
         
         var didFire = false
         
-        let observer = FreeObserver()
+        let observer = TestObserver()
         
         observer.observe(textMapping)
         {
@@ -129,7 +129,7 @@ class ObservableTransformTests: XCTestCase, LogObserver
         
         var observedNumbers = [Int]()
         
-        let observer = FreeObserver()
+        let observer = TestObserver()
         
         observer.observe(doubleDigits)
         {
@@ -153,7 +153,7 @@ class ObservableTransformTests: XCTestCase, LogObserver
         
         var observedNumber: Int? = nil
         
-        let observer = FreeObserver()
+        let observer = TestObserver()
         
         observer.observe(transform)
         {
@@ -174,7 +174,7 @@ class ObservableTransformTests: XCTestCase, LogObserver
         var receivedMessage: String?
         let expectedMessage = "message"
         
-        let observer = FreeObserver()
+        let observer = TestObserver()
         
         observer.observe(textMessenger)
         {
@@ -194,7 +194,7 @@ class ObservableTransformTests: XCTestCase, LogObserver
         
         var didUpdate = false
         
-        let observer = FreeObserver()
+        let observer = TestObserver()
         
         observer.observe(nonOptionalText)
         {
@@ -215,7 +215,7 @@ class ObservableTransformTests: XCTestCase, LogObserver
         
         var didUpdate = false
         
-        let observer = FreeObserver()
+        let observer = TestObserver()
         
         observer.observe(unwrappedText)
         {
@@ -253,4 +253,9 @@ class ObservableTransformTests: XCTestCase, LogObserver
     
     func receive(_ entry: Log.Entry) { latestLogEntry = entry }
     private var latestLogEntry: Log.Entry?
+    
+    class TestObserver: Observer
+    {
+        let receiver = Receiver()
+    }
 }

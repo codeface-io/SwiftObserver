@@ -10,9 +10,9 @@ SwiftObserver is a lightweight framework for reactive Swift. Its design goals ma
 2. [**Non-intrusive Design**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#non-intrusive-design) ✊🏻<br>SwiftObserver doesn't limit or modulate your design. It just makes it easy to do the right thing.
 3. [**Simplicity**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🕹<br>SwiftObserver employs few radically simple concepts and applies them consistently without exceptions.
 4. [**Flexibility**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🤸🏻‍♀️<br>SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
-5. [**Safety**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#safety) ⛑<br>SwiftObserver does the memory management for you. Oh yeah, memory leaks are impossible.
+5. [**Safety**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#safety) ⛑<br>SwiftObserver makes those memory leaks impossible that typically come with observer-/reactive patterns.
 
-SwiftObserver is only 1300 lines of production code, but it's well beyond a 1000 hours of work, re-imagining and reworking it many times, [letting go of fancy features](https://github.com/codeface-io/SwiftObserver/releases), documenting, [unit-testing](https://github.com/codeface-io/SwiftObserver/tree/master/Tests/SwiftObserverTests), and battle-testing it in practice.
+SwiftObserver is only 1400 lines of production code, but it's well beyond a 1000 hours of work, re-imagining and reworking it many times, [letting go of fancy features](https://github.com/codeface-io/SwiftObserver/releases), documenting, [unit-testing](https://github.com/codeface-io/SwiftObserver/tree/master/Tests/SwiftObserverTests), and battle-testing it in practice.
 
 ## Why the Hell Another Reactive Swift Framework?
 
@@ -143,7 +143,7 @@ class Sky: ObservableObject {
 
 ### Memory Management
 
-When an `Observer` or `ObservableObject` dies, SwiftObserver cleans up all related observations automatically, making memory leaks impossible. So there isn't really any memory management to worry about.
+When an `Observer` or `ObservableObject` dies, SwiftObserver cleans up all related observations automatically, making those memory leaks impossible that typically come with observer- and reactive patterns. So there isn't any specific memory management to worry about – no "Cancellables", "Tokens", "DisposeBags" or any such weirdness.
 
 However, observing- and observed objects can stop particular- or all their ongoing observations:
 
@@ -153,24 +153,6 @@ dog.stopObserving()                    // no more messages from anywhere
 Sky.shared.stopBeingObserved(by: dog)  // no more messages to dog
 Sky.shared.stopBeingObserved()         // no more messages to anywhere
 ```
-
-### Free Observers
-
-You may start an observation without an explicit observer:
-
-```swift
-observe(Sky.shared) { color in
-    // marvel at the sky changing its color
-}
-
-Sky.shared.observed { color in  // ... same
-    // ...
-}
-```
-
-Both examples internally use the global observer `FreeObserver.shared`. You may reference `FreeObserver.shared` explicitly to stop particular or all such free global observations.
-
-You can also instantiate your own `FreeObserver` to do observations even more "freely". Just keep it alive as long as the observation shall last. Such a free observer is like a "Cancellable" or "Token" in other reactive frameworks.
 
 ### Architecture
 

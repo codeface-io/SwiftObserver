@@ -10,7 +10,7 @@ class VariableTests: XCTestCase
         var observedNewValue: String?
         var observedOldValue: String?
         
-        let observer = FreeObserver()
+        let observer = TestObserver()
         
         observer.observe(text)
         {
@@ -34,7 +34,7 @@ class VariableTests: XCTestCase
         
         var didUpdate = false
         
-        let observer = FreeObserver()
+        let observer = TestObserver()
         
         observer.observe(text)
         {
@@ -120,7 +120,7 @@ class VariableTests: XCTestCase
         var observedNewValue: String?
         var observedOldValue: String?
         
-        let observer = FreeObserver()
+        let observer = TestObserver()
         
         observer.observe($text)
         {
@@ -142,12 +142,17 @@ class VariableTests: XCTestCase
         
         var observedText: String?
         
-        let observer = FreeObserver()
+        let observer = TestObserver()
         
         observer.observe(text) { observedText = $0.new }
         
         text.send()
         
         XCTAssertEqual(observedText, initialText)
+    }
+    
+    class TestObserver: Observer
+    {
+        let receiver = Receiver()
     }
 }

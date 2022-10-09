@@ -243,5 +243,10 @@ class ObservationTransformTests: XCTestCase
         XCTAssertEqual(observedNumbers, [10, 11, 12])
     }
     
-    let controller = FreeObserver()
+    let controller = TestObserver()
+    
+    class TestObserver: Observer
+    {
+        let receiver = Receiver()
+    }
 }

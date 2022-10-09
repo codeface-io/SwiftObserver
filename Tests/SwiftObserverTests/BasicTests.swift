@@ -6,7 +6,7 @@ class BasicTests: XCTestCase
     func testObserverving()
     {
         let messenger = Messenger<Int>()
-        let observer = FreeObserver()
+        let observer = TestObserver()
         var receivedNumber: Int?
         
         observer.observe(messenger) { receivedNumber = $0 }
@@ -24,7 +24,7 @@ class BasicTests: XCTestCase
         
         var didTriggerUpdate = false
         
-        let observer = FreeObserver()
+        let observer = TestObserver()
         
         observer.observe(messenger)
         {
@@ -37,8 +37,8 @@ class BasicTests: XCTestCase
     func testMaintainingMessageOrder()
     {
         let messenger = Messenger<Int>()
-        let observer1 = FreeObserver()
-        let observer2 = FreeObserver()
+        let observer1 = TestObserver()
+        let observer2 = TestObserver()
         var receivedNumbers = [Int]()
         
         observer1.observe(messenger)
@@ -64,7 +64,7 @@ class BasicTests: XCTestCase
     func testObservingAndReceivingAuthor()
     {
         let messenger = Messenger<Int>()
-        let observer = FreeObserver()
+        let observer = TestObserver()
         var receivedNumber: Int?
         var receivedAuthor: AnyAuthor?
         
@@ -84,7 +84,7 @@ class BasicTests: XCTestCase
     func testObservingSameObservableWithMultipleMessageHandlers()
     {
         let messenger = Messenger<Void>()
-        let observer = FreeObserver()
+        let observer = TestObserver()
         var sum = 0
         
         observer.observe(messenger) { sum += 1 }
@@ -95,5 +95,10 @@ class BasicTests: XCTestCase
         messenger.send(())
         
         XCTAssertEqual(sum, 3)
+    }
+    
+    class TestObserver: Observer
+    {
+        let receiver = Receiver()
     }
 }

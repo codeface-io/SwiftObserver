@@ -9,7 +9,7 @@ class CustomObservableTests: XCTestCase
         
         var didUpdate = false
         
-        let observer = FreeObserver()
+        let observer = TestObserver()
         
         observer.observe(model)
         {
@@ -28,7 +28,7 @@ class CustomObservableTests: XCTestCase
         
         var didFire = false
         
-        let observer = FreeObserver()
+        let observer = TestObserver()
         
         observer.observe(model).map({ $0.rawValue })
         {
@@ -49,7 +49,7 @@ class CustomObservableTests: XCTestCase
         
         var didFire = false
         
-        let observer = FreeObserver()
+        let observer = TestObserver()
         
         observer.observe(mappedModel)
         {
@@ -74,7 +74,7 @@ class CustomObservableTests: XCTestCase
         
         var didUpdate = false
         
-        let observer = FreeObserver()
+        let observer = TestObserver()
         
         observer.observe(newState)
         {
@@ -116,6 +116,11 @@ class CustomObservableTests: XCTestCase
         }
 
         let messenger = Messenger<Update<String>>()
+    }
+    
+    class TestObserver: Observer
+    {
+        let receiver = Receiver()
     }
 }
 
