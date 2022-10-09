@@ -3,6 +3,10 @@ import SwiftObserver
 
 @available(iOS 13.0, macOS 10.15, *)
 public extension ObservableCache {
+    
+    /**
+     Create a `Publisher` that publishes all messages sent by this `ObservableCache`
+     */
     func publisher() -> PublisherOnObservableCache<Self> { .init(self) }
 }
 
@@ -30,6 +34,10 @@ public class PublisherOnObservableCache<O: ObservableCache>: Publisher, Observer
 
 @available(iOS 13.0, macOS 10.15, *)
 public extension SwiftObserver.ObservableObject {
+    
+    /**
+     Create a `Publisher` that publishes all messages sent by this `ObservableObject`
+     */
     func publisher() -> PublisherOnObservable<Self> { .init(self) }
 }
 

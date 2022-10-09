@@ -4,6 +4,9 @@ extension Var: Codable where Value: Codable {}
 
 public typealias Var = Variable
 
+/**
+ An observable wrapper object that makes changes of its contained `Value` observable
+ */
 public final class Variable<Value: Equatable>: Messenger<Update<Value>>, Equatable
 {
     // MARK: - Initialization
@@ -20,6 +23,9 @@ public final class Variable<Value: Equatable>: Messenger<Update<Value>>, Equatab
     
     // MARK: - Equatable
     
+    /**
+     Two `Variable`s count as equal when their ``value``s are equal
+     */
     public static func == (lhs: Variable<Value>,
                            rhs: Variable<Value>) -> Bool
     {
@@ -28,12 +34,18 @@ public final class Variable<Value: Equatable>: Messenger<Update<Value>>, Equatab
     
     // MARK: - Value
     
+    /**
+     The actual stored `Value`. The `Variable` sends an ``Update`` when its `value` changes
+     */
     public var value: Value
     {
         get { storedValue }
         set { set(newValue, as: self) }
     }
     
+    /**
+     Set ``value`` itentifying the author of the potentially triggered ``Update`` message
+     */
     public func set(_ value: Value, as author: AnyAuthor)
     {
         let oldValue = storedValue

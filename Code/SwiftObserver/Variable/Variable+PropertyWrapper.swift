@@ -1,18 +1,31 @@
+/**
+ Make an `Equatable` variable property observable by ``Observer``s
+ 
+ The ``projectedValue`` provides the actual ``Variable`` so it can be observed:
+ 
+ ```swift
+ @Observable var number = 7
+ 
+ observer.observe($number) { numberUpdate in
+     let numberChange = numberUpdate.new - numberUpdate.old
+ }
+ ```
+ */
 @propertyWrapper
 public struct Observable<Value: Equatable>
 {
-    public var projectedValue: Var<Value> { observableVariable }
+    public var projectedValue: Var<Value> { variable }
     
     public var wrappedValue: Value
     {
-        get { observableVariable.value }
-        set { observableVariable <- newValue }
+        get { variable.value }
+        set { variable.value = newValue }
     }
     
     public init(wrappedValue: Value)
     {
-        observableVariable = Var(wrappedValue)
+        variable = Var(wrappedValue)
     }
     
-    private let observableVariable: Var<Value>
+    private let variable: Var<Value>
 }

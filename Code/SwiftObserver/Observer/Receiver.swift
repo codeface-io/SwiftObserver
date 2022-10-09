@@ -2,6 +2,9 @@ import SwiftyToolz
 
 extension Receiver: ReceiverInterface {}
 
+/**
+ The receiver every ``Observer`` needs for receiving ``ObservableObject/Message``s from ``ObservableObject``s
+ */
 public final class Receiver
 {
     // MARK: - Life Cycle

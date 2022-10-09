@@ -2,6 +2,21 @@ import SwiftyToolz
 
 extension Messenger: MessengerInterface {}
 
+/**
+ The simplest `ObservableObject` and the basis of every other `ObservableObject`
+ 
+ `Messenger` doesn't send messages by itself, but anyone can send messages through it and use it for any type of message:
+ 
+ ```swift
+ let textMessenger = Messenger<String>()
+
+ observer.observe(textMessenger) { textMessage in
+     // respond to textMessage
+ }
+
+ textMessenger.send("my message")
+ ```
+ */
 public class Messenger<Message>
 {
     // MARK: - Life Cycle
