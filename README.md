@@ -160,7 +160,7 @@ Have a look at the codebase with its essential internal dependencies:
 
 ![](Documentation/Architecture/SwiftObserver.png)
 
-Diagrams of all top-level source folders [are over here](Documentation/Architecture/architecture.md). The images were generated with the [Codeface app](https://codeface.io). 
+Diagrams of all top-level source folders [are over here](Documentation/Architecture/architecture.md). The images were generated with [Codeface](https://codeface.io). 
 
 # Messengers
 
