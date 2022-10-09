@@ -556,10 +556,7 @@ Of course, `weak()` wouldn't make sense as an adhoc transform, so it can only cr
 
 ## Open Tasks
 
-* Decompose and rework legacy unit tests
-* Write API documentation comments
 * Update and rework (or simply delete) texts about philosophy and patterns
-* Document CombineObserver
 * Engage feedback and contribution
 
 [badge-gitter]: https://img.shields.io/badge/chat-Gitter-red.svg?style=flat-square
