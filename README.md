@@ -60,17 +60,26 @@ With the [**Swift Package Manager**](https://github.com/apple/swift-package-mana
 Or you manually adjust the [Package.swift](https://github.com/apple/swift-package-manager/blob/master/Documentation/Usage.md#create-a-package) file of your project:
 
 ~~~swift
-// swift-tools-version:5.4
+// swift-tools-version:5.6.0
+
 import PackageDescription
 
 let package = Package(
-    name: "MyApp",
+    name: "MyProject",
+    products: [
+        .library(
+            name: "MyProject",
+            targets: ["MyProject"]
+        )
+    ],
     dependencies: [
-        .package(url: "https://github.com/codeface-io/SwiftObserver.git",
-                 .upToNextMajor(from: "6.2.0"))
+        .package(
+            url: "https://github.com/codeface-io/SwiftObserver.git",
+            exact: "7.0.1"
+        )
     ],
     targets: [
-        .target(name: "MyAppTarget",
+        .target(name: "MyProject",
                 dependencies: ["SwiftObserver"])
     ]
 )
@@ -390,7 +399,7 @@ dog.observe(Sky.shared).map {
 
 ## Interoperate With Combine
 
-**CombineObserver** is another library product of the SwiftObserver package. It depends on SwiftObserver and adds a simple way to transform any SwiftObserver- `ObservableObject` into a Combine-`Publisher`:
+**CombineObserver** is another library product of the SwiftObserver package. It depends on SwiftObserver and adds a simple way to transform any SwiftObserver-`ObservableObject` into a Combine-`Publisher`:
 
 ```swift
 import CombineObserver
