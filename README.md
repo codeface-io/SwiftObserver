@@ -2,7 +2,7 @@
 
 # SwiftObserver
 
-![badge-swift-versions] ![badge-platforms] ![badge-mit]
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcodeface-io%2FSwiftObserver%2Fbadge%3Ftype%3Dswift-versions&style=flat-square)](https://swiftpackageindex.com/codeface-io/SwiftObserver) [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcodeface-io%2FSwiftObserver%2Fbadge%3Ftype%3Dplatforms&style=flat-square)](https://swiftpackageindex.com/codeface-io/SwiftObserver) [![](https://img.shields.io/badge/License-MIT-lightgrey.svg?style=flat-square)](LICENSE)
 
 SwiftObserver is a lightweight package for reactive Swift. Its design goals make it easy to learn and a joy to use:
 
@@ -558,9 +558,3 @@ Of course, `weak()` wouldn't make sense as an adhoc transform, so it can only cr
 
 * Update and rework (or simply delete) texts about philosophy and patterns
 * Engage feedback and contribution
-
-[badge-swift-versions]: https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcodeface-io%2FSwiftObserver%2Fbadge%3Ftype%3Dswift-versions&style=flat-square
-
-[badge-platforms]: https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcodeface-io%2FSwiftObserver%2Fbadge%3Ftype%3Dplatforms&style=flat-square
-
-[badge-mit]: https://img.shields.io/badge/License-MIT-lightgrey.svg?style=flat-square
