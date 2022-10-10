@@ -1,5 +1,34 @@
 # SwiftObserver Changelog
 
+## v7.0.1
+
+Fixes the unstable version of the dependence on SwiftyToolz
+
+## v7
+
+This update lets go of some hard-earned features in favour of simplicity and shifts focus to native Swift features that have recently filled some gaps.
+
+7.0.0 also expresses a renewed commitment to semantic versioning, in particular since SwiftObserver has moved to the [Codeface GitHub organization](https://github.com/codeface-io). 
+
+### Removed
+- `Promise` has been removed as any Promise/Future implementation is obsolete with Swift's latest native concurrency features.
+- "One-shot" observations have been removed, as their primary purpose was to enable `Promise`.
+- `FreeObserver` and "global" observations have been removed, since they undermined the memory management concept without much benefit
+- Any value type-specific extensions of `Var<Value>` have been removed, as the property wrapper now fulfills their purpose.
+- Cocoapods support has been dropped.
+
+### Changed
+- Protocol `Observable` has been renamed to `ObservableObject` so the new property wrapper could be conveniently named `Observable` and because the protocol is actually a class protocol.
+- Author filters `from` and `notFrom` require **non**-optional `AnyAuthor`.
+
+### Improved
+- Variable values don't need to be `Codable` anymore. `Var<Value>` remains `Codable` where `Value` is.
+- Many small refinements, more or less under the hood.
+
+### Added
+- Property wrapper `Observable` allows to make any `var: Value` observable by storing it in a wrapped `Var<Value>`.
+- CombineObserver is a new library product of the SwiftObserver package, offering conversion of SwiftObserver's `ObservableObject`s into Combine `Publisher`s.
+
 ## v6.2
 
 New functions on `Promise<Value>` that return a mapped new `Promise<MappedValue>`:
