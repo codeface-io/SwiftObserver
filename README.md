@@ -2,7 +2,7 @@
 
 # SwiftObserver
 
-![badge-pms] ![badge-languages] ![badge-platforms] ![badge-mit]
+![badge-languages] ![badge-swift-versions] ![badge-platforms] ![badge-pms] ![badge-mit]
 
 SwiftObserver is a lightweight framework for reactive Swift. Its design goals make it easy to learn and a joy to use:
 
@@ -10,7 +10,7 @@ SwiftObserver is a lightweight framework for reactive Swift. Its design goals ma
 2. [**Non-intrusive Design**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#non-intrusive-design) ✊🏻<br>SwiftObserver doesn't limit or modulate your design. It just makes it easy to do the right thing.
 3. [**Simplicity**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🕹<br>SwiftObserver employs few radically simple concepts and applies them consistently without exceptions.
 4. [**Flexibility**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🤸🏻‍♀️<br>SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
-5. [**Safety**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#safety) ⛑<br>SwiftObserver makes those memory leaks impossible that typically come with observer-/reactive patterns.
+5. [**Safety**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#safety) ⛑<br>SwiftObserver eradicates those memory leaks that typically come with observer- and reactive patterns.
 
 SwiftObserver is only 1400 lines of production code, but it's well beyond a 1000 hours of work, re-imagining and reworking it many times, [letting go of fancy features](https://github.com/codeface-io/SwiftObserver/releases), documenting, [unit-testing](https://github.com/codeface-io/SwiftObserver/tree/master/Tests/SwiftObserverTests), and battle-testing it in practice.
 
@@ -143,7 +143,7 @@ class Sky: ObservableObject {
 
 ### Memory Management
 
-When an `Observer` or `ObservableObject` dies, SwiftObserver cleans up all related observations automatically, making those memory leaks impossible that typically come with observer- and reactive patterns. So there isn't any specific memory management to worry about – no "Cancellables", "Tokens", "DisposeBags" or any such weirdness.
+When an `Observer` or `ObservableObject` dies, SwiftObserver cleans up all related observations automatically, making those memory leaks impossible that typically come with observer- and reactive patterns. So there's no specific memory management to worry about – and no "Cancellables", "Tokens", "DisposeBags" or any such weirdness.
 
 However, observing- and observed objects can stop particular- or all their ongoing observations:
 
@@ -156,7 +156,7 @@ Sky.shared.stopBeingObserved()         // no more messages to anywhere
 
 ### Architecture
 
-Have a look at the codebase with its essential internal dependencies:
+Have a look at the internal codebase (compositions and essential dependencies) of the "SwiftObserver" target:
 
 ![](Documentation/Architecture/SwiftObserver.png)
 
@@ -189,7 +189,7 @@ public protocol ObservableObject: class {
 }
 ```
 
-`Messenger` is itself `ObservableObject` because it points to itself as the required `Messenger`:
+`Messenger` is itself an `ObservableObject` because it points to itself as the required `Messenger`:
 
 ```swift
 extension Messenger: ObservableObject {
@@ -390,9 +390,7 @@ dog.observe(Sky.shared).map {
 
 ## Interoperate With Combine
 
-SwiftObserver is for pure Swift-/model code without any dependencies – not even on Combine. When combined with Combine (oops), SwiftObserver would be employed in the model core of an application, while Combine would be used more with I/O periphery like SwiftUI and other system-specific APIs that already rely on Combine. That means, the "Combine layer" should be able to observe the "SwiftObserver layer" – but hardly the other way around.
-
-CombineObserver is a library contained in the SwiftObserver package. It depends on SwiftObserver and adds a simple way to transform SwiftObserver's `ObservableObject` into Combine's `Publisher`:
+**CombineObserver** is a library contained in the SwiftObserver package. It depends on SwiftObserver and adds a simple way to transform any SwiftObserver- `ObservableObject` into a Combine-`Publisher`:
 
 ```swift
 import CombineObserver
@@ -407,9 +405,11 @@ let cancellable = numberPublisher.dropFirst().sink { numberUpdate in
 number = 42 // prints "42"
 ```
 
+Some reasoning behind this: SwiftObserver is for pure Swift-/model code without external dependencies – not even on Combine. When combined with Combine (🙊), SwiftObserver would be employed in the model core of an application, while Combine would be used more with I/O periphery like SwiftUI and other system-specific APIs that already rely on Combine. That means, the "Combine layer" might want to observe (react to-) the "SwiftObserver layer" – but hardly the other way around.
+
 ## Message Authors
 
-Every message has an author associated with it. This feature is only noticable in code if we use it.
+Every message has an author associated with it. This feature is only noticable in code if you use it.
 
 An observable object can send an author together with a message via `object.send(message, from: author)`. If noone specifies an author as in `object.send(message)`, the observable object itself becomes the author.
 
@@ -559,9 +559,12 @@ Of course, `weak()` wouldn't make sense as an adhoc transform, so it can only cr
 * Update and rework (or simply delete) texts about philosophy and patterns
 * Engage feedback and contribution
 
-[badge-gitter]: https://img.shields.io/badge/chat-Gitter-red.svg?style=flat-square
+[badge-languages]: https://img.shields.io/badge/language-Swift-orange.svg?style=flat-square
+
+[badge-swift-versions]: https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcodeface-io%2FSwiftObserver%2Fbadge%3Ftype%3Dswift-versions&style=flat-square
+
+[badge-platforms]: https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcodeface-io%2FSwiftObserver%2Fbadge%3Ftype%3Dplatforms&style=flat-square
 
 [badge-pms]: https://img.shields.io/badge/supports-SPM-green.svg?style=flat-square
-[badge-languages]: https://img.shields.io/badge/language-Swift-orange.svg?style=flat-square
-[badge-platforms]: https://img.shields.io/badge/platforms-iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20watchOS%20%7C%20Linux-lightgrey.svg?style=flat-square
+
 [badge-mit]: https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat-square
