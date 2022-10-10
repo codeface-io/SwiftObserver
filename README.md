@@ -390,7 +390,7 @@ dog.observe(Sky.shared).map {
 
 ## Interoperate With Combine
 
-**CombineObserver** is a library contained in the SwiftObserver package. It depends on SwiftObserver and adds a simple way to transform any SwiftObserver- `ObservableObject` into a Combine-`Publisher`:
+**CombineObserver** is another library product of the SwiftObserver package. It depends on SwiftObserver and adds a simple way to transform any SwiftObserver- `ObservableObject` into a Combine-`Publisher`:
 
 ```swift
 import CombineObserver
