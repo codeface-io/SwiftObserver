@@ -2,9 +2,9 @@
 
 # SwiftObserver
 
-![badge-languages] ![badge-swift-versions] ![badge-platforms] ![badge-pms] ![badge-mit]
+![badge-swift-versions] ![badge-platforms] ![badge-mit]
 
-SwiftObserver is a lightweight framework for reactive Swift. Its design goals make it easy to learn and a joy to use:
+SwiftObserver is a lightweight package for reactive Swift. Its design goals make it easy to learn and a joy to use:
 
 1. [**Meaningful Code**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#meaningful-code) 💡<br>SwiftObserver promotes meaningful metaphors, names and syntax, producing highly readable code.
 2. [**Non-intrusive Design**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#non-intrusive-design) ✊🏻<br>SwiftObserver doesn't limit or modulate your design. It just makes it easy to do the right thing.
@@ -559,12 +559,8 @@ Of course, `weak()` wouldn't make sense as an adhoc transform, so it can only cr
 * Update and rework (or simply delete) texts about philosophy and patterns
 * Engage feedback and contribution
 
-[badge-languages]: https://img.shields.io/badge/language-Swift-orange.svg?style=flat-square
-
 [badge-swift-versions]: https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcodeface-io%2FSwiftObserver%2Fbadge%3Ftype%3Dswift-versions&style=flat-square
 
 [badge-platforms]: https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcodeface-io%2FSwiftObserver%2Fbadge%3Ftype%3Dplatforms&style=flat-square
 
-[badge-pms]: https://img.shields.io/badge/supports-SPM-green.svg?style=flat-square
-
-[badge-mit]: https://img.shields.io/badge/license-MIT-lightgrey.svg?style=flat-square
+[badge-mit]: https://img.shields.io/badge/License-MIT-lightgrey.svg?style=flat-square
