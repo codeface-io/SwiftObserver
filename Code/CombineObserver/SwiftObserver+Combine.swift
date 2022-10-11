@@ -1,3 +1,5 @@
+#if canImport(Combine)
+
 import Combine
 import SwiftObserver
 
@@ -61,3 +63,5 @@ public class PublisherOnObservable<O: SwiftObserver.ObservableObject>: Publisher
     public typealias Output = O.Message
     public typealias Failure = Never
 }
+
+#endif

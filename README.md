@@ -78,7 +78,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/codeface-io/SwiftObserver.git",
-            exact: "7.0.1"
+            exact: "7.0.3"
         )
     ],
     targets: [
