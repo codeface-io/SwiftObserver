@@ -1,5 +1,9 @@
 # SwiftObserver Changelog
 
+## v7.0.3
+
+Avoids compiling CombineObserver code on Linux since it's unavailable there
+
 ## v7.0.2
 
 Fixes compile issues on iOS, tvOS and watchOS
