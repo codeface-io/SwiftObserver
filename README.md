@@ -1,4 +1,4 @@
-![SwiftObserver](https://raw.githubusercontent.com/flowtoolz/SwiftObserver/master/Documentation/swift.jpg)
+![SwiftObserver](Documentation/swift.png)
 
 # SwiftObserver
 
