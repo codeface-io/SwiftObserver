@@ -1,5 +1,9 @@
 # SwiftObserver Changelog
 
+## v7.0.2
+
+Fixes compile issues on iOS, tvOS and watchOS
+
 ## v7.0.1
 
 Fixes the unstable version of the dependence on SwiftyToolz
