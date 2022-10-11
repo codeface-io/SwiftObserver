@@ -1,7 +1,7 @@
 import Combine
 import SwiftObserver
 
-@available(iOS 13.0, macOS 10.15, *)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, *)
 public extension ObservableCache {
     
     /**
@@ -10,7 +10,7 @@ public extension ObservableCache {
     func publisher() -> PublisherOnObservableCache<Self> { .init(self) }
 }
 
-@available(iOS 13.0, macOS 10.15, *)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, *)
 public class PublisherOnObservableCache<O: ObservableCache>: Publisher, Observer {
     
     init(_ observable: O) {
@@ -32,7 +32,7 @@ public class PublisherOnObservableCache<O: ObservableCache>: Publisher, Observer
     public typealias Failure = Never
 }
 
-@available(iOS 13.0, macOS 10.15, *)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, *)
 public extension SwiftObserver.ObservableObject {
     
     /**
@@ -41,7 +41,7 @@ public extension SwiftObserver.ObservableObject {
     func publisher() -> PublisherOnObservable<Self> { .init(self) }
 }
 
-@available(iOS 13.0, macOS 10.15, *)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, *)
 public class PublisherOnObservable<O: SwiftObserver.ObservableObject>: Publisher, Observer {
     
     init(_ observable: O) {

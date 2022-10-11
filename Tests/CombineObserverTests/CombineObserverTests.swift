@@ -3,6 +3,7 @@ import CombineObserver
 import SwiftObserver
 import SwiftyToolz
 
+@available(iOS 13.0, tvOS 13.0, *)
 class CombineObserverTests: XCTestCase
 {
     func testCreatingAndSubscribingToPublisher()
