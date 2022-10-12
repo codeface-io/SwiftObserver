@@ -1,6 +1,6 @@
 # Philosophy and Features
 
-This is the opinionated side of SwiftObserver. I invite you put it on like a shoe. See if it fits, take it for what it's worth and evolve it via PR or email: <swiftobserver@flowtoolz.com>.
+This is the opinionated side of SwiftObserver. I invite you put it on like a shoe. See if it fits, take it for what it's worth and evolve it via PR or email: <hello@codeface.io>.
 
 * [What You Might Like](#what-you-might-like)
   * [Meaningful Code](#meaningful-code)
