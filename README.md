@@ -10,7 +10,7 @@ SwiftObserver is a lightweight package for reactive Swift. Its design goals make
 2. [**Non-intrusive Design**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#non-intrusive-design) ✊🏻<br>SwiftObserver doesn't limit or modulate your design. It just makes it easy to do the right thing.
 3. [**Simplicity**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🕹<br>SwiftObserver employs few radically simple concepts and applies them consistently without exceptions.
 4. [**Flexibility**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🤸🏻‍♀️<br>SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
-5. [**Safety**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#safety) ⛑<br>SwiftObserver eradicates those memory leaks that typically come with observer- and reactive patterns.
+5. [**Safety**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#safety) ⛑<br>SwiftObserver eradicates those memory leaks that are typical for "simple" observer- and reactive libraries.
 
 SwiftObserver is only 1400 lines of production code, but it's well beyond a 1000 hours of work, re-imagining and reworking it many times, [letting go of fancy features](https://github.com/codeface-io/SwiftObserver/releases), documenting, [unit-testing](https://github.com/codeface-io/SwiftObserver/tree/master/Tests/SwiftObserverTests), and battle-testing it in practice.
 
@@ -128,7 +128,7 @@ The receiver keeps the observer's observations alive. The observer just holds on
 
 * For a message receiving closure to be called, the `Observer`/`Receiver` must still be alive. There's no awareness after death in memory.
 * An `Observer` can do multiple simultaneous observations of the same `ObservableObject`, for example by calling `observe(...)` multiple times.
-* You can check wether an observer is observing an "observable" via `observer.isObserving(observable)`.
+* You can check wether an `observer` is observing an `observable` via `observer.isObserving(observable)`.
 
 ### Observable Objects
 
@@ -142,7 +142,7 @@ class Sky: ObservableObject {
 
 #### Notes on Observable Objects
 
-* An `ObservableObject` sends messages via `send(_ message: Message)`. The object's clients, even its observers, are also free to call that function. 
+* An `ObservableObject` sends messages via `send(_ message: Message)`. The object's clients, even its observers, are also free to call that function.
 * An `ObservableObject` delivers messages in exactly the order in which `send` is called, which helps when observers, from their message handling closures, somehow trigger further calls of `send`.
 * Just starting to observe an `ObservableObject` does **not** trigger it to send a message. This keeps everything simple, predictable and consistent.
 
@@ -155,9 +155,9 @@ class Sky: ObservableObject {
 
 ### Memory Management
 
-When an `Observer` or `ObservableObject` dies, SwiftObserver cleans up all related observations automatically, making those memory leaks impossible that typically come with observer- and reactive patterns. So there's no specific memory management to worry about – nor are there "Cancellables", "Tokens", "DisposeBags" or any such weirdness.
+With SwiftObserver, you don't need to deal with "Cancellables", "Tokens", "DisposeBags" or any such weirdness for every new observation. And yet, you also don't need to worry about any specific memory management. When an `Observer` or `ObservableObject` dies, SwiftObserver cleans up all related observations automatically, making those memory leaks impossible that tend to come with "simple" implementations of observer- and reactive patterns.
 
-However, observing- and observed objects can stop particular- or all their ongoing observations:
+However, observing- and observed objects can stop particular or all their ongoing observations:
 
 ```swift
 dog.stopObserving(Sky.shared)          // no more messages from the sky
@@ -168,7 +168,7 @@ Sky.shared.stopBeingObserved()         // no more messages to anywhere
 
 ### Architecture
 
-Have a look at the internal codebase (compositions and essential dependencies) of the "SwiftObserver" target:
+Here's the internal architecture (composition and [essential](https://en.wikipedia.org/wiki/Transitive_reduction) dependencies) of the "SwiftObserver" target:
 
 ![](Documentation/Architecture/SwiftObserver.png)
 
@@ -192,7 +192,7 @@ textMessenger.send("my message")
 
 ## Understand Observable Objects
 
-Having a `Messenger` is actually what defines `ObservableObject`:
+Having a `Messenger` is actually what defines an `ObservableObject`:
 
 ```swift
 public protocol ObservableObject: class {
@@ -562,9 +562,10 @@ Of course, `weak()` wouldn't make sense as an adhoc transform, so it can only cr
 
 ## Further Reading
 
-* **Patterns:** Read more about some [patterns that emerged from using SwiftObserver](Documentation/specific-patterns.md#specific-patterns).
-* **Philosophy:** Read more about the [philosophy and features of SwiftObserver](Documentation/philosophy.md#the-philosophy-of-swiftobserver).
-* **License:** SwiftObserver is released under the MIT license. [See LICENSE](LICENSE) for details.
+* **DocC Documentation:** Check out the complete [reference documentation in DocC format](https://swiftpackageindex.com/codeface-io/SwiftObserver/documentation)
+* **Patterns *(incomplete)*:** Read more about some [patterns that emerged from using SwiftObserver](Documentation/specific-patterns.md#specific-patterns).
+* **Philosophy *(outdated)*:** Read more about the [philosophy and features of SwiftObserver](Documentation/philosophy.md#the-philosophy-of-swiftobserver).
+* **License:** SwiftObserver is released under the [MIT license](LICENSE).
 
 ## Open Tasks
 
