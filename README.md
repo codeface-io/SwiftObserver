@@ -2,7 +2,7 @@
 
 # SwiftObserver
 
-[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcodeface-io%2FSwiftObserver%2Fbadge%3Ftype%3Dswift-versions&style=flat-square)](https://swiftpackageindex.com/codeface-io/SwiftObserver) [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcodeface-io%2FSwiftObserver%2Fbadge%3Ftype%3Dplatforms&style=flat-square)](https://swiftpackageindex.com/codeface-io/SwiftObserver) [![](https://img.shields.io/badge/License-MIT-lightgrey.svg?style=flat-square)](LICENSE)
+[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcodeface-io%2FSwiftObserver%2Fbadge%3Ftype%3Dswift-versions&style=flat-square)](https://swiftpackageindex.com/codeface-io/SwiftObserver) &nbsp;[![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fcodeface-io%2FSwiftObserver%2Fbadge%3Ftype%3Dplatforms&style=flat-square)](https://swiftpackageindex.com/codeface-io/SwiftObserver) &nbsp;[![](https://img.shields.io/badge/Documentation-DocC-blue.svg?style=flat-square)](https://swiftpackageindex.com/codeface-io/SwiftObserver/documentation) &nbsp;[![](https://img.shields.io/badge/License-MIT-lightgrey.svg?style=flat-square)](LICENSE)
 
 SwiftObserver is a lightweight package for reactive Swift. Its design goals make it easy to learn and a joy to use:
 
@@ -10,7 +10,7 @@ SwiftObserver is a lightweight package for reactive Swift. Its design goals make
 2. [**Non-intrusive Design**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#non-intrusive-design) ✊🏻<br>SwiftObserver doesn't limit or modulate your design. It just makes it easy to do the right thing.
 3. [**Simplicity**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🕹<br>SwiftObserver employs few radically simple concepts and applies them consistently without exceptions.
 4. [**Flexibility**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🤸🏻‍♀️<br>SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
-5. [**Safety**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#safety) ⛑<br>SwiftObserver eradicates those memory leaks that are typical for "simple" observer- and reactive libraries.
+5. [**Safety**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#safety) ⛑<br>SwiftObserver eliminates the memory leaks that such an easy to use observer-/reactive library might invite.
 
 SwiftObserver is only 1400 lines of production code, but it's well beyond a 1000 hours of work, re-imagining and reworking it many times, [letting go of fancy features](https://github.com/codeface-io/SwiftObserver/releases), documenting, [unit-testing](https://github.com/codeface-io/SwiftObserver/tree/master/Tests/SwiftObserverTests), and battle-testing it in practice.
 
