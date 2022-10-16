@@ -166,14 +166,6 @@ Sky.shared.stopBeingObserved(by: dog)  // no more messages to dog
 Sky.shared.stopBeingObserved()         // no more messages to anywhere
 ```
 
-### Architecture
-
-Here's the internal architecture (composition and [essential](https://en.wikipedia.org/wiki/Transitive_reduction) dependencies) of the "SwiftObserver" target:
-
-![](Documentation/Architecture/SwiftObserver.png)
-
-Diagrams of all top-level source folders [are over here](Documentation/Architecture/architecture.md). The images were generated with [Codeface](https://codeface.io). 
-
 # Messengers
 
 `Messenger` is the simplest `ObservableObject` and the basis of every other `ObservableObject`. It doesn't send messages by itself, but anyone can send messages through it and use it for any type of message:
@@ -559,6 +551,14 @@ weakNumbers.append(weakNumber)
 Of course, `weak()` wouldn't make sense as an adhoc transform, so it can only create a distinct observable object.
 
 # More
+
+## Architecture
+
+Here's the internal architecture (composition and [essential](https://en.wikipedia.org/wiki/Transitive_reduction) dependencies) of the "SwiftObserver" target:
+
+![](Documentation/Architecture/SwiftObserver.png)
+
+Diagrams of all top-level source folders [are over here](Documentation/Architecture/architecture.md). The images were generated with [Codeface](https://codeface.io). 
 
 ## Further Reading
 
