@@ -27,10 +27,10 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Install](#install)
     * [Introduction](#introduction)
 * [Messengers](#messengers)
-    * [Understand Observable Objects](#understand-observables)
+    * [Understand Observable Objects](#understand-observable-objects)
 * [Variables](#variables)
     * [Observe Variables](#observe-variables)
-    * [Enjoy the Property Wrapper](#enjoy-the-property-wrapper)
+    * [Access Variable Values](#access-variable-values)
     * [Encode and Decode Variables](#encode-and-decode-variables)
 * [Transforms](#transforms)
     * [Make Transforms Observable](#make-transforms-observable)
@@ -38,9 +38,9 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Chain Transforms](#chain-transforms)
 * [Advanced](#advanced)
     * [Interoperate With Combine](#interoperate-with-combine)
-    * [Message Authors](#message-authors)
-    * [Cached Messages](#cached-messages)
-    * [Weak Observable Objects](#weak-observables)
+    * [Pull Latest Messages](#pull-latest-messages)
+    * [Identify Message Authors](#identify-message-authors)
+    * [Observe Weak Objects](#observe-weak-objects)
 * [More](#more)
 
 # Get Involved
@@ -149,7 +149,7 @@ class Sky: ObservableObject {
 #### Ways to Create an Observable Object
 
 1. Create a [`Messenger<Message>`](#messengers). It's a mediator through which other entities communicate.
-2. Create an object of a [custom `ObservableObject`](#understand-observables) class that utilizes `Messenger<Message>`.
+2. Create an object of a [custom `ObservableObject`](#understand-observable-objects) class that utilizes `Messenger<Message>`.
 3. Create a [`Variable<Value>`](#variables) (a.k.a. `Var<Value>`). It holds a value and sends value updates.
 5. Create a [*transform*](#make-transforms-observable) object. It wraps and transforms another `ObservableObject`.
 
@@ -209,7 +209,7 @@ extension Messenger: ObservableObject {
 }
 ```
 
-Every other `ObservableObject` class is either a subclass of `Messenger` or a custom `ObservableObject` class that provides a `Messenger`. Custom observables often employ some `enum` as their message type:
+Every other `ObservableObject` class is either a subclass of `Messenger` or a custom `ObservableObject` class that provides a `Messenger`. Custom observable objects often employ some `enum` as their message type:
 
 ```swift
 class Model: SuperModel, ObservableObject {
@@ -223,7 +223,7 @@ class Model: SuperModel, ObservableObject {
 
 # Variables
 
- `Var<Value>` is an `ObservableObject` that has a property `value: Value`. 
+ `Var<Value>` is an `ObservableObject` that has a property `var value: Value`. 
 
 ## Observe Variables
 
@@ -236,14 +236,14 @@ observer.observe(number) { update in
     let whatsTheBigDifference = update.new - update.old
 }
 
-number <- 123
+number <- 123  // use convenience operator <- to set number.value
 ~~~
 
-In addition, you can always manually call `variable.send()` (without argument) to send an update in which `old` and `new` both hold the current `value` (see [`Cached Messages`](#cached-messages)).
+In addition, you can always manually call `variable.send()` (without argument) to send an update in which `old` and `new` both hold the current `value` (see [`Pull Latest Messages`](#pull-latest-messages)).
 
-## Enjoy the Property Wrapper
+## Access Variable Values
 
-Using the property wrapper `Observable`, the above example would look like this:
+The property wrapper `Observable` allows to access the actual `Value` directly. Here we apply it to the above example:
 
 ~~~swift
 @Observable var number = 42
@@ -255,7 +255,7 @@ observer.observe($number) { update in
 number = 123
 ~~~
 
-The wrapper's projected value provides the underlying `Var<Value>`, which you access via the `$` sign like in the above example. This is analogous to how you access publishers in Combine.
+The wrapper's projected value provides the underlying `Var<Value>`, which you access via the `$` sign like in the above example. This is analogous to how you access underlying publishers of `@Published` properties in Combine.
 
 ## Encode and Decode Variables
 
@@ -417,9 +417,45 @@ let cancellable = numberPublisher.dropFirst().sink { numberUpdate in
 number = 42 // prints "42"
 ```
 
-Some reasoning behind this: SwiftObserver is for pure Swift-/model code without external dependencies – not even on Combine. When combined with Combine (🙊), SwiftObserver would be employed in the model core of an application, while Combine would be used more with I/O periphery like SwiftUI and other system-specific APIs that already rely on Combine. That means, the "Combine layer" might want to observe (react to-) the "SwiftObserver layer" – but hardly the other way around.
+> This interoperation goes in only one direction. Here's some reasoning behind that: SwiftObserver is for pure Swift-/model code without external dependencies – not even on Combine. When combined with Combine (oops), SwiftObserver would be employed in the model core of an application, while Combine would be used more with I/O periphery like SwiftUI and other system-specific APIs that already rely on Combine. That means, the "Combine layer" might want to observe (react to-) the "SwiftObserver layer" – but hardly the other way around.
 
-## Message Authors
+## Pull Latest Messages 
+
+An `ObservableCache` is an `ObservableObject` that has a property `latestMessage: Message` which typically returns the last sent message or one that indicates that nothing has changed. `ObservableCache` has a function `send()` that takes no argument and sends `latestMessage`.
+
+### Four Kinds of `ObservableCache`
+
+1. Any `Var` is an `ObservableCache`. Its `latestMessage` is an `Update` in which `old` and `new` both hold the current `value`.
+
+2. Custom observable objects can easily conform to `ObservableCache`. Even if their message type isn't based on some state, `latestMessage` can still return a meaningful default value - or even `nil` where `Message` is optional.
+
+3. Calling `cache()` on an `ObservableObject` creates a [transform](#make-transforms-observable) that is an `ObservableCache`. That cache's `Message` will be optional but never an *optional optional*, even when the origin's `Message` is already optional.
+
+   Of course, `cache()` wouldn't make sense as an adhoc transform of an observation, so it can only create a distinct observable object.
+
+4. Any transform whose origin is an `ObservableCache` is itself implicitly an `ObservableCache` **if** it never suppresses (filters) messages. These compatible transforms are: `map`, `new` and `unwrap(default)`.
+
+   Note that the `latestMessage` of a transform that is an implicit `ObservableCache` returns the transformed `latestMessage` of its underlying `ObservableCache` origin. Calling `send(transformedMessage)` on that transform itself will not "update" its `latestMessage`.
+
+### State-Based Messages 
+
+An `ObservableObject` like `Var`, that derives its messages from its state, can generate a "latest message" on demand and therefore act as an `ObservableCache`:
+
+```swift
+class Model: Messenger<String>, ObservableCache {  // informs about the latest state
+    var latestMessage: String { state }            // ... either on demand
+  
+    var state = "initial state" {
+        didSet {
+            if state != oldValue {
+                send(state)                        // ... or when the state changes
+            }
+        }
+    }
+}
+```
+
+## Identify Message Authors
 
 Every message has an author associated with it. This feature is only noticable in code if you use it.
 
@@ -504,43 +540,7 @@ let messenger = Messenger<String>()             // sends String
 let humanMessages = messenger.notFrom(hal9000)  // sends String, but not from an evil AI
 ```
 
-## Cached Messages 
-
-An `ObservableCache` is an `ObservableObject` that has a property `latestMessage: Message` which typically returns the last sent message or one that indicates that nothing has changed. `ObservableCache` has a function `send()` that takes no argument and sends `latestMessage`.
-
-### Four Kinds of Caches
-
-1. Any `Var` is an `ObservableCache`. Its `latestMessage` is an `Update` in which `old` and `new` both hold the current `value`.
-
-2. Calling `cache()` on an `ObservableObject` creates a [transform](#make-transforms-observable) that is an `ObservableCache`. That cache's `Message` will be optional but never an *optional optional*, even when the origin's `Message` is already optional.
-
-   Of course, `cache()` wouldn't make sense as an adhoc transform of an observation, so it can only create a distinct observable object.
-
-3. Any transform whose origin is an `ObservableCache` is itself implicitly an `ObservableCache` **if** it never suppresses (filters) messages. These compatible transforms are: `map`, `new` and `unwrap(default)`.
-
-   Note that the `latestMessage` of a transform that is an implicit `ObservableCache` returns the transformed `latestMessage` of its underlying `ObservableCache` origin. Calling `send(transformedMessage)` on that transform itself will not "update" its `latestMessage`.
-
-4. Custom observable objects can easily conform to `ObservableCache`. Even if their message type isn't based on some state, `latestMessage` can still return a meaningful default value - or even `nil` where `Message` is optional.
-
-### State-Based Messages 
-
-An `ObservableObject` like `Var`, that derives its messages from its state, can generate a "latest message" on demand and therefore act as an `ObservableCache`:
-
-```swift
-class Model: Messenger<String>, ObservableCache {  // informs about the latest state
-    var latestMessage: String { state }            // ... either on demand
-  
-    var state = "initial state" {
-        didSet {
-            if state != oldValue {
-                send(state)                        // ... or when the state changes
-            }
-        }
-    }
-}
-```
-
-## Weak Observable Objects
+## Observe Weak Objects
 
 When you want to put an `ObservableObject` into some data structure or as the *origin* into a *transform* object but hold it there as a `weak` reference, transform it via `observableObject.weak()`:
 
