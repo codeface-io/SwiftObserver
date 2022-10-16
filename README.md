@@ -155,9 +155,9 @@ class Sky: ObservableObject {
 
 ### Memory Management
 
-With SwiftObserver, you don't need to deal with "Cancellables", "Tokens", "DisposeBags" or any such weirdness for every new observation. And yet, you also don't need to worry about any specific memory management. When an `Observer` or `ObservableObject` dies, SwiftObserver cleans up all related observations automatically, making those memory leaks impossible that tend to come with "simple" implementations of observer- and reactive patterns.
+With SwiftObserver, you don't have to deal with "Cancellables", "Tokens", "DisposeBags" or any such weirdness for every new observation. And yet, you also don't have to worry about any specific memory management. When an `Observer` or `ObservableObject` dies, SwiftObserver cleans up all related observations automatically.
 
-However, observing- and observed objects can stop particular or all their ongoing observations:
+Of course, observing- and observed objects are still free to stop particular or all their ongoing observations:
 
 ```swift
 dog.stopObserving(Sky.shared)          // no more messages from the sky
