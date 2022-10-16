@@ -12,7 +12,7 @@ SwiftObserver is a lightweight package for reactive Swift. Its design goals make
 4. [**Flexibility**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#simplicity-and-flexibility) 🤸🏻‍♀️<br>SwiftObserver's types are simple but universal and composable, making them applicable in many situations.
 5. [**Safety**](https://github.com/codeface-io/SwiftObserver/blob/master/Documentation/philosophy.md#safety) ⛑<br>SwiftObserver eliminates the memory leaks that such an easy to use observer-/reactive library might invite.
 
-SwiftObserver is only 1400 lines of production code, but it's well beyond a 1000 hours of work, re-imagining and reworking it many times, [letting go of fancy features](https://github.com/codeface-io/SwiftObserver/releases), documenting, [unit-testing](https://github.com/codeface-io/SwiftObserver/tree/master/Tests/SwiftObserverTests), and battle-testing it in practice.
+SwiftObserver is only 1400 lines of production code, but it's well beyond 1000 hours of work. With precursor implementations going back to 2013, it has continuously been re-imagined, reworked and battle-tested, [letting go of many fancy features](https://github.com/codeface-io/SwiftObserver/releases) while refining documentation and [unit-tests](https://github.com/codeface-io/SwiftObserver/tree/master/Tests/SwiftObserverTests).
 
 ## Why the Hell Another Reactive Swift Framework?
 
@@ -22,10 +22,10 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
 
 ## Contents
 
-* [Get Involved](#get-involved)
-* [Get Started](#get-started)
+* [Introduction](#introduction)
+    * [Get Involved](#get-involved)
     * [Install](#install)
-    * [Introduction](#introduction)
+    * [Get Started](#get-started)
 * [Messengers](#messengers)
     * [Understand Observable Objects](#understand-observable-objects)
 * [Variables](#variables)
@@ -43,15 +43,15 @@ SwiftObserver diverges from convention as it doesn't inherit the metaphors, term
     * [Observe Weak Objects](#observe-weak-objects)
 * [More](#more)
 
-# Get Involved
+# Introduction
+
+## Get Involved
 
 * Found a **bug**? Create a [github issue](https://github.com/codeface-io/SwiftObserver/issues/new/choose).
 * Need a **feature**? Create a [github issue](https://github.com/codeface-io/SwiftObserver/issues/new/choose).
 * Want to **improve** stuff? Create a [pull request](https://github.com/codeface-io/SwiftObserver/pulls).
 * Need **support** and troubleshooting? Write at <hello@codeface.io>.
 * Want to **contact** us? Write at <hello@codeface.io>.
-
-# Get Started
 
 ## Install
 
@@ -96,7 +96,7 @@ Finally, in your **Swift** files:
 import SwiftObserver
 ```
 
-## Introduction
+## Get Started
 
 No need to learn a bunch of arbitrary metaphors, terms or types.
 
@@ -558,7 +558,7 @@ Here's the internal architecture (composition and [essential](https://en.wikiped
 
 ![](Documentation/Architecture/SwiftObserver.png)
 
-Diagrams of all top-level source folders [are over here](Documentation/Architecture/architecture.md). The images were generated with [Codeface](https://codeface.io). 
+More diagrams of top-level source folders [are over here](Documentation/Architecture/architecture.md). The images were generated with [Codeface](https://codeface.io). 
 
 ## Further Reading
 
