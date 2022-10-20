@@ -187,7 +187,7 @@ textMessenger.send("my message")
 Having a `Messenger` is actually what defines an `ObservableObject`:
 
 ```swift
-public protocol ObservableObject: class {
+public protocol ObservableObject: AnyObject {
     var messenger: Messenger<Message> { get }
     associatedtype Message: Any
 }
@@ -235,7 +235,7 @@ In addition, you can always manually call `variable.send()` (without argument) t
 
 ## Access Variable Values
 
-The property wrapper `Observable` allows to access the actual `Value` directly. Here we apply it to the above example:
+The property wrapper `Observable` allows to access the actual `Value` directly. Let's apply it to the above example:
 
 ~~~swift
 @Observable var number = 42
