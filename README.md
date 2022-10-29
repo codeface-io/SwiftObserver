@@ -231,7 +231,7 @@ observer.observe(number) { update in
 number <- 123  // use convenience operator <- to set number.value
 ~~~
 
-In addition, you can always manually call `variable.send()` (without argument) to send an update in which `old` and `new` both hold the current `value` (see [`Pull Latest Messages`](#pull-latest-messages)).
+In addition, you can always manually call `variable.send()` (without argument) to send an update in which `old` and `new` both hold the current `value` (see [Pull Latest Messages](#pull-latest-messages)).
 
 ## Access Variable Values
 
