@@ -1,7 +1,3 @@
 .build/
 .swiftpm/
-.DS_Store
-DerivedData/
-*.pbxuser
-xcuserdata/
 Package.resolved
