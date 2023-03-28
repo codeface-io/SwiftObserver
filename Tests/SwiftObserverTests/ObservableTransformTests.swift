@@ -2,12 +2,17 @@ import XCTest
 @testable import SwiftObserver
 import SwiftyToolz
 
-class ObservableTransformTests: XCTestCase, LogObserver
+class ObservableTransformTests: XCTestCase
 {
-    static override func setUp()
+    override func setUp()
     {
         super.setUp()
-        Log.shared.minimumLevel = .error
+        Log.shared.minimumPrintLevel = .error
+        
+        Log.shared.add(observer: self)
+        {
+            self.latestLogEntry = $0
+        }
     }
     
     func testCacheLatestMessageIsOptionalOnObservableWithOptionalMessage()
@@ -24,24 +29,20 @@ class ObservableTransformTests: XCTestCase, LogObserver
     
     func testLogWarningWhenApplyingCacheToCacheWithNonOptionalMessage()
     {
-        Log.shared.add(observer: self)
         let alreadyACache = Var<Int?>()
         let expectedWarning = alreadyACache.warningWhenApplyingCache(messageIsOptional: false)
         _ = alreadyACache.cache()
         XCTAssert(latestLogEntry?.message.contains(expectedWarning) ?? false)
-        Log.shared.remove(observer: self)
     }
     
     func testLogWarningWhenApplyingCacheToCacheWithOptionalMessage()
     {
-        Log.shared.add(observer: self)
         latestLogEntry = nil
         let alreadyACache = Messenger<Int>().cache()
         XCTAssertNil(latestLogEntry)
         let expectedWarning = alreadyACache.warningWhenApplyingCache(messageIsOptional: true)
         _ = alreadyACache.cache()
         XCTAssert(latestLogEntry?.message.contains(expectedWarning) ?? false)
-        Log.shared.remove(observer: self)
     }
     
     func testReplacingOriginOfTransform()
