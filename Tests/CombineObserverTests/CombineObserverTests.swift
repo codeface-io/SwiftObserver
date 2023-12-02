@@ -8,7 +8,7 @@ class CombineObserverTests: XCTestCase
 {
     func testCreatingAndSubscribingToPublisher()
     {
-        @Observable var number = 7
+        @ObservableVar var number = 7
         let numberPublisher = $number.publisher()
         
         var receivedNumbers = [Int]()
@@ -24,7 +24,7 @@ class CombineObserverTests: XCTestCase
     
     func testUsingDropFirstOnPublisher()
     {
-        @Observable var number = 7
+        @ObservableVar var number = 7
         let numberPublisher = $number.publisher()
         
         var receivedNumbers = [Int]()
@@ -40,7 +40,7 @@ class CombineObserverTests: XCTestCase
     
     func testCreatingPublisherOnUncachedObservable()
     {
-        @Observable var number = 200
+        @ObservableVar var number = 200
         let numberFilter = $number.new().filter { $0 > 100 }
         let filterPublisher = numberFilter.publisher()
         

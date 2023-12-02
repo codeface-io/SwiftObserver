@@ -4,7 +4,7 @@
  The ``projectedValue`` provides the actual ``Variable`` so it can be observed:
  
  ```swift
- @Observable var number = 7
+ @ObservableVar var number = 7
  
  observer.observe($number) { numberUpdate in
      let numberChange = numberUpdate.new - numberUpdate.old
@@ -12,7 +12,7 @@
  ```
  */
 @propertyWrapper
-public struct Observable<Value: Equatable>
+public struct ObservableVar<Value: Equatable>
 {
     public var projectedValue: Var<Value> { variable }
     

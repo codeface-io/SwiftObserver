@@ -235,10 +235,10 @@ In addition, you can always manually call `variable.send()` (without argument) t
 
 ## Access Variable Values
 
-The property wrapper `Observable` allows to access the actual `Value` directly. Let's apply it to the above example:
+The property wrapper `ObservableVar` allows to access the actual `Value` directly. Let's apply it to the above example:
 
 ~~~swift
-@Observable var number = 42
+@ObservableVar var number = 42
 
 observer.observe($number) { update in
     let whatsTheBigDifference = update.new - update.old
@@ -399,7 +399,7 @@ dog.observe(Sky.shared).map {
 ```swift
 import CombineObserver
 
-@Observable var number = 7                  // SwiftObserver
+@ObservableVar var number = 7               // SwiftObserver
 let numberPublisher = $number.publisher()   // Combine
 
 let cancellable = numberPublisher.dropFirst().sink { numberUpdate in

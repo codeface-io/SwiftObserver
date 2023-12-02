@@ -115,7 +115,7 @@ class VariableTests: XCTestCase
     
     func testPropertyWrapper()
     {
-        @Observable var text: String? = "old text"
+        @ObservableVar var text: String? = "old text"
         
         var observedNewValue: String?
         var observedOldValue: String?
